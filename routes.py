@@ -116,6 +116,25 @@ def delete_word():
     
     return redirect(url_for('word_management'))
 
+@app.route('/delete_multiple_words', methods=['POST'])
+def delete_multiple_words():
+    """여러 단어 삭제"""
+    word_indices_str = request.form.get('word_indices', '')
+    
+    if not word_indices_str:
+        flash('삭제할 단어를 선택해주세요.', 'error')
+        return redirect(url_for('word_management'))
+    
+    word_indices = word_indices_str.split(',')
+    result = game_logic.delete_multiple_words_from_bank(word_indices)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('word_management'))
+
 @app.route('/edit_word', methods=['POST'])
 def edit_word():
     """단어 수정"""

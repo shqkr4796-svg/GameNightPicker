@@ -105,6 +105,25 @@ def delete_word_from_bank(word_index):
     except Exception as e:
         return {'success': False, 'message': '단어 삭제 중 오류가 발생했습니다.'}
 
+def delete_multiple_words_from_bank(word_indices):
+    """단어장에서 여러 단어 삭제"""
+    try:
+        # 인덱스를 내림차순으로 정렬하여 뒤에서부터 삭제
+        word_indices = sorted([int(idx) for idx in word_indices], reverse=True)
+        deleted_words = []
+        
+        for index in word_indices:
+            if 0 <= index < len(word_bank):
+                deleted_word = word_bank.pop(index)
+                deleted_words.append(deleted_word['단어'])
+        
+        if deleted_words:
+            return {'success': True, 'message': f'{len(deleted_words)}개의 단어가 삭제되었습니다.'}
+        else:
+            return {'success': False, 'message': '삭제할 수 있는 단어가 없습니다.'}
+    except Exception as e:
+        return {'success': False, 'message': '단어 삭제 중 오류가 발생했습니다.'}
+
 def edit_word_in_bank(word_index, new_word, new_meaning, new_category):
     """단어장의 단어 수정"""
     try:

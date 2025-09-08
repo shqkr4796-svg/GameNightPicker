@@ -76,7 +76,13 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">단어 목록</h5>
-                    <small class="text-muted">{{ word_bank|length }}개의 단어</small>
+                    <div class="d-flex gap-2 align-items-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm" id="deleteSelectedBtn" 
+                                onclick="confirmMultipleDelete()" style="display: none;">
+                            <i data-feather="trash-2"></i> 선택 삭제
+                        </button>
+                        <small class="text-muted">{{ word_bank|length }}개의 단어</small>
+                    </div>
                 </div>
                 <div class="card-body">
                     {% if word_bank %}
@@ -84,6 +90,9 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll" class="form-check-input">
+                                    </th>
                                     <th>번호</th>
                                     <th>단어</th>
                                     <th>뜻</th>
@@ -94,6 +103,10 @@
                             <tbody>
                                 {% for word in word_bank %}
                                 <tr id="word-row-{{ word.인덱스 }}">
+                                    <td>
+                                        <input type="checkbox" class="form-check-input word-checkbox" 
+                                               value="{{ word.인덱스 }}" onchange="updateDeleteButton()">
+                                    </td>
                                     <td>{{ loop.index }}</td>
                                     <td>
                                         <strong class="text-primary">{{ word.단어 }}</strong>
@@ -199,6 +212,34 @@
         </div>
     </div>
 </div>
+
+<!-- 다중 삭제 확인 모달 -->
+<div class="modal fade" id="multiDeleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">선택 단어 삭제</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>선택한 <strong id="selected_count"></strong>개의 단어를 삭제하시겠습니까?</p>
+                <div class="alert alert-warning">
+                    <i data-feather="alert-triangle"></i>
+                    삭제된 단어들은 복구할 수 없습니다.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <form id="multiDeleteForm" method="POST" action="{{ url_for('delete_multiple_words') }}" class="d-inline">
+                    <input type="hidden" id="selected_word_indices" name="word_indices">
+                    <button type="submit" class="btn btn-danger">
+                        <i data-feather="trash-2"></i> 모두 삭제
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -218,6 +259,60 @@ function confirmDelete(index, word) {
     
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
+
+function updateDeleteButton() {
+    const checkboxes = document.querySelectorAll('.word-checkbox:checked');
+    const deleteBtn = document.getElementById('deleteSelectedBtn');
+    
+    if (checkboxes.length > 0) {
+        deleteBtn.style.display = 'inline-block';
+    } else {
+        deleteBtn.style.display = 'none';
+    }
+}
+
+function confirmMultipleDelete() {
+    const checkboxes = document.querySelectorAll('.word-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert('삭제할 단어를 선택해주세요.');
+        return;
+    }
+    
+    const indices = Array.from(checkboxes).map(cb => cb.value);
+    document.getElementById('selected_word_indices').value = indices.join(',');
+    document.getElementById('selected_count').textContent = indices.length;
+    
+    new bootstrap.Modal(document.getElementById('multiDeleteModal')).show();
+}
+
+// 전체 선택/해제
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.word-checkbox');
+    checkboxes.forEach(cb => {
+        cb.checked = this.checked;
+    });
+    updateDeleteButton();
+});
+
+// 개별 체크박스 변경 시 전체 선택 상태 업데이트
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('word-checkbox')) {
+        const checkboxes = document.querySelectorAll('.word-checkbox');
+        const checkedBoxes = document.querySelectorAll('.word-checkbox:checked');
+        const selectAll = document.getElementById('selectAll');
+        
+        if (checkedBoxes.length === checkboxes.length) {
+            selectAll.checked = true;
+            selectAll.indeterminate = false;
+        } else if (checkedBoxes.length === 0) {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        } else {
+            selectAll.checked = false;
+            selectAll.indeterminate = true;
+        }
+    }
+});
 
 // 검색 자동 완성 지연
 let searchTimeout;
