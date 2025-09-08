@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}성취 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="award" class="me-2"></i>성취 목록
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for achievement in achievements %}
+                    {% set is_achieved = achievement['조건'] in player_achievements %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 {% if is_achieved %}border-success{% else %}border-secondary opacity-75{% endif %}">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="me-3">
+                                    {% if is_achieved %}
+                                        <i data-feather="check-circle" class="text-success" size="32"></i>
+                                    {% else %}
+                                        <i data-feather="circle" class="text-muted" size="32"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-1 {% if is_achieved %}text-success{% else %}text-muted{% endif %}">
+                                        {{ achievement['이름'] }}
+                                    </h6>
+                                    <p class="card-text small text-muted mb-0">
+                                        {{ achievement['설명'] }}
+                                    </p>
+                                    {% if is_achieved %}
+                                        <small class="text-success">
+                                            <i data-feather="star" size="12" class="me-1"></i>달성 완료!
+                                        </small>
+                                    {% else %}
+                                        <small class="text-muted">미달성</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 성취 진행 상황 -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="trending-up" class="me-2"></i>진행 상황 세부 정보
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6>레벨 관련</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small>현재 레벨</small>
+                            <span class="badge bg-primary">{{ player['레벨'] }}</span>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar" style="width: {{ (player['레벨'] / 10 * 100) if player['레벨'] <= 10 else 100 }}%">
+                                {{ player['레벨'] }}/10
+                            </div>
+                        </div>
+                        <small class="text-muted">레벨 마스터 성취까지</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6>재산 관련</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small>보유 현금</small>
+                            <span class="badge bg-success">{{ "{:,}".format(player['돈']) }}원</span>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" style="width: {{ (player['돈'] / 1000000 * 100) if player['돈'] <= 1000000 else 100 }}%">
+                                {{ "%.1f"|format(player['돈'] / 1000000 * 100) if player['돈'] <= 1000000 else 100 }}%
+                            </div>
+                        </div>
+                        <small class="text-muted">백만장자 성취까지</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6>퀴즈 관련</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small>정답 수</small>
+                            <span class="badge bg-info">{{ player['정답_퀴즈'] }}</span>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-info" style="width: {{ (player['정답_퀴즈'] / 100 * 100) if player['정답_퀴즈'] <= 100 else 100 }}%">
+                                {{ player['정답_퀴즈'] }}/100
+                            </div>
+                        </div>
+                        <small class="text-muted">퀴즈왕 성취까지</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <h6>스탯 관련</h6>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small>체력 스탯</small>
+                                <span class="badge bg-warning">{{ player['체력스탯'] }}</span>
+                            </div>
+                            <div class="progress progress-sm mb-1">
+                                <div class="progress-bar bg-warning" style="width: {{ (player['체력스탯'] / 50 * 100) if player['체력스탯'] <= 50 else 100 }}%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small>지능 스탯</small>
+                                <span class="badge bg-info">{{ player['지능'] }}</span>
+                            </div>
+                            <div class="progress progress-sm">
+                                <div class="progress-bar bg-info" style="width: {{ (player['지능'] / 50 * 100) if player['지능'] <= 50 else 100 }}%"></div>
+                            </div>
+                        </div>
+                        <small class="text-muted">체력짱/천재 성취까지</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- 성취 통계 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>성취 통계
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <h2 class="text-success">{{ player_achievements|length }}</h2>
+                    <small class="text-muted">달성한 성취</small>
+                </div>
+                
+                <div class="progress mb-2">
+                    <div class="progress-bar bg-success" 
+                         style="width: {{ (player_achievements|length / achievements|length * 100) }}%">
+                        {{ "%.1f"|format(player_achievements|length / achievements|length * 100) }}%
+                    </div>
+                </div>
+                <small class="text-muted">전체 성취 달성률</small>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ achievements|length }}</h4>
+                        <small class="text-muted">전체 성취</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-warning">{{ achievements|length - player_achievements|length }}</h4>
+                        <small class="text-muted">미달성</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 성취 달성 팁 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="lightbulb" class="me-2"></i>성취 달성 팁
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i data-feather="target" class="text-success me-2" size="16"></i>
+                        <small><strong>레벨 마스터:</strong> 꾸준히 퀴즈를 풀고 근무를 하세요.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="dollar-sign" class="text-success me-2" size="16"></i>
+                        <small><strong>백만장자:</strong> 안정적인 직업을 구하고 지출을 줄이세요.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="book-open" class="text-success me-2" size="16"></i>
+                        <small><strong>퀴즈왕:</strong> 다양한 단어를 추가하고 매일 퀴즈를 푸세요.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="briefcase" class="text-success me-2" size="16"></i>
+                        <small><strong>성공한 사업가:</strong> 스탯을 높여서 CEO 직업에 도전하세요.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="home" class="text-success me-2" size="16"></i>
+                        <small><strong>부동산왕:</strong> 충분한 자금을 모아 펜트하우스를 구매하세요.</small>
+                    </li>
+                    <li>
+                        <i data-feather="trending-up" class="text-success me-2" size="16"></i>
+                        <small><strong>스탯 마스터:</strong> 상점 아이템과 스탯 포인트를 활용하세요.</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 최근 달성 성취 -->
+        {% if player_achievements|length > 0 %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="star" class="me-2"></i>달성한 성취
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for achievement in achievements %}
+                    {% if achievement['조건'] in player_achievements %}
+                    <div class="d-flex align-items-center mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <div>
+                            <strong class="small text-success">{{ achievement['이름'] }}</strong><br>
+                            <small class="text-muted">{{ achievement['설명'] }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

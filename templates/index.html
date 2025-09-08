@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}라이프 시뮬레이션 게임 - 시작{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-4">
+                <i data-feather="life-buoy" class="me-3"></i>
+                라이프 시뮬레이션 게임
+            </h1>
+            <p class="lead text-muted">당신만의 특별한 인생을 시작해보세요!</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- 새 게임 시작 -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <i data-feather="play-circle" size="48" class="mx-auto mb-3 text-success"></i>
+                        <h5 class="card-title">새 게임 시작</h5>
+                        <p class="card-text text-muted flex-grow-1">
+                            새로운 캐릭터로 인생 시뮬레이션을 시작합니다. 
+                            레벨 1부터 시작하여 다양한 활동을 통해 성장해보세요!
+                        </p>
+                        <form method="POST" action="{{ url_for('start_game') }}">
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i data-feather="plus-circle" class="me-2"></i>새 게임 시작
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 게임 불러오기 -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center d-flex flex-column">
+                        <i data-feather="folder-open" size="48" class="mx-auto mb-3 text-primary"></i>
+                        <h5 class="card-title">게임 불러오기</h5>
+                        <p class="card-text text-muted flex-grow-1">
+                            이전에 저장된 게임을 불러와서 계속 진행합니다.
+                            저장된 진행상황부터 이어서 플레이할 수 있습니다.
+                        </p>
+                        <form method="POST" action="{{ url_for('load_game') }}">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i data-feather="download" class="me-2"></i>게임 불러오기
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 게임 소개 -->
+        <div class="card mt-5">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="info" class="me-2"></i>게임 소개
+                </h5>
+                <div class="row g-4 mt-2">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i data-feather="book-open" size="36" class="text-info mb-2"></i>
+                            <h6>단어 학습</h6>
+                            <p class="small text-muted">다양한 단어 퀴즈를 풀어 지식을 쌓고 경험치를 획득하세요.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i data-feather="briefcase" size="36" class="text-warning mb-2"></i>
+                            <h6>직업 시스템</h6>
+                            <p class="small text-muted">다양한 직업에 취업하여 돈을 벌고 스탯을 향상시키세요.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i data-feather="home" size="36" class="text-success mb-2"></i>
+                            <h6>부동산 투자</h6>
+                            <p class="small text-muted">다양한 부동산을 구매하여 더 나은 생활환경을 만드세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}상점 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="shopping-cart" class="me-2"></i>상점 아이템
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for item in items %}
+                    {% set can_afford = player['돈'] >= item['가격'] %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100 {% if not can_afford %}opacity-50{% endif %}">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ item['이름'] }}</h6>
+                                <p class="text-muted small">{{ item['설명'] }}</p>
+                                
+                                <!-- 아이템 효과 -->
+                                <div class="mb-3">
+                                    <small class="text-info">효과:</small><br>
+                                    {% for effect, value in item['효과'].items() %}
+                                        <small class="badge bg-secondary me-1">
+                                            {{ effect }} {% if value > 0 %}+{% endif %}{{ value }}
+                                        </small>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
+                                    <form method="POST" action="{{ url_for('buy_item') }}">
+                                        <input type="hidden" name="item_id" value="{{ loop.index0 }}">
+                                        <button type="submit" class="btn btn-sm {% if can_afford %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                                {% if not can_afford %}disabled{% endif %}>
+                                            {% if can_afford %}구매{% else %}자금부족{% endif %}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- 보유 현금 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="dollar-sign" class="me-2"></i>보유 현금
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <h3 class="text-success">{{ "{:,}".format(player['돈']) }}원</h3>
+            </div>
+        </div>
+
+        <!-- 인벤토리 -->
+        {% if player['인벤토리']|length > 0 %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="package" class="me-2"></i>보유 아이템
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <h3 class="text-info">{{ player['인벤토리']|length }}</h3>
+                    <small class="text-muted">보유 아이템 수</small>
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    {% for item in player['인벤토리'] %}
+                    <div class="list-group-item d-flex align-items-center px-0">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>{{ item }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 상점 안내 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>상점 안내
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>아이템을 구매하면 즉시 효과가 적용됩니다.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>체력과 기력은 최대 10까지만 증가합니다.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>스탯 증가 아이템은 영구적으로 효과가 적용됩니다.</small>
+                    </li>
+                    <li>
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>돈을 벌어서 더 좋은 아이템을 구매해보세요!</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

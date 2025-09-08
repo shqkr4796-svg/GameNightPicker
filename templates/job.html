@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}직업 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- 현재 직업 상태 -->
+        {% if player['직장'] %}
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i data-feather="briefcase" class="me-2"></i>현재 직업
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4 class="text-success">{{ player['직장'] }}</h4>
+                        <p class="text-muted mb-3">월급: {{ "{:,}".format(player['직장정보']['월급']) }}원</p>
+                        
+                        <form method="POST" action="{{ url_for('work') }}" class="mb-3">
+                            <button type="submit" class="btn btn-success me-2" 
+                                    {% if player['기력'] <= 0 %}disabled{% endif %}>
+                                <i data-feather="play" class="me-2"></i>근무하기
+                            </button>
+                            {% if player['기력'] <= 0 %}
+                                <small class="text-muted">기력이 부족합니다.</small>
+                            {% endif %}
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-2">필요 능력치</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <small>힘: {{ player['직장정보']['힘'] }}</small><br>
+                                <small>지능: {{ player['직장정보']['지능'] }}</small><br>
+                                <small>외모: {{ player['직장정보']['외모'] }}</small>
+                            </div>
+                            <div class="col-6">
+                                <small>체력: {{ player['직장정보']['체력스탯'] }}</small><br>
+                                <small>운: {{ player['직장정보']['운'] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 직업 목록 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="search" class="me-2"></i>취업 가능한 직업
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- 직업 카테고리 필터 -->
+                <div class="mb-3">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="filterJobs('all')">전체</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterJobs('low')">초급</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterJobs('mid')">중급</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterJobs('high')">고급</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterJobs('expert')">전문직</button>
+                    </div>
+                </div>
+
+                <div class="row" id="jobsList">
+                    {% for job in jobs %}
+                    {% set total_requirements = job['힘'] + job['지능'] + job['외모'] + job['체력스탯'] + job['운'] %}
+                    {% set player_total = player['힘'] + player['지능'] + player['외모'] + player['체력스탯'] + player['운'] %}
+                    {% set can_apply = player_total >= (total_requirements * 0.5) %}
+                    
+                    <div class="col-md-6 mb-3 job-item" 
+                         data-level="{% if total_requirements <= 5 %}low{% elif total_requirements <= 15 %}mid{% elif total_requirements <= 30 %}high{% else %}expert{% endif %}">
+                        <div class="card h-100 {% if not can_apply %}opacity-50{% endif %}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">{{ job['이름'] }}</h6>
+                                    <span class="badge bg-primary">{{ "{:,}".format(job['월급']) }}원</span>
+                                </div>
+                                
+                                <div class="row text-sm mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted">
+                                            힘: {{ job['힘'] }}, 지능: {{ job['지능'] }}<br>
+                                            외모: {{ job['외모'] }}, 체력: {{ job['체력스탯'] }}<br>
+                                            운: {{ job['운'] }}
+                                        </small>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">
+                                            필요 총합: {{ total_requirements }}<br>
+                                            현재 총합: {{ player_total }}<br>
+                                            {% if can_apply %}
+                                                <span class="text-success">지원 가능</span>
+                                            {% else %}
+                                                <span class="text-danger">스탯 부족</span>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <form method="POST" action="{{ url_for('apply_job') }}">
+                                    <input type="hidden" name="job_id" value="{{ loop.index0 }}">
+                                    <button type="submit" class="btn btn-sm w-100 {% if can_apply %}btn-outline-success{% else %}btn-outline-secondary{% endif %}"
+                                            {% if not can_apply %}disabled{% endif %}>
+                                        <i data-feather="user-plus" class="me-1" size="16"></i>
+                                        {% if can_apply %}지원하기{% else %}스탯 부족{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- 직업 통계 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="trending-up" class="me-2"></i>취업 통계
+                </h5>
+            </div>
+            <div class="card-body">
+                {% set player_total = player['힘'] + player['지능'] + player['외모'] + player['체력스탯'] + player['운'] %}
+                {% set available_jobs = 0 %}
+                {% for job in jobs %}
+                    {% set total_requirements = job['힘'] + job['지능'] + job['외모'] + job['체력스탯'] + job['운'] %}
+                    {% if player_total >= (total_requirements * 0.5) %}
+                        {% set available_jobs = available_jobs + 1 %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="text-center mb-3">
+                    <h3 class="text-success">{{ available_jobs }}</h3>
+                    <small class="text-muted">지원 가능한 직업</small>
+                </div>
+                
+                <div class="progress mb-2">
+                    <div class="progress-bar" style="width: {{ (available_jobs / jobs|length * 100) }}%">
+                        {{ "%.1f"|format(available_jobs / jobs|length * 100) }}%
+                    </div>
+                </div>
+                <small class="text-muted">전체 직업 중 지원 가능 비율</small>
+            </div>
+        </div>
+
+        <!-- 스탯 현황 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="user" class="me-2"></i>내 능력치
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span>힘</span>
+                        <span>{{ player['힘'] }}</span>
+                    </div>
+                    <div class="progress progress-sm mb-2">
+                        <div class="progress-bar bg-danger" style="width: {{ (player['힘'] / 50 * 100) if player['힘'] <= 50 else 100 }}%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span>지능</span>
+                        <span>{{ player['지능'] }}</span>
+                    </div>
+                    <div class="progress progress-sm mb-2">
+                        <div class="progress-bar bg-info" style="width: {{ (player['지능'] / 50 * 100) if player['지능'] <= 50 else 100 }}%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span>외모</span>
+                        <span>{{ player['외모'] }}</span>
+                    </div>
+                    <div class="progress progress-sm mb-2">
+                        <div class="progress-bar bg-warning" style="width: {{ (player['외모'] / 50 * 100) if player['외모'] <= 50 else 100 }}%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span>체력</span>
+                        <span>{{ player['체력스탯'] }}</span>
+                    </div>
+                    <div class="progress progress-sm mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ (player['체력스탯'] / 50 * 100) if player['체력스탯'] <= 50 else 100 }}%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span>운</span>
+                        <span>{{ player['운'] }}</span>
+                    </div>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-secondary" style="width: {{ (player['운'] / 50 * 100) if player['운'] <= 50 else 100 }}%"></div>
+                    </div>
+                </div>
+                
+                <hr>
+                <div class="text-center">
+                    <strong>총합: {{ player_total }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- 취업 가이드 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="help-circle" class="me-2"></i>취업 가이드
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>스탯을 높여서 더 좋은 직업에 지원하세요.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>퀴즈를 풀거나 아이템을 사용해 스탯을 올릴 수 있습니다.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>근무할 때 기력이 3 소모됩니다.</small>
+                    </li>
+                    <li>
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>직업에 따라 스탯이 추가로 상승할 수 있습니다.</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterJobs(level) {
+    const jobs = document.querySelectorAll('.job-item');
+    const buttons = document.querySelectorAll('.btn-group .btn');
+    
+    // 버튼 스타일 업데이트
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // 직업 필터링
+    jobs.forEach(job => {
+        if (level === 'all' || job.dataset.level === level) {
+            job.style.display = 'block';
+        } else {
+            job.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}

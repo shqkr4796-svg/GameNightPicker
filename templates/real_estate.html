@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}부동산 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- 현재 거주지 -->
+        {% if player['거주지'] %}
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i data-feather="home" class="me-2"></i>현재 거주지
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for property in properties %}
+                    {% if property['이름'] == player['거주지'] %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4 class="text-success">{{ property['이름'] }}</h4>
+                            <p class="text-muted mb-0">월세: {{ "{:,}".format(property['월세']) }}원</p>
+                            <p class="text-muted mb-0">매매가: {{ "{:,}".format(property['매매']) }}원</p>
+                            <p class="text-muted">기력 회복: {{ property['기력회복'] }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <form method="POST" action="{{ url_for('sell_property') }}">
+                                <button type="submit" class="btn btn-warning">
+                                    <i data-feather="dollar-sign" class="me-2"></i>
+                                    {{ "{:,}".format((property['매매'] * 0.8)|int) }}원에 판매
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 부동산 목록 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="search" class="me-2"></i>부동산 매물
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- 부동산 필터 -->
+                <div class="mb-3">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="filterProperties('all')">전체</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('low')">저가형</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('mid')">중가형</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('high')">고가형</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('luxury')">초고급</button>
+                    </div>
+                </div>
+
+                <div class="row" id="propertiesList">
+                    {% for property in properties %}
+                    {% set can_afford = player['돈'] >= property['매매'] %}
+                    <div class="col-lg-6 mb-3 property-item"
+                         data-price-range="{% if property['매매'] <= 10000000 %}low{% elif property['매매'] <= 50000000 %}mid{% elif property['매매'] <= 100000000 %}high{% else %}luxury{% endif %}">
+                        <div class="card h-100 {% if not can_afford %}opacity-50{% endif %}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0">{{ property['이름'] }}</h6>
+                                    <div class="text-end">
+                                        <small class="text-muted d-block">기력 회복: +{{ property['기력회복'] }}</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <strong class="text-primary">{{ "{:,}".format(property['매매']) }}원</strong><br>
+                                        <small class="text-muted">매매가</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong class="text-warning">{{ "{:,}".format(property['월세']) }}원</strong><br>
+                                        <small class="text-muted">월세</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-info" 
+                                             style="width: {{ (property['기력회복'] / 10 * 100) }}%"></div>
+                                    </div>
+                                    <small class="text-muted">편의성 점수: {{ property['기력회복'] }}/10</small>
+                                </div>
+                                
+                                <form method="POST" action="{{ url_for('buy_property') }}">
+                                    <input type="hidden" name="property_id" value="{{ loop.index0 }}">
+                                    <button type="submit" class="btn btn-sm w-100 {% if can_afford %}btn-outline-success{% else %}btn-outline-secondary{% endif %}"
+                                            {% if not can_afford %}disabled{% endif %}>
+                                        <i data-feather="shopping-cart" class="me-1" size="16"></i>
+                                        {% if can_afford %}구매하기{% else %}자금 부족{% endif %}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- 재정 현황 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="dollar-sign" class="me-2"></i>재정 현황
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <h3 class="text-success mb-2">{{ "{:,}".format(player['돈']) }}원</h3>
+                <small class="text-muted">보유 현금</small>
+                
+                <hr>
+                
+                {% if player['거주지'] %}
+                {% for property in properties %}
+                    {% if property['이름'] == player['거주지'] %}
+                    <div class="mb-2">
+                        <strong>월 고정비용</strong><br>
+                        <span class="text-warning">{{ "{:,}".format(property['월세']) }}원</span><br>
+                        <small class="text-muted">매달 자동 차감</small>
+                    </div>
+                    
+                    <div>
+                        <strong>자산 가치</strong><br>
+                        <span class="text-info">{{ "{:,}".format((property['매매'] * 0.8)|int) }}원</span><br>
+                        <small class="text-muted">현재 판매 예상가</small>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                {% else %}
+                <div class="text-muted">
+                    <i data-feather="alert-triangle" class="me-2"></i>
+                    <small>현재 거주지가 없습니다</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 구매 가능 물건 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="trending-up" class="me-2"></i>구매 통계
+                </h5>
+            </div>
+            <div class="card-body">
+                {% set affordable_count = 0 %}
+                {% for property in properties %}
+                    {% if player['돈'] >= property['매매'] %}
+                        {% set affordable_count = affordable_count + 1 %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="text-center mb-3">
+                    <h3 class="text-primary">{{ affordable_count }}</h3>
+                    <small class="text-muted">구매 가능한 매물</small>
+                </div>
+                
+                <div class="progress mb-2">
+                    <div class="progress-bar" style="width: {{ (affordable_count / properties|length * 100) }}%">
+                        {{ "%.1f"|format(affordable_count / properties|length * 100) }}%
+                    </div>
+                </div>
+                <small class="text-muted">전체 매물 중 구매 가능 비율</small>
+            </div>
+        </div>
+
+        <!-- 부동산 투자 가이드 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="help-circle" class="me-2"></i>투자 가이드
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>좋은 거주지는 기력 회복량이 높습니다.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>매달 월세가 자동으로 차감됩니다.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>판매 시 매매가의 80% 가격을 받습니다.</small>
+                    </li>
+                    <li class="mb-2">
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>월세를 못 내면 거주지에서 쫓겨납니다.</small>
+                    </li>
+                    <li>
+                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <small>안정적인 수입원을 확보한 후 구매하세요.</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterProperties(priceRange) {
+    const properties = document.querySelectorAll('.property-item');
+    const buttons = document.querySelectorAll('.btn-group .btn');
+    
+    // 버튼 스타일 업데이트
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // 부동산 필터링
+    properties.forEach(property => {
+        if (priceRange === 'all' || property.dataset.priceRange === priceRange) {
+            property.style.display = 'block';
+        } else {
+            property.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,304 @@
+from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from app import app
+import game_logic
+import json
+import os
+
+@app.route('/')
+def index():
+    """메인 페이지"""
+    if 'player_data' not in session:
+        return render_template('index.html')
+    return redirect(url_for('dashboard'))
+
+@app.route('/start_game', methods=['POST'])
+def start_game():
+    """새 게임 시작"""
+    player_data = game_logic.create_new_player()
+    session['player_data'] = player_data
+    game_logic.save_game(player_data)
+    flash('새로운 인생이 시작되었습니다!', 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/load_game', methods=['POST'])
+def load_game():
+    """게임 불러오기"""
+    loaded_data = game_logic.load_game()
+    if loaded_data:
+        session['player_data'] = loaded_data
+        flash('게임을 불러왔습니다!', 'success')
+        return redirect(url_for('dashboard'))
+    else:
+        flash('저장된 게임이 없습니다.', 'error')
+        return redirect(url_for('index'))
+
+@app.route('/dashboard')
+def dashboard():
+    """대시보드"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    stats = game_logic.get_player_stats(player)
+    recent_events = game_logic.get_recent_events()
+    achievements = game_logic.get_achievements(player)
+    
+    return render_template('dashboard.html', 
+                         player=player, 
+                         stats=stats,
+                         recent_events=recent_events,
+                         achievements=achievements)
+
+@app.route('/quiz')
+def quiz():
+    """단어 퀴즈 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    word_bank = game_logic.get_word_bank()
+    categories = game_logic.get_word_categories()
+    
+    return render_template('quiz.html', 
+                         player=player, 
+                         word_bank=word_bank,
+                         categories=categories)
+
+@app.route('/take_quiz', methods=['POST'])
+def take_quiz():
+    """퀴즈 풀기"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    category = request.form.get('category', 'all')
+    answer = request.form.get('answer', '').strip()
+    question_type = request.form.get('question_type')
+    correct_answer = request.form.get('correct_answer')
+    
+    result = game_logic.process_quiz_answer(player, answer, correct_answer, question_type)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['correct']:
+        flash(f'정답! 경험치 +{result["exp_gained"]}', 'success')
+    else:
+        flash(f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.', 'error')
+    
+    return redirect(url_for('quiz'))
+
+@app.route('/add_word', methods=['POST'])
+def add_word():
+    """단어 추가"""
+    word = request.form.get('word', '').strip()
+    meaning = request.form.get('meaning', '').strip()
+    category = request.form.get('category', '기본')
+    
+    if word and meaning:
+        game_logic.add_word_to_bank(word, meaning, category)
+        flash('단어가 추가되었습니다!', 'success')
+    else:
+        flash('단어와 뜻을 모두 입력해주세요.', 'error')
+    
+    return redirect(url_for('quiz'))
+
+@app.route('/job')
+def job():
+    """직업 관리 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    jobs = game_logic.get_jobs()
+    
+    return render_template('job.html', player=player, jobs=jobs)
+
+@app.route('/apply_job', methods=['POST'])
+def apply_job():
+    """취업 신청"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    job_id = int(request.form.get('job_id'))
+    
+    result = game_logic.apply_for_job(player, job_id)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('job'))
+
+@app.route('/work', methods=['POST'])
+def work():
+    """근무하기"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    result = game_logic.work(player)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('job'))
+
+@app.route('/real_estate')
+def real_estate():
+    """부동산 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    properties = game_logic.get_real_estate()
+    
+    return render_template('real_estate.html', player=player, properties=properties)
+
+@app.route('/buy_property', methods=['POST'])
+def buy_property():
+    """부동산 구매"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    property_id = int(request.form.get('property_id'))
+    
+    result = game_logic.buy_property(player, property_id)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('real_estate'))
+
+@app.route('/sell_property', methods=['POST'])
+def sell_property():
+    """부동산 판매"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    result = game_logic.sell_property(player)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('real_estate'))
+
+@app.route('/shop')
+def shop():
+    """상점 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    items = game_logic.get_shop_items()
+    
+    return render_template('shop.html', player=player, items=items)
+
+@app.route('/buy_item', methods=['POST'])
+def buy_item():
+    """아이템 구매"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    item_id = int(request.form.get('item_id'))
+    
+    result = game_logic.buy_item(player, item_id)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('shop'))
+
+@app.route('/allocate_stats', methods=['POST'])
+def allocate_stats():
+    """스탯 분배"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    stat_type = request.form.get('stat_type')
+    points = int(request.form.get('points', 0))
+    
+    result = game_logic.allocate_stat_points(player, stat_type, points)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('dashboard'))
+
+@app.route('/sleep', methods=['POST'])
+def sleep():
+    """잠자기"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    result = game_logic.sleep(player)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    # 랜덤 이벤트 체크
+    event = game_logic.check_random_event(player)
+    if event:
+        flash(f"이벤트 발생: {event['message']}", 'info')
+    
+    flash(result['message'], 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/achievements')
+def achievements():
+    """성취 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    achievements = game_logic.get_all_achievements()
+    player_achievements = game_logic.get_player_achievements(player)
+    
+    return render_template('achievements.html', 
+                         player=player, 
+                         achievements=achievements,
+                         player_achievements=player_achievements)
+
+@app.route('/api/player_stats')
+def api_player_stats():
+    """플레이어 통계 API (차트용)"""
+    if 'player_data' not in session:
+        return jsonify({'error': 'No player data'})
+    
+    player = session['player_data']
+    stats = {
+        'stats': [player['힘'], player['지능'], player['외모'], player['체력스탯'], player['운']],
+        'labels': ['힘', '지능', '외모', '체력', '운'],
+        'level': player['레벨'],
+        'exp': player['경험치'],
+        'max_exp': player['경험치최대']
+    }
+    
+    return jsonify(stats)
