@@ -102,6 +102,82 @@ def add_word():
     
     return redirect(url_for('quiz'))
 
+@app.route('/delete_word', methods=['POST'])
+def delete_word():
+    """단어 삭제"""
+    word_index = int(request.form.get('word_index', 0))
+    
+    result = game_logic.delete_word_from_bank(word_index)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('word_management'))
+
+@app.route('/edit_word', methods=['POST'])
+def edit_word():
+    """단어 수정"""
+    word_index = int(request.form.get('word_index', 0))
+    new_word = request.form.get('word', '').strip()
+    new_meaning = request.form.get('meaning', '').strip()
+    new_category = request.form.get('category', '기본')
+    
+    if new_word and new_meaning:
+        result = game_logic.edit_word_in_bank(word_index, new_word, new_meaning, new_category)
+        if result['success']:
+            flash(result['message'], 'success')
+        else:
+            flash(result['message'], 'error')
+    else:
+        flash('단어와 뜻을 모두 입력해주세요.', 'error')
+    
+    return redirect(url_for('word_management'))
+
+@app.route('/word_management')
+def word_management():
+    """단어 관리 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    word_bank = game_logic.get_word_bank()
+    categories = game_logic.get_word_categories()
+    
+    # 검색 기능
+    search_term = request.args.get('search', '').strip()
+    if search_term:
+        word_bank = game_logic.search_words(search_term)
+    else:
+        # 인덱스 추가
+        for i, word in enumerate(word_bank):
+            word['인덱스'] = str(i)
+    
+    # 카테고리 필터
+    category_filter = request.args.get('category', 'all')
+    if category_filter != 'all':
+        if search_term:
+            word_bank = [word for word in word_bank if word.get('카테고리', '기본') == category_filter]
+        else:
+            word_bank = game_logic.get_word_by_category(category_filter)
+            for i, word in enumerate(word_bank):
+                word['인덱스'] = str(i)
+    
+    return render_template('word_management.html', 
+                         player=player, 
+                         word_bank=word_bank,
+                         categories=categories,
+                         search_term=search_term,
+                         category_filter=category_filter)
+
+@app.route('/search_words')
+def search_words_route():
+    """단어 검색 API"""
+    search_term = request.args.get('q', '')
+    results = game_logic.search_words(search_term) if search_term else []
+    return jsonify({'results': results})
+
 @app.route('/job')
 def job():
     """직업 관리 페이지"""
