@@ -120,7 +120,7 @@ def apply_job():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    job_id = int(request.form.get('job_id'))
+    job_id = int(request.form.get('job_id', 0))
     
     result = game_logic.apply_for_job(player, job_id)
     session['player_data'] = player
@@ -169,7 +169,7 @@ def buy_property():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    property_id = int(request.form.get('property_id'))
+    property_id = int(request.form.get('property_id', 0))
     
     result = game_logic.buy_property(player, property_id)
     session['player_data'] = player
@@ -218,7 +218,7 @@ def buy_item():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    item_id = int(request.form.get('item_id'))
+    item_id = int(request.form.get('item_id', 0))
     
     result = game_logic.buy_item(player, item_id)
     session['player_data'] = player
