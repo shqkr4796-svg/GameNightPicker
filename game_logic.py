@@ -94,6 +94,52 @@ def add_word_to_bank(word, meaning, category='기본'):
         '카테고리': category
     })
 
+def delete_word_from_bank(word_index):
+    """단어장에서 단어 삭제"""
+    try:
+        if 0 <= word_index < len(word_bank):
+            deleted_word = word_bank.pop(word_index)
+            return {'success': True, 'message': f'단어 "{deleted_word["단어"]}"가 삭제되었습니다.'}
+        else:
+            return {'success': False, 'message': '잘못된 단어 번호입니다.'}
+    except Exception as e:
+        return {'success': False, 'message': '단어 삭제 중 오류가 발생했습니다.'}
+
+def edit_word_in_bank(word_index, new_word, new_meaning, new_category):
+    """단어장의 단어 수정"""
+    try:
+        if 0 <= word_index < len(word_bank):
+            word_bank[word_index] = {
+                '단어': new_word,
+                '뜻': new_meaning,
+                '카테고리': new_category
+            }
+            return {'success': True, 'message': f'단어 "{new_word}"가 수정되었습니다.'}
+        else:
+            return {'success': False, 'message': '잘못된 단어 번호입니다.'}
+    except Exception as e:
+        return {'success': False, 'message': '단어 수정 중 오류가 발생했습니다.'}
+
+def get_word_by_category(category='all'):
+    """카테고리별 단어 조회"""
+    if category == 'all':
+        return word_bank
+    else:
+        return [word for word in word_bank if word.get('카테고리', '기본') == category]
+
+def search_words(search_term):
+    """단어 검색"""
+    search_term = search_term.lower()
+    results = []
+    for i, word in enumerate(word_bank):
+        if (search_term in word['단어'].lower() or 
+            search_term in word['뜻'].lower() or 
+            search_term in word.get('카테고리', '기본').lower()):
+            word_with_index = word.copy()
+            word_with_index['인덱스'] = str(i)
+            results.append(word_with_index)
+    return results
+
 def process_quiz_answer(player, answer, correct_answer, question_type):
     """퀴즈 답안 처리"""
     player['총_퀴즈'] += 1
