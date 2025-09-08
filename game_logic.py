@@ -197,16 +197,23 @@ def apply_for_job(player, job_id):
     
     job = jobs[job_id]
     
-    # 스탯 요구사항 확인 (간단한 예시)
-    required_stats = job['힘'] + job['지능'] + job['외모'] + job['체력스탯'] + job['운']
-    player_stats = player['힘'] + player['지능'] + player['외모'] + player['체력스탯'] + player['운']
+    # 각 스탯별 개별 요구사항 확인
+    stat_names = ['힘', '지능', '외모', '체력스탯', '운']
+    insufficient_stats = []
     
-    if player_stats >= required_stats * 0.5:  # 요구 스탯의 50% 이상
+    for stat in stat_names:
+        if player[stat] < job[stat]:
+            insufficient_stats.append(f"{stat}: {player[stat]}/{job[stat]}")
+    
+    if insufficient_stats:
+        return {
+            'success': False, 
+            'message': f'스탯이 부족합니다. 부족한 스탯: {", ".join(insufficient_stats)}'
+        }
+    else:
         player['직장'] = job['이름']
         player['직장정보'] = job
         return {'success': True, 'message': f"{job['이름']}에 취업했습니다!"}
-    else:
-        return {'success': False, 'message': '스탯이 부족하여 취업할 수 없습니다.'}
 
 def work(player):
     """근무하기"""
