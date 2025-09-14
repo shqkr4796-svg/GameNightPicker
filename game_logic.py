@@ -106,6 +106,34 @@ def add_word_to_bank(word, meaning, category='기본'):
         '카테고리': category
     })
 
+def add_words_to_bank(words, meanings, category, player):
+    """여러 단어를 단어장에 추가하고 새 단어에 대해 경험치 지급"""
+    added_count = 0
+    exp_gained = 0
+    
+    # 기존 단어 목록 (소문자로 변환해서 비교)
+    existing_words = {word['단어'].lower() for word in word_bank}
+    
+    for word, meaning in zip(words, meanings):
+        # 중복 체크 (대소문자 무시)
+        if word.lower() not in existing_words:
+            word_bank.append({
+                '단어': word,
+                '뜻': meaning,
+                '카테고리': category
+            })
+            existing_words.add(word.lower())  # 같은 요청 내에서 중복 방지
+            added_count += 1
+            
+            # 새 단어 등록 시 경험치 0.5 획득
+            player['경험치'] += 0.5
+            exp_gained += 0.5
+    
+    # 레벨업 확인
+    level_ups = check_level_up(player)
+    
+    return added_count, exp_gained
+
 def delete_word_from_bank(word_index):
     """단어장에서 단어 삭제"""
     try:

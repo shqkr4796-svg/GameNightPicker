@@ -90,13 +90,29 @@ def take_quiz():
 @app.route('/add_word', methods=['POST'])
 def add_word():
     """단어 추가"""
-    word = request.form.get('word', '').strip()
-    meaning = request.form.get('meaning', '').strip()
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    words_text = request.form.get('words', '').strip()
+    meanings_text = request.form.get('meanings', '').strip()
     category = request.form.get('category', '기본')
     
-    if word and meaning:
-        game_logic.add_word_to_bank(word, meaning, category)
-        flash('단어가 추가되었습니다!', 'success')
+    if words_text and meanings_text:
+        words = [w.strip() for w in words_text.split('\n') if w.strip()]
+        meanings = [m.strip() for m in meanings_text.split('\n') if m.strip()]
+        
+        if len(words) != len(meanings):
+            flash('단어와 뜻의 개수가 다릅니다. 같은 순서로 입력해주세요.', 'error')
+        else:
+            added_count, exp_gained = game_logic.add_words_to_bank(words, meanings, category, player)
+            
+            if added_count > 0:
+                session['player_data'] = player
+                game_logic.save_game(player)
+                flash(f'{added_count}개의 단어가 추가되었습니다! 경험치 +{exp_gained}', 'success')
+            else:
+                flash('모두 중복되는 단어입니다.', 'info')
     else:
         flash('단어와 뜻을 모두 입력해주세요.', 'error')
     

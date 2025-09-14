@@ -69,14 +69,14 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label">영어 단어</label>
-                                <input type="text" name="word" class="form-control" placeholder="예: apple" required>
+                                <label class="form-label">영어 단어 (여러개는 줄바꿈으로 구분)</label>
+                                <textarea name="words" class="form-control" rows="5" placeholder="예:&#10;apple&#10;book&#10;cat" required></textarea>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label class="form-label">한글 뜻</label>
-                                <input type="text" name="meaning" class="form-control" placeholder="예: 사과" required>
+                                <label class="form-label">한글 뜻 (단어와 같은 순서로)</label>
+                                <textarea name="meanings" class="form-control" rows="5" placeholder="예:&#10;사과&#10;책&#10;고양이" required></textarea>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -97,6 +97,14 @@
                                     <i data-feather="plus" class="me-1"></i>추가
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-muted">
+                                <i data-feather="info" class="me-1" size="14"></i>
+                                처음 등록하는 단어마다 경험치 0.5를 획득합니다!
+                            </small>
                         </div>
                     </div>
                 </form>

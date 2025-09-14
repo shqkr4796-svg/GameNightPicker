@@ -21,7 +21,7 @@
                             <h4 class="text-success">{{ property['이름'] }}</h4>
                             <p class="text-muted mb-0">월세: {{ "{:,}".format(property['월세']) }}원</p>
                             <p class="text-muted mb-0">매매가: {{ "{:,}".format(property['매매']) }}원</p>
-                            <p class="text-muted">기력 회복: {{ property['기력회복'] }}</p>
+                            <p class="text-muted">최대기력 증가: +{{ property['기력회복'] }}</p>
                         </div>
                         <div class="col-md-6 text-end">
                             <form method="POST" action="{{ url_for('sell_property') }}">
@@ -67,7 +67,7 @@
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="card-title mb-0">{{ property['이름'] }}</h6>
                                     <div class="text-end">
-                                        <small class="text-muted d-block">기력 회복: +{{ property['기력회복'] }}</small>
+                                        <small class="text-muted d-block">최대기력 증가: +{{ property['기력회복'] }}</small>
                                     </div>
                                 </div>
                                 
@@ -87,7 +87,7 @@
                                         <div class="progress-bar bg-info" 
                                              style="width: {{ (property['기력회복'] / 10 * 100) }}%"></div>
                                     </div>
-                                    <small class="text-muted">편의성 점수: {{ property['기력회복'] }}/10</small>
+                                    <small class="text-muted">최대기력 늨은: {{ property['기력회복'] }}/10</small>
                                 </div>
                                 
                                 <form method="POST" action="{{ url_for('buy_property') }}">
