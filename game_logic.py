@@ -12,7 +12,7 @@ def create_new_player():
     return {
         '레벨': 1, '경험치': 0, '경험치최대': 100, '스탯포인트': 0,
         '힘': 0, '지능': 0, '외모': 0, '체력스탯': 0, '운': 0,
-        '체력': 10, '기력': 10, '직장': None, '직장정보': None,
+        '체력': 10, '기력': 10, '최대기력': 10, '직장': None, '직장정보': None,
         '돈': 0, '거주지': None, '날짜': 1, '시간': 8, '질병': None,
         '인벤토리': [], '성취': [], '총_퀴즈': 0, '정답_퀴즈': 0
     }
@@ -32,7 +32,19 @@ def load_game():
     try:
         if os.path.exists(SAVE_FILE):
             with open(SAVE_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                player = json.load(f)
+                
+                # 기존 플레이어 호환성 처리
+                if '최대기력' not in player:
+                    player['최대기력'] = 10  # 기본값
+                    # 기존 거주지가 있다면 해당 부동산의 기력회복만큼 최대기력 증가
+                    if player['거주지']:
+                        for prop in real_estate:
+                            if prop['이름'] == player['거주지']:
+                                player['최대기력'] += prop['기력회복']
+                                break
+                
+                return player
     except Exception as e:
         print(f"불러오기 실패: {e}")
     return None
@@ -42,7 +54,7 @@ def check_level_up(player):
     level_ups = 0
     while player['경험치'] >= player['경험치최대']:
         player['레벨'] += 1
-        player['스탯포인트'] += 5
+        player['스탯포인트'] += 2
         player['경험치'] -= player['경험치최대']
         player['경험치최대'] = int(player['경험치최대'] * 1.2)
         level_ups += 1
@@ -230,6 +242,12 @@ def work(player):
     player['기력'] = max(0, player['기력'] - 3)
     player['경험치'] += random.randint(5, 15)
     
+    # 근무 시 시간 흐름 (4시간 근무)
+    player['시간'] += 4
+    if player['시간'] >= 24:
+        player['시간'] -= 24
+        player['날짜'] += 1
+    
     # 스탯 증가 (직업에 따라)
     if random.random() < 0.3:  # 30% 확률로 스탯 증가
         stat_gains = []
@@ -245,7 +263,7 @@ def work(player):
     
     level_ups = check_level_up(player)
     
-    message = f"{salary}원을 벌었습니다. 기력 -3, 경험치 획득"
+    message = f"{salary}원을 벌었습니다. 기력 -3, 경험치 획득, 시간 +4시간"
     if level_ups > 0:
         message += f" 레벨업! ({level_ups}회)"
     
@@ -265,11 +283,19 @@ def buy_property(player, property_id):
     if player['돈'] < property_info['매매']:
         return {'success': False, 'message': '돈이 부족합니다.'}
     
+    # 기존 거주지가 있다면 최대기력 감소
+    if player['거주지']:
+        for prop in real_estate:
+            if prop['이름'] == player['거주지']:
+                player['최대기력'] -= prop['기력회복']
+                break
+    
     player['돈'] -= property_info['매매']
     player['거주지'] = property_info['이름']
-    player['기력'] = min(10, player['기력'] + property_info['기력회복'])
+    player['최대기력'] += property_info['기력회복']
+    player['기력'] = min(player['최대기력'], player['기력'])
     
-    return {'success': True, 'message': f"{property_info['이름']}을(를) 구매했습니다!"}
+    return {'success': True, 'message': f"{property_info['이름']}을(를) 구매했습니다! 최대 기력이 {property_info['기력회복']}만큼 증가했습니다."}
 
 def sell_property(player):
     """부동산 판매"""
@@ -330,14 +356,18 @@ def allocate_stat_points(player, stat_type, points):
 
 def sleep(player):
     """잠자기"""
-    recovery = 10
+    # 기본 회복량 4 + 집의 퀄리티에 따른 추가 회복
+    base_recovery = 4
+    bonus_recovery = 0
+    
     if player['거주지']:
         for prop in real_estate:
             if prop['이름'] == player['거주지']:
-                recovery = prop['기력회복']
+                bonus_recovery = prop['기력회복']
                 break
     
-    player['기력'] = recovery
+    total_recovery = base_recovery + bonus_recovery
+    player['기력'] = min(player['최대기력'], player['기력'] + total_recovery)
     player['체력'] = 10
     player['시간'] += 8
     
@@ -352,10 +382,12 @@ def sleep(player):
                     if player['돈'] >= prop['월세']:
                         player['돈'] -= prop['월세']
                     else:
-                        player['거주지'] = None  # 월세를 못 내면 쫓겨남
-                        return {'message': f'월세를 내지 못해 {prop["이름"]}에서 쫓겨났습니다.'}
+                        # 기존 거주지 효과 제거
+                        player['최대기력'] -= prop['기력회복']
+                        player['거주지'] = None
+                        return {'message': f'월세를 내지 못해 {prop["이름"]}에서 쫓겨났습니다. 최대 기력이 감소했습니다.'}
     
-    return {'message': '충분히 잠을 잤습니다. 기력과 체력이 회복되었습니다.'}
+    return {'message': f'충분히 잠을 잤습니다. 기력 +{total_recovery} (기본 4 + 집 보너스 {bonus_recovery}), 체력이 회복되었습니다.'}
 
 def check_random_event(player):
     """랜덤 이벤트 확인"""
