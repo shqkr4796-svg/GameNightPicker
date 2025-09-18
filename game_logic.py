@@ -995,8 +995,28 @@ def load_toeic_words():
         print(f"토익 단어 로드 실패: {e}")
         return []
 
-def load_words_by_source(word_source):
+def load_words_by_source(word_source, category_filter=None, difficulty_filter=None):
     """카테고리별 단어 로드"""
+    # user_bank인 경우 사용자 단어장에서 가져오기
+    if word_source == 'user_bank':
+        all_words = get_word_bank()
+        
+        # 카테고리 필터 적용
+        if category_filter:
+            all_words = [word for word in all_words if word.get('카테고리', '기본') == category_filter]
+        
+        # 난이도 필터 적용
+        if difficulty_filter:
+            all_words = [word for word in all_words if word.get('난이도', 'beginner') in difficulty_filter]
+        
+        # 단어가 부족한 경우 반복하여 확장
+        if len(all_words) > 0 and len(all_words) < 50:
+            extended_words = all_words * (50 // len(all_words) + 1)
+            return extended_words[:50]
+        
+        return all_words
+    
+    # 기존 JSON 파일 기반 로드
     file_mapping = {
         'toeic': 'data/toeic_words.json',
         'business': 'data/business_words.json',
@@ -1050,7 +1070,11 @@ def init_dungeon_run(player, dungeon_id):
         return {'success': False, 'message': f'레벨 {dungeon["레벨_제한"]} 이상만 입장 가능합니다.'}
     
     # 던전별 단어 로드 (카테고리에 맞는 단어 사용)
-    words = load_words_by_source(dungeon.get('word_source', 'toeic'))
+    words = load_words_by_source(
+        dungeon.get('word_source', 'toeic'),
+        category_filter=dungeon.get('category_filter'),
+        difficulty_filter=dungeon.get('difficulty_filter')
+    )
     if not words:
         return {'success': False, 'message': '단어를 로드할 수 없습니다.'}
     
@@ -1171,7 +1195,12 @@ def next_monster(dungeon_run, dungeon):
             return {'success': False, 'message': '던전을 완료했습니다!'}
         
         # 문제가 다 떨어졌지만 클리어해야 할 몬스터가 남은 경우, 문제 재사용
-        words = load_words_by_source(dungeon_run.get('word_source', 'toeic'))
+        dungeon = get_dungeon_by_id(dungeon_run['dungeon_id'])
+        words = load_words_by_source(
+            dungeon_run.get('word_source', 'toeic'),
+            category_filter=dungeon.get('category_filter') if dungeon else None,
+            difficulty_filter=dungeon.get('difficulty_filter') if dungeon else None
+        )
         random.shuffle(words)  # 단어 순서 다시 섞기
         
         # 이미 사용한 문제들을 추적하여 중복 방지
@@ -1203,13 +1232,23 @@ def next_monster(dungeon_run, dungeon):
             dungeon_run['flash_message'] = flash_message
     
     # 현재 단어 설정
-    words = load_words_by_source(dungeon_run.get('word_source', 'toeic'))
+    dungeon = get_dungeon_by_id(dungeon_run['dungeon_id']) if 'dungeon_id' in dungeon_run else None
+    words = load_words_by_source(
+        dungeon_run.get('word_source', 'toeic'),
+        category_filter=dungeon.get('category_filter') if dungeon else None,
+        difficulty_filter=dungeon.get('difficulty_filter') if dungeon else None
+    )
     word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
     current_word = words[word_index]
     dungeon_run['current_word'] = current_word
     
     # 몬스터 등급 결정 (확률 기반)
-    rarity_dist = dungeon['rarity_distribution']
+    if not dungeon:
+        dungeon = get_dungeon_by_id(dungeon_run['dungeon_id'])
+    if not dungeon:  # 던전을 찾을 수 없는 경우 기본값 사용
+        rarity_dist = {'레어': 0.6, '에픽': 0.3, '유니크': 0.1}
+    else:
+        rarity_dist = dungeon['rarity_distribution']
     rand = random.random()
     cumulative = 0
     selected_rarity = '레어'  # 기본값
@@ -1250,7 +1289,11 @@ def build_question(dungeon_run, dungeon):
     correct_answer = current_word['뜻']
     
     # 같은 카테고리 단어에서 오답 생성
-    all_words = load_words_by_source(dungeon.get('word_source', 'toeic') if dungeon else 'toeic')
+    all_words = load_words_by_source(
+        dungeon.get('word_source', 'toeic') if dungeon else 'toeic',
+        category_filter=dungeon.get('category_filter') if dungeon else None,
+        difficulty_filter=dungeon.get('difficulty_filter') if dungeon else None
+    )
     wrong_options = []
     
     # 정답과 다른 뜻들 중에서 3개 랜덤 선택
@@ -1368,7 +1411,12 @@ def answer_dungeon(player, dungeon_run, choice):
 def build_next_question(dungeon_run):
     """같은 몬스터에 대해 다음 문제 생성"""
     # 같은 카테고리에서 현재 단어와 다른 단어를 랜덤하게 선택
-    words = load_words_by_source(dungeon_run.get('word_source', 'toeic'))
+    dungeon = get_dungeon_by_id(dungeon_run['dungeon_id']) if 'dungeon_id' in dungeon_run else None
+    words = load_words_by_source(
+        dungeon_run.get('word_source', 'toeic'),
+        category_filter=dungeon.get('category_filter') if dungeon else None,
+        difficulty_filter=dungeon.get('difficulty_filter') if dungeon else None
+    )
     current_word_text = dungeon_run['current_word']['단어']
     
     # 현재 단어와 다른 단어들 중에서 랜덤 선택
