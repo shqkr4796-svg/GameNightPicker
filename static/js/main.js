@@ -955,42 +955,26 @@ document.addEventListener('DOMContentLoaded', function() {
         handleFormSubmit(form, submitButton);
     });
     
-    // 모든 버튼에 클릭 피드백 추가 (중복 방지)
+    // 모든 버튼에 클릭 피드백 추가 (중복 방지) - 시각적 피드백만 담당
     document.addEventListener('click', function(e) {
         const button = e.target.closest('button');
         if (!button) return;
         
-        // 이미 로컬 피드백이 처리된 버튼은 건너뛰기
+        // 폼 제출 버튼이나 onclick이 있는 버튼은 제외 (기능 방해 방지)
+        if (button.type === 'submit' || button.hasAttribute('onclick')) {
+            return;
+        }
+        
+        // 이미 로컬 피드백이 처리된 버튼은 건너뛰기 (시각적 피드백만)
         if (button.hasAttribute('data-local-feedback')) {
             return;
         }
         
-        // onclick 속성이 있는 버튼들에 대한 특별 처리
-        if (button.hasAttribute('onclick')) {
-            const onclickValue = button.getAttribute('onclick');
-            
-            // 확인 대화상자가 있는 경우는 제외
-            if (onclickValue.includes('confirm(')) {
-                return;
-            }
-            
-            // 특정 함수들은 이미 자체 피드백이 있으므로 제외
-            if (onclickValue.includes('speakWord(') ||
-                onclickValue.includes('resetQuizSession(') ||
-                onclickValue.includes('retryWrongQuestions(') ||
-                onclickValue.includes('filterProperties(') ||
-                onclickValue.includes('editWord(') ||
-                onclickValue.includes('confirmDelete(') ||
-                onclickValue.includes('confirmMultipleDelete(')) {
-                return;
-            }
-            
-            // 일반적인 클릭 피드백 적용
-            showButtonFeedback(button, 'loading');
-            setTimeout(() => {
-                restoreButtonState(button);
-            }, 1000);
-        }
+        // 일반적인 클릭 피드백 적용 (기본 버튼들)
+        showButtonFeedback(button, 'loading');
+        setTimeout(() => {
+            restoreButtonState(button);
+        }, 1000);
     });
     
 });
