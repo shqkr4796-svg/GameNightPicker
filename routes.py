@@ -555,17 +555,6 @@ def inventory():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    
-    # 무기가 있는데 장착된 게 없으면 첫 번째 무기를 자동 장착
-    if player.get('무기_인벤토리') and (not player.get('장착된_무기')):
-        for weapon_name, count in player['무기_인벤토리'].items():
-            if count > 0:
-                player['장착된_무기'] = weapon_name
-                session['player_data'] = player
-                game_logic.save_game(player)
-                flash(f'{weapon_name}을(를) 자동으로 장착했습니다!', 'success')
-                break
-    
     shop_items = game_logic.get_shop_items()
     return render_template('inventory.html', player=player, shop_items=shop_items)
 
