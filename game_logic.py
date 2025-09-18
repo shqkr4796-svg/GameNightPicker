@@ -120,22 +120,22 @@ def save_word_bank(word_data):
     try:
         with open(WORD_BANK_FILE, 'w', encoding='utf-8') as f:
             json.dump(word_data, f, ensure_ascii=False, indent=2)
-        _word_bank_cache = word_data  # 캐시 업데이트
+        _word_bank_cache = word_data.copy()  # 캐시 업데이트 (깊은 복사)
         return True
     except Exception as e:
         print(f"단어장 저장 실패: {e}")
         return False
 
 def get_word_bank():
-    """단어장 가져오기"""
+    """단어장 가져오기 - 항상 최신 데이터 반환"""
     global _word_bank_cache
-    if _word_bank_cache is None:
-        if os.path.exists(WORD_BANK_FILE):
-            _word_bank_cache = load_word_bank()
-        else:
-            _word_bank_cache = word_bank.copy()  # 기본값 복사
-            save_word_bank(_word_bank_cache)  # 초기 파일 생성
-    return _word_bank_cache
+    # 캐시를 사용하지 않고 항상 파일에서 직접 로드
+    if os.path.exists(WORD_BANK_FILE):
+        _word_bank_cache = load_word_bank()
+    else:
+        _word_bank_cache = word_bank.copy()  # 기본값 복사
+        save_word_bank(_word_bank_cache)  # 초기 파일 생성
+    return _word_bank_cache.copy()  # 복사본 반환으로 원본 보호
 
 def get_word_categories():
     """단어 카테고리 목록"""
