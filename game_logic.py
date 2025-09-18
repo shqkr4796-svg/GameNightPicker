@@ -1,12 +1,14 @@
 import json
 import random
 import os
+import hashlib
 from datetime import datetime
 from data.game_data import *
 
 SAVE_FILE = 'savegame.json'
 EVENTS_FILE = 'events.json'
 WORD_BANK_FILE = 'word_bank.json'
+TOEIC_WORDS_FILE = 'data/toeic_words.json'
 
 # 단어장 캐시
 _word_bank_cache = None
@@ -18,7 +20,8 @@ def create_new_player():
         '힘': 0, '지능': 0, '외모': 0, '체력스탯': 0, '운': 0,
         '체력': 10, '기력': 10, '최대기력': 10, '직장': None, '직장정보': None,
         '돈': 0, '거주지': None, '날짜': 1, '시간': 8, '질병': None,
-        '인벤토리': [], '성취': [], '총_퀴즈': 0, '정답_퀴즈': 0
+        '인벤토리': [], '성취': [], '총_퀴즈': 0, '정답_퀴즈': 0,
+        '도감': {}  # 몬스터 도감
     }
 
 def save_game(player_data):
@@ -732,3 +735,197 @@ def get_achievement_points(player):
             total_points += achievement['포인트']
     
     return total_points
+
+# ============== 던전 시스템 ==============
+
+def load_toeic_words():
+    """토익 단어 로드"""
+    try:
+        with open(TOEIC_WORDS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"토익 단어 로드 실패: {e}")
+        return []
+
+def get_dungeons():
+    """던전 목록 가져오기"""
+    return dungeons
+
+def get_dungeon_by_id(dungeon_id):
+    """ID로 던전 정보 가져오기"""
+    for dungeon in dungeons:
+        if dungeon['id'] == dungeon_id:
+            return dungeon
+    return None
+
+def init_dungeon_run(player, dungeon_id):
+    """던전 실행 초기화"""
+    dungeon = get_dungeon_by_id(dungeon_id)
+    if not dungeon:
+        return {'success': False, 'message': '존재하지 않는 던전입니다.'}
+    
+    # 레벨 제한 확인
+    if player['레벨'] < dungeon['레벨_제한']:
+        return {'success': False, 'message': f'레벨 {dungeon["레벨_제한"]} 이상만 입장 가능합니다.'}
+    
+    # 토익 단어 로드
+    words = load_toeic_words()
+    if not words:
+        return {'success': False, 'message': '단어를 로드할 수 없습니다.'}
+    
+    # 던전 실행 상태 초기화
+    random.shuffle(words)  # 단어 순서 랜덤화
+    word_queue = words[:dungeon['clear_condition']]  # 필요한 만큼만 선택
+    
+    dungeon_run = {
+        'dungeon_id': dungeon_id,
+        'word_queue': word_queue,
+        'current_word_index': 0,
+        'current_word': None,
+        'current_options': [],
+        'current_rarity': None,
+        'monster_id': None,
+        'monster_hp': 0,
+        'monster_progress': 0,
+        'player_hp': dungeon['max_health'],
+        'cleared_words': 0,
+        'total_words': len(word_queue)
+    }
+    
+    # 첫 번째 몬스터 생성
+    result = next_monster(dungeon_run, dungeon)
+    if not result['success']:
+        return result
+        
+    return {'success': True, 'dungeon_run': dungeon_run}
+
+def next_monster(dungeon_run, dungeon):
+    """다음 몬스터 생성"""
+    if dungeon_run['current_word_index'] >= len(dungeon_run['word_queue']):
+        return {'success': False, 'message': '모든 단어를 완료했습니다!'}
+    
+    # 현재 단어 설정
+    current_word = dungeon_run['word_queue'][dungeon_run['current_word_index']]
+    dungeon_run['current_word'] = current_word
+    
+    # 몬스터 등급 결정 (확률 기반)
+    rarity_dist = dungeon['rarity_distribution']
+    rand = random.random()
+    cumulative = 0
+    selected_rarity = '레어'  # 기본값
+    
+    for rarity, prob in rarity_dist.items():
+        cumulative += prob
+        if rand <= cumulative:
+            selected_rarity = rarity
+            break
+    
+    dungeon_run['current_rarity'] = selected_rarity
+    
+    # 몬스터 ID 생성 (단어 + 등급 기반 해시)
+    monster_seed = f"{current_word['단어']}_{selected_rarity}"
+    monster_id = hashlib.md5(monster_seed.encode()).hexdigest()[:8]
+    dungeon_run['monster_id'] = monster_id
+    
+    # 몬스터 HP 설정
+    dungeon_run['monster_hp'] = monster_rarities[selected_rarity]['required_correct']
+    dungeon_run['monster_progress'] = 0
+    
+    # 4지선다 문제 생성
+    result = build_question(dungeon_run, dungeon)
+    return result
+
+def build_question(dungeon_run, dungeon):
+    """4지선다 문제 생성"""
+    current_word = dungeon_run['current_word']
+    correct_answer = current_word['뜻']
+    
+    # 토익 단어에서 오답 생성
+    all_words = load_toeic_words()
+    wrong_options = []
+    
+    # 정답과 다른 뜻들 중에서 3개 선택
+    for word in all_words:
+        if word['뜻'] != correct_answer and len(wrong_options) < 3:
+            wrong_options.append(word['뜻'])
+    
+    # 3개가 안 되면 기본 오답들로 채움
+    default_wrong = ['잘못된 답', '다른 뜻', '오답입니다']
+    while len(wrong_options) < 3:
+        for default in default_wrong:
+            if default not in wrong_options and len(wrong_options) < 3:
+                wrong_options.append(default)
+    
+    # 선택지 생성 (정답 + 오답 3개)
+    options = [correct_answer] + wrong_options[:3]
+    random.shuffle(options)
+    
+    # 정답 인덱스 찾기
+    correct_index = options.index(correct_answer)
+    
+    dungeon_run['current_options'] = options
+    dungeon_run['correct_answer_index'] = correct_index
+    
+    return {'success': True, 'message': '문제가 생성되었습니다.'}
+
+def answer_dungeon(player, dungeon_run, choice):
+    """던전 답변 처리"""
+    if choice == dungeon_run['correct_answer_index']:
+        # 정답
+        dungeon_run['monster_progress'] += 1
+        
+        result_msg = "정답! 몬스터에게 피해를 입혔습니다."
+        
+        # 몬스터 처치 확인
+        if dungeon_run['monster_progress'] >= dungeon_run['monster_hp']:
+            # 몬스터 처치
+            rarity = dungeon_run['current_rarity']
+            capture_rate = monster_rarities[rarity]['capture_rate']
+            
+            if random.random() < capture_rate:
+                # 몬스터 포획 성공
+                update_compendium(player, dungeon_run)
+                result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
+            else:
+                result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
+            
+            # 다음 단어로 이동
+            dungeon_run['current_word_index'] += 1
+            dungeon_run['cleared_words'] += 1
+            
+            return {'success': True, 'correct': True, 'monster_defeated': True, 'message': result_msg}
+        else:
+            progress = dungeon_run['monster_progress']
+            max_hp = dungeon_run['monster_hp']
+            result_msg += f" ({progress}/{max_hp})"
+            return {'success': True, 'correct': True, 'monster_defeated': False, 'message': result_msg}
+    else:
+        # 오답
+        dungeon_run['player_hp'] -= 1
+        
+        if dungeon_run['player_hp'] <= 0:
+            return {'success': True, 'correct': False, 'game_over': True, 'message': '체력이 0이 되어 던전에서 퇴장됩니다.'}
+        else:
+            return {'success': True, 'correct': False, 'game_over': False, 'message': f'오답! 체력이 1 감소했습니다. (남은 체력: {dungeon_run["player_hp"]})'}
+
+def update_compendium(player, dungeon_run):
+    """몬스터 도감 업데이트"""
+    monster_id = dungeon_run['monster_id']
+    rarity = dungeon_run['current_rarity']
+    word = dungeon_run['current_word']['단어']
+    
+    if monster_id not in player['도감']:
+        player['도감'][monster_id] = {
+            '이름': f"{word} {rarity}",
+            '등급': rarity,
+            '단어': word,
+            '최초처치일': datetime.now().isoformat(),
+            '처치수': 1,
+            '포획됨': True
+        }
+    else:
+        player['도감'][monster_id]['처치수'] += 1
+
+def check_dungeon_clear(dungeon_run):
+    """던전 클리어 확인"""
+    return dungeon_run['cleared_words'] >= dungeon_run['total_words']

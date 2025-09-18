@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}단어 던전{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-dungeon me-2"></i>단어 던전 목록
+                </h5>
+                <small class="text-muted">단어를 학습하며 몬스터와 전투하는 특별한 던전입니다!</small>
+            </div>
+            <div class="card-body">
+                {% if dungeons %}
+                    <div class="row">
+                        {% for dungeon in dungeons %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-{% if player['레벨'] >= dungeon['레벨_제한'] %}primary{% else %}secondary{% endif %}">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">{{ dungeon['이름'] }}</h6>
+                                    <span class="badge bg-{% if dungeon['난이도'] == '쉬움' %}success{% elif dungeon['난이도'] == '보통' %}primary{% else %}danger{% endif %}">
+                                        {{ dungeon['난이도'] }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">{{ dungeon['설명'] }}</p>
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-level-up-alt me-1"></i>필요 레벨: {{ dungeon['레벨_제한'] }}
+                                        </small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-book me-1"></i>목표 단어: {{ dungeon['clear_condition'] }}개
+                                        </small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-heart me-1"></i>시작 체력: {{ dungeon['max_health'] }}
+                                        </small>
+                                    </div>
+                                    
+                                    {% if player['레벨'] >= dungeon['레벨_제한'] %}
+                                        {% if player['기력'] >= 1 %}
+                                            <a href="{{ url_for('dungeon_preview', dungeon_id=dungeon['id']) }}" class="btn btn-primary btn-sm me-2">
+                                                <i class="fas fa-eye me-1"></i>미리보기
+                                            </a>
+                                            <form class="d-inline" method="POST" action="{{ url_for('start_dungeon') }}">
+                                                <input type="hidden" name="dungeon_id" value="{{ dungeon['id'] }}">
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-play me-1"></i>입장
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-danger">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>기력 부족 (1 필요)
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-warning">
+                                            <i class="fas fa-lock me-1"></i>레벨 {{ dungeon['레벨_제한'] }} 필요
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-dungeon text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted">던전이 없습니다</h4>
+                        <p class="text-muted">아직 이용 가능한 던전이 없습니다.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- 플레이어 상태 -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-user me-2"></i>플레이어 상태
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small class="text-muted">레벨: </small>
+                    <span class="fw-bold">{{ player['레벨'] }}</span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">기력: </small>
+                    <span class="fw-bold text-{% if player['기력'] >= 1 %}success{% else %}danger{% endif %}">
+                        {{ player['기력'] }}/{{ player['최대기력'] }}
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">보유 몬스터: </small>
+                    <span class="fw-bold">{{ player['도감']|length }}마리</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 도감 바로가기 -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-book me-2"></i>몬스터 도감
+                </h6>
+            </div>
+            <div class="card-body text-center">
+                <p class="card-text">처치한 몬스터들을 확인해보세요!</p>
+                <a href="{{ url_for('compendium') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-book me-1"></i>도감 보기
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -297,23 +297,19 @@ function addSoundControlUI() {
         bottom: 20px;
         left: 20px;
         z-index: 9999;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 8px;
         padding: 8px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
     `;
     controlDiv.innerHTML = `
         <div class="d-flex flex-column align-items-center">
-            <button id="sound-toggle" class="btn btn-sm btn-outline-light mb-2" 
+            <button id="sound-toggle" class="btn btn-sm btn-dark mb-2" 
                     title="효과음 켜기/끄기" style="width: 40px; height: 40px;">
-                <i id="sound-icon" class="fas fa-volume-up" style="font-size: 16px;"></i>
+                <i id="sound-icon" class="fas fa-volume-up" style="font-size: 16px; color: white;"></i>
             </button>
             <input type="range" id="volume-slider" class="form-range" 
                    min="0" max="100" value="30" 
                    style="width: 80px; height: 4px;"
                    title="음량 조절">
-            <small id="volume-display" class="text-light mt-1">30%</small>
+            <small id="volume-display" class="text-dark mt-1" style="color: black !important;">30%</small>
         </div>
     `;
     
@@ -328,7 +324,7 @@ function addSoundControlUI() {
     toggleBtn.addEventListener('click', () => {
         const enabled = soundManager.toggle();
         soundIcon.className = enabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
-        toggleBtn.className = enabled ? 'btn btn-sm btn-outline-light mb-2' : 'btn btn-sm btn-outline-danger mb-2';
+        toggleBtn.className = enabled ? 'btn btn-sm btn-dark mb-2' : 'btn btn-sm btn-danger mb-2';
         
         // 상태 알림 표시
         showSoundStatusNotification(enabled ? '효과음이 켜졌습니다' : '효과음이 꺼졌습니다', enabled);

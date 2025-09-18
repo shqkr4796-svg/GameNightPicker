@@ -457,3 +457,157 @@ def api_player_stats():
     }
     
     return jsonify(stats)
+
+# ============== 던전 시스템 라우트 ==============
+
+@app.route('/dungeons')
+def dungeons():
+    """던전 목록 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    dungeons = game_logic.get_dungeons()
+    
+    return render_template('dungeons.html', 
+                         player=player, 
+                         dungeons=dungeons)
+
+@app.route('/dungeon/<dungeon_id>/preview')
+def dungeon_preview(dungeon_id):
+    """던전 미리보기 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    dungeon = game_logic.get_dungeon_by_id(dungeon_id)
+    
+    if not dungeon:
+        flash('존재하지 않는 던전입니다.', 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 토익 단어 미리보기 (일부만)
+    words = game_logic.load_toeic_words()
+    preview_words = words[:20] if words else []  # 처음 20개만 미리보기
+    
+    return render_template('dungeon_preview.html', 
+                         player=player, 
+                         dungeon=dungeon,
+                         preview_words=preview_words,
+                         total_words=len(words))
+
+@app.route('/dungeon/start', methods=['POST'])
+def start_dungeon():
+    """던전 시작"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    dungeon_id = request.form.get('dungeon_id')
+    
+    # 최소 체력 확인 (체력 = 기력)
+    if player['기력'] < 1:
+        flash('던전에 입장하려면 최소 기력 1이 필요합니다.', 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 던전 실행 초기화
+    result = game_logic.init_dungeon_run(player, dungeon_id)
+    
+    if not result['success']:
+        flash(result['message'], 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 세션에 던전 실행 상태 저장
+    session['dungeon_run'] = result['dungeon_run']
+    session['player_data'] = player
+    
+    flash('던전에 입장했습니다!', 'success')
+    return redirect(url_for('dungeon_run'))
+
+@app.route('/dungeon/run')
+def dungeon_run():
+    """던전 실행 화면"""
+    if 'player_data' not in session or 'dungeon_run' not in session:
+        return redirect(url_for('dungeons'))
+    
+    player = session['player_data']
+    dungeon_run = session['dungeon_run']
+    dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+    
+    # 던전 클리어 확인
+    if game_logic.check_dungeon_clear(dungeon_run):
+        flash('던전을 클리어했습니다! 축하합니다!', 'success')
+        # 던전 실행 상태 삭제
+        session.pop('dungeon_run', None)
+        return redirect(url_for('dungeons'))
+    
+    return render_template('dungeon_run.html', 
+                         player=player, 
+                         dungeon=dungeon,
+                         dungeon_run=dungeon_run)
+
+@app.route('/dungeon/answer', methods=['POST'])
+def answer_dungeon():
+    """던전 답변 처리"""
+    if 'player_data' not in session or 'dungeon_run' not in session:
+        return redirect(url_for('dungeons'))
+    
+    player = session['player_data']
+    dungeon_run = session['dungeon_run']
+    choice = int(request.form.get('choice', -1))
+    
+    if choice < 0 or choice >= len(dungeon_run['current_options']):
+        flash('잘못된 선택입니다.', 'error')
+        return redirect(url_for('dungeon_run'))
+    
+    # 답변 처리
+    result = game_logic.answer_dungeon(player, dungeon_run, choice)
+    
+    if result['game_over']:
+        flash(result['message'], 'error')
+        session.pop('dungeon_run', None)  # 던전 실행 상태 삭제
+        session['player_data'] = player
+        game_logic.save_game(player)
+        return redirect(url_for('dungeons'))
+    
+    flash(result['message'], 'success' if result['correct'] else 'warning')
+    
+    # 몬스터가 처치되었으면 다음 몬스터 생성
+    if result.get('monster_defeated'):
+        dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+        next_result = game_logic.next_monster(dungeon_run, dungeon)
+        
+        if not next_result['success']:
+            # 던전 클리어
+            flash('던전을 클리어했습니다!', 'success')
+            session.pop('dungeon_run', None)
+            session['player_data'] = player
+            game_logic.save_game(player)
+            return redirect(url_for('dungeons'))
+    
+    # 상태 업데이트
+    session['dungeon_run'] = dungeon_run
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    return redirect(url_for('dungeon_run'))
+
+@app.route('/dungeon/leave', methods=['POST'])
+def leave_dungeon():
+    """던전 나가기"""
+    if 'dungeon_run' in session:
+        session.pop('dungeon_run', None)
+    
+    flash('던전에서 나갔습니다. 진행 상황이 초기화됩니다.', 'info')
+    return redirect(url_for('dungeons'))
+
+@app.route('/compendium')
+def compendium():
+    """몬스터 도감 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    return render_template('compendium.html', 
+                         player=player)

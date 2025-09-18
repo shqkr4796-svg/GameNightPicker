@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dungeon['이름'] }} - 던전 실행{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-dungeon me-2"></i>{{ dungeon['이름'] }}
+                </h5>
+                <div>
+                    <span class="badge bg-info">진행: {{ dungeon_run['cleared_words'] }}/{{ dungeon_run['total_words'] }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- 체력 바 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-heart me-2 text-danger"></i>내 체력</h6>
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div class="progress-bar bg-danger" role="progressbar" 
+                                 style="width: {{ (dungeon_run['player_hp'] / dungeon['max_health'] * 100)|round(1) }}%"
+                                 id="player-health-bar">
+                                {{ dungeon_run['player_hp'] }}/{{ dungeon['max_health'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-dragon me-2 text-primary"></i>몬스터 체력</h6>
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div class="progress-bar bg-{% if dungeon_run['current_rarity'] == '레어' %}success{% elif dungeon_run['current_rarity'] == '에픽' %}primary{% elif dungeon_run['current_rarity'] == '유니크' %}warning{% else %}danger{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {{ ((dungeon_run['monster_hp'] - dungeon_run['monster_progress']) / dungeon_run['monster_hp'] * 100)|round(1) }}%"
+                                 id="monster-health-bar">
+                                {{ dungeon_run['monster_hp'] - dungeon_run['monster_progress'] }}/{{ dungeon_run['monster_hp'] }}
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ dungeon_run['current_rarity'] }} 몬스터</small>
+                    </div>
+                </div>
+                
+                <!-- 몬스터 표시 영역 -->
+                <div class="text-center mb-4">
+                    <div class="monster-container">
+                        <canvas id="monster-display" width="128" height="128" class="border rounded monster-sprite"
+                                data-monster-id="{{ dungeon_run['monster_id'] }}"
+                                data-rarity="{{ dungeon_run['current_rarity'] }}"
+                                data-word="{{ dungeon_run['current_word']['단어'] }}"
+                                style="image-rendering: pixelated; background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0); background-size: 8px 8px; background-position: 0 0, 4px 4px;">
+                        </canvas>
+                        <div class="mt-2">
+                            <span class="badge bg-{% if dungeon_run['current_rarity'] == '레어' %}success{% elif dungeon_run['current_rarity'] == '에픽' %}primary{% elif dungeon_run['current_rarity'] == '유니크' %}warning{% else %}danger{% endif %} fs-6">
+                                {{ dungeon_run['current_rarity'] }} 몬스터
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 문제 영역 -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body text-center">
+                        <h4 class="card-title mb-3">
+                            <button class="btn btn-outline-secondary btn-sm me-2" onclick="speakWord('{{ dungeon_run['current_word']['단어'] }}')" title="발음 듣기">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <strong>{{ dungeon_run['current_word']['단어'] }}</strong>
+                        </h4>
+                        <p class="text-muted">위 단어의 뜻을 선택하세요</p>
+                    </div>
+                </div>
+                
+                <!-- 선택지 -->
+                <form method="POST" action="{{ url_for('answer_dungeon') }}" class="quiz-form">
+                    <div class="row">
+                        {% for i in range(4) %}
+                        <div class="col-md-6 mb-3">
+                            <button type="submit" name="choice" value="{{ i }}" 
+                                    class="btn btn-outline-primary w-100 h-100 choice-btn"
+                                    style="min-height: 60px; font-size: 1.1em;">
+                                {{ loop.index }}. {{ dungeon_run['current_options'][i] }}
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <form method="POST" action="{{ url_for('leave_dungeon') }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm" 
+                            onclick="return confirm('던전을 나가면 모든 진행상황이 초기화됩니다. 정말 나가시겠습니까?')">
+                        <i class="fas fa-door-open me-1"></i>던전 나가기
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- 진행 상황 -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>진행 상황
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>단어 진행</span>
+                        <span>{{ dungeon_run['cleared_words'] }}/{{ dungeon_run['total_words'] }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {{ (dungeon_run['cleared_words'] / dungeon_run['total_words'] * 100)|round(1) }}%">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>현재 몬스터</span>
+                        <span>{{ dungeon_run['monster_progress'] }}/{{ dungeon_run['monster_hp'] }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar" 
+                             style="width: {{ (dungeon_run['monster_progress'] / dungeon_run['monster_hp'] * 100)|round(1) }}%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 몬스터 정보 -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>몬스터 정보
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <span class="badge bg-{% if dungeon_run['current_rarity'] == '레어' %}success{% elif dungeon_run['current_rarity'] == '에픽' %}primary{% elif dungeon_run['current_rarity'] == '유니크' %}warning{% else %}danger{% endif %} fs-6">
+                        {{ dungeon_run['current_rarity'] }}
+                    </span>
+                </div>
+                <div class="small">
+                    <div class="mb-2">
+                        <strong>단어:</strong> {{ dungeon_run['current_word']['단어'] }}
+                    </div>
+                    {% if dungeon_run['current_word']['품사'] %}
+                    <div class="mb-2">
+                        <strong>품사:</strong> {{ dungeon_run['current_word']['품사'] }}
+                    </div>
+                    {% endif %}
+                    <div class="mb-2">
+                        <strong>필요 정답:</strong> {{ dungeon_run['monster_hp'] }}개
+                    </div>
+                    <div class="mb-2">
+                        <strong>남은 정답:</strong> {{ dungeon_run['monster_hp'] - dungeon_run['monster_progress'] }}개
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.choice-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.monster-sprite {
+    transition: all 0.3s;
+}
+
+.monster-sprite.damage {
+    filter: hue-rotate(0deg) saturate(200%) brightness(150%);
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.progress-bar {
+    transition: width 0.5s ease;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 몬스터 이미지 그리기
+    drawMonster();
+    
+    // 선택지 클릭 효과
+    document.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 피해 효과 (임시)
+            const monster = document.getElementById('monster-display');
+            monster.classList.add('damage');
+            setTimeout(() => {
+                monster.classList.remove('damage');
+            }, 500);
+        });
+    });
+});
+
+function drawMonster() {
+    const canvas = document.getElementById('monster-display');
+    const ctx = canvas.getContext('2d');
+    const monsterId = canvas.dataset.monsterId;
+    const rarity = canvas.dataset.rarity;
+    const word = canvas.dataset.word;
+    
+    // 캔버스 크기 설정
+    canvas.width = 128;
+    canvas.height = 128;
+    
+    // 등급별 색상
+    const colors = {
+        '레어': '#22c55e',
+        '에픽': '#3b82f6', 
+        '유니크': '#f59e0b',
+        '레전드리': '#eab308'
+    };
+    
+    const primaryColor = colors[rarity] || '#6b7280';
+    
+    // 도트 몬스터 그리기 (8x8 픽셀 단위)
+    const scale = 8;
+    
+    // 몸체 (중앙)
+    ctx.fillStyle = primaryColor;
+    drawPixelRect(ctx, 6, 8, 4, 4, scale);
+    
+    // 머리 (위쪽)
+    drawPixelRect(ctx, 7, 6, 2, 2, scale);
+    
+    // 팔 (양옆)
+    drawPixelRect(ctx, 5, 9, 1, 2, scale);
+    drawPixelRect(ctx, 10, 9, 1, 2, scale);
+    
+    // 다리 (아래쪽)
+    drawPixelRect(ctx, 6, 12, 1, 2, scale);
+    drawPixelRect(ctx, 9, 12, 1, 2, scale);
+    
+    // 눈 (검은색)
+    ctx.fillStyle = '#000000';
+    drawPixelRect(ctx, 7, 6, 1, 1, scale / 2);
+    drawPixelRect(ctx, 8, 6, 1, 1, scale / 2);
+    
+    // 등급별 특별 효과
+    if (rarity === '에픽' || rarity === '유니크' || rarity === '레전드리') {
+        // 빛나는 효과
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        drawPixelRect(ctx, 5, 5, 6, 6, scale);
+    }
+}
+
+function drawPixelRect(ctx, x, y, width, height, scale) {
+    ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
+}
+</script>
+{% endblock %}

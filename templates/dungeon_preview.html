@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}{{ dungeon['이름'] }} - 미리보기{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-eye me-2"></i>{{ dungeon['이름'] }} - 미리보기
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-info-circle me-2"></i>던전 정보</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>난이도:</strong> 
+                                <span class="badge bg-{% if dungeon['난이도'] == '쉬움' %}success{% elif dungeon['난이도'] == '보통' %}primary{% else %}danger{% endif %}">
+                                    {{ dungeon['난이도'] }}
+                                </span>
+                            </li>
+                            <li><strong>필요 레벨:</strong> {{ dungeon['레벨_제한'] }}</li>
+                            <li><strong>목표 단어:</strong> {{ dungeon['clear_condition'] }}개</li>
+                            <li><strong>시작 체력:</strong> {{ dungeon['max_health'] }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-dragon me-2"></i>몬스터 등급 분포</h6>
+                        {% for rarity, probability in dungeon['rarity_distribution'].items() %}
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-{% if rarity == '레어' %}success{% elif rarity == '에픽' %}primary{% elif rarity == '유니크' %}warning{% else %}danger{% endif %}">
+                                {{ rarity }}
+                            </span>
+                            <span>{{ (probability * 100)|round(1) }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <h6><i class="fas fa-book me-2"></i>출현 단어 예시 ({{ total_words }}개 중 일부)</h6>
+                <div class="row">
+                    {% for word in preview_words %}
+                    <div class="col-lg-4 col-md-6 mb-2">
+                        <div class="border rounded p-2 small">
+                            <strong>{{ word['단어'] }}</strong> - {{ word['뜻'] }}
+                            {% if word['품사'] %}
+                                <span class="text-muted">({{ word['품사'] }})</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>주의사항</h6>
+                    <ul class="small text-muted">
+                        <li>던전 도중 나가면 모든 진행상황이 초기화됩니다.</li>
+                        <li>체력이 0이 되면 자동으로 던전에서 퇴장됩니다.</li>
+                        <li>몬스터 처치 시 일정 확률로 도감에 등록됩니다.</li>
+                        <li>상점의 아이템을 던전에서 사용할 수 있습니다.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('dungeons') }}" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i>뒤로가기
+                </a>
+                {% if player['레벨'] >= dungeon['레벨_제한'] and player['기력'] >= 1 %}
+                    <form class="d-inline" method="POST" action="{{ url_for('start_dungeon') }}">
+                        <input type="hidden" name="dungeon_id" value="{{ dungeon['id'] }}">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-play me-1"></i>던전 입장
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- 플레이어 준비 상태 -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-check-circle me-2"></i>입장 조건
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>레벨 요구사항</span>
+                        {% if player['레벨'] >= dungeon['레벨_제한'] %}
+                            <i class="fas fa-check text-success"></i>
+                        {% else %}
+                            <i class="fas fa-times text-danger"></i>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">{{ player['레벨'] }} / {{ dungeon['레벨_제한'] }}</small>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>기력 조건</span>
+                        {% if player['기력'] >= 1 %}
+                            <i class="fas fa-check text-success"></i>
+                        {% else %}
+                            <i class="fas fa-times text-danger"></i>
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">{{ player['기력'] }} / 1</small>
+                </div>
+                
+                {% if player['레벨'] >= dungeon['레벨_제한'] and player['기력'] >= 1 %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>입장 가능!
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>조건 미충족
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

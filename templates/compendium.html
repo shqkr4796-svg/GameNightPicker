@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}몬스터 도감{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-book me-2"></i>몬스터 도감
+                </h5>
+                <small class="text-muted">던전에서 처치한 몬스터들이 등록됩니다.</small>
+            </div>
+            <div class="card-body">
+                {% if player['도감'] %}
+                    <div class="row">
+                        {% for monster_id, monster in player['도감'].items() %}
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="card h-100 border-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %}">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">{{ monster['이름'] }}</h6>
+                                    <span class="badge bg-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %}">
+                                        {{ monster['등급'] }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        <!-- 몬스터 이미지 영역 (나중에 도트 그래픽 추가) -->
+                                        <canvas id="monster-{{ monster_id }}" width="64" height="64" class="border rounded" 
+                                                data-monster-id="{{ monster_id }}" 
+                                                data-rarity="{{ monster['등급'] }}"
+                                                data-word="{{ monster['단어'] }}">
+                                        </canvas>
+                                    </div>
+                                    <div class="small">
+                                        <div class="mb-1">
+                                            <strong>단어:</strong> {{ monster['단어'] }}
+                                        </div>
+                                        <div class="mb-1">
+                                            <strong>처치 횟수:</strong> {{ monster['처치수'] }}회
+                                        </div>
+                                        <div class="mb-1">
+                                            <strong>최초 처치:</strong> 
+                                            <span class="text-muted">{{ monster['최초처치일'][:10] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted">도감이 비어있습니다</h4>
+                        <p class="text-muted">던전에서 몬스터를 처치하여 도감을 채워보세요!</p>
+                        <a href="{{ url_for('dungeons') }}" class="btn btn-primary">
+                            <i class="fas fa-dungeon me-1"></i>던전으로 가기
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 도트 몬스터 이미지 생성 (기본 버전)
+document.addEventListener('DOMContentLoaded', function() {
+    const canvases = document.querySelectorAll('canvas[id^="monster-"]');
+    canvases.forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        const monsterId = canvas.dataset.monsterId;
+        const rarity = canvas.dataset.rarity;
+        const word = canvas.dataset.word;
+        
+        // 간단한 도트 몬스터 그리기
+        drawSimpleMonster(ctx, monsterId, rarity, word);
+    });
+});
+
+function drawSimpleMonster(ctx, monsterId, rarity, word) {
+    // 등급별 색상
+    const colors = {
+        '레어': '#00ff00',
+        '에픽': '#9932cc', 
+        '유니크': '#ff8c00',
+        '레전드리': '#ffd700'
+    };
+    
+    const color = colors[rarity] || '#999999';
+    
+    // 간단한 도트 몬스터 그리기
+    ctx.fillStyle = color;
+    
+    // 몸체
+    ctx.fillRect(20, 30, 24, 20);
+    
+    // 머리
+    ctx.fillRect(24, 20, 16, 16);
+    
+    // 눈
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(28, 26, 2, 2);
+    ctx.fillRect(34, 26, 2, 2);
+    
+    // 입
+    ctx.fillRect(30, 32, 4, 1);
+}
+</script>
+{% endblock %}

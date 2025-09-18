@@ -4,6 +4,51 @@ word_bank = [
     # 사용자가 직접 단어를 추가하여 학습할 수 있습니다.
 ]
 
+# 던전 시스템 설정
+dungeons = [
+    {
+        'id': 'toeic_beginner',
+        '이름': 'TOEIC 초급 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 1,
+        '설명': '토익 기초 단어로 구성된 초급자를 위한 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
+        'clear_condition': 50,  # 50개 단어 완료
+        'max_health': 3  # 초급자용 기본 체력
+    },
+    {
+        'id': 'toeic_intermediate',
+        '이름': 'TOEIC 중급 던전',
+        '난이도': '보통',
+        '레벨_제한': 5,
+        '설명': '중급 수준의 토익 단어들로 구성된 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.3, '에픽': 0.4, '유니크': 0.25, '레전드리': 0.05},
+        'clear_condition': 100,
+        'max_health': 5
+    },
+    {
+        'id': 'toeic_advanced',
+        '이름': 'TOEIC 고급 던전',
+        '난이도': '어려움',
+        '레벨_제한': 10,
+        '설명': '고급 토익 단어와 복잡한 표현들로 구성된 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.2, '에픽': 0.3, '유니크': 0.35, '레전드리': 0.15},
+        'clear_condition': 150,
+        'max_health': 3  # 어려운 만큼 체력 제한
+    }
+]
+
+# 몬스터 등급별 요구 정답 수
+monster_rarities = {
+    '레어': {'required_correct': 3, 'capture_rate': 0.8, 'color': '#00ff00'},
+    '에픽': {'required_correct': 10, 'capture_rate': 0.6, 'color': '#9932cc'},
+    '유니크': {'required_correct': 50, 'capture_rate': 0.3, 'color': '#ff8c00'},
+    '레전드리': {'required_correct': 200, 'capture_rate': 0.1, 'color': '#ffd700'}
+}
+
 # 확장된 부동산 목록 (기존 + 추가)
 real_estate = [
     # 기존 부동산
