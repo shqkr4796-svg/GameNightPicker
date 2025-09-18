@@ -6,13 +6,13 @@
     <title>{% block title %}라이프 시뮬레이션 게임{% endblock %}</title>
     <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <style>
-        /* RPG 스타일 폰트 설정 */
+        /* 부드러운 폰트 설정 */
         body {
-            font-family: 'Cinzel', serif !important;
+            font-family: 'Noto Sans KR', 'Inter', sans-serif !important;
             {% if 'player_data' in session %}
                 {% if session.player_data['시간'] >= 6 and session.player_data['시간'] < 18 %}
                     background-image: url('{{ url_for("static", filename="images/day_background.png") }}');
@@ -45,9 +45,9 @@
         .card-header {
             background: transparent !important;
             color: #2c1810 !important;
-            font-family: 'MedievalSharp', cursive !important;
-            font-weight: bold !important;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5) !important;
+            font-family: 'Nunito', 'Noto Sans KR', sans-serif !important;
+            font-weight: 600 !important;
+            text-shadow: none !important;
             border: none !important;
             margin: 0 !important;
             padding: 30px 40px 15px 40px !important;
@@ -70,23 +70,26 @@
 
         .navbar-brand, .nav-link {
             color: #f4e4bc !important;
-            font-family: 'MedievalSharp', cursive !important;
+            font-family: 'Nunito', 'Noto Sans KR', sans-serif !important;
+            font-weight: 600 !important;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7) !important;
         }
 
         .navbar .navbar-text {
             color: #f4e4bc !important;
-            font-family: 'Cinzel', serif !important;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif !important;
+            font-weight: 500 !important;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7) !important;
         }
 
-        /* 버튼 RPG 스타일 */
+        /* 버튼 부드러운 스타일 */
         .btn {
-            font-family: 'Cinzel', serif !important;
-            font-weight: 600 !important;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3) !important;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif !important;
+            font-weight: 500 !important;
+            text-shadow: none !important;
             border: 2px solid !important;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+            border-radius: 8px !important;
         }
 
         .btn-success {
@@ -99,7 +102,7 @@
             border-color: #2e4bc6 !important;
         }
 
-        /* 시간 표시기 RPG 스타일 */
+        /* 시간 표시기 부드러운 스타일 */
         .time-indicator {
             position: fixed;
             top: 20px;
@@ -110,18 +113,19 @@
             border: 3px solid #2c1810;
             border-radius: 15px;
             font-size: 14px;
-            font-family: 'MedievalSharp', cursive;
-            font-weight: bold;
+            font-family: 'Nunito', 'Noto Sans KR', sans-serif;
+            font-weight: 600;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             z-index: 1050;
         }
 
-        /* 제목과 헤딩 RPG 스타일 */
+        /* 제목과 헤딩 부드러운 스타일 */
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'MedievalSharp', cursive !important;
+            font-family: 'Nunito', 'Noto Sans KR', sans-serif !important;
+            font-weight: 600 !important;
             color: #2c1810 !important;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
+            text-shadow: none !important;
         }
 
         /* 컨테이너 배경 제거 */
@@ -140,20 +144,21 @@
             border-radius: 8px !important;
         }
 
-        /* 배지 RPG 스타일 */
+        /* 배지 부드러운 스타일 */
         .badge {
-            font-family: 'Cinzel', serif !important;
-            font-weight: bold !important;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3) !important;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif !important;
+            font-weight: 500 !important;
+            text-shadow: none !important;
+            border-radius: 6px !important;
         }
 
-        /* 알림 메시지 RPG 스타일 */
+        /* 알림 메시지 부드러운 스타일 */
         .alert {
-            border: 3px solid !important;
+            border: 2px solid !important;
             border-radius: 10px !important;
-            font-family: 'Cinzel', serif !important;
-            font-weight: 600 !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif !important;
+            font-weight: 400 !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
         }
     </style>
 </head>
