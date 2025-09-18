@@ -28,31 +28,35 @@
 
         /* RPG 프레임 카드 스타일 */
         .card {
-            background: #f4e4bc !important;
+            background-image: url('{{ url_for("static", filename="images/card_frame.png") }}') !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
             border: none !important;
-            border-image: url('{{ url_for("static", filename="images/rpg_card_frame.png") }}') 30 stretch !important;
-            border-width: 30px !important;
-            border-style: solid !important;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
             margin: 20px 0 !important;
             position: relative;
+            min-height: 200px !important;
+            padding: 0 !important;
         }
 
         .card-header {
-            background: #8b4513 !important;
-            color: #f4e4bc !important;
+            background: transparent !important;
+            color: #2c1810 !important;
             font-family: 'MedievalSharp', cursive !important;
             font-weight: bold !important;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5) !important;
             border: none !important;
-            margin: -15px -15px 15px -15px !important;
-            padding: 15px !important;
+            margin: 0 !important;
+            padding: 30px 40px 15px 40px !important;
+            text-align: center !important;
         }
 
         .card-body {
             background: transparent !important;
             color: #2c1810 !important;
-            padding: 25px !important;
+            padding: 15px 40px 40px 40px !important;
+            margin: 0 !important;
         }
 
         /* 네비게이션 바 RPG 스타일 */
