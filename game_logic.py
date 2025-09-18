@@ -440,35 +440,39 @@ def save_category_words_to_bank(dungeon_id, category_name):
 
 def add_words_to_bank(words, meanings, category, player):
     """여러 단어를 단어장에 추가하고 새 단어에 대해 경험치 지급"""
-    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    # 기본 단어와 사용자 단어 분리해서 로드
+    base_words = word_bank.copy()
+    user_words = get_user_words()
     
     added_count = 0
     exp_gained = 0
     
-    # 기존 단어 목록 (소문자로 변환해서 비교)
-    existing_words = {word['단어'].lower() for word in current_word_bank}
+    # 중복 확인용 세트 (기본 단어 + 사용자 단어)
+    base_word_texts = {base_word['단어'].lower() for base_word in base_words}
+    user_word_texts = {user_word['단어'].lower() for user_word in user_words}
+    existing_word_texts = base_word_texts | user_word_texts
     
     for word, meaning in zip(words, meanings):
         # 유효성 검사 먼저
         if not is_valid_word_entry(word, meaning):
             continue
             
-        # 중복 체크 (대소문자 무시)
-        if word.lower() not in existing_words:
-            current_word_bank.append({
+        # 중복 체크 (기본 단어 + 사용자 단어 모두 확인, 대소문자 무시)
+        if word.lower() not in existing_word_texts:
+            user_words.append({
                 '단어': word,
                 '뜻': meaning,
                 '카테고리': category
             })
-            existing_words.add(word.lower())  # 같은 요청 내에서 중복 방지
+            existing_word_texts.add(word.lower())  # 같은 요청 내에서 중복 방지
             added_count += 1
             
             # 새 단어 등록 시 경험치 0.5 획득
             player['경험치'] += 0.5
             exp_gained += 0.5
     
-    # 단어장 저장
-    save_word_bank(current_word_bank)
+    # 사용자 단어만 저장
+    save_user_words(user_words)
     
     # 레벨업 확인
     level_ups = check_level_up(player)
