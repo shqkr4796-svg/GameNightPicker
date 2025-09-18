@@ -14,7 +14,7 @@ dungeons = [
         '설명': '토익 기초 단어로 구성된 초급자를 위한 던전입니다.',
         'word_source': 'toeic',
         'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
-        'clear_condition': 50,  # 50개 단어 완료
+        'clear_condition': 500,  # 500개 단어 완료
         'max_health': 3  # 초급자용 기본 체력
     },
     {
@@ -25,7 +25,7 @@ dungeons = [
         '설명': '중급 수준의 토익 단어들로 구성된 던전입니다.',
         'word_source': 'toeic',
         'rarity_distribution': {'레어': 0.3, '에픽': 0.4, '유니크': 0.25, '레전드리': 0.05},
-        'clear_condition': 100,
+        'clear_condition': 1000,
         'max_health': 5
     },
     {
@@ -36,8 +36,358 @@ dungeons = [
         '설명': '고급 토익 단어와 복잡한 표현들로 구성된 던전입니다.',
         'word_source': 'toeic',
         'rarity_distribution': {'레어': 0.2, '에픽': 0.3, '유니크': 0.35, '레전드리': 0.15},
-        'clear_condition': 150,
+        'clear_condition': 1500,
         'max_health': 3  # 어려운 만큼 체력 제한
+    },
+    # 비즈니스 던전
+    {
+        'id': 'business_basics',
+        '이름': '비즈니스 기초 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 2,
+        '설명': '기본적인 비즈니스 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.6, '에픽': 0.25, '유니크': 0.12, '레전드리': 0.03},
+        'clear_condition': 300,
+        'max_health': 4
+    },
+    {
+        'id': 'marketing_dungeon',
+        '이름': '마케팅 전문 던전',
+        '난이도': '보통',
+        '레벨_제한': 6,
+        '설명': '마케팅과 광고 관련 전문 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 800,
+        'max_health': 3
+    },
+    {
+        'id': 'finance_dungeon',
+        '이름': '금융 전문 던전',
+        '난이도': '어려움',
+        '레벨_제한': 8,
+        '설명': '금융과 투자 관련 고급 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.3, '에픽': 0.3, '유니크': 0.3, '레전드리': 0.1},
+        'clear_condition': 1200,
+        'max_health': 2
+    },
+    
+    # 기술 던전
+    {
+        'id': 'it_basics',
+        '이름': 'IT 기초 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 3,
+        '설명': '컴퓨터와 IT 기초 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
+        'clear_condition': 400,
+        'max_health': 4
+    },
+    {
+        'id': 'programming_dungeon',
+        '이름': '프로그래밍 던전',
+        '난이도': '보통',
+        '레벨_제한': 7,
+        '설명': '프로그래밍과 개발 관련 전문 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.35, '에픽': 0.35, '유니크': 0.25, '레전드리': 0.05},
+        'clear_condition': 900,
+        'max_health': 3
+    },
+    {
+        'id': 'ai_machine_learning',
+        '이름': 'AI & 머신러닝 던전',
+        '난이도': '매우 어려움',
+        '레벨_제한': 12,
+        '설명': '인공지능과 머신러닝 최신 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.2, '에픽': 0.25, '유니크': 0.35, '레전드리': 0.2},
+        'clear_condition': 1800,
+        'max_health': 2
+    },
+    
+    # 의학 던전
+    {
+        'id': 'medical_basics',
+        '이름': '의학 기초 던전',
+        '난이도': '보통',
+        '레벨_제한': 4,
+        '설명': '기본적인 의학 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.45, '에픽': 0.3, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 600,
+        'max_health': 4
+    },
+    {
+        'id': 'pharmacy_dungeon',
+        '이름': '약학 전문 던전',
+        '난이도': '어려움',
+        '레벨_제한': 9,
+        '설명': '약학과 의약품 관련 전문 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.3, '에픽': 0.3, '유니크': 0.3, '레전드리': 0.1},
+        'clear_condition': 1300,
+        'max_health': 3
+    },
+    
+    # 과학 던전
+    {
+        'id': 'chemistry_dungeon',
+        '이름': '화학 실험실 던전',
+        '난이도': '보통',
+        '레벨_제한': 5,
+        '설명': '화학 용어와 실험 관련 단어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 700,
+        'max_health': 3
+    },
+    {
+        'id': 'physics_dungeon',
+        '이름': '물리학 연구소 던전',
+        '난이도': '어려움',
+        '레벨_제한': 10,
+        '설명': '물리학과 공학 관련 고급 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.25, '에픽': 0.35, '유니크': 0.3, '레전드리': 0.1},
+        'clear_condition': 1400,
+        'max_health': 2
+    },
+    
+    # 예술 던전
+    {
+        'id': 'art_gallery',
+        '이름': '예술 갤러리 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 2,
+        '설명': '미술과 예술 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.55, '에픽': 0.3, '유니크': 0.12, '레전드리': 0.03},
+        'clear_condition': 350,
+        'max_health': 5
+    },
+    {
+        'id': 'music_academy',
+        '이름': '음악 아카데미 던전',
+        '난이도': '보통',
+        '레벨_제한': 6,
+        '설명': '음악과 공연 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 850,
+        'max_health': 4
+    },
+    
+    # 스포츠 던전
+    {
+        'id': 'sports_arena',
+        '이름': '스포츠 경기장 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 3,
+        '설명': '스포츠와 운동 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
+        'clear_condition': 450,
+        'max_health': 5
+    },
+    {
+        'id': 'olympic_village',
+        '이름': '올림픽 선수촌 던전',
+        '난이도': '어려움',
+        '레벨_제한': 11,
+        '설명': '국제 스포츠와 올림픽 관련 전문 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.25, '에픽': 0.3, '유니크': 0.35, '레전드리': 0.1},
+        'clear_condition': 1600,
+        'max_health': 2
+    },
+    
+    # 여행 던전
+    {
+        'id': 'airport_terminal',
+        '이름': '공항 터미널 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 2,
+        '설명': '공항과 여행 관련 기초 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.6, '에픽': 0.25, '유니크': 0.12, '레전드리': 0.03},
+        'clear_condition': 300,
+        'max_health': 5
+    },
+    {
+        'id': 'hotel_resort',
+        '이름': '호텔 리조트 던전',
+        '난이도': '보통',
+        '레벨_제한': 4,
+        '설명': '호텔과 숙박 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.45, '에픽': 0.3, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 600,
+        'max_health': 4
+    },
+    
+    # 요리 던전
+    {
+        'id': 'cooking_school',
+        '이름': '요리학교 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 3,
+        '설명': '요리와 음식 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
+        'clear_condition': 400,
+        'max_health': 4
+    },
+    {
+        'id': 'michelin_restaurant',
+        '이름': '미슐랭 레스토랑 던전',
+        '난이도': '어려움',
+        '레벨_제한': 8,
+        '설명': '고급 요리와 레스토랑 관련 전문 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.3, '에픽': 0.3, '유니크': 0.3, '레전드리': 0.1},
+        'clear_condition': 1200,
+        'max_health': 3
+    },
+    
+    # 패션 던전
+    {
+        'id': 'fashion_boutique',
+        '이름': '패션 부티크 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 2,
+        '설명': '패션과 의류 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.55, '에픽': 0.3, '유니크': 0.12, '레전드리': 0.03},
+        'clear_condition': 350,
+        'max_health': 5
+    },
+    {
+        'id': 'runway_show',
+        '이름': '런웨이 패션쇼 던전',
+        '난이도': '보통',
+        '레벨_제한': 7,
+        '설명': '패션쇼와 브랜드 관련 전문 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.35, '에픽': 0.35, '유니크': 0.25, '레전드리': 0.05},
+        'clear_condition': 900,
+        'max_health': 3
+    },
+    
+    # 법률 던전
+    {
+        'id': 'law_office',
+        '이름': '법무법인 던전',
+        '난이도': '어려움',
+        '레벨_제한': 9,
+        '설명': '법률과 법정 관련 전문 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.25, '에픽': 0.35, '유니크': 0.3, '레전드리': 0.1},
+        'clear_condition': 1300,
+        'max_health': 2
+    },
+    
+    # 환경 던전
+    {
+        'id': 'eco_center',
+        '이름': '환경센터 던전',
+        '난이도': '보통',
+        '레벨_제한': 5,
+        '설명': '환경과 생태 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 750,
+        'max_health': 4
+    },
+    {
+        'id': 'renewable_energy',
+        '이름': '재생에너지 연구소 던전',
+        '난이도': '어려움',
+        '레벨_제한': 10,
+        '설명': '재생에너지와 지속가능성 관련 고급 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.25, '에픽': 0.3, '유니크': 0.35, '레전드리': 0.1},
+        'clear_condition': 1400,
+        'max_health': 2
+    },
+    
+    # 교육 던전
+    {
+        'id': 'elementary_school',
+        '이름': '초등학교 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 1,
+        '설명': '기초 교육 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.7, '에픽': 0.2, '유니크': 0.08, '레전드리': 0.02},
+        'clear_condition': 250,
+        'max_health': 6
+    },
+    {
+        'id': 'university_campus',
+        '이름': '대학 캠퍼스 던전',
+        '난이도': '보통',
+        '레벨_제한': 6,
+        '설명': '대학과 고등교육 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 850,
+        'max_health': 3
+    },
+    
+    # 심리학 던전
+    {
+        'id': 'psychology_lab',
+        '이름': '심리학 연구실 던전',
+        '난이도': '보통',
+        '레벨_제한': 7,
+        '설명': '심리학과 행동과학 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.35, '에픽': 0.35, '유니크': 0.25, '레전드리': 0.05},
+        'clear_condition': 950,
+        'max_health': 3
+    },
+    
+    # 농업 던전
+    {
+        'id': 'organic_farm',
+        '이름': '유기농 농장 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 3,
+        '설명': '농업과 농장 관련 용어를 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
+        'clear_condition': 400,
+        'max_health': 4
+    },
+    
+    # 우주 던전
+    {
+        'id': 'space_station',
+        '이름': '우주정거장 던전',
+        '난이도': '매우 어려움',
+        '레벨_제한': 15,
+        '설명': '우주과학과 천문학 관련 최고급 용어 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.15, '에픽': 0.2, '유니크': 0.4, '레전드리': 0.25},
+        'clear_condition': 2000,
+        'max_health': 1
+    },
+    
+    # 보스 던전들
+    {
+        'id': 'ultimate_challenge',
+        '이름': '궁극의 도전 던전',
+        '난이도': '극한',
+        '레벨_제한': 20,
+        '설명': '모든 분야의 최고난이도 용어가 등장하는 궁극의 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.1, '에픽': 0.15, '유니크': 0.35, '레전드리': 0.4},
+        'clear_condition': 3000,
+        'max_health': 1
     }
 ]
 
