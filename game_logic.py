@@ -814,7 +814,7 @@ def init_dungeon_run(player, dungeon_id):
         'monster_id': None,
         'monster_hp': 0,
         'monster_progress': 0,
-        'player_hp': dungeon.get('max_health', 3),
+        'player_hp': player['체력'],  # 플레이어의 실제 체력 사용
         'cleared_words': 0,
         'total_words': len(word_queue)
     }
@@ -929,8 +929,9 @@ def answer_dungeon(player, dungeon_run, choice):
             result_msg += f" ({progress}/{max_hp})"
             return {'success': True, 'correct': True, 'monster_defeated': False, 'message': result_msg}
     else:
-        # 오답
+        # 오답 - 플레이어 실제 체력과 던전 체력 모두 감소
         dungeon_run['player_hp'] -= 1
+        player['체력'] = max(0, player['체력'] - 1)  # 실제 체력도 감소
         
         if dungeon_run['player_hp'] <= 0:
             return {'success': True, 'correct': False, 'game_over': True, 'message': '체력이 0이 되어 던전에서 퇴장됩니다.'}
@@ -994,11 +995,12 @@ def use_dungeon_item(player, item_name, dungeon_run=None):
     
     for effect, value in effects.items():
         if effect == '던전_체력' and dungeon_run:
-            # 던전 체력 회복
-            dungeon = get_dungeon_by_id(dungeon_run['dungeon_id'])
-            max_health = dungeon.get('max_health', 3)
+            # 던전 체력 회복 - 플레이어 실제 체력도 함께 회복
+            max_health = 10  # 플레이어 최대 체력
             old_hp = dungeon_run['player_hp']
+            heal_amount = min(value, max_health - old_hp)
             dungeon_run['player_hp'] = min(dungeon_run['player_hp'] + value, max_health)
+            player['체력'] = min(player['체력'] + heal_amount, max_health)
             actual_heal = dungeon_run['player_hp'] - old_hp
             result_message += f'체력이 {actual_heal} 회복되었습니다. '
         elif effect == '부활' and dungeon_run:

@@ -559,14 +559,27 @@ def dungeon_run():
 def answer_dungeon():
     """던전 답변 처리"""
     if 'player_data' not in session or 'dungeon_run' not in session:
+        flash('던전 정보가 없습니다.', 'error')
         return redirect(url_for('dungeons'))
     
     player = session['player_data']
     dungeon_run = session['dungeon_run']
-    choice = int(request.form.get('choice', -1))
+    
+    # 안전한 choice 값 처리
+    try:
+        choice = int(request.form.get('choice', -1))
+    except (ValueError, TypeError):
+        flash('잘못된 선택입니다. 다시 시도해주세요.', 'error')
+        return redirect(url_for('dungeon_run'))
+    
+    # 선택지 유효성 검사
+    if 'current_options' not in dungeon_run or not dungeon_run['current_options']:
+        flash('게임 오류가 발생했습니다. 던전을 다시 시작해주세요.', 'error')
+        session.pop('dungeon_run', None)
+        return redirect(url_for('dungeons'))
     
     if choice < 0 or choice >= len(dungeon_run['current_options']):
-        flash('잘못된 선택입니다.', 'error')
+        flash('잘못된 선택입니다. 다시 시도해주세요.', 'error')
         return redirect(url_for('dungeon_run'))
     
     # 답변 처리
