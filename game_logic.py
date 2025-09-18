@@ -154,7 +154,7 @@ def get_tier_conditions():
         {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 1, 'level': 12, 'achievement_points': 40}},
         {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 1, 'level': 18, 'achievement_points': 70}},
         {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 1, 'level': 25, 'achievement_points': 120}},
-        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 1, 'level': 35, 'achievement_points': 200}}
+        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 1, 'level': 35, 'achievement_points': 161}}
     ]
 
 def get_player_tier(player):

@@ -8,7 +8,7 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    <i data-feather="award" class="me-2"></i>성취 목록 ({{ achievements|length }}개)
+                    <i data-feather="award" class="me-2"></i>성취 목록
                 </h5>
                 <div>
                     <span class="badge bg-primary fs-6">
@@ -151,28 +151,28 @@
             </div>
             <div class="card-body text-center">
                 <div class="mb-3">
-                    <h2 class="text-success">{{ player_achievements|length }}</h2>
-                    <small class="text-muted">달성한 성취</small>
+                    <h2 class="text-success">{{ achievement_points }}</h2>
+                    <small class="text-muted">달성한 포인트</small>
                 </div>
                 
                 <div class="progress mb-2">
                     <div class="progress-bar bg-success" 
-                         style="width: {{ (player_achievements|length / achievements|length * 100) }}%">
-                        {{ "%.1f"|format(player_achievements|length / achievements|length * 100) }}%
+                         style="width: {{ (achievement_points / (achievements | sum(attribute='포인트')) * 100) }}%">
+                        {{ "%.1f"|format(achievement_points / (achievements | sum(attribute='포인트')) * 100) }}%
                     </div>
                 </div>
-                <small class="text-muted">전체 성취 달성률</small>
+                <small class="text-muted">전체 포인트 달성률</small>
                 
                 <hr>
                 
                 <div class="row">
                     <div class="col-6">
-                        <h4 class="text-primary">{{ achievements|length }}</h4>
-                        <small class="text-muted">전체 성취</small>
+                        <h4 class="text-primary">{{ achievements | sum(attribute='포인트') }}</h4>
+                        <small class="text-muted">최대 포인트</small>
                     </div>
                     <div class="col-6">
-                        <h4 class="text-warning">{{ achievements|length - player_achievements|length }}</h4>
-                        <small class="text-muted">미달성</small>
+                        <h4 class="text-warning">{{ achievements | sum(attribute='포인트') - achievement_points }}</h4>
+                        <small class="text-muted">미획득 포인트</small>
                     </div>
                 </div>
             </div>
