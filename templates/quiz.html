@@ -231,12 +231,16 @@
                             <div class="mb-3">
                                 <label class="form-label">카테고리</label>
                                 <select id="category-select" name="category" class="form-select" onchange="toggleCustomCategory()">
-                                    {% for category in categories %}
-                                    <option value="{{ category }}">{{ category }}</option>
-                                    {% endfor %}
-                                    <option value="custom">새 카테고리 입력</option>
+                                    {% if categories %}
+                                        {% for category in categories %}
+                                        <option value="{{ category }}">{{ category }}</option>
+                                        {% endfor %}
+                                        <option value="custom">새 카테고리 입력</option>
+                                    {% else %}
+                                        <option value="custom" selected>새 카테고리 입력</option>
+                                    {% endif %}
                                 </select>
-                                <input type="text" id="custom-category" name="custom_category" class="form-control mt-2 d-none" placeholder="카테고리 이름을 입력하세요">
+                                <input type="text" id="custom-category" name="custom_category" class="form-control mt-2 {% if not categories %}{% else %}d-none{% endif %}" placeholder="카테고리 이름을 입력하세요" {% if not categories %}required{% endif %}>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -268,16 +272,19 @@
             if (select.value === 'custom') {
                 customInput.classList.remove('d-none');
                 customInput.required = true;
+                customInput.focus(); // 입력 칸에 포커스
             } else {
                 customInput.classList.add('d-none');
                 customInput.required = false;
                 customInput.value = '';
             }
         }
+        
+        // 페이지 로드 시 초기 상태 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleCustomCategory();
+        });
         </script>
-                </form>
-            </div>
-        </div>
     </div>
 
     <div class="col-lg-4">
