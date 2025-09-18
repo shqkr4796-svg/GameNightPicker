@@ -495,14 +495,13 @@ def dungeon_preview(dungeon_id):
         flash('존재하지 않는 던전입니다.', 'error')
         return redirect(url_for('dungeons'))
     
-    # 토익 단어 미리보기 (일부만)
-    words = game_logic.load_toeic_words()
-    preview_words = words[:20] if words else []  # 처음 20개만 미리보기
+    # 던전별 단어 로드 (모든 단어 표시)
+    words = game_logic.load_words_by_source(dungeon.get('word_source', 'toeic'))
     
     return render_template('dungeon_preview.html', 
                          player=player, 
                          dungeon=dungeon,
-                         preview_words=preview_words,
+                         all_words=words,
                          total_words=len(words))
 
 @app.route('/dungeon/start', methods=['POST'])

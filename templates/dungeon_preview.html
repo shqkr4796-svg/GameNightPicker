@@ -44,9 +44,9 @@
                     </div>
                 </div>
                 
-                <h6><i class="fas fa-book me-2"></i>출현 단어 예시 ({{ total_words }}개 중 일부)</h6>
-                <div class="row">
-                    {% for word in preview_words %}
+                <h6><i class="fas fa-book me-2"></i>출현 단어 목록 (총 {{ total_words }}개)</h6>
+                <div class="row" style="max-height: 400px; overflow-y: auto;">
+                    {% for word in all_words %}
                     <div class="col-lg-4 col-md-6 mb-2">
                         <div class="border rounded p-2 small">
                             <strong>{{ word['단어'] }}</strong> - {{ word['뜻'] }}
