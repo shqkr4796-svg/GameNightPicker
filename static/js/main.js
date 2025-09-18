@@ -196,11 +196,26 @@ class SoundManager {
 // 전역 사운드 매니저 인스턴스
 let soundManager;
 
-// 음성 합성 함수 - 네이티브 영어 발음
-function speakWord(word) {
+// 음성 합성 함수 - 네이티브 영어 발음 (상태 표시 포함)
+function speakWord(word, buttonElement = null) {
+    // 버튼 요소가 문자열이면 event 객체로 판단하고 버튼 찾기
+    if (typeof buttonElement === 'object' && buttonElement && buttonElement.target) {
+        buttonElement = buttonElement.target.closest('button');
+    } else if (typeof buttonElement === 'object' && buttonElement && buttonElement.tagName === 'BUTTON') {
+        // 이미 버튼 요소인 경우 그대로 사용
+    } else {
+        buttonElement = null;
+    }
+    
     if ('speechSynthesis' in window) {
         // 이전 음성이 재생 중이면 중단
         speechSynthesis.cancel();
+        
+        // 버튼 상태 표시 시작
+        if (buttonElement) {
+            buttonElement.setAttribute('data-local-feedback', 'true');
+            window.showButtonFeedback(buttonElement, 'speaking');
+        }
         
         const utterance = new SpeechSynthesisUtterance(word);
         
@@ -238,6 +253,28 @@ function speakWord(word) {
             utterance.voice = preferredVoice;
         }
         
+        // 음성 재생 완료 시 상태 복원
+        utterance.onend = function() {
+            if (buttonElement) {
+                window.showButtonFeedback(buttonElement, 'success');
+                setTimeout(() => {
+                    window.restoreButtonState(buttonElement);
+                    buttonElement.removeAttribute('data-local-feedback');
+                }, 800);
+            }
+        };
+        
+        // 음성 재생 오류 시 상태 복원
+        utterance.onerror = function() {
+            if (buttonElement) {
+                window.showButtonFeedback(buttonElement, 'error');
+                setTimeout(() => {
+                    window.restoreButtonState(buttonElement);
+                    buttonElement.removeAttribute('data-local-feedback');
+                }, 1000);
+            }
+        };
+        
         // 음성 효과음 재생
         if (soundManager) {
             soundManager.createTone(600, 0.05, 'sine');
@@ -245,6 +282,14 @@ function speakWord(word) {
         
         speechSynthesis.speak(utterance);
     } else {
+        if (buttonElement) {
+            buttonElement.setAttribute('data-local-feedback', 'true');
+            window.showButtonFeedback(buttonElement, 'error');
+            setTimeout(() => {
+                window.restoreButtonState(buttonElement);
+                buttonElement.removeAttribute('data-local-feedback');
+            }, 1000);
+        }
         alert('음성 합성을 지원하지 않는 브라우저입니다.');
     }
 }
@@ -254,8 +299,21 @@ function changeQuizCategory(category) {
     window.location.href = `/quiz?category=${category}`;
 }
 
-// 퀴즈 세션 리셋
-function resetQuizSession(category) {
+// 퀴즈 세션 리셋 (상태 표시 포함)
+function resetQuizSession(category, buttonOrEvent = null) {
+    // 버튼 요소 찾기
+    let button = null;
+    if (buttonOrEvent && buttonOrEvent.target) {
+        button = buttonOrEvent.target.closest('button');
+    } else if (buttonOrEvent && buttonOrEvent.tagName === 'BUTTON') {
+        button = buttonOrEvent;
+    }
+    
+    if (button) {
+        button.setAttribute('data-local-feedback', 'true');
+        window.showButtonFeedback(button, 'loading');
+    }
+    
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/reset_quiz_session';
@@ -267,12 +325,34 @@ function resetQuizSession(category) {
     
     form.appendChild(categoryInput);
     document.body.appendChild(form);
+    
+    // 스크롤 위치 저장
+    const scrollY = window.scrollY;
+    sessionStorage.setItem('scrollPosition', scrollY);
+    
     form.submit();
 }
 
-// 틀린 문제 재도전
-function retryWrongQuestions(category) {
+// 틀린 문제 재도전 (상태 표시 포함)
+function retryWrongQuestions(category, buttonOrEvent = null) {
+    // 버튼 요소 찾기
+    let button = null;
+    if (buttonOrEvent && buttonOrEvent.target) {
+        button = buttonOrEvent.target.closest('button');
+    } else if (buttonOrEvent && buttonOrEvent.tagName === 'BUTTON') {
+        button = buttonOrEvent;
+    }
+    
     if (confirm('틀린 문제들만 다시 풀어보시겠습니까?')) {
+        if (button) {
+            button.setAttribute('data-local-feedback', 'true');
+            window.showButtonFeedback(button, 'loading');
+        }
+        
+        // 스크롤 위치 저장
+        const scrollY = window.scrollY;
+        sessionStorage.setItem('scrollPosition', scrollY);
+        
         window.location.href = '/quiz/retry_wrong?category=' + encodeURIComponent(category);
     }
 }
@@ -770,22 +850,154 @@ function checkPlayerStatus() {
     // 실제 구현은 서버 데이터가 필요하므로 여기서는 기본 구조만 제공합니다.
 }
 
-// 글로벌 변수로 Utils 노출
+// 글로벌 변수로 Utils 및 피드백 함수들 노출
 window.GameUtils = Utils;
+window.showButtonFeedback = showButtonFeedback;
+window.restoreButtonState = restoreButtonState;
 
-// 페이지 상단 스크롤 방지 - 앵커 태그의 기본 동작 방지
+// 버튼 상태 표시 시스템
+function showButtonFeedback(button, state) {
+    if (!button) return;
+    
+    // 원본 상태 저장 (한 번만)
+    if (!button.dataset.originalContent) {
+        button.dataset.originalContent = button.innerHTML;
+        button.dataset.originalClass = button.className;
+    }
+    
+    const icons = {
+        speaking: '<i class="fas fa-volume-up fa-pulse"></i> 재생중...',
+        loading: '<i class="fas fa-spinner fa-spin"></i> 처리중...',
+        success: '<i class="fas fa-check"></i> 완료',
+        error: '<i class="fas fa-times"></i> 오류',
+        submitting: '<i class="fas fa-paper-plane fa-pulse"></i> 제출중...'
+    };
+    
+    const classes = {
+        speaking: 'btn-primary',
+        loading: 'btn-warning',
+        success: 'btn-success',
+        error: 'btn-danger',
+        submitting: 'btn-info'
+    };
+    
+    // 버튼 상태 변경
+    button.innerHTML = icons[state] || icons.loading;
+    button.className = button.dataset.originalClass.replace(/btn-\w+/, classes[state] || classes.loading);
+    button.disabled = true;
+}
+
+function restoreButtonState(button) {
+    if (!button || !button.dataset.originalContent) return;
+    
+    button.innerHTML = button.dataset.originalContent;
+    button.className = button.dataset.originalClass;
+    button.disabled = false;
+    
+    // 데이터 정리
+    delete button.dataset.originalContent;
+    delete button.dataset.originalClass;
+}
+
+// 폼 제출 시 상태 표시
+function handleFormSubmit(form, submitButton) {
+    if (submitButton) {
+        showButtonFeedback(submitButton, 'submitting');
+    }
+    
+    // 페이지 이동 시 스크롤 위치 유지
+    const scrollY = window.scrollY;
+    sessionStorage.setItem('scrollPosition', scrollY);
+}
+
+// 페이지 로드 시 스크롤 위치 복원
+function restoreScrollPosition() {
+    const scrollY = sessionStorage.getItem('scrollPosition');
+    if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY));
+        sessionStorage.removeItem('scrollPosition');
+    }
+}
+
+// 페이지 상단 스크롤 방지 및 상호작용 개선
 document.addEventListener('DOMContentLoaded', function() {
-    // 앵커 태그의 기본 동작 방지
+    // 스크롤 위치 복원
+    restoreScrollPosition();
+    
+    // 앵커 태그의 기본 동작 방지 (더 구체적으로)
     document.addEventListener('click', function(e) {
         const anchor = e.target.closest('a[href]');
         if (!anchor) return;
         
         const href = anchor.getAttribute('href');
         
-        // 빈 href, # 또는 존재하지 않는 해시 링크의 기본 동작 방지
-        if (href === '#' || href === '' || (href.startsWith('#') && !document.querySelector(href))) {
+        // 다음 경우에만 기본 동작 방지:
+        // 1. href가 정확히 '#'인 경우
+        // 2. href가 빈 문자열인 경우
+        // 3. data-prevent-scroll 속성이 있는 경우
+        // 4. href가 '#'로 시작하지만 해당 요소가 페이지에 없는 경우
+        if (href === '#' || 
+            href === '' || 
+            anchor.hasAttribute('data-prevent-scroll') ||
+            (href.startsWith('#') && href.length > 1 && !document.querySelector(href))) {
             e.preventDefault();
             return false;
+        }
+    });
+    
+    // 모든 폼에 제출 이벤트 리스너 추가
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        const submitButton = form.querySelector('button[type="submit"]:focus') || 
+                           form.querySelector('input[type="submit"]:focus') ||
+                           document.activeElement;
+        
+        handleFormSubmit(form, submitButton);
+    });
+    
+    // 모든 버튼에 클릭 피드백 추가 (중복 방지)
+    document.addEventListener('click', function(e) {
+        const button = e.target.closest('button');
+        if (!button) return;
+        
+        // 이미 로컬 피드백이 처리된 버튼은 건너뛰기
+        if (button.hasAttribute('data-local-feedback')) {
+            return;
+        }
+        
+        // onclick 속성이 있는 버튼들에 대한 특별 처리
+        if (button.hasAttribute('onclick')) {
+            const onclickValue = button.getAttribute('onclick');
+            
+            // 확인 대화상자가 있는 경우는 제외
+            if (onclickValue.includes('confirm(')) {
+                return;
+            }
+            
+            // 특정 함수들은 이미 자체 피드백이 있으므로 제외
+            if (onclickValue.includes('speakWord(') ||
+                onclickValue.includes('resetQuizSession(') ||
+                onclickValue.includes('retryWrongQuestions(') ||
+                onclickValue.includes('filterProperties(') ||
+                onclickValue.includes('editWord(') ||
+                onclickValue.includes('confirmDelete(') ||
+                onclickValue.includes('confirmMultipleDelete(')) {
+                return;
+            }
+            
+            // 일반적인 클릭 피드백 적용
+            showButtonFeedback(button, 'loading');
+            setTimeout(() => {
+                restoreButtonState(button);
+            }, 1000);
+        }
+    });
+    
+    // 선택지 버튼들에 대한 특별 처리
+    document.addEventListener('click', function(e) {
+        const choiceButton = e.target.closest('.choice-btn');
+        if (choiceButton && choiceButton.type === 'submit') {
+            showButtonFeedback(choiceButton, 'submitting');
         }
     });
 });

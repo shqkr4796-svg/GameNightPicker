@@ -40,7 +40,7 @@
                             <div class="word-card mb-4">
                                 <div class="word">{{ current_question['meaning'] }}</div>
                                 <button type="button" class="btn btn-outline-info btn-sm mt-2" 
-                                        onclick="speakWord('{{ current_question['word'] }}')" title="정답 단어 발음 듣기">
+                                        onclick="speakWord('{{ current_question['word'] }}', this)" title="정답 단어 발음 듣기">
                                     <i class="fas fa-volume-up me-1"></i>정답 발음 듣기
                                 </button>
                             </div>
@@ -50,7 +50,7 @@
                             <div class="word-card mb-4">
                                 <div class="word">{{ current_question['word'] }}</div>
                                 <button type="button" class="btn btn-outline-primary btn-sm mt-2" 
-                                        onclick="speakWord('{{ current_question['word'] }}')" title="단어 발음 듣기">
+                                        onclick="speakWord('{{ current_question['word'] }}', this)" title="단어 발음 듣기">
                                     <i class="fas fa-volume-up me-1"></i>발음 듣기
                                 </button>
                             </div>

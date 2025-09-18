@@ -49,11 +49,11 @@
                 <!-- 부동산 필터 -->
                 <div class="mb-3">
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-primary active" onclick="filterProperties('all')">전체</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('low')">저가형</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('mid')">중가형</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('high')">고가형</button>
-                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('luxury')">초고급</button>
+                        <button type="button" class="btn btn-outline-primary active" onclick="filterProperties('all', this)">전체</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('low', this)">저가형</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('mid', this)">중가형</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('high', this)">고가형</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="filterProperties('luxury', this)">초고급</button>
                     </div>
                 </div>
 
@@ -213,13 +213,31 @@
 
 {% block scripts %}
 <script>
-function filterProperties(priceRange) {
+function filterProperties(priceRange, buttonElement = null) {
+    // 버튼 요소 찾기 (event 객체이거나 button 요소)
+    let button = null;
+    if (buttonElement && buttonElement.target) {
+        button = buttonElement.target.closest('button');
+    } else if (buttonElement && buttonElement.tagName === 'BUTTON') {
+        button = buttonElement;
+    }
+    
+    // 상태 표시
+    if (button && typeof window.showButtonFeedback === 'function') {
+        button.setAttribute('data-local-feedback', 'true'); // 전역 핸들러 중복 방지
+        window.showButtonFeedback(button, 'loading');
+    }
+    
     const properties = document.querySelectorAll('.property-item');
-    const buttons = document.querySelectorAll('.btn-group .btn');
+    // 버튼 그룹을 더 구체적으로 선택
+    const buttonGroup = button ? button.closest('.btn-group') : document.querySelector('.btn-group');
+    const buttons = buttonGroup ? buttonGroup.querySelectorAll('.btn') : [];
     
     // 버튼 스타일 업데이트
     buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (button) {
+        button.classList.add('active');
+    }
     
     // 부동산 필터링
     properties.forEach(property => {
@@ -229,6 +247,14 @@ function filterProperties(priceRange) {
             property.style.display = 'none';
         }
     });
+    
+    // 상태 복원
+    if (button && typeof window.restoreButtonState === 'function') {
+        setTimeout(() => {
+            window.restoreButtonState(button);
+            button.removeAttribute('data-local-feedback'); // 전역 핸들러 재활성화
+        }, 500);
+    }
 }
 </script>
 {% endblock %}

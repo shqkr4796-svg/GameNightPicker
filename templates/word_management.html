@@ -78,7 +78,7 @@
                     <h5 class="mb-0">단어 목록</h5>
                     <div class="d-flex gap-2 align-items-center">
                         <button type="button" class="btn btn-danger btn-sm" id="deleteSelectedBtn" 
-                                onclick="confirmMultipleDelete()" style="display: none;">
+                                onclick="confirmMultipleDelete(this)" style="display: none;">
                             <i class="fas fa-trash-alt me-1"></i> 선택 삭제
                         </button>
                         <small class="text-muted">{{ word_bank|length }}개의 단어</small>
@@ -118,11 +118,11 @@
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
                                             <button type="button" class="btn btn-warning btn-sm" title="수정" 
-                                                    onclick="editWord('{{ word.인덱스 }}', '{{ word.단어 }}', '{{ word.뜻 }}', '{{ word.카테고리 or '기본' }}')">
+                                                    onclick="editWord('{{ word.인덱스 }}', '{{ word.단어 }}', '{{ word.뜻 }}', '{{ word.카테고리 or '기본' }}', this)">
                                                 <i class="fas fa-edit text-white"></i>
                                             </button>
                                             <button type="button" class="btn btn-danger btn-sm" title="삭제"
-                                                    onclick="confirmDelete('{{ word.인덱스 }}', '{{ word.단어 }}')">
+                                                    onclick="confirmDelete('{{ word.인덱스 }}', '{{ word.단어 }}', this)">
                                                 <i class="fas fa-trash-alt text-white"></i>
                                             </button>
                                         </div>
@@ -244,20 +244,66 @@
 
 {% block scripts %}
 <script>
-function editWord(index, word, meaning, category) {
+function editWord(index, word, meaning, category, buttonElement = null) {
+    // 버튼 요소 찾기
+    let button = null;
+    if (buttonElement && buttonElement.target) {
+        button = buttonElement.target.closest('button');
+    } else if (buttonElement && buttonElement.tagName === 'BUTTON') {
+        button = buttonElement;
+    }
+    
+    // 상태 표시
+    if (button && typeof window.showButtonFeedback === 'function') {
+        button.setAttribute('data-local-feedback', 'true'); // 전역 핸들러 중복 방지
+        window.showButtonFeedback(button, 'loading');
+    }
+    
     document.getElementById('edit_word_index').value = index;
     document.getElementById('edit_word').value = word;
     document.getElementById('edit_meaning').value = meaning;
     document.getElementById('edit_category').value = category;
     
-    new bootstrap.Modal(document.getElementById('editModal')).show();
+    // 모달 표시 후 상태 복원
+    const modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
+    
+    if (button && typeof window.restoreButtonState === 'function') {
+        setTimeout(() => {
+            window.restoreButtonState(button);
+            button.removeAttribute('data-local-feedback'); // 전역 핸들러 재활성화
+        }, 300);
+    }
 }
 
-function confirmDelete(index, word) {
+function confirmDelete(index, word, buttonElement = null) {
+    // 버튼 요소 찾기
+    let button = null;
+    if (buttonElement && buttonElement.target) {
+        button = buttonElement.target.closest('button');
+    } else if (buttonElement && buttonElement.tagName === 'BUTTON') {
+        button = buttonElement;
+    }
+    
+    // 상태 표시
+    if (button && typeof window.showButtonFeedback === 'function') {
+        button.setAttribute('data-local-feedback', 'true'); // 전역 핸들러 중복 방지
+        window.showButtonFeedback(button, 'loading');
+    }
+    
     document.getElementById('delete_word_index').value = index;
     document.getElementById('delete_word_name').textContent = word;
     
-    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    // 모달 표시 후 상태 복원
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+    
+    if (button && typeof window.restoreButtonState === 'function') {
+        setTimeout(() => {
+            window.restoreButtonState(button);
+            button.removeAttribute('data-local-feedback'); // 전역 핸들러 재활성화
+        }, 300);
+    }
 }
 
 function updateDeleteButton() {
@@ -271,9 +317,27 @@ function updateDeleteButton() {
     }
 }
 
-function confirmMultipleDelete() {
+function confirmMultipleDelete(buttonElement = null) {
+    // 버튼 요소 찾기
+    let button = null;
+    if (buttonElement && buttonElement.target) {
+        button = buttonElement.target.closest('button');
+    } else if (buttonElement && buttonElement.tagName === 'BUTTON') {
+        button = buttonElement;
+    }
+    
+    // 상태 표시
+    if (button && typeof window.showButtonFeedback === 'function') {
+        button.setAttribute('data-local-feedback', 'true'); // 전역 핸들러 중복 방지
+        window.showButtonFeedback(button, 'loading');
+    }
+    
     const checkboxes = document.querySelectorAll('.word-checkbox:checked');
     if (checkboxes.length === 0) {
+        if (button && typeof window.restoreButtonState === 'function') {
+            window.restoreButtonState(button);
+            button.removeAttribute('data-local-feedback');
+        }
         alert('삭제할 단어를 선택해주세요.');
         return;
     }
@@ -282,7 +346,16 @@ function confirmMultipleDelete() {
     document.getElementById('selected_word_indices').value = indices.join(',');
     document.getElementById('selected_count').textContent = indices.length;
     
-    new bootstrap.Modal(document.getElementById('multiDeleteModal')).show();
+    // 모달 표시 후 상태 복원
+    const modal = new bootstrap.Modal(document.getElementById('multiDeleteModal'));
+    modal.show();
+    
+    if (button && typeof window.restoreButtonState === 'function') {
+        setTimeout(() => {
+            window.restoreButtonState(button);
+            button.removeAttribute('data-local-feedback'); // 전역 핸들러 재활성화
+        }, 300);
+    }
 }
 
 // 전체 선택/해제
