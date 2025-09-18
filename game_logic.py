@@ -359,6 +359,85 @@ def add_word_to_bank(word, meaning, category='기본'):
         return save_user_words(user_words)
     return False
 
+def save_category_words_to_bank(dungeon_id, category_name):
+    """던전 카테고리의 모든 단어를 사용자 단어장에 저장"""
+    try:
+        # 던전 정보 가져오기
+        dungeon = get_dungeon_by_id(dungeon_id)
+        if not dungeon:
+            return {'success': False, 'message': '존재하지 않는 던전입니다.'}
+        
+        # 던전의 단어 소스에서 모든 단어 로드 (던전에서 실제로 표시되는 단어들)
+        word_source = dungeon.get('word_source', 'toeic')
+        category_words = load_words_by_source(word_source)
+        
+        if not category_words:
+            return {'success': False, 'message': '해당 카테고리에 단어가 없습니다.'}
+        
+        # 기본 단어와 사용자 단어장 가져오기
+        base_words = word_bank.copy()
+        user_words = get_user_words()
+        
+        # 중복 확인용 세트 (기본 단어 + 사용자 단어)
+        base_word_texts = {base_word['단어'].lower() for base_word in base_words}
+        user_word_texts = {user_word['단어'].lower() for user_word in user_words}
+        existing_word_texts = base_word_texts | user_word_texts
+        
+        # 새로 추가할 단어들
+        new_words = []
+        duplicate_count = 0
+        
+        for word_data in category_words:
+            word = word_data['단어']
+            meaning = word_data['뜻']
+            
+            # 유효성 검사
+            if not is_valid_word_entry(word, meaning):
+                continue
+            
+            # 중복 확인 (기본 단어 + 사용자 단어 모두 확인)
+            if word.lower() not in existing_word_texts:
+                new_word = {
+                    '단어': word,
+                    '뜻': meaning,
+                    '카테고리': category_name
+                }
+                new_words.append(new_word)
+                existing_word_texts.add(word.lower())  # 같은 요청 내에서 중복 방지
+            else:
+                duplicate_count += 1
+        
+        if new_words:
+            # 기존 사용자 단어에 새 단어들 추가
+            user_words.extend(new_words)
+            success = save_user_words(user_words)
+            
+            if success:
+                total_words = len(category_words)
+                added_count = len(new_words)
+                message = f'"{category_name}" 카테고리에 {added_count}개의 단어가 저장되었습니다!'
+                if duplicate_count > 0:
+                    message += f' ({duplicate_count}개는 이미 존재하여 제외됨)'
+                
+                return {
+                    'success': True, 
+                    'message': message,
+                    'added_count': added_count,
+                    'total_words': total_words,
+                    'duplicate_count': duplicate_count
+                }
+            else:
+                return {'success': False, 'message': '단어 저장 중 오류가 발생했습니다.'}
+        else:
+            return {
+                'success': False, 
+                'message': f'추가할 수 있는 새로운 단어가 없습니다. ({duplicate_count}개 모두 이미 존재함)'
+            }
+    
+    except Exception as e:
+        print(f"Error in save_category_words_to_bank: {e}")
+        return {'success': False, 'message': '카테고리 단어 저장 중 오류가 발생했습니다.'}
+
 def add_words_to_bank(words, meanings, category, player):
     """여러 단어를 단어장에 추가하고 새 단어에 대해 경험치 지급"""
     current_word_bank = get_word_bank()  # 최신 단어장 로드
@@ -397,57 +476,98 @@ def add_words_to_bank(words, meanings, category, player):
     return added_count, exp_gained
 
 def delete_word_from_bank(word_index):
-    """단어장에서 단어 삭제"""
-    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    """단어장에서 단어 삭제 (사용자 단어만)"""
+    current_word_bank = get_word_bank()  # 전체 단어장 로드
+    base_words = word_bank.copy()  # 기본 단어들
+    user_words = get_user_words()  # 사용자 단어들
     
     try:
         if 0 <= word_index < len(current_word_bank):
-            deleted_word = current_word_bank.pop(word_index)
-            save_word_bank(current_word_bank)  # 변경사항 저장
-            return {'success': True, 'message': f'단어 "{deleted_word["단어"]}"가 삭제되었습니다.'}
+            target_word = current_word_bank[word_index]
+            
+            # 기본 단어는 삭제할 수 없음
+            if word_index < len(base_words):
+                return {'success': False, 'message': '기본 단어는 삭제할 수 없습니다. 사용자가 추가한 단어만 삭제 가능합니다.'}
+            
+            # 사용자 단어에서 이 단어를 찾아서 삭제
+            target_word_text = target_word['단어']
+            for i, user_word in enumerate(user_words):
+                if user_word['단어'] == target_word_text and user_word['뜻'] == target_word['뜻']:
+                    deleted_word = user_words.pop(i)
+                    save_user_words(user_words)  # 사용자 단어만 저장
+                    return {'success': True, 'message': f'단어 "{deleted_word["단어"]}"가 삭제되었습니다.'}
+            
+            return {'success': False, 'message': '사용자 단어장에서 해당 단어를 찾을 수 없습니다.'}
         else:
             return {'success': False, 'message': '잘못된 단어 번호입니다.'}
     except Exception as e:
+        print(f"Error in delete_word_from_bank: {e}")
         return {'success': False, 'message': '단어 삭제 중 오류가 발생했습니다.'}
 
 def delete_multiple_words_from_bank(word_indices):
-    """단어장에서 여러 단어 삭제"""
-    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    """단어장에서 여러 단어 삭제 (사용자 단어만)"""
+    current_word_bank = get_word_bank()  # 전체 단어장 로드
+    base_words = word_bank.copy()  # 기본 단어들
+    user_words = get_user_words()  # 사용자 단어들
     
     try:
-        # 인덱스를 내림차순으로 정렬하여 뒤에서부터 삭제
-        word_indices = sorted([int(idx) for idx in word_indices], reverse=True)
+        word_indices = [int(idx) for idx in word_indices]
         deleted_words = []
         
+        # 삭제할 단어들 수집 (사용자 단어만)
+        words_to_delete = []
         for index in word_indices:
-            if 0 <= index < len(current_word_bank):
-                deleted_word = current_word_bank.pop(index)
-                deleted_words.append(deleted_word['단어'])
+            if index >= len(base_words) and index < len(current_word_bank):  # 사용자 단어 범위
+                target_word = current_word_bank[index]
+                words_to_delete.append((target_word['단어'], target_word['뜻']))
+        
+        # 사용자 단어에서 일치하는 단어들 삭제
+        for word_text, meaning in words_to_delete:
+            for i in range(len(user_words) - 1, -1, -1):  # 뒤에서부터 삭제
+                if user_words[i]['단어'] == word_text and user_words[i]['뜻'] == meaning:
+                    deleted_word = user_words.pop(i)
+                    deleted_words.append(deleted_word['단어'])
+                    break  # 같은 단어라도 한 번만 삭제
         
         if deleted_words:
-            save_word_bank(current_word_bank)  # 변경사항 저장
+            save_user_words(user_words)  # 사용자 단어만 저장
             return {'success': True, 'message': f'{len(deleted_words)}개의 단어가 삭제되었습니다.'}
         else:
-            return {'success': False, 'message': '삭제할 수 있는 단어가 없습니다.'}
+            return {'success': False, 'message': '삭제할 수 있는 사용자 단어가 없습니다. 기본 단어는 삭제할 수 없습니다.'}
     except Exception as e:
+        print(f"Error in delete_multiple_words_from_bank: {e}")
         return {'success': False, 'message': '단어 삭제 중 오류가 발생했습니다.'}
 
 def edit_word_in_bank(word_index, new_word, new_meaning, new_category):
-    """단어장의 단어 수정"""
-    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    """단어장의 단어 수정 (사용자 단어만)"""
+    current_word_bank = get_word_bank()  # 전체 단어장 로드
+    base_words = word_bank.copy()  # 기본 단어들
+    user_words = get_user_words()  # 사용자 단어들
     
     try:
         if 0 <= word_index < len(current_word_bank):
-            current_word_bank[word_index] = {
-                '단어': new_word,
-                '뜻': new_meaning,
-                '카테고리': new_category
-            }
-            save_word_bank(current_word_bank)  # 변경사항 저장
-            return {'success': True, 'message': f'단어 "{new_word}"가 수정되었습니다.'}
+            # 기본 단어는 수정할 수 없음
+            if word_index < len(base_words):
+                return {'success': False, 'message': '기본 단어는 수정할 수 없습니다. 사용자가 추가한 단어만 수정 가능합니다.'}
+            
+            # 사용자 단어에서 이 단어를 찾아서 수정
+            target_word = current_word_bank[word_index]
+            target_word_text = target_word['단어']
+            for i, user_word in enumerate(user_words):
+                if user_word['단어'] == target_word_text and user_word['뜻'] == target_word['뜻']:
+                    user_words[i] = {
+                        '단어': new_word,
+                        '뜻': new_meaning,
+                        '카테고리': new_category
+                    }
+                    save_user_words(user_words)  # 사용자 단어만 저장
+                    return {'success': True, 'message': f'단어 "{new_word}"가 수정되었습니다.'}
+            
+            return {'success': False, 'message': '사용자 단어장에서 해당 단어를 찾을 수 없습니다.'}
         else:
             return {'success': False, 'message': '잘못된 단어 번호입니다.'}
     except Exception as e:
+        print(f"Error in edit_word_in_bank: {e}")
         return {'success': False, 'message': '단어 수정 중 오류가 발생했습니다.'}
 
 def get_word_by_category(category='all'):

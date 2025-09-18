@@ -338,6 +338,52 @@ def save_word_from_quiz():
         print(f"Error saving word from quiz: {e}")
         return jsonify({'success': False, 'message': '단어 저장 중 오류가 발생했습니다.'})
 
+@app.route('/save_category_words', methods=['POST'])
+def save_category_words():
+    """던전 카테고리의 모든 단어를 사용자 단어장에 저장"""
+    if 'player_data' not in session:
+        return jsonify({'success': False, 'message': '로그인이 필요합니다.'})
+    
+    try:
+        data = request.get_json()
+        dungeon_id = data.get('dungeon_id', '').strip()
+        category_name = data.get('category_name', '').strip()
+        
+        if not dungeon_id or not category_name:
+            return jsonify({'success': False, 'message': '던전 ID와 카테고리 이름이 필요합니다.'})
+        
+        result = game_logic.save_category_words_to_bank(dungeon_id, category_name)
+        
+        if result['success']:
+            # 경험치 지급 (저장된 단어 수에 비례)
+            player = session['player_data']
+            exp_gained = result['added_count'] * 0.1  # 단어당 0.1 경험치
+            player['경험치'] += exp_gained
+            
+            # 정규 레벨업 로직 사용
+            old_level = player['레벨']
+            level_ups = game_logic.check_level_up(player)
+            
+            session['player_data'] = player
+            game_logic.save_game(player)
+            
+            level_up_message = ""
+            if level_ups > 0:
+                level_up_message = f" (레벨업! {old_level} → {player['레벨']})"
+            
+            return jsonify({
+                'success': True,
+                'message': result['message'] + f' 경험치 +{exp_gained}{level_up_message}',
+                'added_count': result['added_count'],
+                'total_words': result['total_words']
+            })
+        else:
+            return jsonify(result)
+            
+    except Exception as e:
+        print(f"Error saving category words: {e}")
+        return jsonify({'success': False, 'message': '카테고리 단어 저장 중 오류가 발생했습니다.'})
+
 @app.route('/delete_word', methods=['POST'])
 def delete_word():
     """단어 삭제"""

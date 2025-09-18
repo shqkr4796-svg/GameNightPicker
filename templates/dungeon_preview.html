@@ -43,7 +43,12 @@
                     </div>
                 </div>
                 
-                <h6><i class="fas fa-book me-2"></i>출현 단어 목록 (총 {{ total_words }}개)</h6>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0"><i class="fas fa-book me-2"></i>출현 단어 목록 (총 {{ total_words }}개)</h6>
+                    <button type="button" class="btn btn-primary" onclick="saveCategoryWords()">
+                        <i class="fas fa-download me-1"></i>전체 단어 저장
+                    </button>
+                </div>
                 <div class="row" style="max-height: 400px; overflow-y: auto;">
                     {% for word in all_words %}
                     <div class="col-lg-4 col-md-6 mb-2">
@@ -129,4 +134,105 @@
         </div>
     </div>
 </div>
+
+<!-- 카테고리 저장 모달 -->
+<div class="modal fade" id="saveCategoryModal" tabindex="-1" aria-labelledby="saveCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveCategoryModalLabel">
+                    <i class="fas fa-download me-2"></i>카테고리 단어 저장
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>{{ dungeon['이름'] }}</strong> 던전의 모든 단어({{ total_words }}개)를 단어 관리에 저장하시겠습니까?</p>
+                <div class="mb-3">
+                    <label for="category-name" class="form-label">저장할 카테고리 이름</label>
+                    <input type="text" class="form-control" id="category-name" value="{{ dungeon['이름'] }}" placeholder="카테고리 이름을 입력하세요">
+                    <div class="form-text">단어 관리에서 이 이름으로 분류됩니다.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-success" onclick="confirmSaveCategoryWords()">
+                    <i class="fas fa-save me-1"></i>저장
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function saveCategoryWords() {
+    const modal = new bootstrap.Modal(document.getElementById('saveCategoryModal'));
+    modal.show();
+}
+
+function confirmSaveCategoryWords() {
+    const categoryName = document.getElementById('category-name').value.trim();
+    
+    if (!categoryName) {
+        alert('카테고리 이름을 입력해주세요.');
+        return;
+    }
+    
+    // 로딩 상태 표시
+    const saveButton = document.querySelector('#saveCategoryModal .btn-success');
+    const originalText = saveButton.innerHTML;
+    saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>저장 중...';
+    saveButton.disabled = true;
+    
+    // AJAX로 카테고리 저장 요청
+    fetch('/save_category_words', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            dungeon_id: '{{ dungeon["id"] }}',
+            category_name: categoryName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 버튼 원상복구
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+        
+        if (data.success) {
+            // 성공 메시지 표시
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; width: 400px;';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // 5초 후 자동으로 제거
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+            
+            // 모달 닫기
+            const modal = bootstrap.Modal.getInstance(document.getElementById('saveCategoryModal'));
+            modal.hide();
+        } else {
+            alert('오류: ' + data.message);
+        }
+    })
+    .catch(error => {
+        // 버튼 원상복구
+        saveButton.innerHTML = originalText;
+        saveButton.disabled = false;
+        
+        console.error('Error:', error);
+        alert('카테고리 저장 중 오류가 발생했습니다.');
+    });
+}
+</script>
 {% endblock %}
