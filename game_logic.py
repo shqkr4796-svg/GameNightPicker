@@ -6,6 +6,10 @@ from data.game_data import *
 
 SAVE_FILE = 'savegame.json'
 EVENTS_FILE = 'events.json'
+WORD_BANK_FILE = 'word_bank.json'
+
+# 단어장 캐시
+_word_bank_cache = None
 
 def create_new_player():
     """새 플레이어 생성"""
@@ -87,37 +91,81 @@ def get_wealth_rank(money):
     else:
         return "재벌"
 
+def load_word_bank():
+    """단어장 파일에서 로드"""
+    try:
+        if os.path.exists(WORD_BANK_FILE):
+            with open(WORD_BANK_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        else:
+            # 파일이 없으면 기본 단어장으로 초기화
+            save_word_bank(word_bank)
+            return word_bank
+    except Exception as e:
+        print(f"단어장 로드 실패: {e}")
+        return word_bank
+
+def save_word_bank(word_data):
+    """단어장을 파일에 저장"""
+    global _word_bank_cache
+    try:
+        with open(WORD_BANK_FILE, 'w', encoding='utf-8') as f:
+            json.dump(word_data, f, ensure_ascii=False, indent=2)
+        _word_bank_cache = word_data  # 캐시 업데이트
+        return True
+    except Exception as e:
+        print(f"단어장 저장 실패: {e}")
+        return False
+
 def get_word_bank():
     """단어장 가져오기"""
-    return word_bank
+    global _word_bank_cache
+    if _word_bank_cache is None:
+        if os.path.exists(WORD_BANK_FILE):
+            _word_bank_cache = load_word_bank()
+        else:
+            _word_bank_cache = word_bank.copy()  # 기본값 복사
+            save_word_bank(_word_bank_cache)  # 초기 파일 생성
+    return _word_bank_cache
 
 def get_word_categories():
     """단어 카테고리 목록"""
+    current_word_bank = get_word_bank()
     categories = set()
-    for word in word_bank:
+    for word in current_word_bank:
         categories.add(word.get('카테고리', '기본'))
     return list(categories)
 
 def add_word_to_bank(word, meaning, category='기본'):
     """단어장에 단어 추가"""
-    word_bank.append({
-        '단어': word,
-        '뜻': meaning,
-        '카테고리': category
-    })
+    current_word_bank = get_word_bank()
+    
+    # 중복 체크
+    existing_words = {w['단어'].lower() for w in current_word_bank}
+    if word.lower() not in existing_words:
+        current_word_bank.append({
+            '단어': word,
+            '뜻': meaning,
+            '카테고리': category
+        })
+        save_word_bank(current_word_bank)
+        return True
+    return False
 
 def add_words_to_bank(words, meanings, category, player):
     """여러 단어를 단어장에 추가하고 새 단어에 대해 경험치 지급"""
+    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    
     added_count = 0
     exp_gained = 0
     
     # 기존 단어 목록 (소문자로 변환해서 비교)
-    existing_words = {word['단어'].lower() for word in word_bank}
+    existing_words = {word['단어'].lower() for word in current_word_bank}
     
     for word, meaning in zip(words, meanings):
         # 중복 체크 (대소문자 무시)
         if word.lower() not in existing_words:
-            word_bank.append({
+            current_word_bank.append({
                 '단어': word,
                 '뜻': meaning,
                 '카테고리': category
@@ -129,6 +177,9 @@ def add_words_to_bank(words, meanings, category, player):
             player['경험치'] += 0.5
             exp_gained += 0.5
     
+    # 단어장 저장
+    save_word_bank(current_word_bank)
+    
     # 레벨업 확인
     level_ups = check_level_up(player)
     
@@ -136,9 +187,12 @@ def add_words_to_bank(words, meanings, category, player):
 
 def delete_word_from_bank(word_index):
     """단어장에서 단어 삭제"""
+    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    
     try:
-        if 0 <= word_index < len(word_bank):
-            deleted_word = word_bank.pop(word_index)
+        if 0 <= word_index < len(current_word_bank):
+            deleted_word = current_word_bank.pop(word_index)
+            save_word_bank(current_word_bank)  # 변경사항 저장
             return {'success': True, 'message': f'단어 "{deleted_word["단어"]}"가 삭제되었습니다.'}
         else:
             return {'success': False, 'message': '잘못된 단어 번호입니다.'}
@@ -147,17 +201,20 @@ def delete_word_from_bank(word_index):
 
 def delete_multiple_words_from_bank(word_indices):
     """단어장에서 여러 단어 삭제"""
+    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    
     try:
         # 인덱스를 내림차순으로 정렬하여 뒤에서부터 삭제
         word_indices = sorted([int(idx) for idx in word_indices], reverse=True)
         deleted_words = []
         
         for index in word_indices:
-            if 0 <= index < len(word_bank):
-                deleted_word = word_bank.pop(index)
+            if 0 <= index < len(current_word_bank):
+                deleted_word = current_word_bank.pop(index)
                 deleted_words.append(deleted_word['단어'])
         
         if deleted_words:
+            save_word_bank(current_word_bank)  # 변경사항 저장
             return {'success': True, 'message': f'{len(deleted_words)}개의 단어가 삭제되었습니다.'}
         else:
             return {'success': False, 'message': '삭제할 수 있는 단어가 없습니다.'}
@@ -166,13 +223,16 @@ def delete_multiple_words_from_bank(word_indices):
 
 def edit_word_in_bank(word_index, new_word, new_meaning, new_category):
     """단어장의 단어 수정"""
+    current_word_bank = get_word_bank()  # 최신 단어장 로드
+    
     try:
-        if 0 <= word_index < len(word_bank):
-            word_bank[word_index] = {
+        if 0 <= word_index < len(current_word_bank):
+            current_word_bank[word_index] = {
                 '단어': new_word,
                 '뜻': new_meaning,
                 '카테고리': new_category
             }
+            save_word_bank(current_word_bank)  # 변경사항 저장
             return {'success': True, 'message': f'단어 "{new_word}"가 수정되었습니다.'}
         else:
             return {'success': False, 'message': '잘못된 단어 번호입니다.'}
@@ -181,16 +241,18 @@ def edit_word_in_bank(word_index, new_word, new_meaning, new_category):
 
 def get_word_by_category(category='all'):
     """카테고리별 단어 조회"""
+    current_word_bank = get_word_bank()
     if category == 'all':
-        return word_bank
+        return current_word_bank
     else:
-        return [word for word in word_bank if word.get('카테고리', '기본') == category]
+        return [word for word in current_word_bank if word.get('카테고리', '기본') == category]
 
 def search_words(search_term):
     """단어 검색"""
+    current_word_bank = get_word_bank()
     search_term = search_term.lower()
     results = []
-    for i, word in enumerate(word_bank):
+    for i, word in enumerate(current_word_bank):
         if (search_term in word['단어'].lower() or 
             search_term in word['뜻'].lower() or 
             search_term in word.get('카테고리', '기본').lower()):
