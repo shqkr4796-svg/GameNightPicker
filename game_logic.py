@@ -799,9 +799,9 @@ def init_dungeon_run(player, dungeon_id):
     if not words:
         return {'success': False, 'message': '단어를 로드할 수 없습니다.'}
     
-    # 던전 실행 상태 초기화 (세션 크기 최소화)
+    # 던전 실행 상태 초기화 - 단어 순서 랜덤화
     random.shuffle(words)  # 단어 순서 랜덤화
-    word_queue = words[:min(dungeon['clear_condition'], 50)]  # 최대 50개로 제한
+    word_queue = words[:dungeon['clear_condition']]  # 던전 클리어 조건만큼 단어 선택
     
     # 간소화된 던전 실행 상태 (세션 용량 최적화)
     dungeon_run = {
@@ -958,7 +958,7 @@ def update_compendium(player, dungeon_run):
 
 def check_dungeon_clear(dungeon_run):
     """던전 클리어 확인"""
-    return dungeon_run['cleared_words'] >= dungeon_run['total_words']
+    return dungeon_run['current_word_index'] >= len(dungeon_run['word_indices'])
 
 def get_safe_percentage(current, maximum):
     """안전한 퍼센트 계산 (division by zero 방지)"""
