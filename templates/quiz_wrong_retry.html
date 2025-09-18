@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}틀린 문제 재도전 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- 틀린 문제 재도전 섹션 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2 text-warning"></i>틀린 문제 재도전
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- 진행률 표시 -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">남은 틀린 문제</span>
+                        <span class="badge bg-warning">{{ wrong_questions|length }}개</span>
+                    </div>
+                    <div class="text-center mb-3">
+                        <small class="text-muted">
+                            카테고리: <strong>{{ category if category != 'all' else '전체' }}</strong>
+                        </small>
+                    </div>
+                </div>
+
+                {% if wrong_questions|length > 0 %}
+                    {% set current_question = wrong_questions[session.get('wrong_questions_retry_index', 0)] %}
+                    
+                    <div class="text-center mb-4">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-info-circle me-2"></i>
+                            이전에 틀린 문제를 다시 풀어보세요!
+                        </div>
+                        
+                        {% if current_question['question_type'] == '뜻맞히기' %}
+                            <h4 class="text-primary">단어 뜻 맞히기</h4>
+                            <div class="word-card mb-4">
+                                <div class="word">{{ current_question['word'] }}의 뜻</div>
+                                <button type="button" class="btn btn-outline-info btn-sm mt-2" 
+                                        onclick="speakWord('{{ current_question['word'] }}')" title="단어 발음 듣기">
+                                    <i class="fas fa-volume-up me-1"></i>발음 듣기
+                                </button>
+                            </div>
+                            <p>위 단어의 뜻을 한글로 입력하세요.</p>
+                        {% else %}
+                            <h4 class="text-primary">단어를 보고 뜻 맞히기</h4>
+                            <div class="word-card mb-4">
+                                <div class="word">{{ current_question['correct_answer'] }}</div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" 
+                                        onclick="speakWord('{{ current_question['word'] }}')" title="단어 발음 듣기">
+                                    <i class="fas fa-volume-up me-1"></i>발음 듣기
+                                </button>
+                            </div>
+                            <p>위 뜻에 해당하는 영어 단어를 입력하세요.</p>
+                        {% endif %}
+                        
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="fas fa-history me-1"></i>
+                                이전 답변: <strong>{{ current_question['player_answer'] }}</strong> → 
+                                정답: <strong>{{ current_question['correct_answer'] }}</strong>
+                            </small>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('answer_wrong_quiz') }}">
+                        <div class="mb-3">
+                            <input type="text" name="answer" class="form-control form-control-lg text-center" 
+                                   placeholder="답을 입력하세요" required autofocus>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-check me-2"></i>정답 제출
+                            </button>
+                            <a href="{{ url_for('quiz', category=category) }}" class="btn btn-outline-secondary btn-lg ms-2">
+                                <i class="fas fa-arrow-left me-2"></i>퀴즈로 돌아가기
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4 text-center">
+                        <small class="text-muted">
+                            맞춘 문제는 틀린 문제 목록에서 제거됩니다.
+                        </small>
+                    </div>
+                {% else %}
+                    <!-- 틀린 문제가 없을 때 -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="text-success mb-3">모든 틀린 문제를 완료했습니다!</h4>
+                        <p class="text-muted mb-4">
+                            훌륭합니다! 이전에 틀린 문제들을 모두 다시 맞혔습니다.
+                        </p>
+                        <a href="{{ url_for('quiz', category=category) }}" class="btn btn-success btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>퀴즈로 돌아가기
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- 틀린 문제 통계 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>재도전 진행상황
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <h3 class="text-warning">{{ wrong_questions|length }}</h3>
+                            <small class="text-muted">남은 문제</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h3 class="text-success">{{ session.get('wrong_questions_retry_correct', [])|length }}</h3>
+                        <small class="text-muted">맞춘 문제</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 틀린 문제 목록 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>틀린 문제 목록
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if wrong_questions|length > 0 %}
+                    {% for question in wrong_questions[:5] %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 p-2 {% if loop.index0 == session.get('wrong_questions_retry_index', 0) %}bg-warning bg-opacity-25 rounded{% endif %}">
+                            <div>
+                                <strong>{{ question['word'] }}</strong>
+                                {% if loop.index0 == session.get('wrong_questions_retry_index', 0) %}
+                                    <span class="badge bg-warning ms-1">현재</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ question['question_type'] }}</small>
+                        </div>
+                    {% endfor %}
+                    {% if wrong_questions|length > 5 %}
+                        <div class="text-center mt-2">
+                            <small class="text-muted">그 외 {{ wrong_questions|length - 5 }}개 문제...</small>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted text-center mb-0">틀린 문제가 없습니다!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -79,6 +79,10 @@ def quiz():
     total_words = len(word_bank)
     completed_words = len(correct_words)
     
+    # 틀린 문제들 가져오기
+    wrong_session_key = f'quiz_session_wrong_{selected_category}'
+    wrong_questions = session.get(wrong_session_key, [])
+    
     return render_template('quiz.html', 
                          player=player, 
                          word_bank=available_words,
@@ -86,7 +90,9 @@ def quiz():
                          categories=categories,
                          selected_category=selected_category,
                          total_words=total_words,
-                         completed_words=completed_words)
+                         completed_words=completed_words,
+                         wrong_questions=wrong_questions,
+                         has_wrong_questions=len(wrong_questions) > 0)
 
 @app.route('/take_quiz', methods=['POST'])
 def take_quiz():
@@ -116,6 +122,24 @@ def take_quiz():
         
         flash(f'정답! 경험치 +{result["exp_gained"]}', 'success')
     else:
+        # 틀린 문제 저장 (카테고리별로)
+        wrong_session_key = f'quiz_session_wrong_{selected_category}'
+        if wrong_session_key not in session:
+            session[wrong_session_key] = []
+        
+        wrong_question = {
+            'word': quiz_word,
+            'question_type': question_type,
+            'correct_answer': correct_answer,
+            'player_answer': answer,
+            'category': selected_category
+        }
+        
+        # 중복 방지: 같은 단어의 틀린 문제가 이미 있으면 덮어쓰기
+        session[wrong_session_key] = [q for q in session[wrong_session_key] if q['word'] != quiz_word]
+        session[wrong_session_key].append(wrong_question)
+        session.modified = True
+        
         flash(f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.', 'error')
     
     return redirect(url_for('quiz', category=selected_category))
@@ -125,10 +149,94 @@ def reset_quiz_session():
     """퀴즈 세션 초기화"""
     selected_category = request.form.get('selected_category', 'all')
     session_key = f'quiz_session_correct_{selected_category}'
+    wrong_session_key = f'quiz_session_wrong_{selected_category}'
     if session_key in session:
         del session[session_key]
+    if wrong_session_key in session:
+        del session[wrong_session_key]
     flash('새로운 퀴즈 세션을 시작합니다!', 'info')
     return redirect(url_for('quiz', category=selected_category))
+
+@app.route('/quiz/retry_wrong')
+def retry_wrong_quiz():
+    """틀린 문제 재도전"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    category = request.args.get('category', 'all')
+    wrong_session_key = f'quiz_session_wrong_{category}'
+    wrong_questions = session.get(wrong_session_key, [])
+    
+    if not wrong_questions:
+        flash('틀린 문제가 없습니다.', 'info')
+        return redirect(url_for('quiz', category=category))
+    
+    # 틀린 문제들을 재도전 모드로 초기화
+    session['wrong_questions_retry_mode'] = True
+    session['wrong_questions_retry_category'] = category
+    session['wrong_questions_retry_index'] = 0
+    session['wrong_questions_retry_correct'] = []
+    
+    return render_template('quiz_wrong_retry.html',
+                         player=session['player_data'],
+                         wrong_questions=wrong_questions,
+                         category=category,
+                         current_index=0)
+
+@app.route('/quiz/retry_wrong/answer', methods=['POST'])
+def answer_wrong_quiz():
+    """틀린 문제 재도전 답안 처리"""
+    if 'player_data' not in session or not session.get('wrong_questions_retry_mode'):
+        return redirect(url_for('quiz'))
+    
+    player = session['player_data']
+    category = session.get('wrong_questions_retry_category', 'all')
+    wrong_session_key = f'quiz_session_wrong_{category}'
+    wrong_questions = session.get(wrong_session_key, [])
+    current_index = session.get('wrong_questions_retry_index', 0)
+    
+    if current_index >= len(wrong_questions):
+        flash('모든 틀린 문제를 완료했습니다!', 'success')
+        session.pop('wrong_questions_retry_mode', None)
+        return redirect(url_for('quiz', category=category))
+    
+    current_question = wrong_questions[current_index]
+    answer = request.form.get('answer', '').strip()
+    correct_answer = current_question['correct_answer']
+    
+    result = game_logic.process_quiz_answer(player, answer, correct_answer, current_question['question_type'])
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['correct']:
+        # 맞춘 문제를 기록
+        if 'wrong_questions_retry_correct' not in session:
+            session['wrong_questions_retry_correct'] = []
+        session['wrong_questions_retry_correct'].append(current_index)
+        
+        # 틀린 문제 목록에서 제거
+        wrong_questions.pop(current_index)
+        session[wrong_session_key] = wrong_questions
+        
+        flash(f'정답! 경험치 +{result["exp_gained"]}', 'success')
+        
+        # 다음 문제로 이동하지만 인덱스는 증가하지 않음 (문제가 제거되었으므로)
+        if current_index >= len(wrong_questions):
+            # 모든 문제 완료
+            flash('모든 틀린 문제를 완료했습니다!', 'success')
+            session.pop('wrong_questions_retry_mode', None)
+            return redirect(url_for('quiz', category=category))
+    else:
+        # 틀렸으면 다음 문제로 이동
+        session['wrong_questions_retry_index'] = current_index + 1
+        flash(f'틀렸습니다. 정답은 "{correct_answer}"입니다.', 'error')
+        
+        if session['wrong_questions_retry_index'] >= len(wrong_questions):
+            flash('틀린 문제 재도전을 완료했습니다.', 'info')
+            session.pop('wrong_questions_retry_mode', None)
+            return redirect(url_for('quiz', category=category))
+    
+    return redirect(url_for('retry_wrong_quiz', category=category))
 
 @app.route('/add_word', methods=['POST'])
 def add_word():

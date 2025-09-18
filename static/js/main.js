@@ -245,6 +245,13 @@ function resetQuizSession(category) {
     form.submit();
 }
 
+// 틀린 문제 재도전
+function retryWrongQuestions(category) {
+    if (confirm('틀린 문제들만 다시 풀어보시겠습니까?')) {
+        window.location.href = '/quiz/retry_wrong?category=' + encodeURIComponent(category);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 효과음 시스템 초기화
     soundManager = new SoundManager();

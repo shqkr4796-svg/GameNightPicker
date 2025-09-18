@@ -942,11 +942,46 @@ def next_monster(dungeon_run, dungeon):
     
     # 현재 단어 인덱스가 범위를 벗어났는지 확인
     if dungeon_run['current_word_index'] >= len(dungeon_run['word_indices']):
-        return {'success': False, 'message': '던전을 완료했습니다!'}
+        # 클리어 조건을 다 채웠는지 확인
+        if dungeon_run['cleared_words'] >= dungeon_run['actual_clear_condition']:
+            return {'success': False, 'message': '던전을 완료했습니다!'}
+        
+        # 문제가 다 떨어졌지만 클리어해야 할 몬스터가 남은 경우, 문제 재사용
+        words = load_words_by_source(dungeon_run.get('word_source', 'toeic'))
+        random.shuffle(words)  # 단어 순서 다시 섞기
+        
+        # 이미 사용한 문제들을 추적하여 중복 방지
+        if 'used_word_cycle' not in dungeon_run:
+            dungeon_run['used_word_cycle'] = []
+        
+        # 현재 사이클에서 아직 사용하지 않은 단어들만 선택
+        unused_words = [word for word in words if word['단어'] not in dungeon_run['used_word_cycle']]
+        
+        if not unused_words:
+            # 모든 단어를 다 사용했으면 새 사이클 시작
+            dungeon_run['used_word_cycle'] = []
+            unused_words = words
+            flash_message = '모든 문제를 풀었습니다! 새로운 사이클을 시작합니다.'
+        else:
+            flash_message = None
+        
+        # 새로운 단어 인덱스 목록 생성 (남은 클리어 조건만큼)
+        remaining_clears = dungeon_run['actual_clear_condition'] - dungeon_run['cleared_words']
+        new_word_queue = unused_words[:remaining_clears]
+        
+        # 단어 인덱스 업데이트
+        dungeon_run['word_indices'] = [words.index(w) for w in new_word_queue]
+        dungeon_run['current_word_index'] = 0
+        dungeon_run['total_words'] += len(new_word_queue)
+        
+        if flash_message:
+            # 플래시 메시지를 던전런에 저장 (라우트에서 처리)
+            dungeon_run['flash_message'] = flash_message
     
-    # 현재 단어 설정 (카테고리별 랜덤 단어 선택)
+    # 현재 단어 설정
     words = load_words_by_source(dungeon_run.get('word_source', 'toeic'))
-    current_word = random.choice(words)
+    word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
+    current_word = words[word_index]
     dungeon_run['current_word'] = current_word
     
     # 몬스터 등급 결정 (확률 기반)
@@ -1043,6 +1078,14 @@ def answer_dungeon(player, dungeon_run, choice):
             
             # 처치한 단어 수 및 인덱스 증가
             dungeon_run['cleared_words'] += 1
+            
+            # 사용한 단어 사이클에 추가 (중복 방지용)
+            if not dungeon_run.get('wrong_questions_mode'):
+                if 'used_word_cycle' not in dungeon_run:
+                    dungeon_run['used_word_cycle'] = []
+                current_word_text = dungeon_run['current_word']['단어']
+                if current_word_text not in dungeon_run['used_word_cycle']:
+                    dungeon_run['used_word_cycle'].append(current_word_text)
             
             # 인덱스 증가
             if dungeon_run.get('wrong_questions_mode'):
