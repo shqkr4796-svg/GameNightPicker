@@ -61,14 +61,36 @@ class SoundManager {
 
     // 퀴즈 정답 사운드
     playQuizCorrect() {
-        this.createTone(659, 0.1); // E5
-        setTimeout(() => this.createTone(784, 0.1), 80); // G5
-        setTimeout(() => this.createTone(1047, 0.15), 160); // C6
+        try {
+            const audio = new Audio('/static/sounds/맞춘효과음.mp3');
+            audio.volume = this.volume;
+            audio.play().catch(() => {
+                // 파일이 없으면 기본 톤으로 대체
+                this.createTone(659, 0.1); // E5
+                setTimeout(() => this.createTone(784, 0.1), 80); // G5
+                setTimeout(() => this.createTone(1047, 0.15), 160); // C6
+            });
+        } catch (e) {
+            // 오류 시 기본 톤으로 대체
+            this.createTone(659, 0.1); // E5
+            setTimeout(() => this.createTone(784, 0.1), 80); // G5
+            setTimeout(() => this.createTone(1047, 0.15), 160); // C6
+        }
     }
 
     // 퀴즈 오답 사운드
     playQuizWrong() {
-        this.createTone(349, 0.3, 'sawtooth'); // F4
+        try {
+            const audio = new Audio('/static/sounds/틀린효과음.mp3');
+            audio.volume = this.volume;
+            audio.play().catch(() => {
+                // 파일이 없으면 기본 톤으로 대체
+                this.createTone(349, 0.3, 'sawtooth'); // F4
+            });
+        } catch (e) {
+            // 오류 시 기본 톤으로 대체
+            this.createTone(349, 0.3, 'sawtooth'); // F4
+        }
     }
 
     // 돈 소리 (구매/판매)

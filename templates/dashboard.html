@@ -88,60 +88,75 @@
             </div>
         </div>
 
-        <!-- 던전 티어 -->
+        <!-- 플레이어 티어 -->
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i class="fas fa-trophy me-2"></i>던전 티어
+                    <i class="fas fa-trophy me-2"></i>플레이어 티어
                 </h5>
             </div>
-            <div class="card-body text-center">
-                <div class="row">
-                    <div class="col-md-6">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6 text-center">
                         <div class="tier-display">
-                            <div class="tier-icon mb-2" style="font-size: 3rem;">
-                                {{ stats['tier']['icon'] }}
-                            </div>
+                            {% if stats['tier']['image'] %}
+                                <div class="tier-image mb-3">
+                                    <img src="{{ stats['tier']['image'] }}" alt="{{ stats['tier']['name'] }}" 
+                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid gold;">
+                                </div>
+                            {% else %}
+                                <div class="tier-icon mb-3" style="font-size: 4rem;">❓</div>
+                            {% endif %}
                             <h4 class="mb-1">
-                                <span class="badge bg-{{ stats['tier']['color'] }} fs-6">
+                                <span class="badge bg-{{ stats['tier']['color'] }} fs-5">
                                     {{ stats['tier']['name'] }}
                                 </span>
                             </h4>
-                            <p class="text-muted mb-0">던전 클리어 {{ stats['dungeon_clears'] }}회</p>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="tier-progress">
-                            <h6 class="text-muted">다음 티어까지</h6>
-                            {% set current_clears = stats['dungeon_clears'] %}
-                            {% if current_clears < 1 %}
-                                {% set next_tier = "브론즈 (1회)" %}
-                                {% set progress = 0 %}
-                            {% elif current_clears <= 5 %}
-                                {% set next_tier = "실버 (6회)" %}
-                                {% set progress = (current_clears / 5 * 100) %}
-                            {% elif current_clears <= 15 %}
-                                {% set next_tier = "골드 (16회)" %}
-                                {% set progress = ((current_clears - 5) / 10 * 100) %}
-                            {% elif current_clears <= 30 %}
-                                {% set next_tier = "다이아 (31회)" %}
-                                {% set progress = ((current_clears - 15) / 15 * 100) %}
-                            {% elif current_clears <= 100 %}
-                                {% set next_tier = "마스터 (101회)" %}
-                                {% set progress = ((current_clears - 30) / 70 * 100) %}
-                            {% elif current_clears <= 500 %}
-                                {% set next_tier = "챌린저 (501회)" %}
-                                {% set progress = ((current_clears - 100) / 400 * 100) %}
-                            {% else %}
-                                {% set next_tier = "최고 티어!" %}
-                                {% set progress = 100 %}
-                            {% endif %}
-                            
-                            <div class="progress mb-2" style="height: 20px;">
-                                <div class="progress-bar" style="width: {{ progress }}%"></div>
+                        <h6 class="text-muted mb-3">현재 달성 상황</h6>
+                        <div class="tier-stats">
+                            <div class="mb-2">
+                                <strong>던전 클리어:</strong> {{ stats['dungeon_clears'] }}회
                             </div>
-                            <small class="text-muted">{{ next_tier }}</small>
+                            <div class="mb-2">
+                                <strong>부동산 보유:</strong> {{ stats['real_estate_count'] }}개
+                            </div>
+                            <div class="mb-2">
+                                <strong>플레이어 레벨:</strong> {{ stats['level'] }}
+                            </div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- 모든 티어 조건 표시 -->
+                <div class="tier-conditions">
+                    <h6 class="text-muted mb-3">티어 조건</h6>
+                    <div class="row">
+                        {% for tier in stats['tier_conditions'] %}
+                            {% if tier['name'] != '언랭크' %}
+                                <div class="col-lg-4 col-md-6 mb-3">
+                                    <div class="card {% if tier['name'] == stats['tier']['name'] %}border-warning{% endif %}" 
+                                         style="height: 100%;">
+                                        <div class="card-body text-center p-2">
+                                            {% if tier['image'] %}
+                                                <img src="{{ tier['image'] }}" alt="{{ tier['name'] }}" 
+                                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" class="mb-2">
+                                            {% endif %}
+                                            <h6 class="card-title mb-1">
+                                                <span class="badge bg-{{ tier['color'] }}">{{ tier['name'] }}</span>
+                                            </h6>
+                                            <small class="text-muted">
+                                                던전 {{ tier['conditions']['dungeon'] }}회<br>
+                                                부동산 {{ tier['conditions']['real_estate'] }}개<br>
+                                                레벨 {{ tier['conditions']['level'] }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>

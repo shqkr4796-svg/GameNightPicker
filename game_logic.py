@@ -78,22 +78,43 @@ def check_level_up(player):
         level_ups += 1
     return level_ups
 
-def get_dungeon_tier(clear_count):
-    """던전 클리어 횟수에 따른 티어 계산"""
-    if clear_count < 1:
-        return {'name': '언랭크', 'icon': '❓', 'color': 'secondary'}
-    elif clear_count <= 5:
-        return {'name': '브론즈', 'icon': '🥉', 'color': 'warning'}
-    elif clear_count <= 15:
-        return {'name': '실버', 'icon': '🥈', 'color': 'light'}
-    elif clear_count <= 30:
-        return {'name': '골드', 'icon': '🥇', 'color': 'warning'}
-    elif clear_count <= 100:
-        return {'name': '다이아', 'icon': '💎', 'color': 'info'}
-    elif clear_count <= 500:
-        return {'name': '마스터', 'icon': '🏆', 'color': 'primary'}
+def get_tier_conditions():
+    """티어별 조건 반환"""
+    return [
+        {'name': '언랭크', 'image': None, 'color': 'secondary', 'conditions': {'dungeon': 0, 'real_estate': 0, 'level': 1}},
+        {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 3}},
+        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 3, 'level': 7}},
+        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 6, 'level': 12}},
+        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 10, 'level': 18}},
+        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 15, 'level': 25}},
+        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 25, 'level': 35}}
+    ]
+
+def get_player_tier(player):
+    """플레이어 통계에 따른 티어 계산"""
+    dungeon_clears = player.get('던전클리어횟수', 0)
+    real_estate_count = len([p for p in real_estate if p['이름'] == player.get('거주지')])
+    if player.get('거주지'):
+        real_estate_count = 1  # 현재는 부동산을 하나만 가질 수 있으므로
     else:
-        return {'name': '챌린저', 'icon': '👑', 'color': 'danger'}
+        real_estate_count = 0
+    level = player['레벨']
+    
+    conditions = get_tier_conditions()
+    
+    # 가장 높은 달성 가능한 티어 찾기
+    current_tier = conditions[0]  # 언랭크부터 시작
+    
+    for tier in conditions[1:]:  # 언랭크 제외
+        req = tier['conditions']
+        if (dungeon_clears >= req['dungeon'] and 
+            real_estate_count >= req['real_estate'] and 
+            level >= req['level']):
+            current_tier = tier
+        else:
+            break
+    
+    return current_tier
 
 def get_player_stats(player):
     """플레이어 통계 정보"""
@@ -103,7 +124,11 @@ def get_player_stats(player):
         quiz_accuracy = (player['정답_퀴즈'] / player['총_퀴즈']) * 100
     
     dungeon_clears = player.get('던전클리어횟수', 0)
-    tier_info = get_dungeon_tier(dungeon_clears)
+    tier_info = get_player_tier(player)
+    tier_conditions = get_tier_conditions()
+    
+    # 부동산 갯수 계산
+    real_estate_count = 1 if player.get('거주지') else 0
     
     return {
         'total_stats': total_stats,
@@ -111,7 +136,10 @@ def get_player_stats(player):
         'wealth_rank': get_wealth_rank(player['돈']),
         'days_played': player['날짜'],
         'dungeon_clears': dungeon_clears,
-        'tier': tier_info
+        'real_estate_count': real_estate_count,
+        'level': player['레벨'],
+        'tier': tier_info,
+        'tier_conditions': tier_conditions
     }
 
 def get_wealth_rank(money):
