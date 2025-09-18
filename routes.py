@@ -427,13 +427,18 @@ def word_management():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    word_bank = game_logic.get_word_bank()
-    categories = game_logic.get_word_categories()
+    word_bank = game_logic.get_user_words()
+    # 사용자 단어에서만 카테고리 추출
+    categories = list(set([word.get('카테고리', '기본') for word in word_bank]))
     
     # 검색 기능
     search_term = request.args.get('search', '').strip()
     if search_term:
-        word_bank = game_logic.search_words(search_term)
+        # 사용자 단어에서만 검색
+        all_user_words = game_logic.get_user_words()
+        word_bank = [word for word in all_user_words if 
+                    search_term.lower() in word.get('단어', '').lower() or 
+                    search_term.lower() in word.get('뜻', '').lower()]
     else:
         # 인덱스 추가
         for i, word in enumerate(word_bank):
@@ -445,7 +450,9 @@ def word_management():
         if search_term:
             word_bank = [word for word in word_bank if word.get('카테고리', '기본') == category_filter]
         else:
-            word_bank = game_logic.get_word_by_category(category_filter)
+            # 사용자 단어에서만 카테고리 필터링
+            all_user_words = game_logic.get_user_words()
+            word_bank = [word for word in all_user_words if word.get('카테고리', '기본') == category_filter]
             for i, word in enumerate(word_bank):
                 word['인덱스'] = str(i)
     
