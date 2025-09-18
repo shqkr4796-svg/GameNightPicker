@@ -772,3 +772,20 @@ function checkPlayerStatus() {
 
 // 글로벌 변수로 Utils 노출
 window.GameUtils = Utils;
+
+// 페이지 상단 스크롤 방지 - 앵커 태그의 기본 동작 방지
+document.addEventListener('DOMContentLoaded', function() {
+    // 앵커 태그의 기본 동작 방지
+    document.addEventListener('click', function(e) {
+        const anchor = e.target.closest('a[href]');
+        if (!anchor) return;
+        
+        const href = anchor.getAttribute('href');
+        
+        // 빈 href, # 또는 존재하지 않는 해시 링크의 기본 동작 방지
+        if (href === '#' || href === '' || (href.startsWith('#') && !document.querySelector(href))) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
