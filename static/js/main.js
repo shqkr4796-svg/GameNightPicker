@@ -59,38 +59,19 @@ class SoundManager {
         this.createTone(800, 0.05, 'square');
     }
 
-    // 퀴즈 정답 사운드
+    // 퀴즈 정답 사운드 (딩동댕)
     playQuizCorrect() {
-        try {
-            const audio = new Audio('/static/sounds/맞춘효과음.mp3');
-            audio.volume = this.volume;
-            audio.play().catch(() => {
-                // 파일이 없으면 기본 톤으로 대체
-                this.createTone(659, 0.1); // E5
-                setTimeout(() => this.createTone(784, 0.1), 80); // G5
-                setTimeout(() => this.createTone(1047, 0.15), 160); // C6
-            });
-        } catch (e) {
-            // 오류 시 기본 톤으로 대체
-            this.createTone(659, 0.1); // E5
-            setTimeout(() => this.createTone(784, 0.1), 80); // G5
-            setTimeout(() => this.createTone(1047, 0.15), 160); // C6
-        }
+        // 딩동댕 효과음
+        this.createTone(523, 0.12); // C5 (딩)
+        setTimeout(() => this.createTone(659, 0.12), 120); // E5 (동)
+        setTimeout(() => this.createTone(784, 0.18), 240); // G5 (댕)
     }
 
-    // 퀴즈 오답 사운드
+    // 퀴즈 오답 사운드 (땡)
     playQuizWrong() {
-        try {
-            const audio = new Audio('/static/sounds/틀린효과음.mp3');
-            audio.volume = this.volume;
-            audio.play().catch(() => {
-                // 파일이 없으면 기본 톤으로 대체
-                this.createTone(349, 0.3, 'sawtooth'); // F4
-            });
-        } catch (e) {
-            // 오류 시 기본 톤으로 대체
-            this.createTone(349, 0.3, 'sawtooth'); // F4
-        }
+        // 땡 효과음 (낮은 음의 짧은 톤)
+        this.createTone(220, 0.25, 'sawtooth'); // A3
+        setTimeout(() => this.createTone(196, 0.25, 'sawtooth'), 50); // G3
     }
 
     // 돈 소리 (구매/판매)
@@ -339,7 +320,7 @@ function addSoundControlUI() {
     controlDiv.innerHTML = `
         <div class="d-flex flex-column align-items-center">
             <button id="sound-toggle" class="btn btn-sm btn-dark mb-2" 
-                    title="효과음 켜기/끄기" style="width: 40px; height: 40px;">
+                    title="효과음 켜기/끄기" style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;">
                 <i id="sound-icon" class="fas fa-volume-up" style="font-size: 16px; color: white;"></i>
             </button>
             <input type="range" id="volume-slider" class="form-range" 
