@@ -21,7 +21,7 @@
                         <h6><i class="fas fa-heart me-2 text-danger"></i>내 체력</h6>
                         <div class="progress mb-2" style="height: 25px;">
                             <div class="progress-bar bg-danger" role="progressbar" 
-                                 style="width: {{ (dungeon_run['player_hp'] / dungeon['max_health'] * 100)|round(1) }}%"
+                                 style="width: {{ ((dungeon_run['player_hp'] / (dungeon['max_health'] if dungeon['max_health'] > 0 else 1)) * 100)|round(1) }}%"
                                  id="player-health-bar">
                                 {{ dungeon_run['player_hp'] }}/{{ dungeon['max_health'] }}
                             </div>
@@ -32,7 +32,7 @@
                         <div class="progress mb-2" style="height: 25px;">
                             <div class="progress-bar bg-{% if dungeon_run['current_rarity'] == '레어' %}success{% elif dungeon_run['current_rarity'] == '에픽' %}primary{% elif dungeon_run['current_rarity'] == '유니크' %}warning{% else %}danger{% endif %}" 
                                  role="progressbar" 
-                                 style="width: {{ ((dungeon_run['monster_hp'] - dungeon_run['monster_progress']) / dungeon_run['monster_hp'] * 100)|round(1) }}%"
+                                 style="width: {{ (((dungeon_run['monster_hp'] - dungeon_run['monster_progress']) / (dungeon_run['monster_hp'] if dungeon_run['monster_hp'] > 0 else 1)) * 100)|round(1) }}%"
                                  id="monster-health-bar">
                                 {{ dungeon_run['monster_hp'] - dungeon_run['monster_progress'] }}/{{ dungeon_run['monster_hp'] }}
                             </div>
@@ -113,7 +113,7 @@
                     </div>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" 
-                             style="width: {{ (dungeon_run['cleared_words'] / dungeon_run['total_words'] * 100)|round(1) }}%">
+                             style="width: {{ ((dungeon_run['cleared_words'] / (dungeon_run['total_words'] if dungeon_run['total_words'] > 0 else 1)) * 100)|round(1) }}%">
                         </div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                     </div>
                     <div class="progress">
                         <div class="progress-bar bg-warning" role="progressbar" 
-                             style="width: {{ (dungeon_run['monster_progress'] / dungeon_run['monster_hp'] * 100)|round(1) }}%">
+                             style="width: {{ ((dungeon_run['monster_progress'] / (dungeon_run['monster_hp'] if dungeon_run['monster_hp'] > 0 else 1)) * 100)|round(1) }}%">
                         </div>
                     </div>
                 </div>
@@ -162,6 +162,33 @@
                 </div>
             </div>
         </div>
+        
+        <!-- 던전 아이템 -->
+        {% if player.get('던전_인벤토리') and player['던전_인벤토리']|length > 0 %}
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-magic me-2"></i>던전 아이템
+                </h6>
+            </div>
+            <div class="card-body">
+                {% for item_name, count in player['던전_인벤토리'].items() %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <small class="fw-bold">{{ item_name }}</small>
+                        <span class="badge bg-secondary ms-1">{{ count }}개</span>
+                    </div>
+                    <form method="POST" action="{{ url_for('use_dungeon_item') }}" class="d-inline">
+                        <input type="hidden" name="item_name" value="{{ item_name }}">
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            <i class="fas fa-hand-sparkles me-1"></i>사용
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 

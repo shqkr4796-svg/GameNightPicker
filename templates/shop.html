@@ -16,16 +16,22 @@
                     {% for item in items %}
                     {% set can_afford = player['돈'] >= item['가격'] %}
                     <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card h-100 {% if not can_afford %}opacity-50{% endif %}">
+                        <div class="card h-100 {% if not can_afford %}opacity-50{% endif %} 
+                             border-{% if item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %}">
+                            <div class="card-header p-2">
+                                <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
+                                <span class="badge bg-{% if item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %} fs-7">
+                                    {% if item.get('타입') == '던전' %}던전 전용{% elif item.get('타입') == '스탯' %}스탯 증가{% else %}일반{% endif %}
+                                </span>
+                            </div>
                             <div class="card-body">
-                                <h6 class="card-title">{{ item['이름'] }}</h6>
                                 <p class="text-muted small">{{ item['설명'] }}</p>
                                 
                                 <!-- 아이템 효과 -->
                                 <div class="mb-3">
                                     <small class="text-info">효과:</small><br>
                                     {% for effect, value in item['효과'].items() %}
-                                        <small class="badge bg-secondary me-1">
+                                        <small class="badge bg-{% if item.get('타입') == '던전' %}warning{% else %}secondary{% endif %} me-1">
                                             {{ effect }} {% if value > 0 %}+{% endif %}{{ value }}
                                         </small>
                                     {% endfor %}
@@ -63,12 +69,31 @@
             </div>
         </div>
 
-        <!-- 인벤토리 -->
-        {% if player['인벤토리']|length > 0 %}
+        <!-- 던전 인벤토리 -->
+        {% if player.get('던전_인벤토리') and player['던전_인벤토리']|length > 0 %}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="package" class="me-2"></i>보유 아이템
+                    <i class="fas fa-shield me-2"></i>던전 인벤토리
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for item_name, count in player['던전_인벤토리'].items() %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>{{ item_name }}</span>
+                    <span class="badge bg-warning">{{ count }}개</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 일반 인벤토리 -->
+        {% if player.get('인벤토리') and player['인벤토리']|length > 0 %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-box me-2"></i>일반 인벤토리
                 </h5>
             </div>
             <div class="card-body">

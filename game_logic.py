@@ -424,7 +424,9 @@ def get_shop_items():
     return shop_items
 
 def buy_item(player, item_id):
-    """아이템 구매"""
+    """아이템 구매 (던전 특화 버전)"""
+    shop_items = get_shop_items()
+    
     if item_id < 0 or item_id >= len(shop_items):
         return {'success': False, 'message': '잘못된 아이템 선택입니다.'}
     
@@ -435,14 +437,32 @@ def buy_item(player, item_id):
     
     player['돈'] -= item['가격']
     
-    # 아이템 효과 적용
-    for effect, value in item['효과'].items():
-        if effect in player:
-            player[effect] = min(player[effect] + value, 10)  # 최대 10으로 제한
-    
-    player['인벤토리'].append(item['이름'])
-    
-    return {'success': True, 'message': f"{item['이름']}을(를) 구매했습니다!"}
+    # 던전 아이템은 인벤토리에 저장
+    if item.get('타입') == '던전':
+        if '던전_인벤토리' not in player:
+            player['던전_인벤토리'] = {}
+        
+        item_name = item['이름']
+        if item_name not in player['던전_인벤토리']:
+            player['던전_인벤토리'][item_name] = 0
+        player['던전_인벤토리'][item_name] += 1
+        
+        return {'success': True, 'message': f'{item["이름"]}을(를) 구매하여 던전 인벤토리에 저장했습니다!'}
+    else:
+        # 일반 아이템은 즉시 효과 적용
+        for stat, value in item['효과'].items():
+            if stat in player:
+                if stat == '기력':
+                    # 기력은 최대치 제한
+                    player[stat] = min(player[stat] + value, player['최대기력'])
+                elif stat == '체력':
+                    # 체력은 최대치 제한 
+                    player[stat] = min(player[stat] + value, player['최대체력'])
+                else:
+                    # 기타 스탯은 단순 증가
+                    player[stat] += value
+        
+        return {'success': True, 'message': f'{item["이름"]}의 효과가 적용되었습니다!'}
 
 def allocate_stat_points(player, stat_type, points):
     """스탯 포인트 분배"""
@@ -764,6 +784,12 @@ def init_dungeon_run(player, dungeon_id):
     if not dungeon:
         return {'success': False, 'message': '존재하지 않는 던전입니다.'}
     
+    # 필수 키 검증
+    required_keys = ['레벨_제한', 'clear_condition', 'max_health', 'rarity_distribution']
+    for key in required_keys:
+        if key not in dungeon:
+            return {'success': False, 'message': f'던전 설정 오류: {key} 누락'}
+    
     # 레벨 제한 확인
     if player['레벨'] < dungeon['레벨_제한']:
         return {'success': False, 'message': f'레벨 {dungeon["레벨_제한"]} 이상만 입장 가능합니다.'}
@@ -773,13 +799,14 @@ def init_dungeon_run(player, dungeon_id):
     if not words:
         return {'success': False, 'message': '단어를 로드할 수 없습니다.'}
     
-    # 던전 실행 상태 초기화
+    # 던전 실행 상태 초기화 (세션 크기 최소화)
     random.shuffle(words)  # 단어 순서 랜덤화
-    word_queue = words[:dungeon['clear_condition']]  # 필요한 만큼만 선택
+    word_queue = words[:min(dungeon['clear_condition'], 50)]  # 최대 50개로 제한
     
+    # 간소화된 던전 실행 상태 (세션 용량 최적화)
     dungeon_run = {
         'dungeon_id': dungeon_id,
-        'word_queue': word_queue,
+        'word_indices': [words.index(w) for w in word_queue],  # 인덱스만 저장
         'current_word_index': 0,
         'current_word': None,
         'current_options': [],
@@ -787,7 +814,7 @@ def init_dungeon_run(player, dungeon_id):
         'monster_id': None,
         'monster_hp': 0,
         'monster_progress': 0,
-        'player_hp': dungeon['max_health'],
+        'player_hp': dungeon.get('max_health', 3),
         'cleared_words': 0,
         'total_words': len(word_queue)
     }
@@ -801,11 +828,13 @@ def init_dungeon_run(player, dungeon_id):
 
 def next_monster(dungeon_run, dungeon):
     """다음 몬스터 생성"""
-    if dungeon_run['current_word_index'] >= len(dungeon_run['word_queue']):
+    if dungeon_run['current_word_index'] >= len(dungeon_run['word_indices']):
         return {'success': False, 'message': '모든 단어를 완료했습니다!'}
     
-    # 현재 단어 설정
-    current_word = dungeon_run['word_queue'][dungeon_run['current_word_index']]
+    # 현재 단어 설정 (인덱스를 통해 토익 단어에서 가져오기)
+    words = load_toeic_words()
+    word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
+    current_word = words[word_index]
     dungeon_run['current_word'] = current_word
     
     # 몬스터 등급 결정 (확률 기반)
@@ -929,3 +958,55 @@ def update_compendium(player, dungeon_run):
 def check_dungeon_clear(dungeon_run):
     """던전 클리어 확인"""
     return dungeon_run['cleared_words'] >= dungeon_run['total_words']
+
+def get_safe_percentage(current, maximum):
+    """안전한 퍼센트 계산 (division by zero 방지)"""
+    if maximum <= 0:
+        return 0
+    return min(100, max(0, (current / maximum) * 100))
+
+def use_dungeon_item(player, item_name, dungeon_run=None):
+    """던전 아이템 사용"""
+    if '던전_인벤토리' not in player or item_name not in player['던전_인벤토리']:
+        return {'success': False, 'message': '해당 아이템이 없습니다.'}
+    
+    if player['던전_인벤토리'][item_name] <= 0:
+        return {'success': False, 'message': '해당 아이템이 없습니다.'}
+    
+    # 아이템 사용
+    player['던전_인벤토리'][item_name] -= 1
+    if player['던전_인벤토리'][item_name] == 0:
+        del player['던전_인벤토리'][item_name]
+    
+    # 아이템 효과 적용
+    shop_items = get_shop_items()
+    item_data = None
+    for item in shop_items:
+        if item['이름'] == item_name:
+            item_data = item
+            break
+    
+    if not item_data:
+        return {'success': False, 'message': '아이템 정보를 찾을 수 없습니다.'}
+    
+    effects = item_data['효과']
+    result_message = f'{item_name}을(를) 사용했습니다. '
+    
+    for effect, value in effects.items():
+        if effect == '던전_체력' and dungeon_run:
+            # 던전 체력 회복
+            dungeon = get_dungeon_by_id(dungeon_run['dungeon_id'])
+            max_health = dungeon.get('max_health', 3)
+            old_hp = dungeon_run['player_hp']
+            dungeon_run['player_hp'] = min(dungeon_run['player_hp'] + value, max_health)
+            actual_heal = dungeon_run['player_hp'] - old_hp
+            result_message += f'체력이 {actual_heal} 회복되었습니다. '
+        elif effect == '부활' and dungeon_run:
+            # 부활 효과는 나중에 처리하기 위해 플레이어에 플래그 저장
+            if '던전_버프' not in player:
+                player['던전_버프'] = {}
+            player['던전_버프']['부활'] = player['던전_버프'].get('부활', 0) + value
+            result_message += '부활 효과가 적용되었습니다. '
+        # 기타 효과들은 필요시 추가 구현
+    
+    return {'success': True, 'message': result_message.strip(), 'item': item_data}

@@ -611,3 +611,32 @@ def compendium():
     
     return render_template('compendium.html', 
                          player=player)
+
+@app.route('/dungeon/use_item', methods=['POST'])
+def use_dungeon_item():
+    """던전 아이템 사용"""
+    if 'player_data' not in session or 'dungeon_run' not in session:
+        return redirect(url_for('dungeons'))
+    
+    player = session['player_data']
+    dungeon_run = session['dungeon_run']
+    item_name = request.form.get('item_name')
+    
+    if not item_name:
+        flash('아이템을 선택해주세요.', 'error')
+        return redirect(url_for('dungeon_run'))
+    
+    # 아이템 사용
+    result = game_logic.use_dungeon_item(player, item_name, dungeon_run)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    # 상태 업데이트
+    session['player_data'] = player
+    session['dungeon_run'] = dungeon_run
+    game_logic.save_game(player)
+    
+    return redirect(url_for('dungeon_run'))
