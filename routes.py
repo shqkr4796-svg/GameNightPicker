@@ -59,10 +59,24 @@ def quiz():
     word_bank = game_logic.get_word_bank()
     categories = game_logic.get_word_categories()
     
+    # 퀴즈 세션에서 맞춘 단어들 제외
+    if 'quiz_session_correct' not in session:
+        session['quiz_session_correct'] = []
+    
+    correct_words = session['quiz_session_correct']
+    available_words = [word for word in word_bank if word['단어'] not in correct_words]
+    
+    # 진행률 계산
+    total_words = len(word_bank)
+    completed_words = len(correct_words)
+    
     return render_template('quiz.html', 
                          player=player, 
-                         word_bank=word_bank,
-                         categories=categories)
+                         word_bank=available_words,
+                         full_word_bank=word_bank,
+                         categories=categories,
+                         total_words=total_words,
+                         completed_words=completed_words)
 
 @app.route('/take_quiz', methods=['POST'])
 def take_quiz():
@@ -75,16 +89,32 @@ def take_quiz():
     answer = request.form.get('answer', '').strip()
     question_type = request.form.get('question_type')
     correct_answer = request.form.get('correct_answer')
+    quiz_word = request.form.get('quiz_word')  # 현재 퀴즈 단어
     
     result = game_logic.process_quiz_answer(player, answer, correct_answer, question_type)
     session['player_data'] = player
     game_logic.save_game(player)
     
     if result['correct']:
+        # 세션에서 맞춘 단어 추가
+        if 'quiz_session_correct' not in session:
+            session['quiz_session_correct'] = []
+        if quiz_word not in session['quiz_session_correct']:
+            session['quiz_session_correct'].append(quiz_word)
+            session.modified = True
+        
         flash(f'정답! 경험치 +{result["exp_gained"]}', 'success')
     else:
         flash(f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.', 'error')
     
+    return redirect(url_for('quiz'))
+
+@app.route('/reset_quiz_session', methods=['POST'])
+def reset_quiz_session():
+    """퀴즈 세션 초기화"""
+    if 'quiz_session_correct' in session:
+        del session['quiz_session_correct']
+    flash('새로운 퀴즈 세션을 시작합니다!', 'info')
     return redirect(url_for('quiz'))
 
 @app.route('/add_word', methods=['POST'])
