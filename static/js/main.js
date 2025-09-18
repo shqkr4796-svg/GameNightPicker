@@ -178,16 +178,40 @@ class SoundManager {
 // 전역 사운드 매니저 인스턴스
 let soundManager;
 
-// 음성 합성 함수
+// 음성 합성 함수 - 네이티브 영어 발음
 function speakWord(word) {
     if ('speechSynthesis' in window) {
         // 이전 음성이 재생 중이면 중단
         speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(word);
+        
+        // 영어 네이티브 발음을 위한 설정
         utterance.lang = 'en-US';
-        utterance.rate = 0.8;
-        utterance.volume = 0.8;
+        utterance.rate = 0.7;  // 조금 더 천천히
+        utterance.volume = 0.9;
+        utterance.pitch = 1.0;
+        
+        // 영어 네이티브 음성 선택 시도
+        const voices = speechSynthesis.getVoices();
+        const englishVoices = voices.filter(voice => 
+            voice.lang.startsWith('en-') && 
+            (voice.name.includes('Google') || voice.name.includes('Microsoft') || 
+             voice.name.includes('Apple') || voice.name.includes('Natural'))
+        );
+        
+        if (englishVoices.length > 0) {
+            // 가장 자연스러운 영어 음성 선택
+            const preferredVoice = englishVoices.find(voice => 
+                voice.name.includes('Natural') || 
+                voice.name.includes('Google US English') ||
+                voice.name.includes('Microsoft Zira') ||
+                voice.name.includes('Alex') ||
+                voice.name.includes('Samantha')
+            ) || englishVoices[0];
+            
+            utterance.voice = preferredVoice;
+        }
         
         // 음성 효과음 재생
         if (soundManager) {
@@ -273,7 +297,7 @@ function addSoundControlUI() {
         bottom: 20px;
         left: 20px;
         z-index: 9999;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.3);
         border-radius: 8px;
         padding: 8px;
         backdrop-filter: blur(10px);
