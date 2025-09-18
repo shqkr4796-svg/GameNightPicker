@@ -22,8 +22,8 @@
                                 {% set equipped_weapon = player.get('장착된_무기') %}
                                 {% set weapon_damage = 0 %}
                                 {% for item in shop_items %}
-                                    {% if item.이름 == equipped_weapon and item.타입 == '무기' %}
-                                        {% set weapon_damage = item.효과['무기 피해'] %}
+                                    {% if item['이름'] == equipped_weapon and item['타입'] == '무기' %}
+                                        {% set weapon_damage = item['효과']['무기 피해'] %}
                                     {% endif %}
                                 {% endfor %}
                                 <div class="d-flex justify-content-between align-items-center">
