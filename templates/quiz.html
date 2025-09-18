@@ -240,7 +240,7 @@
                                         <option value="custom" selected>새 카테고리 입력</option>
                                     {% endif %}
                                 </select>
-                                <input type="text" id="custom-category" name="custom_category" class="form-control mt-2 {% if not categories %}{% else %}d-none{% endif %}" placeholder="카테고리 이름을 입력하세요" {% if not categories %}required{% endif %}>
+                                <input type="text" id="custom-category" name="custom_category" class="form-control mt-2{% if categories %} d-none{% endif %}" placeholder="카테고리 이름을 입력하세요"{% if not categories %} required{% endif %}>
                             </div>
                         </div>
                         <div class="col-md-2">
