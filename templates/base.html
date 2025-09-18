@@ -8,6 +8,42 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        body {
+            {% if 'player_data' in session %}
+                {% if session.player_data['시간'] >= 6 and session.player_data['시간'] < 18 %}
+                    background-image: url('{{ url_for("static", filename="images/day_background.png") }}');
+                {% else %}
+                    background-image: url('{{ url_for("static", filename="images/night_background.png") }}');
+                {% endif %}
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            {% endif %}
+        }
+        .container, .navbar, .card {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(5px);
+        }
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8) !important;
+        }
+        .navbar .navbar-text {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        .time-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1050;
+        }
+    </style>
 </head>
 <body>
     <!-- 네비게이션 -->
@@ -68,6 +104,17 @@
             </div>
         </div>
     </nav>
+    {% endif %}
+
+    <!-- 시간 표시기 -->
+    {% if 'player_data' in session %}
+    <div class="time-indicator">
+        {% if session.player_data['시간'] >= 6 and session.player_data['시간'] < 18 %}
+        <i data-feather="sun" class="me-1"></i>{{ session.player_data['시간'] }}:00 (낮)
+        {% else %}
+        <i data-feather="moon" class="me-1"></i>{{ session.player_data['시간'] }}:00 (밤)
+        {% endif %}
+    </div>
     {% endif %}
 
     <!-- 플래시 메시지 -->

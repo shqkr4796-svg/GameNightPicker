@@ -3,54 +3,6 @@
 {% block title %}직업 - 라이프 시뮬레이션{% endblock %}
 
 {% block content %}
-<!-- 시간에 따른 배경 이미지 -->
-<style>
-.job-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    {% if player['시간'] >= 6 and player['시간'] < 18 %}
-    background-image: url('{{ url_for("static", filename="images/day_city.png") }}');
-    {% else %}
-    background-image: url('{{ url_for("static", filename="images/night_city.png") }}');
-    {% endif %}
-}
-.job-overlay {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-.card {
-    background-color: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(5px);
-}
-.time-indicator {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 14px;
-}
-</style>
-
-<div class="job-background"></div>
-<div class="time-indicator">
-    {% if player['시간'] >= 6 and player['시간'] < 18 %}
-    <i data-feather="sun" class="me-1"></i>{{ player['시간'] }}:00 (낮)
-    {% else %}
-    <i data-feather="moon" class="me-1"></i>{{ player['시간'] }}:00 (밤)
-    {% endif %}
-</div>
 <div class="row">
     <div class="col-lg-8">
         <!-- 현재 직업 상태 -->
