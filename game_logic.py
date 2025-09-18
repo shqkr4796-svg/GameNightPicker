@@ -836,13 +836,13 @@ def init_dungeon_run(player, dungeon_id):
 
 def next_monster(dungeon_run, dungeon):
     """다음 몬스터 생성"""
-    if dungeon_run['current_word_index'] >= len(dungeon_run['word_indices']):
-        return {'success': False, 'message': '모든 단어를 완료했습니다!'}
+    # 클리어한 몬스터 수가 목표에 도달했는지 확인
+    if dungeon_run['cleared_words'] >= dungeon_run['actual_clear_condition']:
+        return {'success': False, 'message': '던전을 완료했습니다!'}
     
-    # 현재 단어 설정 (인덱스를 통해 토익 단어에서 가져오기)
+    # 현재 단어 설정 (랜덤하게 단어 선택)
     words = load_toeic_words()
-    word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
-    current_word = words[word_index]
+    current_word = random.choice(words)
     dungeon_run['current_word'] = current_word
     
     # 몬스터 등급 결정 (확률 기반)
@@ -881,10 +881,15 @@ def build_question(dungeon_run, dungeon):
     all_words = load_toeic_words()
     wrong_options = []
     
-    # 정답과 다른 뜻들 중에서 3개 선택
-    for word in all_words:
-        if word['뜻'] != correct_answer and len(wrong_options) < 3:
-            wrong_options.append(word['뜻'])
+    # 정답과 다른 뜻들 중에서 3개 랜덤 선택
+    other_meanings = [word['뜻'] for word in all_words if word['뜻'] != correct_answer]
+    if len(other_meanings) >= 3:
+        wrong_options = random.sample(other_meanings, 3)
+    else:
+        # 단어가 부족하면 기존 방식 사용
+        for word in all_words:
+            if word['뜻'] != correct_answer and len(wrong_options) < 3:
+                wrong_options.append(word['뜻'])
     
     # 3개가 안 되면 기본 오답들로 채움
     default_wrong = ['잘못된 답', '다른 뜻', '오답입니다']
@@ -926,15 +931,19 @@ def answer_dungeon(player, dungeon_run, choice):
             else:
                 result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
             
-            # 다음 단어로 이동
-            dungeon_run['current_word_index'] += 1
+            # 처치한 단어 수 증가
             dungeon_run['cleared_words'] += 1
             
             return {'success': True, 'correct': True, 'monster_defeated': True, 'game_over': False, 'message': result_msg}
         else:
+            # 몬스터가 살아있으면 새로운 문제 생성
             progress = dungeon_run['monster_progress']
             max_hp = dungeon_run['monster_hp']
             result_msg += f" ({progress}/{max_hp})"
+            
+            # 다음 문제 준비 - 다른 단어로 새로운 문제 생성
+            build_next_question(dungeon_run)
+            
             return {'success': True, 'correct': True, 'monster_defeated': False, 'game_over': False, 'message': result_msg}
     else:
         # 오답 - 플레이어 실제 체력과 던전 체력 모두 감소
@@ -945,6 +954,21 @@ def answer_dungeon(player, dungeon_run, choice):
             return {'success': True, 'correct': False, 'game_over': True, 'message': '체력이 0이 되어 던전에서 퇴장됩니다.'}
         else:
             return {'success': True, 'correct': False, 'game_over': False, 'message': f'오답! 체력이 1 감소했습니다. (남은 체력: {dungeon_run["player_hp"]})'}
+
+def build_next_question(dungeon_run):
+    """같은 몬스터에 대해 다음 문제 생성"""
+    # 모든 단어에서 현재 단어와 다른 단어를 랜덤하게 선택
+    words = load_toeic_words()
+    current_word = dungeon_run['current_word']['단어']
+    
+    # 현재 단어와 다른 단어들 중에서 랜덤 선택
+    available_words = [word for word in words if word['단어'] != current_word]
+    if available_words:
+        new_word = random.choice(available_words)
+        dungeon_run['current_word'] = new_word
+        
+        # 새로운 문제 생성
+        build_question(dungeon_run, None)
 
 def update_compendium(player, dungeon_run):
     """몬스터 도감 업데이트"""
@@ -966,7 +990,7 @@ def update_compendium(player, dungeon_run):
 
 def check_dungeon_clear(dungeon_run):
     """던전 클리어 확인"""
-    return dungeon_run['current_word_index'] >= len(dungeon_run['word_indices'])
+    return dungeon_run['cleared_words'] >= dungeon_run['actual_clear_condition']
 
 def get_safe_percentage(current, maximum):
     """안전한 퍼센트 계산 (division by zero 방지)"""
