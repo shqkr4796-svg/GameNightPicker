@@ -351,6 +351,11 @@ def work(player):
             player['외모'] += 1
             stat_gains.append('외모')
     
+    # 업적용 통계 업데이트
+    if '일한_횟수' not in player:
+        player['일한_횟수'] = 0
+    player['일한_횟수'] += 1
+    
     level_ups = check_level_up(player)
     
     message = f"{salary}원을 벌었습니다. 기력 -3, 경험치 획득, 시간 +1시간"
@@ -465,19 +470,26 @@ def sleep(player):
         player['시간'] -= 24
         player['날짜'] += 1
         
-        # 월세 지불
+        # 월세 수입
+        rent_message = None
         if player['거주지']:
             for prop in real_estate:
                 if prop['이름'] == player['거주지']:
-                    if player['돈'] >= prop['월세']:
-                        player['돈'] -= prop['월세']
-                    else:
-                        # 기존 거주지 효과 제거
-                        player['최대기력'] -= prop['기력회복']
-                        player['거주지'] = None
-                        return {'message': f'월세를 내지 못해 {prop["이름"]}에서 쫓겨났습니다. 최대 기력이 감소했습니다.'}
+                    player['돈'] += prop['월세']
+                    rent_message = f'부동산 월세 수입으로 {prop["월세"]:,}원을 받았습니다.'
+                    break
     
-    return {'message': f'충분히 잠을 잤습니다. 기력 +{total_recovery} (기본 4 + 집 보너스 {bonus_recovery}), 체력이 회복되었습니다.'}
+    # 업적용 통계 업데이트
+    if '잠잔_횟수' not in player:
+        player['잠잔_횟수'] = 0
+    player['잠잔_횟수'] += 1
+    
+    # 월세 수입 메시지 추가
+    base_message = f'충분히 잠을 잤습니다. 기력 +{total_recovery} (기본 4 + 집 보너스 {bonus_recovery}), 체력이 회복되었습니다.'
+    if rent_message:
+        return {'message': f'{base_message} {rent_message}'}
+    else:
+        return {'message': base_message}
 
 def check_random_event(player):
     """랜덤 이벤트 확인"""
@@ -551,27 +563,99 @@ def get_achievements(player):
     return achievements
 
 def get_all_achievements():
-    """모든 성취 목록"""
+    """모든 성취 목록 - 30개 업적과 난이도별 포인트"""
     return [
-        {'이름': '레벨 마스터', '설명': '레벨 10 달성', '조건': 'level_10'},
-        {'이름': '백만장자', '설명': '100만원 이상 보유', '조건': 'money_1m'},
-        {'이름': '퀴즈왕', '설명': '퀴즈 100문제 정답', '조건': 'quiz_100'},
-        {'이름': '성공한 사업가', '설명': 'CEO 직업 달성', '조건': 'ceo_job'},
-        {'이름': '부동산왕', '설명': '펜트하우스 소유', '조건': 'penthouse'},
-        {'이름': '체력짱', '설명': '체력 스탯 50 달성', '조건': 'strength_50'},
-        {'이름': '천재', '설명': '지능 스탯 50 달성', '조건': 'intelligence_50'}
+        # 쉬운 업적 (1-2점)
+        {'이름': '첫 걸음', '설명': '게임 시작하기', '조건': 'game_start', '난이도': '쉬움', '포인트': 1},
+        {'이름': '열정적인 학습자', '설명': '첫 퀴즈 정답', '조건': 'first_quiz', '난이도': '쉬움', '포인트': 1},
+        {'이름': '사회초년생', '설명': '첫 직장 얻기', '조건': 'first_job', '난이도': '쉬움', '포인트': 1},
+        {'이름': '독립', '설명': '첫 거주지 구입', '조건': 'first_home', '난이도': '쉬움', '포인트': 2},
+        {'이름': '야심차', '설명': '레벨 5 달성', '조건': 'level_5', '난이도': '쉬움', '포인트': 2},
+        {'이름': '저축왕', '설명': '10만원 이상 보유', '조건': 'money_100k', '난이도': '쉬움', '포인트': 2},
+        
+        # 보통 업적 (3-5점)
+        {'이름': '레벨 마스터', '설명': '레벨 10 달성', '조건': 'level_10', '난이도': '보통', '포인트': 3},
+        {'이름': '퀴즈 초보자', '설명': '퀴즈 20문제 정답', '조건': 'quiz_20', '난이도': '보통', '포인트': 3},
+        {'이름': '성실한 근로자', '설명': '일하기 50번', '조건': 'work_50', '난이도': '보통', '포인트': 3},
+        {'이름': '건강한 생활', '설명': '잠자기 30번', '조건': 'sleep_30', '난이도': '보통', '포인트': 3},
+        {'이름': '백만장자', '설명': '100만원 이상 보유', '조건': 'money_1m', '난이도': '보통', '포인트': 4},
+        {'이름': '퀴즈왕', '설명': '퀴즈 100문제 정답', '조건': 'quiz_100', '난이도': '보통', '포인트': 4},
+        {'이름': '체력단련', '설명': '체력 스탯 30 달성', '조건': 'strength_30', '난이도': '보통', '포인트': 4},
+        {'이름': '똑똑이', '설명': '지능 스탯 30 달성', '조건': 'intelligence_30', '난이도': '보통', '포인트': 4},
+        {'이름': '매력적인', '설명': '외모 스탯 30 달성', '조건': 'beauty_30', '난이도': '보통', '포인트': 4},
+        {'이름': '운빨좋은', '설명': '운 스탯 30 달성', '조건': 'luck_30', '난이도': '보통', '포인트': 4},
+        {'이름': '전문직', '설명': '월급 5000원 이상 직업', '조건': 'high_salary_job', '난이도': '보통', '포인트': 5},
+        
+        # 어려운 업적 (6-8점)
+        {'이름': '성공한 사업가', '설명': 'CEO 직업 달성', '조건': 'ceo_job', '난이도': '어려움', '포인트': 6},
+        {'이름': '부동산왕', '설명': '펜트하우스 소유', '조건': 'penthouse', '난이도': '어려움', '포인트': 6},
+        {'이름': '체력짱', '설명': '체력 스탯 50 달성', '조건': 'strength_50', '난이도': '어려움', '포인트': 6},
+        {'이름': '천재', '설명': '지능 스탯 50 달성', '조건': 'intelligence_50', '난이도': '어려움', '포인트': 6},
+        {'이름': '완벽한 외모', '설명': '외모 스탯 50 달성', '조건': 'beauty_50', '난이도': '어려움', '포인트': 6},
+        {'이름': '행운의 여신', '설명': '운 스탯 50 달성', '조건': 'luck_50', '난이도': '어려움', '포인트': 6},
+        {'이름': '억만장자', '설명': '1천만원 이상 보유', '조건': 'money_10m', '난이도': '어려움', '포인트': 7},
+        {'이름': '퀴즈 박사', '설명': '퀴즈 500문제 정답', '조건': 'quiz_500', '난이도': '어려움', '포인트': 7},
+        {'이름': '워커홀릭', '설명': '일하기 200번', '조건': 'work_200', '난이도': '어려움', '포인트': 7},
+        {'이름': '고급 주거자', '설명': '월세 수입 50만원 이상 부동산 소유', '조건': 'luxury_home', '난이도': '어려움', '포인트': 8},
+        
+        # 전설 업적 (9-10점)
+        {'이름': '전설의 레벨', '설명': '레벨 50 달성', '조건': 'level_50', '난이도': '전설', '포인트': 9},
+        {'이름': '완벽한 인간', '설명': '모든 스탯 50 이상', '조건': 'all_stats_50', '난이도': '전설', '포인트': 9},
+        {'이름': '재벌', '설명': '1억원 이상 보유', '조건': 'money_100m', '난이도': '전설', '포인트': 10},
+        {'이름': '퀴즈 전설', '설명': '퀴즈 1000문제 정답', '조건': 'quiz_1000', '난이도': '전설', '포인트': 10}
     ]
 
 def get_player_achievements(player):
     """플레이어가 달성한 성취 목록"""
     achieved = []
     
+    # 기본 통계 초기화 (없는 경우) - 안전한 접근
+    player.setdefault('일한_횟수', 0)
+    player.setdefault('잠잔_횟수', 0)
+    
+    # 쉬운 업적
+    achieved.append('game_start')  # 게임을 시작했다면 항상 달성
+    if player['정답_퀴즈'] >= 1:
+        achieved.append('first_quiz')
+    if player['직장']:
+        achieved.append('first_job')
+    if player['거주지']:
+        achieved.append('first_home')
+    if player['레벨'] >= 5:
+        achieved.append('level_5')
+    if player['돈'] >= 100000:
+        achieved.append('money_100k')
+    
+    # 보통 업적
     if player['레벨'] >= 10:
         achieved.append('level_10')
+    if player['정답_퀴즈'] >= 20:
+        achieved.append('quiz_20')
+    if player['일한_횟수'] >= 50:
+        achieved.append('work_50')
+    if player['잠잔_횟수'] >= 30:
+        achieved.append('sleep_30')
     if player['돈'] >= 1000000:
         achieved.append('money_1m')
     if player['정답_퀴즈'] >= 100:
         achieved.append('quiz_100')
+    if player['체력스탯'] >= 30:
+        achieved.append('strength_30')
+    if player['지능'] >= 30:
+        achieved.append('intelligence_30')
+    if player['외모'] >= 30:
+        achieved.append('beauty_30')
+    if player['운'] >= 30:
+        achieved.append('luck_30')
+    
+    # 월급 5000원 이상 직업 확인
+    if player['직장']:
+        for job in jobs:
+            if job['이름'] == player['직장'] and job['월급'] >= 5000:
+                achieved.append('high_salary_job')
+                break
+    
+    # 어려운 업적
     if player['직장'] and 'CEO' in player['직장']:
         achieved.append('ceo_job')
     if player['거주지'] and '펜트하우스' in player['거주지']:
@@ -580,5 +664,45 @@ def get_player_achievements(player):
         achieved.append('strength_50')
     if player['지능'] >= 50:
         achieved.append('intelligence_50')
+    if player['외모'] >= 50:
+        achieved.append('beauty_50')
+    if player['운'] >= 50:
+        achieved.append('luck_50')
+    if player['돈'] >= 10000000:
+        achieved.append('money_10m')
+    if player['정답_퀴즈'] >= 500:
+        achieved.append('quiz_500')
+    if player['일한_횟수'] >= 200:
+        achieved.append('work_200')
+    
+    # 고급 주거지 확인 (월세 수입 50만원 이상)
+    if player['거주지']:
+        for prop in real_estate:
+            if prop['이름'] == player['거주지'] and prop['월세'] >= 500000:
+                achieved.append('luxury_home')
+                break
+    
+    # 전설 업적
+    if player['레벨'] >= 50:
+        achieved.append('level_50')
+    if (player['체력스탯'] >= 50 and player['지능'] >= 50 and 
+        player['외모'] >= 50 and player['운'] >= 50):
+        achieved.append('all_stats_50')
+    if player['돈'] >= 100000000:
+        achieved.append('money_100m')
+    if player['정답_퀴즈'] >= 1000:
+        achieved.append('quiz_1000')
     
     return achieved
+
+def get_achievement_points(player):
+    """플레이어가 획득한 업적 포인트 계산"""
+    achieved = get_player_achievements(player)
+    achievements = get_all_achievements()
+    
+    total_points = 0
+    for achievement in achievements:
+        if achievement['조건'] in achieved:
+            total_points += achievement['포인트']
+    
+    return total_points

@@ -13,6 +13,28 @@
                 </h5>
             </div>
             <div class="card-body">
+                <!-- 카테고리 선택 -->
+                <div class="mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">퀴즈 카테고리 선택</label>
+                            <select class="form-select" onchange="changeQuizCategory(this.value)">
+                                <option value="all" {{ 'selected' if selected_category == 'all' }}>전체 단어</option>
+                                {% for category in categories %}
+                                <option value="{{ category }}" {{ 'selected' if selected_category == category }}>
+                                    {{ category }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="text-muted small">
+                                현재 카테고리: <strong>{{ selected_category if selected_category != 'all' else '전체' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 퀴즈 진행률 표시 -->
                 {% if total_words > 0 %}
                 <div class="mb-4">
@@ -47,12 +69,20 @@
                             <h4 class="text-primary">단어 뜻 맞히기</h4>
                             <div class="word-card mb-4">
                                 <div class="word">{{ quiz_word['뜻'] }}</div>
+                                <button type="button" class="btn btn-outline-info btn-sm mt-2" 
+                                        onclick="speakWord('{{ quiz_word['단어'] }}')" title="정답 단어 발음 듣기">
+                                    <i class="fas fa-volume-up me-1"></i>정답 발음 듣기
+                                </button>
                             </div>
                             <p>위 뜻에 해당하는 영어 단어를 입력하세요.</p>
                         {% else %}
                             <h4 class="text-primary">단어를 보고 뜻 맞히기</h4>
                             <div class="word-card mb-4">
                                 <div class="word">{{ quiz_word['단어'] }}</div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" 
+                                        onclick="speakWord('{{ quiz_word['단어'] }}')" title="단어 발음 듣기">
+                                    <i class="fas fa-volume-up me-1"></i>발음 듣기
+                                </button>
                             </div>
                             <p>위 단어의 뜻을 한글로 입력하세요.</p>
                         {% endif %}
@@ -63,6 +93,7 @@
                         <input type="hidden" name="correct_answer" 
                                value="{{ quiz_word['단어'] if question_type == '뜻맞히기' else quiz_word['뜻'] }}">
                         <input type="hidden" name="quiz_word" value="{{ quiz_word['단어'] }}">
+                        <input type="hidden" name="selected_category" value="{{ selected_category }}">
                         
                         <div class="mb-3">
                             <input type="text" name="answer" class="form-control form-control-lg text-center" 
@@ -73,10 +104,8 @@
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="fas fa-check me-2"></i>정답 제출
                             </button>
-                            <button type="submit" class="btn btn-outline-secondary btn-lg ms-2" 
-                                    formaction="{{ url_for('reset_quiz_session') }}" 
-                                    formmethod="post" 
-                                    formnovalidate>
+                            <button type="button" class="btn btn-outline-secondary btn-lg ms-2" 
+                                    onclick="resetQuizSession('{{ selected_category }}')">
                                 <i class="fas fa-redo me-2"></i>새 세션
                             </button>
                         </div>
@@ -97,6 +126,7 @@
                             새로운 퀴즈 세션을 시작하여 다시 도전해보세요.
                         </p>
                         <form method="POST" action="{{ url_for('reset_quiz_session') }}">
+                            <input type="hidden" name="selected_category" value="{{ selected_category }}">
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fas fa-redo me-2"></i>새 세션 시작
                             </button>

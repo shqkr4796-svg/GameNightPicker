@@ -178,6 +178,49 @@ class SoundManager {
 // 전역 사운드 매니저 인스턴스
 let soundManager;
 
+// 음성 합성 함수
+function speakWord(word) {
+    if ('speechSynthesis' in window) {
+        // 이전 음성이 재생 중이면 중단
+        speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        utterance.volume = 0.8;
+        
+        // 음성 효과음 재생
+        if (soundManager) {
+            soundManager.createTone(600, 0.05, 'sine');
+        }
+        
+        speechSynthesis.speak(utterance);
+    } else {
+        alert('음성 합성을 지원하지 않는 브라우저입니다.');
+    }
+}
+
+// 퀴즈 카테고리 변경
+function changeQuizCategory(category) {
+    window.location.href = `/quiz?category=${category}`;
+}
+
+// 퀴즈 세션 리셋
+function resetQuizSession(category) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/reset_quiz_session';
+    
+    const categoryInput = document.createElement('input');
+    categoryInput.type = 'hidden';
+    categoryInput.name = 'selected_category';
+    categoryInput.value = category;
+    
+    form.appendChild(categoryInput);
+    document.body.appendChild(form);
+    form.submit();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 효과음 시스템 초기화
     soundManager = new SoundManager();
@@ -225,17 +268,28 @@ document.addEventListener('DOMContentLoaded', function() {
 function addSoundControlUI() {
     const controlDiv = document.createElement('div');
     controlDiv.id = 'sound-controls';
-    controlDiv.className = 'position-fixed bottom-0 start-0 m-3';
-    controlDiv.style.zIndex = '9999';
+    controlDiv.className = 'position-fixed';
+    controlDiv.style.cssText = `
+        bottom: 20px;
+        left: 20px;
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 8px;
+        padding: 8px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    `;
     controlDiv.innerHTML = `
-        <div class="btn-group-vertical" role="group">
-            <button id="sound-toggle" class="btn btn-sm btn-outline-secondary" title="효과음 켜기/끄기">
-                <i data-feather="volume-2" id="sound-icon"></i>
+        <div class="d-flex flex-column align-items-center">
+            <button id="sound-toggle" class="btn btn-sm btn-outline-light mb-2" 
+                    title="효과음 켜기/끄기" style="width: 40px; height: 40px;">
+                <i id="sound-icon" class="fas fa-volume-up" style="font-size: 16px;"></i>
             </button>
-            <input type="range" id="volume-slider" class="form-range mt-1" 
+            <input type="range" id="volume-slider" class="form-range" 
                    min="0" max="100" value="30" 
-                   style="width: 60px; transform: rotate(-90deg); transform-origin: center;"
+                   style="width: 80px; height: 4px;"
                    title="음량 조절">
+            <small id="volume-display" class="text-light mt-1">30%</small>
         </div>
     `;
     
@@ -245,23 +299,72 @@ function addSoundControlUI() {
     const toggleBtn = document.getElementById('sound-toggle');
     const volumeSlider = document.getElementById('volume-slider');
     const soundIcon = document.getElementById('sound-icon');
+    const volumeDisplay = document.getElementById('volume-display');
     
     toggleBtn.addEventListener('click', () => {
         const enabled = soundManager.toggle();
-        soundIcon.setAttribute('data-feather', enabled ? 'volume-2' : 'volume-x');
-        toggleBtn.className = enabled ? 'btn btn-sm btn-outline-secondary' : 'btn btn-sm btn-outline-danger';
-        feather.replace();
+        soundIcon.className = enabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+        toggleBtn.className = enabled ? 'btn btn-sm btn-outline-light mb-2' : 'btn btn-sm btn-outline-danger mb-2';
+        
+        // 상태 알림 표시
+        showSoundStatusNotification(enabled ? '효과음이 켜졌습니다' : '효과음이 꺼졌습니다', enabled);
     });
     
     volumeSlider.addEventListener('input', (e) => {
         const volume = e.target.value / 100;
         soundManager.setVolume(volume);
+        volumeDisplay.textContent = `${e.target.value}%`;
+        
+        // 음량 변경 시 간단한 테스트 사운드
+        if (soundManager.enabled) {
+            soundManager.createTone(800, 0.05, 'sine');
+        }
     });
-    
-    // 아이콘 초기화
-    if (typeof feather !== 'undefined') {
-        feather.replace();
+}
+
+// 효과음 상태 알림 표시
+function showSoundStatusNotification(message, isEnabled) {
+    // 기존 알림이 있으면 제거
+    const existingNotification = document.getElementById('sound-status-notification');
+    if (existingNotification) {
+        existingNotification.remove();
     }
+    
+    const notification = document.createElement('div');
+    notification.id = 'sound-status-notification';
+    notification.className = `alert alert-${isEnabled ? 'success' : 'warning'} position-fixed`;
+    notification.style.cssText = `
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        min-width: 250px;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+    `;
+    notification.innerHTML = `
+        <i class="fas fa-${isEnabled ? 'volume-up' : 'volume-mute'} me-2"></i>
+        ${message}
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 애니메이션으로 표시
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 10);
+    
+    // 2초 후 자동 제거
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 2000);
 }
 
 // 자동 저장 상태 표시

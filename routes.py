@@ -59,11 +59,19 @@ def quiz():
     word_bank = game_logic.get_word_bank()
     categories = game_logic.get_word_categories()
     
-    # 퀴즈 세션에서 맞춘 단어들 제외
-    if 'quiz_session_correct' not in session:
-        session['quiz_session_correct'] = []
+    # 선택된 카테고리 확인
+    selected_category = request.args.get('category', 'all')
     
-    correct_words = session['quiz_session_correct']
+    # 카테고리별 단어 필터링
+    if selected_category != 'all':
+        word_bank = [word for word in word_bank if word.get('카테고리', '기본') == selected_category]
+    
+    # 퀴즈 세션에서 맞춘 단어들 제외
+    session_key = f'quiz_session_correct_{selected_category}'
+    if session_key not in session:
+        session[session_key] = []
+    
+    correct_words = session[session_key]
     available_words = [word for word in word_bank if word['단어'] not in correct_words]
     
     # 진행률 계산
@@ -75,6 +83,7 @@ def quiz():
                          word_bank=available_words,
                          full_word_bank=word_bank,
                          categories=categories,
+                         selected_category=selected_category,
                          total_words=total_words,
                          completed_words=completed_words)
 
@@ -85,7 +94,7 @@ def take_quiz():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    category = request.form.get('category', 'all')
+    selected_category = request.form.get('selected_category', 'all')
     answer = request.form.get('answer', '').strip()
     question_type = request.form.get('question_type')
     correct_answer = request.form.get('correct_answer')
@@ -96,26 +105,29 @@ def take_quiz():
     game_logic.save_game(player)
     
     if result['correct']:
-        # 세션에서 맞춘 단어 추가
-        if 'quiz_session_correct' not in session:
-            session['quiz_session_correct'] = []
-        if quiz_word not in session['quiz_session_correct']:
-            session['quiz_session_correct'].append(quiz_word)
+        # 세션에서 맞춘 단어 추가 (카테고리별로)
+        session_key = f'quiz_session_correct_{selected_category}'
+        if session_key not in session:
+            session[session_key] = []
+        if quiz_word not in session[session_key]:
+            session[session_key].append(quiz_word)
             session.modified = True
         
         flash(f'정답! 경험치 +{result["exp_gained"]}', 'success')
     else:
         flash(f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.', 'error')
     
-    return redirect(url_for('quiz'))
+    return redirect(url_for('quiz', category=selected_category))
 
 @app.route('/reset_quiz_session', methods=['POST'])
 def reset_quiz_session():
     """퀴즈 세션 초기화"""
-    if 'quiz_session_correct' in session:
-        del session['quiz_session_correct']
+    selected_category = request.form.get('selected_category', 'all')
+    session_key = f'quiz_session_correct_{selected_category}'
+    if session_key in session:
+        del session[session_key]
     flash('새로운 퀴즈 세션을 시작합니다!', 'info')
-    return redirect(url_for('quiz'))
+    return redirect(url_for('quiz', category=selected_category))
 
 @app.route('/add_word', methods=['POST'])
 def add_word():
@@ -421,11 +433,13 @@ def achievements():
     player = session['player_data']
     achievements = game_logic.get_all_achievements()
     player_achievements = game_logic.get_player_achievements(player)
+    achievement_points = game_logic.get_achievement_points(player)
     
     return render_template('achievements.html', 
                          player=player, 
                          achievements=achievements,
-                         player_achievements=player_achievements)
+                         player_achievements=player_achievements,
+                         achievement_points=achievement_points)
 
 @app.route('/api/player_stats')
 def api_player_stats():
