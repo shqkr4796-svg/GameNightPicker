@@ -993,11 +993,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 선택지 버튼들에 대한 특별 처리
-    document.addEventListener('click', function(e) {
-        const choiceButton = e.target.closest('.choice-btn');
-        if (choiceButton && choiceButton.type === 'submit') {
-            showButtonFeedback(choiceButton, 'submitting');
-        }
-    });
 });
