@@ -81,24 +81,21 @@ def check_level_up(player):
 def get_tier_conditions():
     """티어별 조건 반환"""
     return [
-        {'name': '언랭크', 'image': None, 'color': 'secondary', 'conditions': {'dungeon': 0, 'real_estate': 0, 'level': 1}},
-        {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 3}},
-        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 3, 'level': 7}},
-        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 6, 'level': 12}},
-        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 10, 'level': 18}},
-        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 15, 'level': 25}},
-        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 25, 'level': 35}}
+        {'name': '언랭크', 'image': None, 'color': 'secondary', 'conditions': {'dungeon': 0, 'real_estate': 0, 'level': 1, 'achievements': 0}},
+        {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 3, 'achievements': 5}},
+        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 3, 'level': 7, 'achievements': 15}},
+        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 6, 'level': 12, 'achievements': 30}},
+        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 10, 'level': 18, 'achievements': 50}},
+        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 15, 'level': 25, 'achievements': 80}},
+        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 25, 'level': 35, 'achievements': 120}}
     ]
 
 def get_player_tier(player):
     """플레이어 통계에 따른 티어 계산"""
     dungeon_clears = player.get('던전클리어횟수', 0)
-    real_estate_count = len([p for p in real_estate if p['이름'] == player.get('거주지')])
-    if player.get('거주지'):
-        real_estate_count = 1  # 현재는 부동산을 하나만 가질 수 있으므로
-    else:
-        real_estate_count = 0
+    real_estate_count = 1 if player.get('거주지') else 0
     level = player['레벨']
+    achievements_count = len(player.get('성취', []))
     
     conditions = get_tier_conditions()
     
@@ -109,7 +106,8 @@ def get_player_tier(player):
         req = tier['conditions']
         if (dungeon_clears >= req['dungeon'] and 
             real_estate_count >= req['real_estate'] and 
-            level >= req['level']):
+            level >= req['level'] and
+            achievements_count >= req['achievements']):
             current_tier = tier
         else:
             break
@@ -137,6 +135,7 @@ def get_player_stats(player):
         'days_played': player['날짜'],
         'dungeon_clears': dungeon_clears,
         'real_estate_count': real_estate_count,
+        'achievements_count': len(player.get('성취', [])),
         'level': player['레벨'],
         'tier': tier_info,
         'tier_conditions': tier_conditions
@@ -200,8 +199,40 @@ def get_word_categories():
         categories.add(word.get('카테고리', '기본'))
     return list(categories)
 
+def is_valid_word_entry(word, meaning):
+    """단어 항목 유효성 검사"""
+    if not word or not meaning:
+        return False
+    
+    word = word.strip()
+    meaning = meaning.strip()
+    
+    # 빈 문자열이거나 공백만 있는 경우
+    if not word or not meaning:
+        return False
+    
+    # 숫자만 있는 경우
+    if word.isdigit() or meaning.isdigit():
+        return False
+    
+    # 의미없는 반복 문자 (예: "aaa", "111")
+    if len(set(word)) == 1 and len(word) > 2:
+        return False
+    if len(set(meaning)) == 1 and len(meaning) > 2:
+        return False
+    
+    # 단어와 뜻이 동일한 경우
+    if word.lower() == meaning.lower():
+        return False
+    
+    return True
+
 def add_word_to_bank(word, meaning, category='기본'):
     """단어장에 단어 추가"""
+    # 유효성 검사
+    if not is_valid_word_entry(word, meaning):
+        return False
+    
     current_word_bank = get_word_bank()
     
     # 중복 체크
@@ -227,6 +258,10 @@ def add_words_to_bank(words, meanings, category, player):
     existing_words = {word['단어'].lower() for word in current_word_bank}
     
     for word, meaning in zip(words, meanings):
+        # 유효성 검사 먼저
+        if not is_valid_word_entry(word, meaning):
+            continue
+            
         # 중복 체크 (대소문자 무시)
         if word.lower() not in existing_words:
             current_word_bank.append({

@@ -126,37 +126,53 @@
                             <div class="mb-2">
                                 <strong>플레이어 레벨:</strong> {{ stats['level'] }}
                             </div>
+                            <div class="mb-2">
+                                <strong>업적 포인트:</strong> {{ stats['achievements_count'] }}개
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- 모든 티어 조건 표시 -->
-                <div class="tier-conditions">
-                    <h6 class="text-muted mb-3">티어 조건</h6>
-                    <div class="row">
-                        {% for tier in stats['tier_conditions'] %}
-                            {% if tier['name'] != '언랭크' %}
-                                <div class="col-lg-4 col-md-6 mb-3">
-                                    <div class="card {% if tier['name'] == stats['tier']['name'] %}border-warning{% endif %}" 
-                                         style="height: 100%;">
-                                        <div class="card-body text-center p-2">
-                                            {% if tier['image'] %}
-                                                <img src="{{ tier['image'] }}" alt="{{ tier['name'] }}" 
-                                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" class="mb-2">
-                                            {% endif %}
-                                            <h6 class="card-title mb-1">
-                                                <span class="badge bg-{{ tier['color'] }}">{{ tier['name'] }}</span>
-                                            </h6>
-                                            <small class="text-muted">
-                                                던전 {{ tier['conditions']['dungeon'] }}회<br>
-                                                부동산 {{ tier['conditions']['real_estate'] }}개<br>
-                                                레벨 {{ tier['conditions']['level'] }}
-                                            </small>
+                <!-- 티어 조건 토글 버튼 -->
+                <div class="tier-conditions-toggle">
+                    <div class="text-center mb-3">
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#tierConditions" aria-expanded="false">
+                            <i data-feather="eye"></i> 티어 조건 보기
+                        </button>
+                    </div>
+                    
+                    <!-- 접을 수 있는 티어 조건 -->
+                    <div class="collapse" id="tierConditions">
+                        <h6 class="text-muted mb-3">티어 조건</h6>
+                        <div class="row">
+                            {% for tier in stats['tier_conditions'] %}
+                                {% if tier['name'] != '언랭크' %}
+                                    <div class="col-lg-4 col-md-6 mb-3">
+                                        <div class="card {% if tier['name'] == stats['tier']['name'] %}border-warning bg-warning bg-opacity-10{% endif %}" 
+                                             style="height: 100%;">
+                                            <div class="card-body text-center p-2">
+                                                {% if tier['image'] %}
+                                                    <img src="{{ tier['image'] }}" alt="{{ tier['name'] }}" 
+                                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" class="mb-2">
+                                                {% endif %}
+                                                <h6 class="card-title mb-1">
+                                                    <span class="badge bg-{{ tier['color'] }}">{{ tier['name'] }}</span>
+                                                    {% if tier['name'] == stats['tier']['name'] %}
+                                                        <span class="badge bg-success ms-1">달성</span>
+                                                    {% endif %}
+                                                </h6>
+                                                <small class="text-muted">
+                                                    던전 {{ tier['conditions']['dungeon'] }}회<br>
+                                                    부동산 {{ tier['conditions']['real_estate'] }}개<br>
+                                                    레벨 {{ tier['conditions']['level'] }}<br>
+                                                    업적 {{ tier['conditions']['achievements'] }}개
+                                                </small>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>

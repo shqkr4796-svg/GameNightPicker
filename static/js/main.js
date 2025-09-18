@@ -210,27 +210,34 @@ function speakWord(word) {
         
         // 영어 네이티브 발음을 위한 설정
         utterance.lang = 'en-US';
-        utterance.rate = 0.7;  // 조금 더 천천히
-        utterance.volume = 0.9;
+        utterance.rate = 0.8;  // 자연스러운 속도
+        utterance.volume = 1.0;
         utterance.pitch = 1.0;
         
-        // 영어 네이티브 음성 선택 시도
+        // 미국 영어 네이티브 음성 선택 시도 (우선순위)
         const voices = speechSynthesis.getVoices();
-        const englishVoices = voices.filter(voice => 
-            voice.lang.startsWith('en-') && 
-            (voice.name.includes('Google') || voice.name.includes('Microsoft') || 
-             voice.name.includes('Apple') || voice.name.includes('Natural'))
+        
+        // 미국 영어 음성만 필터링 (한국어 등 제외)
+        const usEnglishVoices = voices.filter(voice => 
+            (voice.lang === 'en-US' || voice.lang.startsWith('en-US')) &&
+            !voice.name.includes('Korean') && 
+            !voice.name.includes('한국') && 
+            !voice.name.includes('KR')
         );
         
-        if (englishVoices.length > 0) {
-            // 가장 자연스러운 영어 음성 선택
-            const preferredVoice = englishVoices.find(voice => 
-                voice.name.includes('Natural') || 
+        if (usEnglishVoices.length > 0) {
+            // 가장 자연스러운 미국 영어 음성 우선순위로 선택
+            const preferredVoice = usEnglishVoices.find(voice => 
                 voice.name.includes('Google US English') ||
+                voice.name.includes('Microsoft David') ||
                 voice.name.includes('Microsoft Zira') ||
                 voice.name.includes('Alex') ||
-                voice.name.includes('Samantha')
-            ) || englishVoices[0];
+                voice.name.includes('Samantha') ||
+                voice.name.includes('Natural') ||
+                voice.name.includes('Premium')
+            ) || usEnglishVoices.find(voice => 
+                voice.name.includes('Google') && voice.lang === 'en-US'
+            ) || usEnglishVoices[0];
             
             utterance.voice = preferredVoice;
         }
