@@ -54,7 +54,7 @@ def check_level_up(player):
     level_ups = 0
     while player['경험치'] >= player['경험치최대']:
         player['레벨'] += 1
-        player['스탯포인트'] += 2
+        player['스탯포인트'] += 1
         player['경험치'] -= player['경험치최대']
         player['경험치최대'] = int(player['경험치최대'] * 1.2)
         level_ups += 1
