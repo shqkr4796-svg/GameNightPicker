@@ -22,7 +22,10 @@ def create_new_player():
         '돈': 0, '거주지': None, '날짜': 1, '시간': 8, '질병': None,
         '인벤토리': [], '성취': [], '총_퀴즈': 0, '정답_퀴즈': 0,
         '도감': {},  # 몬스터 도감
-        '던전클리어횟수': 0  # 던전 클리어 횟수
+        '던전클리어횟수': 0,  # 던전 클리어 횟수
+        '무기_인벤토리': {},  # 무기 인벤토리
+        '장착된_무기': None,  # 장착된 무기
+        '던전_인벤토리': {}  # 던전 아이템 인벤토리
     }
 
 def save_game(player_data):
@@ -61,6 +64,14 @@ def load_game():
                     # 기존 플레이어는 즉시 월세를 받을 수 있도록 설정
                     player['부동산구매날짜'] = player['날짜'] - 30
                     player['마지막월세날짜'] = player['날짜'] - 30
+                
+                # 무기 시스템 마이그레이션 (기존 플레이어 호환성)
+                if '무기_인벤토리' not in player:
+                    player['무기_인벤토리'] = {}
+                if '장착된_무기' not in player:
+                    player['장착된_무기'] = None
+                if '던전_인벤토리' not in player:
+                    player['던전_인벤토리'] = {}
                 
                 return player
     except Exception as e:
