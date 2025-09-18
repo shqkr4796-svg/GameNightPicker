@@ -127,7 +127,7 @@
                                 <strong>플레이어 레벨:</strong> {{ stats['level'] }}
                             </div>
                             <div class="mb-2">
-                                <strong>업적 포인트:</strong> {{ stats['achievements_count'] }}개
+                                <strong>업적:</strong> {{ stats['achievements_count'] }}개 ({{ stats['achievement_points'] }}점)
                             </div>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                                                     던전 {{ tier['conditions']['dungeon'] }}회<br>
                                                     부동산 {{ tier['conditions']['real_estate'] }}개<br>
                                                     레벨 {{ tier['conditions']['level'] }}<br>
-                                                    업적 {{ tier['conditions']['achievements'] }}개
+                                                    업적 {{ tier['conditions']['achievement_points'] }}점
                                                 </small>
                                             </div>
                                         </div>
