@@ -739,6 +739,8 @@ def answer_dungeon():
             if dungeon_run.get('wrong_questions_mode'):
                 flash('틀린 문제 복습을 완료했습니다!', 'success')
             else:
+                # 던전 클리어 횟수 증가
+                player['던전클리어횟수'] = player.get('던전클리어횟수', 0) + 1
                 flash('던전을 클리어했습니다!', 'success')
                 # 틀린 문제가 있으면 세션에 저장하여 재도전 옵션 제공
                 if wrong_questions:

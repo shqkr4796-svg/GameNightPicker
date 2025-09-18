@@ -21,7 +21,8 @@ def create_new_player():
         '체력': 10, '기력': 10, '최대기력': 10, '직장': None, '직장정보': None,
         '돈': 0, '거주지': None, '날짜': 1, '시간': 8, '질병': None,
         '인벤토리': [], '성취': [], '총_퀴즈': 0, '정답_퀴즈': 0,
-        '도감': {}  # 몬스터 도감
+        '도감': {},  # 몬스터 도감
+        '던전클리어횟수': 0  # 던전 클리어 횟수
     }
 
 def save_game(player_data):
@@ -51,6 +52,10 @@ def load_game():
                                 player['최대기력'] += prop['기력회복']
                                 break
                 
+                # 던전 클리어 횟수 필드 추가 (기존 플레이어 호환성)
+                if '던전클리어횟수' not in player:
+                    player['던전클리어횟수'] = 0
+                
                 # 부동산 30일 월세 시스템 마이그레이션
                 if player['거주지'] and '부동산구매날짜' not in player:
                     # 기존 플레이어는 즉시 월세를 받을 수 있도록 설정
@@ -73,6 +78,23 @@ def check_level_up(player):
         level_ups += 1
     return level_ups
 
+def get_dungeon_tier(clear_count):
+    """던전 클리어 횟수에 따른 티어 계산"""
+    if clear_count < 1:
+        return {'name': '언랭크', 'icon': '❓', 'color': 'secondary'}
+    elif clear_count <= 5:
+        return {'name': '브론즈', 'icon': '🥉', 'color': 'warning'}
+    elif clear_count <= 15:
+        return {'name': '실버', 'icon': '🥈', 'color': 'light'}
+    elif clear_count <= 30:
+        return {'name': '골드', 'icon': '🥇', 'color': 'warning'}
+    elif clear_count <= 100:
+        return {'name': '다이아', 'icon': '💎', 'color': 'info'}
+    elif clear_count <= 500:
+        return {'name': '마스터', 'icon': '🏆', 'color': 'primary'}
+    else:
+        return {'name': '챌린저', 'icon': '👑', 'color': 'danger'}
+
 def get_player_stats(player):
     """플레이어 통계 정보"""
     total_stats = player['힘'] + player['지능'] + player['외모'] + player['체력스탯'] + player['운']
@@ -80,11 +102,16 @@ def get_player_stats(player):
     if player['총_퀴즈'] > 0:
         quiz_accuracy = (player['정답_퀴즈'] / player['총_퀴즈']) * 100
     
+    dungeon_clears = player.get('던전클리어횟수', 0)
+    tier_info = get_dungeon_tier(dungeon_clears)
+    
     return {
         'total_stats': total_stats,
         'quiz_accuracy': quiz_accuracy,
         'wealth_rank': get_wealth_rank(player['돈']),
-        'days_played': player['날짜']
+        'days_played': player['날짜'],
+        'dungeon_clears': dungeon_clears,
+        'tier': tier_info
     }
 
 def get_wealth_rank(money):
