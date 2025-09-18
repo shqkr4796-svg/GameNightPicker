@@ -101,7 +101,9 @@ def get_random_monster_image(rarity):
             '/static/images/epic_monster_2.png',
             '/static/images/epic_monster_3.png',
             '/static/images/epic_monster_4.png',
-            '/static/images/epic_monster_5.png'
+            '/static/images/epic_monster_5.png',
+            '/static/images/epic_monster_6.png',
+            '/static/images/epic_monster_7.png'
         ]
         return random.choice(epic_images)
     else:
