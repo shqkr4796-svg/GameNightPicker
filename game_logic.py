@@ -852,7 +852,8 @@ def init_dungeon_run(player, dungeon_id):
         'cleared_words': 0,
         'total_words': len(word_queue),
         'actual_clear_condition': actual_clear_condition,  # 실제 클리어 조건 저장
-        'word_source': dungeon.get('word_source', 'toeic')  # 단어 카테고리 저장
+        'word_source': dungeon.get('word_source', 'toeic'),  # 단어 카테고리 저장
+        'wrong_questions': []  # 틀린 문제들 저장
     }
     
     # 첫 번째 몬스터 생성
@@ -861,6 +862,77 @@ def init_dungeon_run(player, dungeon_id):
         return result
         
     return {'success': True, 'dungeon_run': dungeon_run}
+
+def init_wrong_questions_dungeon(player, wrong_questions, original_dungeon_id):
+    """틀린 문제들만으로 던전 재시작"""
+    if not wrong_questions:
+        return {'success': False, 'message': '틀린 문제가 없습니다.'}
+    
+    original_dungeon = get_dungeon_by_id(original_dungeon_id)
+    if not original_dungeon:
+        return {'success': False, 'message': '원본 던전을 찾을 수 없습니다.'}
+    
+    # 레벨 제한 확인
+    if player['레벨'] < original_dungeon['레벨_제한']:
+        return {'success': False, 'message': f'레벨 {original_dungeon["레벨_제한"]} 이상만 입장 가능합니다.'}
+    
+    # 틀린 문제들만으로 던전 실행 상태 초기화
+    dungeon_run = {
+        'dungeon_id': f"wrong_{original_dungeon_id}",
+        'wrong_questions_mode': True,
+        'original_dungeon_id': original_dungeon_id,
+        'wrong_questions_list': wrong_questions.copy(),
+        'current_wrong_index': 0,
+        'current_word': None,
+        'current_options': [],
+        'current_rarity': '레어',  # 틀린 문제 복습은 기본 등급
+        'monster_id': None,
+        'monster_hp': 1,  # 복습용이므로 낮은 체력
+        'monster_progress': 0,
+        'player_hp': player['체력'],
+        'cleared_words': 0,
+        'total_words': len(wrong_questions),
+        'actual_clear_condition': len(wrong_questions),
+        'word_source': original_dungeon.get('word_source', 'toeic'),
+        'wrong_questions': []  # 새로운 틀린 문제들 저장
+    }
+    
+    # 첫 번째 틀린 문제 설정
+    result = next_wrong_question(dungeon_run)
+    if not result['success']:
+        return result
+        
+    return {'success': True, 'dungeon_run': dungeon_run}
+
+def next_wrong_question(dungeon_run):
+    """다음 틀린 문제 설정"""
+    # 인덱스가 범위를 벗어났는지 확인
+    if dungeon_run['current_wrong_index'] >= len(dungeon_run['wrong_questions_list']):
+        return {'success': False, 'message': '모든 틀린 문제를 완료했습니다!'}
+    
+    # 현재 틀린 문제 가져오기
+    wrong_q = dungeon_run['wrong_questions_list'][dungeon_run['current_wrong_index']]
+    
+    # 문제 설정
+    dungeon_run['current_word'] = wrong_q['word']
+    dungeon_run['current_options'] = wrong_q['options']
+    dungeon_run['correct_answer_index'] = wrong_q['correct_index']
+    
+    # 몬스터 상태 초기화
+    dungeon_run['monster_progress'] = 0
+    dungeon_run['monster_hp'] = 1  # 틀린 문제 복습용 낮은 체력
+    
+    # 몬스터 ID 생성
+    monster_seed = f"wrong_{wrong_q['word']['단어']}"
+    monster_id = hashlib.md5(monster_seed.encode()).hexdigest()[:8]
+    dungeon_run['monster_id'] = monster_id
+    
+    # 힌트 상태 초기화
+    dungeon_run.pop('hint_used', None)
+    dungeon_run.pop('hint_options', None)
+    dungeon_run.pop('hint_correct_index', None)
+    
+    return {'success': True, 'message': '틀린 문제가 준비되었습니다.'}
 
 def next_monster(dungeon_run, dungeon):
     """다음 몬스터 생성"""
@@ -902,6 +974,12 @@ def next_monster(dungeon_run, dungeon):
     
     # 4지선다 문제 생성
     result = build_question(dungeon_run, dungeon)
+    
+    # 힌트 상태 초기화
+    dungeon_run.pop('hint_used', None)
+    dungeon_run.pop('hint_options', None)
+    dungeon_run.pop('hint_correct_index', None)
+    
     return result
 
 def build_question(dungeon_run, dungeon):
@@ -965,7 +1043,12 @@ def answer_dungeon(player, dungeon_run, choice):
             
             # 처치한 단어 수 및 인덱스 증가
             dungeon_run['cleared_words'] += 1
-            dungeon_run['current_word_index'] += 1
+            
+            # 인덱스 증가
+            if dungeon_run.get('wrong_questions_mode'):
+                dungeon_run['current_wrong_index'] += 1
+            else:
+                dungeon_run['current_word_index'] += 1
             
             return {'success': True, 'correct': True, 'monster_defeated': True, 'game_over': False, 'message': result_msg}
         else:
@@ -982,6 +1065,19 @@ def answer_dungeon(player, dungeon_run, choice):
         # 오답 - 플레이어 실제 체력과 던전 체력 모두 감소
         dungeon_run['player_hp'] -= 1
         player['체력'] = max(0, player['체력'] - 1)  # 실제 체력도 감소
+        
+        # 틀린 문제 저장 (일반 모드에서만)
+        if not dungeon_run.get('wrong_questions_mode'):
+            if 'wrong_questions' not in dungeon_run:
+                dungeon_run['wrong_questions'] = []
+            
+            wrong_question = {
+                'word': dungeon_run['current_word'],
+                'options': dungeon_run['current_options'],
+                'correct_index': dungeon_run['correct_answer_index'],
+                'player_choice': choice
+            }
+            dungeon_run['wrong_questions'].append(wrong_question)
         
         if dungeon_run['player_hp'] <= 0:
             return {'success': True, 'correct': False, 'game_over': True, 'message': '체력이 0이 되어 던전에서 퇴장됩니다.'}
@@ -1001,10 +1097,24 @@ def build_next_question(dungeon_run):
         dungeon_run['current_word'] = new_word
         
         # 새로운 문제 생성
-        return build_question(dungeon_run, None)
+        result = build_question(dungeon_run, None)
+        
+        # 힌트 상태 초기화
+        dungeon_run.pop('hint_used', None)
+        dungeon_run.pop('hint_options', None)
+        dungeon_run.pop('hint_correct_index', None)
+        
+        return result
     else:
         # 사용 가능한 다른 단어가 없으면 기존 문제 재생성
-        return build_question(dungeon_run, None)
+        result = build_question(dungeon_run, None)
+        
+        # 힌트 상태 초기화
+        dungeon_run.pop('hint_used', None)
+        dungeon_run.pop('hint_options', None)
+        dungeon_run.pop('hint_correct_index', None)
+        
+        return result
 
 def update_compendium(player, dungeon_run):
     """몬스터 도감 업데이트"""

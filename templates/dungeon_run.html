@@ -11,7 +11,13 @@
                     <i class="fas fa-dungeon me-2"></i>{{ dungeon['이름'] }}
                 </h5>
                 <div>
-                    <span class="badge bg-info">진행: {{ dungeon_run['current_word_index'] }}/{{ dungeon_run['total_words'] }}</span>
+                    <span class="badge bg-info">
+                        {% if dungeon_run.get('wrong_questions_mode') %}
+                            복습: {{ dungeon_run['current_wrong_index'] }}/{{ dungeon_run['total_words'] }}
+                        {% else %}
+                            진행: {{ dungeon_run['current_word_index'] }}/{{ dungeon_run['total_words'] }}
+                        {% endif %}
+                    </span>
                 </div>
             </div>
             <div class="card-body">
@@ -74,15 +80,34 @@
                 <!-- 선택지 -->
                 <form method="POST" action="{{ url_for('answer_dungeon') }}" class="quiz-form">
                     <div class="row">
-                        {% for i in range(4) %}
-                        <div class="col-md-6 mb-3">
-                            <button type="submit" name="choice" value="{{ i }}" 
-                                    class="btn btn-outline-primary w-100 h-100 choice-btn"
-                                    style="min-height: 60px; font-size: 1.1em;">
-                                {{ loop.index }}. {{ dungeon_run['current_options'][i] }}
-                            </button>
-                        </div>
-                        {% endfor %}
+                        {% if dungeon_run.get('hint_used') %}
+                            <!-- 힌트 사용 시 2지선다 -->
+                            {% for i in range(2) %}
+                            <div class="col-md-6 mb-3">
+                                <button type="submit" name="choice" value="{{ dungeon_run['current_options'].index(dungeon_run['hint_options'][i]) }}" 
+                                        class="btn btn-outline-success w-100 h-100 choice-btn"
+                                        style="min-height: 60px; font-size: 1.1em;">
+                                    {{ loop.index }}. {{ dungeon_run['hint_options'][i] }}
+                                </button>
+                            </div>
+                            {% endfor %}
+                            <div class="col-12">
+                                <div class="alert alert-info text-center mt-2">
+                                    <i class="fas fa-lightbulb me-2"></i>힌트를 사용하여 선택지가 2개로 줄어들었습니다!
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- 일반 4지선다 -->
+                            {% for i in range(4) %}
+                            <div class="col-md-6 mb-3">
+                                <button type="submit" name="choice" value="{{ i }}" 
+                                        class="btn btn-outline-primary w-100 h-100 choice-btn"
+                                        style="min-height: 60px; font-size: 1.1em;">
+                                    {{ loop.index }}. {{ dungeon_run['current_options'][i] }}
+                                </button>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </form>
             </div>
@@ -108,12 +133,18 @@
             <div class="card-body">
                 <div class="mb-3">
                     <div class="d-flex justify-content-between mb-1">
-                        <span>단어 진행</span>
-                        <span>{{ dungeon_run['current_word_index'] }}/{{ dungeon_run['total_words'] }}</span>
+                        <span>{% if dungeon_run.get('wrong_questions_mode') %}복습 진행{% else %}단어 진행{% endif %}</span>
+                        <span>
+                            {% if dungeon_run.get('wrong_questions_mode') %}
+                                {{ dungeon_run['current_wrong_index'] }}/{{ dungeon_run['total_words'] }}
+                            {% else %}
+                                {{ dungeon_run['current_word_index'] }}/{{ dungeon_run['total_words'] }}
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" 
-                             style="width: {{ ((dungeon_run['current_word_index'] / (dungeon_run['total_words'] if dungeon_run['total_words'] > 0 else 1)) * 100)|round(1) }}%">
+                             style="width: {% if dungeon_run.get('wrong_questions_mode') %}{{ ((dungeon_run['current_wrong_index'] / (dungeon_run['total_words'] if dungeon_run['total_words'] > 0 else 1)) * 100)|round(1) }}{% else %}{{ ((dungeon_run['current_word_index'] / (dungeon_run['total_words'] if dungeon_run['total_words'] > 0 else 1)) * 100)|round(1) }}{% endif %}%">
                         </div>
                     </div>
                 </div>

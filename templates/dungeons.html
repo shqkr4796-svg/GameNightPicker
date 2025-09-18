@@ -70,6 +70,33 @@
                         <p class="text-muted">아직 이용 가능한 던전이 없습니다.</p>
                     </div>
                 {% endif %}
+                
+                <!-- 틀린 문제 재도전 섹션 -->
+                {% if session.get('last_wrong_questions') %}
+                <div class="alert alert-info mt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">
+                                <i class="fas fa-redo me-2"></i>틀린 문제 재도전
+                            </h6>
+                            <small>최근 던전에서 틀린 {{ session['last_wrong_questions']['questions']|length }}개의 문제를 다시 도전해보세요!</small>
+                        </div>
+                        <div>
+                            {% if player['기력'] >= 1 %}
+                            <form method="POST" action="{{ url_for('retry_wrong_questions') }}" class="d-inline">
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-redo me-1"></i>재도전
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-danger small">
+                                <i class="fas fa-exclamation-triangle me-1"></i>기력 부족
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

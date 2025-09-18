@@ -596,12 +596,34 @@ def answer_dungeon():
     
     # 몬스터가 처치되었으면 다음 몬스터 생성
     if result.get('monster_defeated'):
-        dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
-        next_result = game_logic.next_monster(dungeon_run, dungeon)
+        # 틀린 문제 모드인지 확인
+        if dungeon_run.get('wrong_questions_mode'):
+            # 틀린 문제 모드의 경우 완료 체크 후 다음 문제로
+            if dungeon_run['current_wrong_index'] >= len(dungeon_run['wrong_questions_list']):
+                next_result = {'success': False, 'message': '틀린 문제 복습을 완료했습니다!'}
+            else:
+                next_result = game_logic.next_wrong_question(dungeon_run)
+        else:
+            # 일반 던전의 경우 다음 몬스터 생성
+            dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+            next_result = game_logic.next_monster(dungeon_run, dungeon)
         
         if not next_result['success']:
             # 던전 클리어
-            flash('던전을 클리어했습니다!', 'success')
+            wrong_questions = dungeon_run.get('wrong_questions', [])
+            
+            if dungeon_run.get('wrong_questions_mode'):
+                flash('틀린 문제 복습을 완료했습니다!', 'success')
+            else:
+                flash('던전을 클리어했습니다!', 'success')
+                # 틀린 문제가 있으면 세션에 저장하여 재도전 옵션 제공
+                if wrong_questions:
+                    session['last_wrong_questions'] = {
+                        'questions': wrong_questions,
+                        'original_dungeon_id': dungeon_run['dungeon_id']
+                    }
+                    flash(f'{len(wrong_questions)}개의 틀린 문제가 있습니다. 다시 도전해보세요!', 'info')
+            
             session.pop('dungeon_run', None)
             session['player_data'] = player
             game_logic.save_game(player)
@@ -622,6 +644,53 @@ def leave_dungeon():
     
     flash('던전에서 나갔습니다. 진행 상황이 초기화됩니다.', 'info')
     return redirect(url_for('dungeons'))
+
+@app.route('/dungeon/retry_wrong', methods=['POST'])
+def retry_wrong_questions():
+    """틀린 문제들로 재도전"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    # 세션에서 틀린 문제들 가져오기
+    last_wrong = session.get('last_wrong_questions')
+    if not last_wrong or not last_wrong.get('questions'):
+        flash('재도전할 틀린 문제가 없습니다.', 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 최소 체력 확인 (체력 = 기력)
+    if player['기력'] < 1:
+        flash('던전에 입장하려면 최소 기력 1이 필요합니다.', 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 기력 소모
+    player['기력'] -= 1
+    
+    # 틀린 문제들로 던전 초기화
+    result = game_logic.init_wrong_questions_dungeon(
+        player, 
+        last_wrong['questions'], 
+        last_wrong['original_dungeon_id']
+    )
+    
+    if not result['success']:
+        flash(result['message'], 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 세션에 던전 실행 상태 저장
+    session['dungeon_run'] = result['dungeon_run']
+    session['player_data'] = player
+    session.modified = True
+    
+    # 데이터 저장 (일관성을 위해)
+    game_logic.save_game(player)
+    
+    # 사용한 틀린 문제 정보 삭제
+    session.pop('last_wrong_questions', None)
+    
+    flash('틀린 문제들로 재도전을 시작합니다!', 'success')
+    return redirect(url_for('dungeon_run'))
 
 @app.route('/compendium')
 def compendium():
@@ -672,8 +741,12 @@ def use_hint():
     player = session['player_data']
     dungeon_run = session['dungeon_run']
     
+    # 던전 버프 딕셔너리 초기화 (없는 경우)
+    if '던전_버프' not in player:
+        player['던전_버프'] = {}
+    
     # 힌트 사용 가능 횟수 확인
-    hint_count = player.get('던전_버프', {}).get('힌트 사용', 0)
+    hint_count = player['던전_버프'].get('힌트 사용', 0)
     
     if hint_count <= 0:
         flash('사용할 수 있는 힌트가 없습니다.', 'error')
@@ -682,11 +755,25 @@ def use_hint():
     # 힌트 사용 횟수 차감
     player['던전_버프']['힌트 사용'] -= 1
     
-    # 힌트 생성 (정답의 첫 글자 또는 힌트 제공)
-    correct_answer = dungeon_run['current_word']['뜻']
-    hint_text = f"힌트: 정답은 '{correct_answer[0]}...'로 시작합니다."
+    # 힌트 생성 (4지선다를 2지선다로 줄이기)
+    current_options = dungeon_run['current_options']
+    correct_answer_index = dungeon_run['correct_answer_index']
     
-    flash(hint_text, 'info')
+    # 정답과 오답 1개만 남기기 (랜덤하게 선택)
+    correct_answer = current_options[correct_answer_index]
+    wrong_options = [opt for i, opt in enumerate(current_options) if i != correct_answer_index]
+    selected_wrong = random.choice(wrong_options)
+    
+    # 2지선다 생성
+    hint_options = [correct_answer, selected_wrong]
+    random.shuffle(hint_options)
+    
+    # 힌트 사용 표시
+    dungeon_run['hint_used'] = True
+    dungeon_run['hint_options'] = hint_options
+    dungeon_run['hint_correct_index'] = hint_options.index(correct_answer)
+    
+    flash('힌트를 사용했습니다! 선택지가 2개로 줄어들었습니다.', 'info')
     
     # 상태 업데이트
     session['player_data'] = player
@@ -705,8 +792,12 @@ def skip_question():
     player = session['player_data']
     dungeon_run = session['dungeon_run']
     
+    # 던전 버프 딕셔너리 초기화 (없는 경우)
+    if '던전_버프' not in player:
+        player['던전_버프'] = {}
+    
     # 스킵 사용 가능 횟수 확인
-    skip_count = player.get('던전_버프', {}).get('문제 스킵', 0)
+    skip_count = player['던전_버프'].get('문제 스킵', 0)
     
     if skip_count <= 0:
         flash('사용할 수 있는 스킵이 없습니다.', 'error')
