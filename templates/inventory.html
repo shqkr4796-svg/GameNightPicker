@@ -59,7 +59,7 @@
                                     {% if count > 0 %}
                                         {% set weapon_info = none %}
                                         {% for item in shop_items %}
-                                            {% if item.이름 == weapon_name and item.타입 == '무기' %}
+                                            {% if item['이름'] == weapon_name and item['타입'] == '무기' %}
                                                 {% set weapon_info = item %}
                                             {% endif %}
                                         {% endfor %}
@@ -70,8 +70,8 @@
                                                 <div class="card-body">
                                                     <h6 class="card-title text-warning">{{ weapon_name }}</h6>
                                                     <p class="card-text small">
-                                                        {{ weapon_info.설명 }}<br>
-                                                        <strong>피해: +{{ weapon_info.효과['무기 피해'] }}</strong><br>
+                                                        {{ weapon_info['설명'] }}<br>
+                                                        <strong>피해: +{{ weapon_info['효과']['무기 피해'] }}</strong><br>
                                                         <span class="text-muted">보유: {{ count }}개</span>
                                                     </p>
                                                     {% if player.get('장착된_무기') != weapon_name %}
@@ -113,7 +113,7 @@
                                     {% if count > 0 %}
                                         {% set item_info = none %}
                                         {% for item in shop_items %}
-                                            {% if item.이름 == item_name and item.타입 == '던전' %}
+                                            {% if item['이름'] == item_name and item['타입'] == '던전' %}
                                                 {% set item_info = item %}
                                             {% endif %}
                                         {% endfor %}
@@ -124,7 +124,7 @@
                                                 <div class="card-body">
                                                     <h6 class="card-title text-info">{{ item_name }}</h6>
                                                     <p class="card-text small">
-                                                        {{ item_info.설명 }}<br>
+                                                        {{ item_info['설명'] }}<br>
                                                         <span class="text-muted">보유: {{ count }}개</span>
                                                     </p>
                                                 </div>
