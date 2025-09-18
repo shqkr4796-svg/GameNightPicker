@@ -9,59 +9,74 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="book-open" class="me-2"></i>단어 퀴즈
+                    <i class="fas fa-brain me-2"></i>단어 퀴즈
                 </h5>
             </div>
             <div class="card-body">
-                {% set quiz_word = word_bank|random %}
-                {% set question_type = ['뜻맞히기', '단어맞히기']|random %}
-                
-                <div class="text-center mb-4">
-                    {% if question_type == '뜻맞히기' %}
-                        <h4 class="text-primary">단어 뜻 맞히기</h4>
-                        <div class="bg-light p-4 rounded mb-4">
-                            <h2>{{ quiz_word['뜻'] }}</h2>
-                        </div>
-                        <p>위 뜻에 해당하는 영어 단어를 입력하세요.</p>
-                    {% else %}
-                        <h4 class="text-primary">단어를 보고 뜻 맞히기</h4>
-                        <div class="bg-light p-4 rounded mb-4">
-                            <h2>{{ quiz_word['단어'] }}</h2>
-                        </div>
-                        <p>위 단어의 뜻을 한글로 입력하세요.</p>
-                    {% endif %}
-                </div>
+                {% if word_bank|length > 0 %}
+                    {% set quiz_word = word_bank|random %}
+                    {% set question_type = ['뜻맞히기', '단어맞히기']|random %}
+                    
+                    <div class="text-center mb-4">
+                        {% if question_type == '뜻맞히기' %}
+                            <h4 class="text-primary">단어 뜻 맞히기</h4>
+                            <div class="word-card mb-4">
+                                <div class="word">{{ quiz_word['뜻'] }}</div>
+                            </div>
+                            <p>위 뜻에 해당하는 영어 단어를 입력하세요.</p>
+                        {% else %}
+                            <h4 class="text-primary">단어를 보고 뜻 맞히기</h4>
+                            <div class="word-card mb-4">
+                                <div class="word">{{ quiz_word['단어'] }}</div>
+                            </div>
+                            <p>위 단어의 뜻을 한글로 입력하세요.</p>
+                        {% endif %}
+                    </div>
 
-                <form method="POST" action="{{ url_for('take_quiz') }}">
-                    <input type="hidden" name="question_type" value="{{ question_type }}">
-                    <input type="hidden" name="correct_answer" 
-                           value="{{ quiz_word['단어'] if question_type == '뜻맞히기' else quiz_word['뜻'] }}">
+                    <form method="POST" action="{{ url_for('take_quiz') }}">
+                        <input type="hidden" name="question_type" value="{{ question_type }}">
+                        <input type="hidden" name="correct_answer" 
+                               value="{{ quiz_word['단어'] if question_type == '뜻맞히기' else quiz_word['뜻'] }}">
+                        
+                        <div class="mb-3">
+                            <input type="text" name="answer" class="form-control form-control-lg text-center" 
+                                   placeholder="답을 입력하세요" required autofocus>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>정답 제출
+                            </button>
+                        </div>
+                    </form>
                     
-                    <div class="mb-3">
-                        <input type="text" name="answer" class="form-control form-control-lg text-center" 
-                               placeholder="답을 입력하세요" required autofocus>
+                    <div class="mt-4 text-center">
+                        <small class="text-muted">
+                            퀴즈를 풀면 경험치를 획득하고 기력이 1 소모됩니다.
+                        </small>
                     </div>
-                    
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i data-feather="check" class="me-2"></i>정답 제출
-                        </button>
+                {% else %}
+                    <!-- 단어장이 비어있을 때 -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-book text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h4 class="text-muted mb-3">단어장이 비어있습니다</h4>
+                        <p class="text-muted mb-4">
+                            퀴즈를 시작하려면 먼저 단어를 추가해주세요.<br>
+                            아래 단어 추가 섹션을 이용해 학습할 단어들을 등록하세요.
+                        </p>
+                        <a href="#add-word-section" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>단어 추가하기
+                        </a>
                     </div>
-                </form>
-                
-                <div class="mt-4 text-center">
-                    <small class="text-muted">
-                        퀴즈를 풀면 경험치를 획득하고 기력이 1 소모됩니다.
-                    </small>
-                </div>
+                {% endif %}
             </div>
         </div>
 
         <!-- 단어장 관리 -->
-        <div class="card">
+        <div class="card" id="add-word-section">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="plus-circle" class="me-2"></i>단어 추가
+                    <i class="fas fa-plus-circle me-2"></i>단어 추가
                 </h5>
             </div>
             <div class="card-body">
@@ -94,7 +109,7 @@
                             <div class="mb-3">
                                 <label class="form-label">&nbsp;</label>
                                 <button type="submit" class="btn btn-success w-100">
-                                    <i data-feather="plus" class="me-1"></i>추가
+                                    <i class="fas fa-plus me-1"></i>추가
                                 </button>
                             </div>
                         </div>
@@ -102,7 +117,7 @@
                     <div class="row">
                         <div class="col-12">
                             <small class="text-muted">
-                                <i data-feather="info" class="me-1" size="14"></i>
+                                <i class="fas fa-info-circle me-1"></i>
                                 처음 등록하는 단어마다 경험치 0.5를 획득합니다!
                             </small>
                         </div>
@@ -117,7 +132,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="bar-chart-2" class="me-2"></i>퀴즈 통계
+                    <i class="fas fa-chart-bar me-2"></i>퀴즈 통계
                 </h5>
             </div>
             <div class="card-body text-center">
@@ -146,7 +161,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="book" class="me-2"></i>단어장 현황
+                    <i class="fas fa-book me-2"></i>단어장 현황
                 </h5>
             </div>
             <div class="card-body">
@@ -170,25 +185,25 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="lightbulb" class="me-2"></i>학습 팁
+                    <i class="fas fa-lightbulb me-2"></i>학습 팁
                 </h5>
             </div>
             <div class="card-body">
                 <ul class="list-unstyled mb-0">
                     <li class="mb-2">
-                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <i class="fas fa-check-circle text-success me-2"></i>
                         <small>꾸준히 퀴즈를 풀어 경험치를 모으세요.</small>
                     </li>
                     <li class="mb-2">
-                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <i class="fas fa-check-circle text-success me-2"></i>
                         <small>새로운 단어를 추가해서 학습량을 늘리세요.</small>
                     </li>
                     <li class="mb-2">
-                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <i class="fas fa-check-circle text-success me-2"></i>
                         <small>기력이 없으면 잠을 자서 회복하세요.</small>
                     </li>
                     <li>
-                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
+                        <i class="fas fa-check-circle text-success me-2"></i>
                         <small>카테고리별로 단어를 정리하면 효율적입니다.</small>
                     </li>
                 </ul>
