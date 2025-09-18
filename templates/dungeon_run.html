@@ -53,7 +53,7 @@
                         {% if dungeon_run.get('monster_image') %}
                             <img src="{{ dungeon_run['monster_image'] }}" alt="{{ dungeon_run['current_rarity'] }} 몬스터" 
                                  class="monster-sprite border rounded p-2" 
-                                 style="width: 128px; height: 128px; object-fit: contain; background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0); background-size: 8px 8px; background-position: 0 0, 4px 4px;">
+                                 style="width: 128px; height: 128px; object-fit: contain; background: transparent;">
                         {% else %}
                             <canvas id="monster-display" width="128" height="128" class="border rounded monster-sprite"
                                     data-monster-id="{{ dungeon_run['monster_id'] }}"

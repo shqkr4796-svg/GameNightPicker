@@ -78,14 +78,32 @@ def check_level_up(player):
         level_ups += 1
     return level_ups
 
-def get_random_monster_image():
-    """몬스터 이미지를 랜덤으로 선택"""
-    monster_images = [
-        '/static/images/monster_1.png',
-        '/static/images/monster_2.png', 
-        '/static/images/monster_3.png'
-    ]
-    return random.choice(monster_images)
+def get_random_monster_image(rarity):
+    """등급별 몬스터 이미지를 랜덤으로 선택"""
+    if rarity == '레어':
+        rare_images = [
+            '/static/images/monster_1.png',
+            '/static/images/monster_2.png', 
+            '/static/images/monster_3.png'
+        ]
+        return random.choice(rare_images)
+    elif rarity == '에픽':
+        epic_images = [
+            '/static/images/epic_monster_1.png',
+            '/static/images/epic_monster_2.png',
+            '/static/images/epic_monster_3.png',
+            '/static/images/epic_monster_4.png',
+            '/static/images/epic_monster_5.png'
+        ]
+        return random.choice(epic_images)
+    else:
+        # 유니크, 레전더리는 레어 이미지 사용 (나중에 전용 이미지 추가 가능)
+        rare_images = [
+            '/static/images/monster_1.png',
+            '/static/images/monster_2.png', 
+            '/static/images/monster_3.png'
+        ]
+        return random.choice(rare_images)
 
 def get_tier_conditions():
     """티어별 조건 반환"""
@@ -1102,8 +1120,8 @@ def next_monster(dungeon_run, dungeon):
     monster_id = hashlib.md5(monster_seed.encode()).hexdigest()[:8]
     dungeon_run['monster_id'] = monster_id
     
-    # 몬스터 이미지 랜덤 할당
-    dungeon_run['monster_image'] = get_random_monster_image()
+    # 몬스터 이미지 등급별 랜덤 할당
+    dungeon_run['monster_image'] = get_random_monster_image(selected_rarity)
     
     # 몬스터 HP 설정
     dungeon_run['monster_hp'] = monster_rarities[selected_rarity]['required_correct']
