@@ -13,7 +13,7 @@
                 </h5>
             </div>
             <div class="card-body">
-                <!-- 카테고리 선택 -->
+                <!-- 카테고리 및 언어 선택 -->
                 <div class="mb-4">
                     <div class="row">
                         <div class="col-md-6">
@@ -27,9 +27,28 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-6 d-flex align-items-end">
+                        <div class="col-md-6">
+                            <label class="form-label">퀴즈 언어 선택</label>
+                            <select class="form-select" onchange="changeQuizLanguage(this.value)">
+                                <option value="random" {{ 'selected' if selected_language == 'random' }}>랜덤 (영어↔한글)</option>
+                                <option value="english" {{ 'selected' if selected_language == 'english' }}>영어 문제만</option>
+                                <option value="korean" {{ 'selected' if selected_language == 'korean' }}>한글 문제만</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
                             <div class="text-muted small">
                                 현재 카테고리: <strong>{{ selected_category if selected_category != 'all' else '전체' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted small">
+                                현재 언어: <strong>
+                                    {% if selected_language == 'english' %}영어 문제만
+                                    {% elif selected_language == 'korean' %}한글 문제만
+                                    {% else %}랜덤{% endif %}
+                                </strong>
                             </div>
                         </div>
                     </div>
@@ -50,6 +69,8 @@
                         <div class="alert alert-success">
                             <i class="fas fa-trophy me-2"></i>모든 단어를 완료했습니다! 
                             <form method="POST" action="{{ url_for('reset_quiz_session') }}" class="d-inline">
+                                <input type="hidden" name="selected_category" value="{{ selected_category }}">
+                                <input type="hidden" name="selected_language" value="{{ selected_language }}">
                                 <button type="submit" class="btn btn-sm btn-outline-success ms-2">
                                     <i class="fas fa-redo me-1"></i>새 세션 시작
                                 </button>
@@ -70,7 +91,7 @@
                                 <br><small class="text-muted">틀린 문제들만 다시 풀어보세요!</small>
                             </div>
                             <div>
-                                <a href="{{ url_for('retry_wrong_quiz', category=selected_category) }}" 
+                                <a href="{{ url_for('retry_wrong_quiz', category=selected_category, language=selected_language) }}" 
                                    class="btn btn-warning">
                                     <i class="fas fa-redo me-1"></i>틀린 문제 재도전
                                 </a>
@@ -83,7 +104,13 @@
 
                 {% if word_bank|length > 0 %}
                     {% set quiz_word = word_bank|random %}
-                    {% set question_type = ['뜻맞히기', '단어맞히기']|random %}
+                    {% if selected_language == 'english' %}
+                        {% set question_type = '단어맞히기' %}
+                    {% elif selected_language == 'korean' %}
+                        {% set question_type = '뜻맞히기' %}
+                    {% else %}
+                        {% set question_type = ['뜻맞히기', '단어맞히기']|random %}
+                    {% endif %}
                     
                     <div class="text-center mb-4">
                         {% if question_type == '뜻맞히기' %}
@@ -119,6 +146,7 @@
                                value="{{ quiz_word['단어'] if question_type == '뜻맞히기' else quiz_word['뜻'] }}">
                         <input type="hidden" name="quiz_word" value="{{ quiz_word['단어'] }}">
                         <input type="hidden" name="selected_category" value="{{ selected_category }}">
+                        <input type="hidden" name="selected_language" value="{{ selected_language }}">
                         
                         <div class="mb-3">
                             <input type="text" name="answer" class="form-control form-control-lg text-center" 
@@ -158,6 +186,7 @@
                         </p>
                         <form method="POST" action="{{ url_for('reset_quiz_session') }}">
                             <input type="hidden" name="selected_category" value="{{ selected_category }}">
+                            <input type="hidden" name="selected_language" value="{{ selected_language }}">
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fas fa-redo me-2"></i>새 세션 시작
                             </button>
@@ -198,7 +227,7 @@
                                     </h6>
                                     <small class="text-muted">{{ wrong_questions|length }}개의 틀린 문제를 다시 풀어보세요</small>
                                 </div>
-                                <a href="{{ url_for('retry_wrong_quiz', category=selected_category) }}" class="btn btn-warning">
+                                <a href="{{ url_for('retry_wrong_quiz', category=selected_category, language=selected_language) }}" class="btn btn-warning">
                                     <i class="fas fa-redo me-2"></i>틀린 문제 재도전
                                 </a>
                             </div>
@@ -288,6 +317,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             toggleCustomCategory();
         });
+        
+        // 퀴즈 언어 변경
+        function changeQuizLanguage(language) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('language', language);
+            window.location.search = urlParams.toString();
+        }
         
         // 단어 저장 모달 표시
         function showSaveWordModal(word, meaning) {

@@ -59,8 +59,9 @@ def quiz():
     # 사용자 단어에서만 카테고리 추출
     categories = list(set([word.get('카테고리', '기본') for word in word_bank]))
     
-    # 선택된 카테고리 확인
+    # 선택된 카테고리 및 언어 확인
     selected_category = request.args.get('category', 'all')
+    selected_language = request.args.get('language', 'random')
     
     # 카테고리별 단어 필터링
     if selected_category != 'all':
@@ -88,6 +89,7 @@ def quiz():
                          full_word_bank=word_bank,
                          categories=categories,
                          selected_category=selected_category,
+                         selected_language=selected_language,
                          total_words=total_words,
                          completed_words=completed_words,
                          wrong_questions=wrong_questions,
@@ -101,6 +103,7 @@ def take_quiz():
     
     player = session['player_data']
     selected_category = request.form.get('selected_category', 'all')
+    selected_language = request.form.get('selected_language', request.args.get('language', 'random'))  # POST에서 우선, 없으면 URL에서
     answer = request.form.get('answer', '').strip()
     question_type = request.form.get('question_type')
     correct_answer = request.form.get('correct_answer')
@@ -150,12 +153,13 @@ def take_quiz():
         
         flash(f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.', 'error')
     
-    return redirect(url_for('quiz', category=selected_category))
+    return redirect(url_for('quiz', category=selected_category, language=selected_language))
 
 @app.route('/reset_quiz_session', methods=['POST'])
 def reset_quiz_session():
     """퀴즈 세션 초기화"""
     selected_category = request.form.get('selected_category', 'all')
+    selected_language = request.form.get('selected_language', request.args.get('language', 'random'))
     session_key = f'quiz_session_correct_{selected_category}'
     wrong_session_key = f'quiz_session_wrong_{selected_category}'
     if session_key in session:
@@ -163,7 +167,7 @@ def reset_quiz_session():
     if wrong_session_key in session:
         del session[wrong_session_key]
     flash('새로운 퀴즈 세션을 시작합니다!', 'info')
-    return redirect(url_for('quiz', category=selected_category))
+    return redirect(url_for('quiz', category=selected_category, language=selected_language))
 
 @app.route('/quiz/retry_wrong')
 def retry_wrong_quiz():
@@ -172,12 +176,13 @@ def retry_wrong_quiz():
         return redirect(url_for('index'))
     
     category = request.args.get('category', 'all')
+    selected_language = request.args.get('language', 'random')
     wrong_session_key = f'quiz_session_wrong_{category}'
     wrong_questions = session.get(wrong_session_key, [])
     
     if not wrong_questions:
         flash('틀린 문제가 없습니다.', 'info')
-        return redirect(url_for('quiz', category=category))
+        return redirect(url_for('quiz', category=category, language=selected_language))
     
     # 틀린 문제들을 재도전 모드로 초기화
     session['wrong_questions_retry_mode'] = True
