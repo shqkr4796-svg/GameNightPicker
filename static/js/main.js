@@ -109,11 +109,12 @@ class SoundManager {
         }
     }
 
-    // 작업 완료 소리
+    // 작업 완료 소리 (ATM 돈 소리)
     playWorkComplete() {
-        this.createTone(523, 0.1); // C5
-        setTimeout(() => this.createTone(659, 0.1), 100); // E5
-        setTimeout(() => this.createTone(523, 0.1), 200); // C5
+        this.createTone(880, 0.08); // A5
+        setTimeout(() => this.createTone(1109, 0.08), 80); // C#6
+        setTimeout(() => this.createTone(1319, 0.12), 160); // E6
+        setTimeout(() => this.createTone(1568, 0.1), 240); // G6 (추가)
     }
 
     // 잠자기 소리 (부드러운 톤)
