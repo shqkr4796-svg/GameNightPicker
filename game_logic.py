@@ -78,6 +78,15 @@ def check_level_up(player):
         level_ups += 1
     return level_ups
 
+def get_random_monster_image():
+    """몬스터 이미지를 랜덤으로 선택"""
+    monster_images = [
+        '/static/images/monster_1.png',
+        '/static/images/monster_2.png', 
+        '/static/images/monster_3.png'
+    ]
+    return random.choice(monster_images)
+
 def get_tier_conditions():
     """티어별 조건 반환"""
     return [
@@ -1093,6 +1102,9 @@ def next_monster(dungeon_run, dungeon):
     monster_id = hashlib.md5(monster_seed.encode()).hexdigest()[:8]
     dungeon_run['monster_id'] = monster_id
     
+    # 몬스터 이미지 랜덤 할당
+    dungeon_run['monster_image'] = get_random_monster_image()
+    
     # 몬스터 HP 설정
     dungeon_run['monster_hp'] = monster_rarities[selected_rarity]['required_correct']
     dungeon_run['monster_progress'] = 0
@@ -1265,6 +1277,7 @@ def update_compendium(player, dungeon_run):
                 '이름': f"{word} {rarity}",
                 '등급': rarity,
                 '단어': word,
+                '이미지': dungeon_run.get('monster_image', '/static/images/monster_1.png'),
                 '최초처치일': datetime.now().isoformat(),
                 '처치수': 1,
                 '포획됨': True

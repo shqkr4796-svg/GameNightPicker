@@ -26,12 +26,17 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="text-center mb-3">
-                                        <!-- 몬스터 이미지 영역 (나중에 도트 그래픽 추가) -->
-                                        <canvas id="monster-{{ monster_id }}" width="64" height="64" class="border rounded" 
-                                                data-monster-id="{{ monster_id }}" 
-                                                data-rarity="{{ monster['등급'] }}"
-                                                data-word="{{ monster['단어'] }}">
-                                        </canvas>
+                                        <!-- 몬스터 이미지 -->
+                                        {% if monster.get('이미지') %}
+                                            <img src="{{ monster['이미지'] }}" alt="{{ monster['이름'] }}" 
+                                                 class="monster-image" style="width: 80px; height: 80px; object-fit: contain;">
+                                        {% else %}
+                                            <canvas id="monster-{{ monster_id }}" width="64" height="64" class="border rounded" 
+                                                    data-monster-id="{{ monster_id }}" 
+                                                    data-rarity="{{ monster['등급'] }}"
+                                                    data-word="{{ monster['단어'] }}">
+                                            </canvas>
+                                        {% endif %}
                                     </div>
                                     <div class="small">
                                         <div class="mb-1">
