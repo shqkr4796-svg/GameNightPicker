@@ -8,9 +8,7 @@ import random
 @app.route('/')
 def index():
     """메인 페이지"""
-    if 'player_data' not in session:
-        return render_template('index.html')
-    return redirect(url_for('dashboard'))
+    return render_template('index.html')
 
 @app.route('/start_game', methods=['POST'])
 def start_game():
