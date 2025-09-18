@@ -9,7 +9,7 @@
         <div class="card status-card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="user" class="me-2"></i>플레이어 상태
+                    <i class="fas fa-user me-2"></i>플레이어 상태
                 </h5>
             </div>
             <div class="card-body">
@@ -59,24 +59,27 @@
                 <div class="row mt-4">
                     <div class="col-md-6">
                         <label class="form-label">경험치</label>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: {{ (player['경험치'] / player['경험치최대'] * 100) }}%">
+                        <div class="progress" style="height: 32px;">
+                            <div class="progress-bar d-flex align-items-center justify-content-center" 
+                                 style="width: {{ (player['경험치'] / player['경험치최대'] * 100) }}%; font-size: 14px; font-weight: 500;">
                                 {{ player['경험치'] }}/{{ player['경험치최대'] }}
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">체력</label>
-                        <div class="progress">
-                            <div class="progress-bar bg-danger" style="width: {{ (player['체력'] / 10 * 100) }}%">
+                        <label class="form-label">건강</label>
+                        <div class="progress" style="height: 32px;">
+                            <div class="progress-bar bg-danger d-flex align-items-center justify-content-center" 
+                                 style="width: {{ (player['체력'] / 10 * 100) }}%; font-size: 14px; font-weight: 500;">
                                 {{ "%.1f"|format(player['체력']) }}
                             </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">기력</label>
-                        <div class="progress">
-                            <div class="progress-bar bg-info" style="width: {{ (player['기력'] / 10 * 100) }}%">
+                        <div class="progress" style="height: 32px;">
+                            <div class="progress-bar bg-info d-flex align-items-center justify-content-center" 
+                                 style="width: {{ (player['기력'] / 10 * 100) }}%; font-size: 14px; font-weight: 500;">
                                 {{ "%.1f"|format(player['기력']) }}
                             </div>
                         </div>
@@ -89,7 +92,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="map-pin" class="me-2"></i>현재 상황
+                    <i class="fas fa-map-marker-alt me-2"></i>현재 상황
                 </h5>
             </div>
             <div class="card-body">
@@ -114,7 +117,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
-                    <i data-feather="bar-chart-2" class="me-2"></i>능력치 분포
+                    <i class="fas fa-chart-bar me-2"></i>능력치 분포
                 </h5>
             </div>
             <div class="card-body">
