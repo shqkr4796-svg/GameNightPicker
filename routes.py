@@ -585,7 +585,7 @@ def answer_dungeon():
     # 답변 처리
     result = game_logic.answer_dungeon(player, dungeon_run, choice)
     
-    if result['game_over']:
+    if result.get('game_over', False):
         flash(result['message'], 'error')
         session.pop('dungeon_run', None)  # 던전 실행 상태 삭제
         session['player_data'] = player

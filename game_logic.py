@@ -805,7 +805,10 @@ def init_dungeon_run(player, dungeon_id):
     
     # 던전 실행 상태 초기화 - 단어 순서 랜덤화
     random.shuffle(words)  # 단어 순서 랜덤화
-    word_queue = words[:dungeon['clear_condition']]  # 던전 클리어 조건만큼 단어 선택
+    
+    # 실제 사용 가능한 단어 수에 맞춰 클리어 조건 조정
+    actual_clear_condition = min(dungeon['clear_condition'], len(words))
+    word_queue = words[:actual_clear_condition]  # 실제 사용 가능한 단어만큼 선택
     
     # 간소화된 던전 실행 상태 (세션 용량 최적화)
     dungeon_run = {
@@ -820,7 +823,8 @@ def init_dungeon_run(player, dungeon_id):
         'monster_progress': 0,
         'player_hp': player['체력'],  # 플레이어의 실제 체력 사용
         'cleared_words': 0,
-        'total_words': len(word_queue)
+        'total_words': len(word_queue),
+        'actual_clear_condition': actual_clear_condition  # 실제 클리어 조건 저장
     }
     
     # 첫 번째 몬스터 생성
@@ -926,12 +930,12 @@ def answer_dungeon(player, dungeon_run, choice):
             dungeon_run['current_word_index'] += 1
             dungeon_run['cleared_words'] += 1
             
-            return {'success': True, 'correct': True, 'monster_defeated': True, 'message': result_msg}
+            return {'success': True, 'correct': True, 'monster_defeated': True, 'game_over': False, 'message': result_msg}
         else:
             progress = dungeon_run['monster_progress']
             max_hp = dungeon_run['monster_hp']
             result_msg += f" ({progress}/{max_hp})"
-            return {'success': True, 'correct': True, 'monster_defeated': False, 'message': result_msg}
+            return {'success': True, 'correct': True, 'monster_defeated': False, 'game_over': False, 'message': result_msg}
     else:
         # 오답 - 플레이어 실제 체력과 던전 체력 모두 감소
         dungeon_run['player_hp'] -= 1
