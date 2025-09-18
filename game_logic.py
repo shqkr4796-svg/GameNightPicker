@@ -120,19 +120,19 @@ def get_random_monster_image(rarity):
         ]
         return random.choice(unique_images)
     else:
-        # 레전더리는 유니크 이미지 사용
-        unique_images = [
-            '/static/images/unique_monster_1.png',
-            '/static/images/unique_monster_2.png',
-            '/static/images/unique_monster_3.png',
-            '/static/images/unique_monster_4.png',
-            '/static/images/unique_monster_5.png',
-            '/static/images/unique_monster_6.png',
-            '/static/images/unique_monster_7.png',
-            '/static/images/unique_monster_8.png',
-            '/static/images/unique_monster_9.png'
+        # 레전더리는 전용 이미지 사용
+        legendary_images = [
+            '/static/images/legendary_monster_1.png',
+            '/static/images/legendary_monster_2.png',
+            '/static/images/legendary_monster_3.png',
+            '/static/images/legendary_monster_4.png',
+            '/static/images/legendary_monster_5.png',
+            '/static/images/legendary_monster_6.png',
+            '/static/images/legendary_monster_7.png',
+            '/static/images/legendary_monster_8.png',
+            '/static/images/legendary_monster_9.png'
         ]
-        return random.choice(unique_images)
+        return random.choice(legendary_images)
 
 def get_tier_conditions():
     """티어별 조건 반환"""
