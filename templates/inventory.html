@@ -108,7 +108,7 @@
             {% endif %}
             
             <!-- 던전 아이템 인벤토리 -->
-            {% if player.get('던전_인벤토리') %}
+            {% if player.get('던전_인벤토리') and player['던전_인벤토리']|length > 0 %}
             <div class="row">
                 <div class="col-md-12">
                     <div class="card bg-dark text-light">
@@ -122,25 +122,35 @@
                                         {% set item_info = none %}
                                         {% if shop_items %}
                                             {% for item in shop_items %}
-                                                {% if item['이름'] == item_name and item['타입'] == '던전' %}
+                                                {% if item['이름'] == item_name and item.get('타입') == '던전' %}
                                                     {% set item_info = item %}
+                                                    {% break %}
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
                                         
-                                        {% if item_info %}
                                         <div class="col-md-4 mb-3">
                                             <div class="card bg-secondary">
                                                 <div class="card-body">
                                                     <h6 class="card-title text-info">{{ item_name }}</h6>
                                                     <p class="card-text small">
-                                                        {{ item_info['설명'] }}<br>
+                                                        {% if item_info %}
+                                                            {{ item_info['설명'] }}<br>
+                                                        {% else %}
+                                                            던전 아이템<br>
+                                                        {% endif %}
                                                         <span class="text-muted">보유: {{ count }}개</span>
                                                     </p>
+                                                    {% if item_info and item_info.get('효과') %}
+                                                        <p class="card-text small text-success">
+                                                            {% for effect, value in item_info['효과'].items() %}
+                                                                {{ effect }}: +{{ value }}{% if not loop.last %}, {% endif %}
+                                                            {% endfor %}
+                                                        </p>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
-                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             </div>
