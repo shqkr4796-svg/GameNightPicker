@@ -388,6 +388,96 @@ dungeons = [
         'rarity_distribution': {'레어': 0.1, '에픽': 0.15, '유니크': 0.35, '레전드리': 0.4},
         'clear_condition': 3000,
         'max_health': 1
+    },
+    
+    # 영어 회화 던전들
+    {
+        'id': 'coffee_shop_conversation',
+        '이름': '카페 회화 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 2,
+        '설명': '카페에서 자주 사용하는 영어 회화 표현을 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.6, '에픽': 0.25, '유니크': 0.12, '레전드리': 0.03},
+        'clear_condition': 350,
+        'max_health': 5
+    },
+    {
+        'id': 'airport_dialogue',
+        '이름': '공항 대화 던전',
+        '난이도': '보통',
+        '레벨_제한': 4,
+        '설명': '공항과 여행 관련 필수 영어 회화를 연습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.45, '에픽': 0.3, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 600,
+        'max_health': 4
+    },
+    {
+        'id': 'restaurant_ordering',
+        '이름': '레스토랑 주문 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 3,
+        '설명': '레스토랑에서 음식 주문 시 사용하는 영어 표현 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.55, '에픽': 0.28, '유니크': 0.15, '레전드리': 0.02},
+        'clear_condition': 450,
+        'max_health': 5
+    },
+    {
+        'id': 'job_interview_prep',
+        '이름': '취업 면접 준비 던전',
+        '난이도': '어려움',
+        '레벨_제한': 8,
+        '설명': '영어 취업 면접에서 사용하는 전문적인 표현을 학습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.3, '에픽': 0.35, '유니크': 0.25, '레전드리': 0.1},
+        'clear_condition': 1100,
+        'max_health': 2
+    },
+    {
+        'id': 'daily_small_talk',
+        '이름': '일상 대화 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 1,
+        '설명': '매일 사용하는 기본적인 영어 일상 대화 표현 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.7, '에픽': 0.2, '유니크': 0.08, '레전드리': 0.02},
+        'clear_condition': 300,
+        'max_health': 6
+    },
+    {
+        'id': 'phone_conversation',
+        '이름': '전화 통화 던전',
+        '난이도': '보통',
+        '레벨_제한': 5,
+        '설명': '전화로 대화할 때 사용하는 영어 표현을 연습하는 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 700,
+        'max_health': 3
+    },
+    {
+        'id': 'business_meeting',
+        '이름': '비즈니스 미팅 던전',
+        '난이도': '어려움',
+        '레벨_제한': 10,
+        '설명': '비즈니스 회의에서 사용하는 전문 영어 표현 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.25, '에픽': 0.3, '유니크': 0.35, '레전드리': 0.1},
+        'clear_condition': 1500,
+        'max_health': 2
+    },
+    {
+        'id': 'shopping_dialogue',
+        '이름': '쇼핑 대화 던전',
+        '난이도': '쉬움',
+        '레벨_제한': 2,
+        '설명': '쇼핑할 때 자주 사용하는 영어 회화 표현 던전입니다.',
+        'word_source': 'toeic',
+        'rarity_distribution': {'레어': 0.6, '에픽': 0.25, '유니크': 0.12, '레전드리': 0.03},
+        'clear_condition': 400,
+        'max_health': 5
     }
 ]
 
