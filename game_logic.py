@@ -844,10 +844,9 @@ def next_monster(dungeon_run, dungeon):
     if dungeon_run['current_word_index'] >= len(dungeon_run['word_indices']):
         return {'success': False, 'message': '던전을 완료했습니다!'}
     
-    # 현재 단어 설정 (미리 섞인 단어 인덱스에서 가져오기)
+    # 현재 단어 설정 (랜덤 단어 선택)
     words = load_toeic_words()
-    word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
-    current_word = words[word_index]
+    current_word = random.choice(words)
     dungeon_run['current_word'] = current_word
     
     # 몬스터 등급 결정 (확률 기반)
@@ -981,21 +980,29 @@ def build_next_question(dungeon_run):
 
 def update_compendium(player, dungeon_run):
     """몬스터 도감 업데이트"""
-    monster_id = dungeon_run['monster_id']
-    rarity = dungeon_run['current_rarity']
-    word = dungeon_run['current_word']['단어']
-    
-    if monster_id not in player['도감']:
-        player['도감'][monster_id] = {
-            '이름': f"{word} {rarity}",
-            '등급': rarity,
-            '단어': word,
-            '최초처치일': datetime.now().isoformat(),
-            '처치수': 1,
-            '포획됨': True
-        }
-    else:
-        player['도감'][monster_id]['처치수'] += 1
+    try:
+        # 플레이어 도감 초기화 (없다면)
+        if '도감' not in player:
+            player['도감'] = {}
+            
+        monster_id = dungeon_run['monster_id']
+        rarity = dungeon_run['current_rarity']
+        word = dungeon_run['current_word']['단어']
+        
+        if monster_id not in player['도감']:
+            player['도감'][monster_id] = {
+                '이름': f"{word} {rarity}",
+                '등급': rarity,
+                '단어': word,
+                '최초처치일': datetime.now().isoformat(),
+                '처치수': 1,
+                '포획됨': True
+            }
+        else:
+            player['도감'][monster_id]['처치수'] += 1
+    except Exception as e:
+        print(f"도감 업데이트 오류: {e}")
+        # 오류가 발생해도 게임이 멈추지 않도록 pass
 
 def check_dungeon_clear(dungeon_run):
     """던전 클리어 확인"""
