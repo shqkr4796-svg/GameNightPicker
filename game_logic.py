@@ -270,8 +270,8 @@ def work(player):
     player['기력'] = max(0, player['기력'] - 3)
     player['경험치'] += random.randint(5, 15)
     
-    # 근무 시 시간 흐름 (4시간 근무)
-    player['시간'] += 4
+    # 근무 시 시간 흐름 (1시간 근무)
+    player['시간'] += 1
     if player['시간'] >= 24:
         player['시간'] -= 24
         player['날짜'] += 1
@@ -291,7 +291,7 @@ def work(player):
     
     level_ups = check_level_up(player)
     
-    message = f"{salary}원을 벌었습니다. 기력 -3, 경험치 획득, 시간 +4시간"
+    message = f"{salary}원을 벌었습니다. 기력 -3, 경험치 획득, 시간 +1시간"
     if level_ups > 0:
         message += f" 레벨업! ({level_ups}회)"
     
