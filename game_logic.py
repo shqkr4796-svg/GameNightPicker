@@ -248,15 +248,52 @@ def save_word_bank(word_data):
         return False
 
 def get_word_bank():
-    """단어장 가져오기 - 항상 최신 데이터 반환"""
+    """단어장 가져오기 - 기본 단어와 사용자 단어 병합"""
     global _word_bank_cache
-    # 캐시를 사용하지 않고 항상 파일에서 직접 로드
-    if os.path.exists(WORD_BANK_FILE):
-        _word_bank_cache = load_word_bank()
-    else:
-        _word_bank_cache = word_bank.copy()  # 기본값 복사
-        save_word_bank(_word_bank_cache)  # 초기 파일 생성
+    
+    # 기본 단어들 (data/game_data.py에서)
+    base_words = word_bank.copy()
+    
+    # 사용자 추가 단어들 (word_bank.json에서) - 기본 단어와 중복되지 않는 것만
+    user_words = get_user_words()
+    
+    # 두 단어집을 병합 (기본 단어 + 사용자 단어)
+    _word_bank_cache = base_words + user_words
+    
     return _word_bank_cache.copy()  # 복사본 반환으로 원본 보호
+
+def get_user_words():
+    """사용자가 추가한 단어들만 가져오기 (기본 단어와 중복 제거)"""
+    if not os.path.exists(WORD_BANK_FILE):
+        return []
+    
+    user_words = load_word_bank()
+    base_words = word_bank.copy()
+    
+    # 기본 단어 리스트에서 단어 추출 (중복 확인용)
+    base_word_texts = {word['단어'].lower() for word in base_words}
+    
+    # 기본 단어와 중복되지 않는 사용자 단어만 반환
+    filtered_user_words = []
+    for word in user_words:
+        if word.get('단어', '').lower() not in base_word_texts:
+            filtered_user_words.append(word)
+    
+    # 중복이 발견되었다면 정리된 목록을 저장
+    if len(filtered_user_words) != len(user_words):
+        save_user_words(filtered_user_words)
+    
+    return filtered_user_words
+
+def save_user_words(user_words):
+    """사용자 단어만 저장 (기본 단어는 제외)"""
+    try:
+        with open(WORD_BANK_FILE, 'w', encoding='utf-8') as f:
+            json.dump(user_words, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"사용자 단어장 저장 실패: {e}")
+        return False
 
 def get_word_categories():
     """단어 카테고리 목록"""
@@ -295,23 +332,31 @@ def is_valid_word_entry(word, meaning):
     return True
 
 def add_word_to_bank(word, meaning, category='기본'):
-    """단어장에 단어 추가"""
+    """단어장에 단어 추가 (사용자 단어만)"""
     # 유효성 검사
     if not is_valid_word_entry(word, meaning):
         return False
     
-    current_word_bank = get_word_bank()
+    # 기본 단어와 중복 확인
+    base_words = word_bank.copy()
+    base_word_texts = {base_word['단어'].lower() for base_word in base_words}
     
-    # 중복 체크
-    existing_words = {w['단어'].lower() for w in current_word_bank}
-    if word.lower() not in existing_words:
-        current_word_bank.append({
+    if word.lower() in base_word_texts:
+        print(f"'{word}'는 이미 기본 단어장에 있습니다.")
+        return False
+    
+    # 사용자 단어 목록에서 중복 확인
+    user_words = get_user_words()
+    user_word_texts = {user_word['단어'].lower() for user_word in user_words}
+    
+    if word.lower() not in user_word_texts:
+        new_word = {
             '단어': word,
             '뜻': meaning,
             '카테고리': category
-        })
-        save_word_bank(current_word_bank)
-        return True
+        }
+        user_words.append(new_word)
+        return save_user_words(user_words)
     return False
 
 def add_words_to_bank(words, meanings, category, player):
