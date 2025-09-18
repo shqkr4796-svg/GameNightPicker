@@ -28,7 +28,7 @@
 
         /* RPG 프레임 카드 스타일 */
         .card {
-            background-image: url('{{ url_for("static", filename="images/new_card_frame.png") }}') !important;
+            background-image: url('{{ url_for("static", filename="images/hd_card_frame.png") }}') !important;
             background-size: 100% 100% !important;
             background-repeat: no-repeat !important;
             background-position: center !important;
@@ -38,6 +38,8 @@
             position: relative;
             min-height: 200px !important;
             padding: 0 !important;
+            image-rendering: -webkit-optimize-contrast !important;
+            image-rendering: crisp-edges !important;
         }
 
         .card-header {
