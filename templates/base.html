@@ -13,22 +13,12 @@
         /* 부드러운 폰트 설정 */
         body {
             font-family: 'Noto Sans KR', 'Inter', sans-serif !important;
-            {% if 'player_data' in session %}
-                {% if session.player_data['시간'] >= 6 and session.player_data['시간'] < 18 %}
-                    background-image: url('{{ url_for("static", filename="images/day_background.png") }}');
-                {% else %}
-                    background-image: url('{{ url_for("static", filename="images/night_background.png") }}');
-                {% endif %}
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-            {% endif %}
+            background: #ffffff !important;
         }
 
         /* RPG 프레임 카드 스타일 */
         .card {
-            background-image: url('{{ url_for("static", filename="images/hd_card_frame.png") }}') !important;
+            background-image: url('{{ url_for("static", filename="images/main_card_frame.png") }}') !important;
             background-size: 100% 100% !important;
             background-repeat: no-repeat !important;
             background-position: center !important;
@@ -40,6 +30,48 @@
             padding: 0 !important;
             image-rendering: -webkit-optimize-contrast !important;
             image-rendering: crisp-edges !important;
+        }
+
+        /* 작업/근무 관련 카드 스타일 */
+        .work-card {
+            background-image: url('{{ url_for("static", filename="images/work_card_frame.png") }}') !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            border: none !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2) !important;
+            margin: 15px 0 !important;
+            position: relative;
+            min-height: 120px !important;
+            padding: 0 !important;
+        }
+
+        /* 저장/불러오기 카드 스타일 */
+        .save-load-card {
+            background-image: url('{{ url_for("static", filename="images/save_load_card.png") }}') !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            border: none !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2) !important;
+            margin: 15px 0 !important;
+            position: relative;
+            min-height: 150px !important;
+            padding: 0 !important;
+        }
+
+        /* 캐릭터 상태 카드 스타일 */
+        .status-card {
+            background-image: url('{{ url_for("static", filename="images/status_card.png") }}') !important;
+            background-size: 100% 100% !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            border: none !important;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2) !important;
+            margin: 15px 0 !important;
+            position: relative;
+            min-height: 180px !important;
+            padding: 0 !important;
         }
 
         .card-header {
