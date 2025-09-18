@@ -131,6 +131,33 @@ dungeons = [
         'rarity_distribution': {'레어': 0.3, '에픽': 0.3, '유니크': 0.3, '레전드리': 0.1},
         'clear_condition': 350,  # 350개 몬스터 처치
         'max_health': 3
+    },
+    
+    # 구동사 던전
+    {
+        'id': 'phrasal_verbs_basic',
+        '이름': '구동사 기초 던전',
+        '난이도': '보통',
+        '레벨_제한': 3,
+        '설명': '일상에서 자주 사용되는 구동사를 학습하는 던전입니다.',
+        'word_source': 'user_bank',
+        'category_filter': '구동사',
+        'rarity_distribution': {'레어': 0.45, '에픽': 0.35, '유니크': 0.15, '레전드리': 0.05},
+        'clear_condition': 200,  # 200개 몬스터 처치
+        'max_health': 4
+    },
+    {
+        'id': 'phrasal_verbs_advanced',
+        '이름': '구동사 고급 던전',
+        '난이도': '어려움',
+        '레벨_제한': 7,
+        '설명': '복잡하고 고급 구동사 표현들로 구성된 던전입니다.',
+        'word_source': 'user_bank',
+        'category_filter': '구동사',
+        'difficulty_filter': ['intermediate', 'advanced'],
+        'rarity_distribution': {'레어': 0.25, '에픽': 0.35, '유니크': 0.3, '레전드리': 0.1},
+        'clear_condition': 300,  # 300개 몬스터 처치
+        'max_health': 3  # 어려운 만큼 체력 제한
     }
 ]
 
