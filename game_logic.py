@@ -1044,7 +1044,11 @@ def load_words_by_source(word_source, category_filter=None, difficulty_filter=No
     """카테고리별 단어 로드"""
     # user_bank인 경우 사용자 단어장에서 가져오기
     if word_source == 'user_bank':
-        all_words = get_word_bank()
+        # 구동사 카테고리는 기본 단어만 사용 (사용자 단어 제외)
+        if category_filter == '구동사':
+            all_words = word_bank.copy()  # 기본 단어만 사용
+        else:
+            all_words = get_word_bank()  # 기본 + 사용자 단어 병합
         
         # 카테고리 필터 적용
         if category_filter:
