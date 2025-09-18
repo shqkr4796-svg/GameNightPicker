@@ -82,26 +82,42 @@ def get_random_monster_image(rarity):
     """등급별 몬스터 이미지를 랜덤으로 선택"""
     if rarity == '레어':
         rare_images = [
+            '/static/images/monster_1.png',
+            '/static/images/monster_2.png', 
+            '/static/images/monster_3.png',
             '/static/images/monster_rare_1.png',
             '/static/images/monster_rare_2.png', 
-            '/static/images/monster_rare_3.png'
-        ]
-        return random.choice(rare_images)
-    elif rarity == '에픽':
-        epic_images = [
+            '/static/images/monster_rare_3.png',
             '/static/images/monster_rare_4.png',
             '/static/images/monster_rare_5.png',
             '/static/images/monster_rare_6.png',
             '/static/images/monster_rare_7.png',
             '/static/images/monster_rare_8.png'
         ]
+        return random.choice(rare_images)
+    elif rarity == '에픽':
+        epic_images = [
+            '/static/images/epic_monster_1.png',
+            '/static/images/epic_monster_2.png',
+            '/static/images/epic_monster_3.png',
+            '/static/images/epic_monster_4.png',
+            '/static/images/epic_monster_5.png'
+        ]
         return random.choice(epic_images)
     else:
         # 유니크, 레전더리는 레어 이미지 사용
         rare_images = [
+            '/static/images/monster_1.png',
+            '/static/images/monster_2.png', 
+            '/static/images/monster_3.png',
             '/static/images/monster_rare_1.png',
             '/static/images/monster_rare_2.png', 
-            '/static/images/monster_rare_3.png'
+            '/static/images/monster_rare_3.png',
+            '/static/images/monster_rare_4.png',
+            '/static/images/monster_rare_5.png',
+            '/static/images/monster_rare_6.png',
+            '/static/images/monster_rare_7.png',
+            '/static/images/monster_rare_8.png'
         ]
         return random.choice(rare_images)
 

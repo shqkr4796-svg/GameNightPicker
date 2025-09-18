@@ -104,14 +104,14 @@ class SoundManager {
         setTimeout(() => this.createTone(196, 0.5, 'sine'), 250); // G3
     }
 
-    // 몬스터 수집 효과음
+    // 몬스터 수집 효과음 (상자 여는 소리)
     playMonsterCollected() {
-        // 수집 성공 사운드 (마법 같은 느낌)
-        this.createTone(523, 0.12); // C5
-        setTimeout(() => this.createTone(659, 0.12), 120); // E5
-        setTimeout(() => this.createTone(784, 0.12), 240); // G5
-        setTimeout(() => this.createTone(1047, 0.15), 360); // C6
-        setTimeout(() => this.createTone(1319, 0.2), 480); // E6
+        // 상자 여는 효과음 (딸깍 + 반짝이는 소리)
+        this.createTone(800, 0.05, 'square'); // 딸깍
+        setTimeout(() => this.createTone(1200, 0.08), 100); // 반짝1
+        setTimeout(() => this.createTone(1500, 0.08), 200); // 반짝2
+        setTimeout(() => this.createTone(1800, 0.1), 300); // 반짝3
+        setTimeout(() => this.createTone(2000, 0.12), 400); // 반짝4
     }
 
     // 이벤트 리스너 설정
@@ -155,7 +155,7 @@ class SoundManager {
                                 this.playQuizCorrect();
                             } else if (text.includes('레벨업') || text.includes('레벨이')) {
                                 this.playLevelUp();
-                            } else if (text.includes('도감에 추가') || text.includes('몬스터 수집') || text.includes('새로운 몬스터')) {
+                            } else if (text.includes('새로운 몬스터를 도감에 추가')) {
                                 this.playMonsterCollected();
                             } else {
                                 this.playSuccess();
