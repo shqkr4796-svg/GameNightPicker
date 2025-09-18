@@ -616,8 +616,8 @@ def buy_item(player, item_id):
             player['무기_인벤토리'][item_name] = 0
         player['무기_인벤토리'][item_name] += 1
         
-        # 첫 번째 무기는 자동으로 장착
-        if '장착된_무기' not in player:
+        # 첫 번째 무기는 자동으로 장착 (장착된 무기가 없을 때만)
+        if '장착된_무기' not in player or player['장착된_무기'] is None:
             player['장착된_무기'] = item_name
             return {'success': True, 'message': f'{item["이름"]}을(를) 구매하고 장착했습니다!'}
         else:
