@@ -948,8 +948,11 @@ def skip_question():
         
         if random.random() < capture_rate:
             # 몬스터 포획 성공
-            game_logic.update_compendium(player, dungeon_run)
-            result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
+            is_new_monster = game_logic.update_compendium(player, dungeon_run)
+            if is_new_monster:
+                result_msg += f" {rarity} 몬스터를 처치하고 새로운 몬스터를 도감에 추가했습니다!"
+            else:
+                result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
         else:
             result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
         

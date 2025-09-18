@@ -82,26 +82,26 @@ def get_random_monster_image(rarity):
     """등급별 몬스터 이미지를 랜덤으로 선택"""
     if rarity == '레어':
         rare_images = [
-            '/static/images/monster_1.png',
-            '/static/images/monster_2.png', 
-            '/static/images/monster_3.png'
+            '/static/images/monster_rare_1.png',
+            '/static/images/monster_rare_2.png', 
+            '/static/images/monster_rare_3.png'
         ]
         return random.choice(rare_images)
     elif rarity == '에픽':
         epic_images = [
-            '/static/images/epic_monster_1.png',
-            '/static/images/epic_monster_2.png',
-            '/static/images/epic_monster_3.png',
-            '/static/images/epic_monster_4.png',
-            '/static/images/epic_monster_5.png'
+            '/static/images/monster_rare_4.png',
+            '/static/images/monster_rare_5.png',
+            '/static/images/monster_rare_6.png',
+            '/static/images/monster_rare_7.png',
+            '/static/images/monster_rare_8.png'
         ]
         return random.choice(epic_images)
     else:
-        # 유니크, 레전더리는 레어 이미지 사용 (나중에 전용 이미지 추가 가능)
+        # 유니크, 레전더리는 레어 이미지 사용
         rare_images = [
-            '/static/images/monster_1.png',
-            '/static/images/monster_2.png', 
-            '/static/images/monster_3.png'
+            '/static/images/monster_rare_1.png',
+            '/static/images/monster_rare_2.png', 
+            '/static/images/monster_rare_3.png'
         ]
         return random.choice(rare_images)
 
@@ -1191,8 +1191,11 @@ def answer_dungeon(player, dungeon_run, choice):
             
             if random.random() < capture_rate:
                 # 몬스터 포획 성공
-                update_compendium(player, dungeon_run)
-                result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
+                is_new_monster = update_compendium(player, dungeon_run)
+                if is_new_monster:
+                    result_msg += f" {rarity} 몬스터를 처치하고 새로운 몬스터를 도감에 추가했습니다!"
+                else:
+                    result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
             else:
                 result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
             
@@ -1290,6 +1293,7 @@ def update_compendium(player, dungeon_run):
         rarity = dungeon_run['current_rarity']
         word = dungeon_run['current_word']['단어']
         
+        is_new_monster = False
         if monster_id not in player['도감']:
             player['도감'][monster_id] = {
                 '이름': f"{word} {rarity}",
@@ -1300,11 +1304,15 @@ def update_compendium(player, dungeon_run):
                 '처치수': 1,
                 '포획됨': True
             }
+            is_new_monster = True
         else:
             player['도감'][monster_id]['처치수'] += 1
+        
+        return is_new_monster
     except Exception as e:
         print(f"도감 업데이트 오류: {e}")
         # 오류가 발생해도 게임이 멈추지 않도록 pass
+        return False
 
 def check_dungeon_clear(dungeon_run):
     """던전 클리어 확인"""
