@@ -52,49 +52,51 @@
                     <div class="card bg-dark text-light">
                         <div class="card-header">
                             <h5><i data-feather="zap" class="me-2"></i>보유 무기</h5>
-                            <!-- 디버그 정보 -->
-                            <small class="text-muted">
-                                무기 인벤토리: {{ player['무기_인벤토리'] }}<br>
-                                상점 아이템 수: {{ shop_items|length if shop_items else 0 }}
-                            </small>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 {% for weapon_name, count in player['무기_인벤토리'].items() %}
                                     {% if count > 0 %}
                                         {% set weapon_info = none %}
-                                        {% for item in shop_items %}
-                                            {% if item['이름'] == weapon_name and item['타입'] == '무기' %}
-                                                {% set weapon_info = item %}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if shop_items %}
+                                            {% for item in shop_items %}
+                                                {% if item['이름'] == weapon_name and item['타입'] == '무기' %}
+                                                    {% set weapon_info = item %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
                                         
-                                        {% if weapon_info %}
                                         <div class="col-md-4 mb-3">
                                             <div class="card bg-secondary">
                                                 <div class="card-body">
                                                     <h6 class="card-title text-warning">{{ weapon_name }}</h6>
                                                     <p class="card-text small">
-                                                        {{ weapon_info['설명'] }}<br>
-                                                        <strong>피해: +{{ weapon_info['효과']['무기 피해'] }}</strong><br>
+                                                        {% if weapon_info %}
+                                                            {{ weapon_info['설명'] }}<br>
+                                                            <strong>피해: +{{ weapon_info['효과']['무기 피해'] }}</strong><br>
+                                                        {% else %}
+                                                            <span class="text-muted">무기 정보를 찾을 수 없습니다.</span><br>
+                                                        {% endif %}
                                                         <span class="text-muted">보유: {{ count }}개</span>
                                                     </p>
+                                                    
                                                     {% if player.get('장착된_무기') != weapon_name %}
-                                                    <form method="post" action="{{ url_for('equip_weapon') }}">
-                                                        <input type="hidden" name="weapon_name" value="{{ weapon_name }}">
-                                                        <button type="submit" class="btn btn-warning btn-sm">
-                                                            <i data-feather="check" size="16" class="me-1"></i>장착
-                                                        </button>
-                                                    </form>
+                                                        <form method="post" action="{{ url_for('equip_weapon') }}" style="display: inline;">
+                                                            <input type="hidden" name="weapon_name" value="{{ weapon_name }}">
+                                                            <button type="submit" class="btn btn-warning btn-sm">
+                                                                <i data-feather="check" size="16" class="me-1"></i>장착
+                                                            </button>
+                                                        </form>
                                                     {% else %}
-                                                    <button class="btn btn-success btn-sm" disabled>
-                                                        <i data-feather="check-circle" size="16" class="me-1"></i>장착됨
-                                                    </button>
+                                                        <form method="post" action="{{ url_for('unequip_weapon') }}" style="display: inline;">
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                <i data-feather="x" size="16" class="me-1"></i>해제
+                                                            </button>
+                                                        </form>
                                                     {% endif %}
                                                 </div>
                                             </div>
                                         </div>
-                                        {% endif %}
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -117,11 +119,13 @@
                                 {% for item_name, count in player['던전_인벤토리'].items() %}
                                     {% if count > 0 %}
                                         {% set item_info = none %}
-                                        {% for item in shop_items %}
-                                            {% if item['이름'] == item_name and item['타입'] == '던전' %}
-                                                {% set item_info = item %}
-                                            {% endif %}
-                                        {% endfor %}
+                                        {% if shop_items %}
+                                            {% for item in shop_items %}
+                                                {% if item['이름'] == item_name and item['타입'] == '던전' %}
+                                                    {% set item_info = item %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
                                         
                                         {% if item_info %}
                                         <div class="col-md-4 mb-3">
