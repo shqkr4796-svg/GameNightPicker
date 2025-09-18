@@ -1,6 +1,187 @@
 // 라이프 시뮬레이션 게임 - 메인 JavaScript 파일
 
+// 효과음 시스템
+class SoundManager {
+    constructor() {
+        this.audioContext = null;
+        this.enabled = true;
+        this.volume = 0.3;
+        this.init();
+    }
+
+    async init() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.setupSoundEvents();
+        } catch (error) {
+            console.log('오디오 컨텍스트 초기화 실패:', error);
+            this.enabled = false;
+        }
+    }
+
+    // 간단한 톤 생성
+    createTone(frequency, duration, type = 'sine') {
+        if (!this.enabled || !this.audioContext) return;
+
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(this.volume, this.audioContext.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
+
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + duration);
+    }
+
+    // 성공 사운드 (상승하는 톤)
+    playSuccess() {
+        this.createTone(523, 0.15); // C5
+        setTimeout(() => this.createTone(659, 0.15), 100); // E5
+        setTimeout(() => this.createTone(784, 0.2), 200); // G5
+    }
+
+    // 실패 사운드 (하강하는 톤)
+    playError() {
+        this.createTone(523, 0.15); // C5
+        setTimeout(() => this.createTone(440, 0.15), 100); // A4
+        setTimeout(() => this.createTone(349, 0.2), 200); // F4
+    }
+
+    // 버튼 클릭 사운드
+    playClick() {
+        this.createTone(800, 0.05, 'square');
+    }
+
+    // 퀴즈 정답 사운드
+    playQuizCorrect() {
+        this.createTone(659, 0.1); // E5
+        setTimeout(() => this.createTone(784, 0.1), 80); // G5
+        setTimeout(() => this.createTone(1047, 0.15), 160); // C6
+    }
+
+    // 퀴즈 오답 사운드
+    playQuizWrong() {
+        this.createTone(349, 0.3, 'sawtooth'); // F4
+    }
+
+    // 돈 소리 (구매/판매)
+    playMoney() {
+        this.createTone(880, 0.05); // A5
+        setTimeout(() => this.createTone(1109, 0.05), 50); // C#6
+        setTimeout(() => this.createTone(1319, 0.1), 100); // E6
+    }
+
+    // 레벨업 소리
+    playLevelUp() {
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                this.createTone(523 + (i * 131), 0.1); // 상승하는 음계
+            }, i * 100);
+        }
+    }
+
+    // 작업 완료 소리
+    playWorkComplete() {
+        this.createTone(523, 0.1); // C5
+        setTimeout(() => this.createTone(659, 0.1), 100); // E5
+        setTimeout(() => this.createTone(523, 0.1), 200); // C5
+    }
+
+    // 잠자기 소리 (부드러운 톤)
+    playSleep() {
+        this.createTone(220, 0.5, 'sine'); // A3
+        setTimeout(() => this.createTone(196, 0.5, 'sine'), 250); // G3
+    }
+
+    // 이벤트 리스너 설정
+    setupSoundEvents() {
+        // 모든 버튼에 클릭 사운드 추가
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('button, .btn, input[type="submit"]')) {
+                this.playClick();
+            }
+        });
+
+        // 폼 제출 시 사운드
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            const action = form.action;
+            
+            if (action.includes('work')) {
+                this.playWorkComplete();
+            } else if (action.includes('sleep')) {
+                this.playSleep();
+            } else if (action.includes('buy') || action.includes('sell')) {
+                this.playMoney();
+            } else if (action.includes('quiz') || action.includes('take_quiz')) {
+                // 퀴즈 사운드는 결과에 따라 별도 처리
+            }
+        });
+
+        // 플래시 메시지 기반 사운드
+        this.setupFlashMessageSounds();
+    }
+
+    // 플래시 메시지에 따른 사운드 재생
+    setupFlashMessageSounds() {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1 && node.classList) {
+                        if (node.classList.contains('alert-success')) {
+                            const text = node.textContent.toLowerCase();
+                            if (text.includes('정답')) {
+                                this.playQuizCorrect();
+                            } else if (text.includes('레벨업') || text.includes('레벨이')) {
+                                this.playLevelUp();
+                            } else {
+                                this.playSuccess();
+                            }
+                        } else if (node.classList.contains('alert-danger') || node.classList.contains('alert-error')) {
+                            const text = node.textContent.toLowerCase();
+                            if (text.includes('틀렸습니다')) {
+                                this.playQuizWrong();
+                            } else {
+                                this.playError();
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // 음량 조절
+    setVolume(volume) {
+        this.volume = Math.max(0, Math.min(1, volume));
+    }
+
+    // 효과음 켜기/끄기
+    toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+    }
+}
+
+// 전역 사운드 매니저 인스턴스
+let soundManager;
+
 document.addEventListener('DOMContentLoaded', function() {
+    // 효과음 시스템 초기화
+    soundManager = new SoundManager();
+
     // Feather icons 초기화
     if (typeof feather !== 'undefined') {
         feather.replace();
@@ -35,7 +216,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 확인 대화상자
     setupConfirmDialogs();
+
+    // 효과음 설정 UI 추가
+    addSoundControlUI();
 });
+
+// 효과음 제어 UI 추가
+function addSoundControlUI() {
+    const controlDiv = document.createElement('div');
+    controlDiv.id = 'sound-controls';
+    controlDiv.className = 'position-fixed bottom-0 start-0 m-3';
+    controlDiv.style.zIndex = '9999';
+    controlDiv.innerHTML = `
+        <div class="btn-group-vertical" role="group">
+            <button id="sound-toggle" class="btn btn-sm btn-outline-secondary" title="효과음 켜기/끄기">
+                <i data-feather="volume-2" id="sound-icon"></i>
+            </button>
+            <input type="range" id="volume-slider" class="form-range mt-1" 
+                   min="0" max="100" value="30" 
+                   style="width: 60px; transform: rotate(-90deg); transform-origin: center;"
+                   title="음량 조절">
+        </div>
+    `;
+    
+    document.body.appendChild(controlDiv);
+    
+    // 이벤트 리스너 설정
+    const toggleBtn = document.getElementById('sound-toggle');
+    const volumeSlider = document.getElementById('volume-slider');
+    const soundIcon = document.getElementById('sound-icon');
+    
+    toggleBtn.addEventListener('click', () => {
+        const enabled = soundManager.toggle();
+        soundIcon.setAttribute('data-feather', enabled ? 'volume-2' : 'volume-x');
+        toggleBtn.className = enabled ? 'btn btn-sm btn-outline-secondary' : 'btn btn-sm btn-outline-danger';
+        feather.replace();
+    });
+    
+    volumeSlider.addEventListener('input', (e) => {
+        const volume = e.target.value / 100;
+        soundManager.setVolume(volume);
+    });
+    
+    // 아이콘 초기화
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+}
 
 // 자동 저장 상태 표시
 function showAutoSaveStatus() {
