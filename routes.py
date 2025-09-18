@@ -138,7 +138,16 @@ def add_word():
     player = session['player_data']
     words_text = request.form.get('words', '').strip()
     meanings_text = request.form.get('meanings', '').strip()
+    
+    # 카테고리 처리: 새 카테고리가 선택되면 사용자 입력값 사용
     category = request.form.get('category', '기본')
+    if category == 'custom':
+        custom_category = request.form.get('custom_category', '').strip()
+        if custom_category:
+            category = custom_category
+        else:
+            flash('새 카테고리 이름을 입력해주세요.', 'error')
+            return redirect(url_for('quiz'))
     
     if words_text and meanings_text:
         words = [w.strip() for w in words_text.split('\n') if w.strip()]
@@ -152,7 +161,7 @@ def add_word():
             if added_count > 0:
                 session['player_data'] = player
                 game_logic.save_game(player)
-                flash(f'{added_count}개의 단어가 추가되었습니다! 경험치 +{exp_gained}', 'success')
+                flash(f'{added_count}개의 단어가 "{category}" 카테고리에 추가되었습니다! 경험치 +{exp_gained}', 'success')
             else:
                 flash('모두 중복되는 단어입니다.', 'info')
     else:

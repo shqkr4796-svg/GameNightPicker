@@ -174,12 +174,13 @@
                         <div class="col-md-2">
                             <div class="mb-3">
                                 <label class="form-label">카테고리</label>
-                                <select name="category" class="form-select">
+                                <select id="category-select" name="category" class="form-select" onchange="toggleCustomCategory()">
                                     {% for category in categories %}
                                     <option value="{{ category }}">{{ category }}</option>
                                     {% endfor %}
-                                    <option value="새카테고리">새 카테고리</option>
+                                    <option value="custom">새 카테고리 입력</option>
                                 </select>
+                                <input type="text" id="custom-category" name="custom_category" class="form-control mt-2 d-none" placeholder="카테고리 이름을 입력하세요">
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -199,6 +200,25 @@
                             </small>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+        
+        <script>
+        function toggleCustomCategory() {
+            const select = document.getElementById('category-select');
+            const customInput = document.getElementById('custom-category');
+            
+            if (select.value === 'custom') {
+                customInput.classList.remove('d-none');
+                customInput.required = true;
+            } else {
+                customInput.classList.add('d-none');
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
+        </script>
                 </form>
             </div>
         </div>
