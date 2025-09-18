@@ -355,25 +355,9 @@ def save_category_words():
         result = game_logic.save_category_words_to_bank(dungeon_id, category_name)
         
         if result['success']:
-            # 경험치 지급 (저장된 단어 수에 비례)
-            player = session['player_data']
-            exp_gained = result['added_count'] * 0.1  # 단어당 0.1 경험치
-            player['경험치'] += exp_gained
-            
-            # 정규 레벨업 로직 사용
-            old_level = player['레벨']
-            level_ups = game_logic.check_level_up(player)
-            
-            session['player_data'] = player
-            game_logic.save_game(player)
-            
-            level_up_message = ""
-            if level_ups > 0:
-                level_up_message = f" (레벨업! {old_level} → {player['레벨']})"
-            
             return jsonify({
                 'success': True,
-                'message': result['message'] + f' 경험치 +{exp_gained}{level_up_message}',
+                'message': result['message'],
                 'added_count': result['added_count'],
                 'total_words': result['total_words']
             })
