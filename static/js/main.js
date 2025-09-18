@@ -4,8 +4,8 @@
 class SoundManager {
     constructor() {
         this.audioContext = null;
-        this.enabled = true;
-        this.volume = 0.3;
+        this.enabled = localStorage.getItem('soundEnabled') !== 'false';
+        this.volume = parseFloat(localStorage.getItem('soundVolume')) || 0.3;
         this.init();
     }
 
@@ -182,11 +182,13 @@ class SoundManager {
     // 음량 조절
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
+        localStorage.setItem('soundVolume', this.volume.toString());
     }
 
     // 효과음 켜기/끄기
     toggle() {
         this.enabled = !this.enabled;
+        localStorage.setItem('soundEnabled', this.enabled.toString());
         return this.enabled;
     }
 }
@@ -329,17 +331,21 @@ function addSoundControlUI() {
         z-index: 9999;
         padding: 8px;
     `;
+    // 저장된 설정 불러오기
+    const savedVolume = Math.round((soundManager.volume || 0.3) * 100);
+    const isEnabled = soundManager.enabled;
+    
     controlDiv.innerHTML = `
         <div class="d-flex flex-column align-items-center">
-            <button id="sound-toggle" class="btn btn-sm btn-dark mb-2" 
+            <button id="sound-toggle" class="btn btn-sm ${isEnabled ? 'btn-dark' : 'btn-danger'} mb-2" 
                     title="효과음 켜기/끄기" style="width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;">
-                <i id="sound-icon" class="fas fa-volume-up" style="font-size: 16px; color: white;"></i>
+                <i id="sound-icon" class="fas ${isEnabled ? 'fa-volume-up' : 'fa-volume-mute'}" style="font-size: 16px; color: white;"></i>
             </button>
             <input type="range" id="volume-slider" class="form-range" 
-                   min="0" max="100" value="30" 
+                   min="0" max="100" value="${savedVolume}" 
                    style="width: 80px; height: 4px;"
                    title="음량 조절">
-            <small id="volume-display" class="text-dark mt-1" style="color: black !important;">30%</small>
+            <small id="volume-display" class="text-dark mt-1" style="color: black !important;">${savedVolume}%</small>
         </div>
     `;
     
