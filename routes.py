@@ -3,6 +3,7 @@ from app import app
 import game_logic
 import json
 import os
+import random
 
 @app.route('/')
 def index():
@@ -658,6 +659,111 @@ def use_dungeon_item():
     # 상태 업데이트
     session['player_data'] = player
     session['dungeon_run'] = dungeon_run
+    game_logic.save_game(player)
+    
+    return redirect(url_for('dungeon_run'))
+
+@app.route('/dungeon/use_hint', methods=['POST'])
+def use_hint():
+    """던전에서 힌트 사용"""
+    if 'player_data' not in session or 'dungeon_run' not in session:
+        return redirect(url_for('dungeons'))
+    
+    player = session['player_data']
+    dungeon_run = session['dungeon_run']
+    
+    # 힌트 사용 가능 횟수 확인
+    hint_count = player.get('던전_버프', {}).get('힌트 사용', 0)
+    
+    if hint_count <= 0:
+        flash('사용할 수 있는 힌트가 없습니다.', 'error')
+        return redirect(url_for('dungeon_run'))
+    
+    # 힌트 사용 횟수 차감
+    player['던전_버프']['힌트 사용'] -= 1
+    
+    # 힌트 생성 (정답의 첫 글자 또는 힌트 제공)
+    correct_answer = dungeon_run['current_word']['뜻']
+    hint_text = f"힌트: 정답은 '{correct_answer[0]}...'로 시작합니다."
+    
+    flash(hint_text, 'info')
+    
+    # 상태 업데이트
+    session['player_data'] = player
+    session['dungeon_run'] = dungeon_run
+    session.modified = True
+    game_logic.save_game(player)
+    
+    return redirect(url_for('dungeon_run'))
+
+@app.route('/dungeon/skip_question', methods=['POST'])
+def skip_question():
+    """던전에서 문제 스킵"""
+    if 'player_data' not in session or 'dungeon_run' not in session:
+        return redirect(url_for('dungeons'))
+    
+    player = session['player_data']
+    dungeon_run = session['dungeon_run']
+    
+    # 스킵 사용 가능 횟수 확인
+    skip_count = player.get('던전_버프', {}).get('문제 스킵', 0)
+    
+    if skip_count <= 0:
+        flash('사용할 수 있는 스킵이 없습니다.', 'error')
+        return redirect(url_for('dungeon_run'))
+    
+    # 스킵 사용 횟수 차감
+    player['던전_버프']['문제 스킵'] -= 1
+    
+    # 문제를 정답으로 처리 (스킵이므로 몬스터 진행도 증가)
+    dungeon_run['monster_progress'] += 1
+    
+    result_msg = "문제를 스킵했습니다! 몬스터에게 피해를 입혔습니다."
+    
+    # 몬스터 처치 확인
+    if dungeon_run['monster_progress'] >= dungeon_run['monster_hp']:
+        # 몬스터 처치
+        rarity = dungeon_run['current_rarity']
+        capture_rate = game_logic.monster_rarities[rarity]['capture_rate']
+        
+        if random.random() < capture_rate:
+            # 몬스터 포획 성공
+            game_logic.update_compendium(player, dungeon_run)
+            result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
+        else:
+            result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
+        
+        # 처치한 단어 수 및 인덱스 증가
+        dungeon_run['cleared_words'] += 1
+        dungeon_run['current_word_index'] += 1
+        
+        # 다음 몬스터 생성
+        dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+        next_result = game_logic.next_monster(dungeon_run, dungeon)
+        
+        if not next_result['success']:
+            # 던전 클리어
+            flash('던전을 클리어했습니다!', 'success')
+            session.pop('dungeon_run', None)
+            session['player_data'] = player
+            session.modified = True
+            game_logic.save_game(player)
+            return redirect(url_for('dungeons'))
+    else:
+        # 몬스터가 살아있으면 새로운 문제 생성
+        progress = dungeon_run['monster_progress']
+        max_hp = dungeon_run['monster_hp']
+        result_msg += f" ({progress}/{max_hp})"
+        
+        # 다음 문제 준비 - 다른 단어로 새로운 문제 생성
+        game_logic.build_next_question(dungeon_run)
+    
+    flash(result_msg, 'success')
+    
+    # 상태 업데이트
+    session['player_data'] = player
+    session['dungeon_run'] = dungeon_run
+    session.modified = True
     game_logic.save_game(player)
     
     return redirect(url_for('dungeon_run'))

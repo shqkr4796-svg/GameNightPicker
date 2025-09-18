@@ -1070,7 +1070,7 @@ def use_dungeon_item(player, item_name, dungeon_run=None):
     result_message = f'{item_name}을(를) 사용했습니다. '
     
     for effect, value in effects.items():
-        if effect == '던전_체력' and dungeon_run:
+        if effect == '던전 체력' and dungeon_run:
             # 던전 체력 회복 - 플레이어 실제 체력도 함께 회복
             max_health = 10  # 플레이어 최대 체력
             old_hp = dungeon_run['player_hp']
@@ -1079,6 +1079,18 @@ def use_dungeon_item(player, item_name, dungeon_run=None):
             player['체력'] = min(player['체력'] + heal_amount, max_health)
             actual_heal = dungeon_run['player_hp'] - old_hp
             result_message += f'체력이 {actual_heal} 회복되었습니다. '
+        elif effect == '힌트 사용' and dungeon_run:
+            # 힌트 사용 횟수 추가
+            if '던전_버프' not in player:
+                player['던전_버프'] = {}
+            player['던전_버프']['힌트 사용'] = player['던전_버프'].get('힌트 사용', 0) + value
+            result_message += f'힌트를 {value}번 사용할 수 있습니다. '
+        elif effect == '문제 스킵' and dungeon_run:
+            # 문제 스킵 횟수 추가  
+            if '던전_버프' not in player:
+                player['던전_버프'] = {}
+            player['던전_버프']['문제 스킵'] = player['던전_버프'].get('문제 스킵', 0) + value
+            result_message += f'문제를 {value}개 스킵할 수 있습니다. '
         elif effect == '부활' and dungeon_run:
             # 부활 효과는 나중에 처리하기 위해 플레이어에 플래그 저장
             if '던전_버프' not in player:
