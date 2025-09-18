@@ -124,7 +124,6 @@
                                             {% for item in shop_items %}
                                                 {% if item['이름'] == item_name and item.get('타입') == '던전' %}
                                                     {% set item_info = item %}
-                                                    {% break %}
                                                 {% endif %}
                                             {% endfor %}
                                         {% endif %}
