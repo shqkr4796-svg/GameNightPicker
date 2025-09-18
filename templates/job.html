@@ -119,7 +119,7 @@
                     {% for job in jobs %}
                     {% set total_requirements = job['힘'] + job['지능'] + job['외모'] + job['체력스탯'] + job['운'] %}
                     {% set player_total = player['힘'] + player['지능'] + player['외모'] + player['체력스탯'] + player['운'] %}
-                    {% set can_apply = player_total >= (total_requirements * 0.5) %}
+                    {% set can_apply = (player['힘'] >= job['힘']) and (player['지능'] >= job['지능']) and (player['외모'] >= job['외모']) and (player['체력스탯'] >= job['체력스탯']) and (player['운'] >= job['운']) %}
                     
                     <div class="col-md-6 mb-3 job-item" 
                          data-level="{% if total_requirements <= 5 %}low{% elif total_requirements <= 15 %}mid{% elif total_requirements <= 30 %}high{% else %}expert{% endif %}">
@@ -178,13 +178,7 @@
             </div>
             <div class="card-body">
                 {% set player_total = player['힘'] + player['지능'] + player['외모'] + player['체력스탯'] + player['운'] %}
-                {% set available_jobs = 0 %}
-                {% for job in jobs %}
-                    {% set total_requirements = job['힘'] + job['지능'] + job['외모'] + job['체력스탯'] + job['운'] %}
-                    {% if player_total >= (total_requirements * 0.5) %}
-                        {% set available_jobs = available_jobs + 1 %}
-                    {% endif %}
-                {% endfor %}
+                {% set available_jobs = jobs|selectattr('힘', '<=', player['힘'])|selectattr('지능', '<=', player['지능'])|selectattr('외모', '<=', player['외모'])|selectattr('체력스탯', '<=', player['체력스탯'])|selectattr('운', '<=', player['운'])|list|length %}
                 
                 <div class="text-center mb-3">
                     <h3 class="text-success">{{ available_jobs }}</h3>

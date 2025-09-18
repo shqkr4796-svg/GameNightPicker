@@ -377,7 +377,7 @@ def sleep():
     # 랜덤 이벤트 체크
     event = game_logic.check_random_event(player)
     if event:
-        flash(f"이벤트 발생: {event['message']}", 'info')
+        flash(f"이벤트 발생: {event['메시지']}", 'info')
     
     flash(result['message'], 'success')
     return redirect(url_for('dashboard'))
