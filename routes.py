@@ -55,8 +55,9 @@ def quiz():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    word_bank = game_logic.get_word_bank()
-    categories = game_logic.get_word_categories()
+    word_bank = game_logic.get_user_words()
+    # 사용자 단어에서만 카테고리 추출
+    categories = list(set([word.get('카테고리', '기본') for word in word_bank]))
     
     # 선택된 카테고리 확인
     selected_category = request.args.get('category', 'all')
@@ -125,10 +126,10 @@ def take_quiz():
         if wrong_session_key not in session:
             session[wrong_session_key] = []
         
-        # 단어 정보를 완전하게 저장
-        word_bank = game_logic.get_word_bank()
+        # 단어 정보를 완전하게 저장 (사용자 단어에서만)
+        user_word_bank = game_logic.get_user_words()
         full_word_info = None
-        for word_info in word_bank:
+        for word_info in user_word_bank:
             if word_info['단어'] == quiz_word:
                 full_word_info = word_info
                 break
