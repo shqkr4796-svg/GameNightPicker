@@ -15,8 +15,10 @@
                 <div class="row">
                     {% for item in items %}
                     {% set can_afford = player['돈'] >= item['가격'] %}
+                    {% set level_ok = not item.get('레벨_제한') or player['레벨'] >= item.get('레벨_제한', 0) %}
+                    {% set can_buy = can_afford and level_ok %}
                     <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card h-100 {% if not can_afford %}opacity-50{% endif %} 
+                        <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} 
                              border-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %}">
                             <div class="card-header p-2">
                                 <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
@@ -35,15 +37,18 @@
                                             {{ effect }} {% if value > 0 %}+{% endif %}{{ value }}
                                         </small>
                                     {% endfor %}
+                                    {% if item.get('레벨_제한') %}
+                                        <br><small class="text-warning">필요 레벨: {{ item['레벨_제한'] }}</small>
+                                    {% endif %}
                                 </div>
                                 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
                                     <form method="POST" action="{{ url_for('buy_item') }}">
                                         <input type="hidden" name="item_id" value="{{ loop.index0 }}">
-                                        <button type="submit" class="btn btn-sm {% if can_afford %}btn-success{% else %}btn-outline-secondary{% endif %}"
-                                                {% if not can_afford %}disabled{% endif %}>
-                                            {% if can_afford %}구매{% else %}자금부족{% endif %}
+                                        <button type="submit" class="btn btn-sm {% if can_buy %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                                {% if not can_buy %}disabled{% endif %}>
+                                            {% if not level_ok %}레벨부족{% elif not can_afford %}자금부족{% else %}구매{% endif %}
                                         </button>
                                     </form>
                                 </div>

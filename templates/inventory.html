@@ -74,8 +74,9 @@
                                                         {% if weapon_info %}
                                                             {{ weapon_info['설명'] }}<br>
                                                             <strong>피해: +{{ weapon_info['효과']['무기 피해'] }}</strong><br>
-                                                        {% else %}
-                                                            <span class="text-muted">무기 정보를 찾을 수 없습니다.</span><br>
+                                                            {% if weapon_info.get('레벨_제한') %}
+                                                                <span class="text-info">필요 레벨: {{ weapon_info['레벨_제한'] }}</span><br>
+                                                            {% endif %}
                                                         {% endif %}
                                                         <span class="text-muted">보유: {{ count }}개</span>
                                                     </p>

@@ -608,6 +608,11 @@ def buy_item(player, item_id):
     
     # 무기는 장착 시스템으로 관리
     elif item.get('타입') == '무기':
+        # 레벨 제한 확인
+        required_level = item.get('레벨_제한', 0)
+        if player['레벨'] < required_level:
+            return {'success': False, 'message': f'레벨 {required_level} 이상이어야 구매할 수 있습니다. (현재 레벨: {player["레벨"]})'}
+        
         if '무기_인벤토리' not in player:
             player['무기_인벤토리'] = {}
         
@@ -661,6 +666,15 @@ def equip_weapon(player, weapon_name):
     
     if weapon_name not in player['무기_인벤토리'] or player['무기_인벤토리'][weapon_name] <= 0:
         return {'success': False, 'message': '보유하지 않은 무기입니다.'}
+    
+    # 레벨 제한 확인
+    shop_items = get_shop_items()
+    for item in shop_items:
+        if item.get('이름') == weapon_name and item.get('타입') == '무기':
+            required_level = item.get('레벨_제한', 0)
+            if player['레벨'] < required_level:
+                return {'success': False, 'message': f'레벨 {required_level} 이상이어야 장착할 수 있습니다. (현재 레벨: {player["레벨"]})'}
+            break
     
     player['장착된_무기'] = weapon_name
     return {'success': True, 'message': f'{weapon_name}을(를) 장착했습니다!'}
