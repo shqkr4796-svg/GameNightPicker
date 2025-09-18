@@ -594,6 +594,24 @@ def buy_item(player, item_id):
         player['던전_인벤토리'][item_name] += 1
         
         return {'success': True, 'message': f'{item["이름"]}을(를) 구매하여 던전 인벤토리에 저장했습니다!'}
+    
+    # 무기는 장착 시스템으로 관리
+    elif item.get('타입') == '무기':
+        if '무기_인벤토리' not in player:
+            player['무기_인벤토리'] = {}
+        
+        item_name = item['이름']
+        if item_name not in player['무기_인벤토리']:
+            player['무기_인벤토리'][item_name] = 0
+        player['무기_인벤토리'][item_name] += 1
+        
+        # 첫 번째 무기는 자동으로 장착
+        if '장착된_무기' not in player:
+            player['장착된_무기'] = item_name
+            return {'success': True, 'message': f'{item["이름"]}을(를) 구매하고 장착했습니다!'}
+        else:
+            return {'success': True, 'message': f'{item["이름"]}을(를) 구매했습니다! 인벤토리에서 장착할 수 있습니다.'}
+    
     else:
         # 일반 아이템은 즉시 효과 적용
         for stat, value in item['효과'].items():
@@ -609,6 +627,41 @@ def buy_item(player, item_id):
                     player[stat] += value
         
         return {'success': True, 'message': f'{item["이름"]}의 효과가 적용되었습니다!'}
+
+def get_weapon_damage(player):
+    """장착된 무기의 추가 피해 계산"""
+    if '장착된_무기' not in player or not player['장착된_무기']:
+        return 0
+    
+    weapon_name = player['장착된_무기']
+    shop_items = get_shop_items()
+    
+    # 상점 아이템에서 무기 정보 찾기
+    for item in shop_items:
+        if item.get('이름') == weapon_name and item.get('타입') == '무기':
+            return item['효과'].get('무기 피해', 0)
+    
+    return 0
+
+def equip_weapon(player, weapon_name):
+    """무기 장착"""
+    if '무기_인벤토리' not in player:
+        return {'success': False, 'message': '무기 인벤토리가 없습니다.'}
+    
+    if weapon_name not in player['무기_인벤토리'] or player['무기_인벤토리'][weapon_name] <= 0:
+        return {'success': False, 'message': '보유하지 않은 무기입니다.'}
+    
+    player['장착된_무기'] = weapon_name
+    return {'success': True, 'message': f'{weapon_name}을(를) 장착했습니다!'}
+
+def unequip_weapon(player):
+    """무기 해제"""
+    if '장착된_무기' in player:
+        weapon_name = player['장착된_무기']
+        player['장착된_무기'] = None
+        return {'success': True, 'message': f'{weapon_name}을(를) 해제했습니다.'}
+    else:
+        return {'success': False, 'message': '장착된 무기가 없습니다.'}
 
 def allocate_stat_points(player, stat_type, points):
     """스탯 포인트 분배"""
@@ -1207,10 +1260,18 @@ def build_question(dungeon_run, dungeon):
 def answer_dungeon(player, dungeon_run, choice):
     """던전 답변 처리"""
     if choice == dungeon_run['correct_answer_index']:
-        # 정답
-        dungeon_run['monster_progress'] += 1
+        # 정답 - 기본 피해 1 + 무기 추가 피해 계산
+        base_damage = 1
+        weapon_damage = get_weapon_damage(player)
+        total_damage = base_damage + weapon_damage
         
-        result_msg = "정답! 몬스터에게 피해를 입혔습니다."
+        dungeon_run['monster_progress'] += total_damage
+        
+        if weapon_damage > 0:
+            weapon_name = player.get('장착된_무기', '')
+            result_msg = f"정답! {weapon_name}으로 몬스터에게 {total_damage} 피해를 입혔습니다."
+        else:
+            result_msg = "정답! 몬스터에게 피해를 입혔습니다."
         
         # 몬스터 처치 확인
         if dungeon_run['monster_progress'] >= dungeon_run['monster_hp']:

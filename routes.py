@@ -509,6 +509,55 @@ def buy_item():
     
     return redirect(url_for('shop'))
 
+@app.route('/equip_weapon', methods=['POST'])
+def equip_weapon():
+    """무기 장착"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    weapon_name = request.form.get('weapon_name', '')
+    
+    result = game_logic.equip_weapon(player, weapon_name)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('inventory'))
+
+@app.route('/unequip_weapon', methods=['POST'])
+def unequip_weapon():
+    """무기 해제"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    result = game_logic.unequip_weapon(player)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('inventory'))
+
+@app.route('/inventory')
+def inventory():
+    """인벤토리 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    shop_items = game_logic.get_shop_items()
+    return render_template('inventory.html', player=player, shop_items=shop_items)
+
 @app.route('/allocate_stats', methods=['POST'])
 def allocate_stats():
     """스탯 분배"""
