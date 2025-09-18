@@ -52,6 +52,11 @@
                     <div class="card bg-dark text-light">
                         <div class="card-header">
                             <h5><i data-feather="zap" class="me-2"></i>보유 무기</h5>
+                            <!-- 디버그 정보 -->
+                            <small class="text-muted">
+                                무기 인벤토리: {{ player['무기_인벤토리'] }}<br>
+                                상점 아이템 수: {{ shop_items|length if shop_items else 0 }}
+                            </small>
                         </div>
                         <div class="card-body">
                             <div class="row">
