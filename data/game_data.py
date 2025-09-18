@@ -14,8 +14,8 @@ dungeons = [
         '설명': '토익 기초 단어로 구성된 초급자를 위한 던전입니다.',
         'word_source': 'toeic',
         'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
-        'clear_condition': 500,  # 500개 단어 완료
-        'max_health': 3  # 초급자용 기본 체력
+        'clear_condition': 20,  # 20개 몬스터 처치
+        'max_health': 5  # 초급자용 기본 체력
     },
     {
         'id': 'toeic_intermediate',
@@ -25,8 +25,8 @@ dungeons = [
         '설명': '중급 수준의 토익 단어들로 구성된 던전입니다.',
         'word_source': 'toeic',
         'rarity_distribution': {'레어': 0.3, '에픽': 0.4, '유니크': 0.25, '레전드리': 0.05},
-        'clear_condition': 1000,
-        'max_health': 5
+        'clear_condition': 30,  # 30개 몬스터 처치
+        'max_health': 4
     },
     {
         'id': 'toeic_advanced',
@@ -36,7 +36,7 @@ dungeons = [
         '설명': '고급 토익 단어와 복잡한 표현들로 구성된 던전입니다.',
         'word_source': 'toeic',
         'rarity_distribution': {'레어': 0.2, '에픽': 0.3, '유니크': 0.35, '레전드리': 0.15},
-        'clear_condition': 1500,
+        'clear_condition': 50,  # 50개 몬스터 처치
         'max_health': 3  # 어려운 만큼 체력 제한
     },
     # 비즈니스 던전
@@ -46,9 +46,9 @@ dungeons = [
         '난이도': '쉬움',
         '레벨_제한': 2,
         '설명': '기본적인 비즈니스 용어를 학습하는 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'business',
         'rarity_distribution': {'레어': 0.6, '에픽': 0.25, '유니크': 0.12, '레전드리': 0.03},
-        'clear_condition': 300,
+        'clear_condition': 15,  # 15개 몬스터 처치
         'max_health': 4
     },
     {
@@ -57,9 +57,9 @@ dungeons = [
         '난이도': '보통',
         '레벨_제한': 6,
         '설명': '마케팅과 광고 관련 전문 용어 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'marketing',
         'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
-        'clear_condition': 800,
+        'clear_condition': 25,  # 25개 몬스터 처치
         'max_health': 3
     },
     {
@@ -68,9 +68,9 @@ dungeons = [
         '난이도': '어려움',
         '레벨_제한': 8,
         '설명': '금융과 투자 관련 고급 용어 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'finance',
         'rarity_distribution': {'레어': 0.3, '에픽': 0.3, '유니크': 0.3, '레전드리': 0.1},
-        'clear_condition': 1200,
+        'clear_condition': 35,  # 35개 몬스터 처치
         'max_health': 2
     },
     
@@ -81,9 +81,9 @@ dungeons = [
         '난이도': '쉬움',
         '레벨_제한': 3,
         '설명': '컴퓨터와 IT 기초 용어를 학습하는 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'it',
         'rarity_distribution': {'레어': 0.5, '에픽': 0.3, '유니크': 0.15, '레전드리': 0.05},
-        'clear_condition': 400,
+        'clear_condition': 18,  # 18개 몬스터 처치
         'max_health': 4
     },
     {
@@ -92,9 +92,9 @@ dungeons = [
         '난이도': '보통',
         '레벨_제한': 7,
         '설명': '프로그래밍과 개발 관련 전문 용어 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'programming',
         'rarity_distribution': {'레어': 0.35, '에픽': 0.35, '유니크': 0.25, '레전드리': 0.05},
-        'clear_condition': 900,
+        'clear_condition': 30,  # 30개 몬스터 처치
         'max_health': 3
     },
     {
@@ -103,9 +103,9 @@ dungeons = [
         '난이도': '매우 어려움',
         '레벨_제한': 12,
         '설명': '인공지능과 머신러닝 최신 용어 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'ai',
         'rarity_distribution': {'레어': 0.2, '에픽': 0.25, '유니크': 0.35, '레전드리': 0.2},
-        'clear_condition': 1800,
+        'clear_condition': 40,  # 40개 몬스터 처치
         'max_health': 2
     },
     
@@ -116,9 +116,9 @@ dungeons = [
         '난이도': '보통',
         '레벨_제한': 4,
         '설명': '기본적인 의학 용어를 학습하는 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'medical',
         'rarity_distribution': {'레어': 0.45, '에픽': 0.3, '유니크': 0.2, '레전드리': 0.05},
-        'clear_condition': 600,
+        'clear_condition': 20,  # 20개 몬스터 처치
         'max_health': 4
     },
     {
@@ -127,9 +127,9 @@ dungeons = [
         '난이도': '어려움',
         '레벨_제한': 9,
         '설명': '약학과 의약품 관련 전문 용어 던전입니다.',
-        'word_source': 'toeic',
+        'word_source': 'medical',
         'rarity_distribution': {'레어': 0.3, '에픽': 0.3, '유니크': 0.3, '레전드리': 0.1},
-        'clear_condition': 1300,
+        'clear_condition': 35,  # 35개 몬스터 처치
         'max_health': 3
     },
     

@@ -771,6 +771,33 @@ def load_toeic_words():
         print(f"토익 단어 로드 실패: {e}")
         return []
 
+def load_words_by_source(word_source):
+    """카테고리별 단어 로드"""
+    file_mapping = {
+        'toeic': 'data/toeic_words.json',
+        'business': 'data/business_words.json',
+        'marketing': 'data/marketing_words.json',
+        'finance': 'data/finance_words.json',
+        'it': 'data/it_words.json',
+        'programming': 'data/programming_words.json',
+        'ai': 'data/ai_words.json',
+        'medical': 'data/medical_words.json'
+    }
+    
+    try:
+        file_path = file_mapping.get(word_source, 'data/toeic_words.json')  # 기본값은 토익
+        with open(file_path, 'r', encoding='utf-8') as f:
+            words = json.load(f)
+            # 단어가 적어도 카테고리 순수성 유지 - 같은 단어들을 반복하여 확장
+            if len(words) < 50 and word_source != 'toeic':
+                # 카테고리 단어만 반복하여 확장 (순수성 유지)
+                extended_words = words * (50 // len(words) + 1)
+                return extended_words[:50]  # 50개로 제한
+            return words
+    except Exception as e:
+        print(f"{word_source} 단어 로드 실패: {e}, 토익 단어로 대체")
+        return load_toeic_words()
+
 def get_dungeons():
     """던전 목록 가져오기"""
     return dungeons
@@ -798,8 +825,8 @@ def init_dungeon_run(player, dungeon_id):
     if player['레벨'] < dungeon['레벨_제한']:
         return {'success': False, 'message': f'레벨 {dungeon["레벨_제한"]} 이상만 입장 가능합니다.'}
     
-    # 토익 단어 로드
-    words = load_toeic_words()
+    # 던전별 단어 로드 (카테고리에 맞는 단어 사용)
+    words = load_words_by_source(dungeon.get('word_source', 'toeic'))
     if not words:
         return {'success': False, 'message': '단어를 로드할 수 없습니다.'}
     
@@ -824,7 +851,8 @@ def init_dungeon_run(player, dungeon_id):
         'player_hp': player['체력'],  # 플레이어의 실제 체력 사용
         'cleared_words': 0,
         'total_words': len(word_queue),
-        'actual_clear_condition': actual_clear_condition  # 실제 클리어 조건 저장
+        'actual_clear_condition': actual_clear_condition,  # 실제 클리어 조건 저장
+        'word_source': dungeon.get('word_source', 'toeic')  # 단어 카테고리 저장
     }
     
     # 첫 번째 몬스터 생성
@@ -844,8 +872,8 @@ def next_monster(dungeon_run, dungeon):
     if dungeon_run['current_word_index'] >= len(dungeon_run['word_indices']):
         return {'success': False, 'message': '던전을 완료했습니다!'}
     
-    # 현재 단어 설정 (랜덤 단어 선택)
-    words = load_toeic_words()
+    # 현재 단어 설정 (카테고리별 랜덤 단어 선택)
+    words = load_words_by_source(dungeon_run.get('word_source', 'toeic'))
     current_word = random.choice(words)
     dungeon_run['current_word'] = current_word
     
@@ -881,8 +909,8 @@ def build_question(dungeon_run, dungeon):
     current_word = dungeon_run['current_word']
     correct_answer = current_word['뜻']
     
-    # 토익 단어에서 오답 생성
-    all_words = load_toeic_words()
+    # 같은 카테고리 단어에서 오답 생성
+    all_words = load_words_by_source(dungeon.get('word_source', 'toeic') if dungeon else 'toeic')
     wrong_options = []
     
     # 정답과 다른 뜻들 중에서 3개 랜덤 선택
@@ -962,8 +990,8 @@ def answer_dungeon(player, dungeon_run, choice):
 
 def build_next_question(dungeon_run):
     """같은 몬스터에 대해 다음 문제 생성"""
-    # 모든 단어에서 현재 단어와 다른 단어를 랜덤하게 선택
-    words = load_toeic_words()
+    # 같은 카테고리에서 현재 단어와 다른 단어를 랜덤하게 선택
+    words = load_words_by_source(dungeon_run.get('word_source', 'toeic'))
     current_word_text = dungeon_run['current_word']['단어']
     
     # 현재 단어와 다른 단어들 중에서 랜덤 선택
