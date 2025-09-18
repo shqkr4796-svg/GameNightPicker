@@ -127,8 +127,17 @@ def take_quiz():
         if wrong_session_key not in session:
             session[wrong_session_key] = []
         
+        # 단어 정보를 완전하게 저장
+        word_bank = game_logic.get_word_bank()
+        full_word_info = None
+        for word_info in word_bank:
+            if word_info['단어'] == quiz_word:
+                full_word_info = word_info
+                break
+        
         wrong_question = {
             'word': quiz_word,
+            'meaning': full_word_info['뜻'] if full_word_info else '알 수 없음',
             'question_type': question_type,
             'correct_answer': correct_answer,
             'player_answer': answer,
@@ -649,6 +658,13 @@ def dungeon_run():
     
     player = session['player_data']
     dungeon_run = session['dungeon_run']
+    
+    # 던전런에서 플래시 메시지 확인 및 처리
+    if 'flash_message' in dungeon_run:
+        flash(dungeon_run['flash_message'], 'info')
+        del dungeon_run['flash_message']  # 메시지 표시 후 삭제
+        session['dungeon_run'] = dungeon_run  # 세션 업데이트
+    
     dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
     
     # 던전 클리어 확인
@@ -736,6 +752,11 @@ def answer_dungeon():
             session['player_data'] = player
             game_logic.save_game(player)
             return redirect(url_for('dungeons'))
+        
+        # 던전런에서 플래시 메시지 확인 및 처리
+        if 'flash_message' in dungeon_run:
+            flash(dungeon_run['flash_message'], 'info')
+            del dungeon_run['flash_message']  # 메시지 표시 후 삭제
     
     # 상태 업데이트
     session['dungeon_run'] = dungeon_run
