@@ -840,9 +840,14 @@ def next_monster(dungeon_run, dungeon):
     if dungeon_run['cleared_words'] >= dungeon_run['actual_clear_condition']:
         return {'success': False, 'message': '던전을 완료했습니다!'}
     
-    # 현재 단어 설정 (랜덤하게 단어 선택)
+    # 현재 단어 인덱스가 범위를 벗어났는지 확인
+    if dungeon_run['current_word_index'] >= len(dungeon_run['word_indices']):
+        return {'success': False, 'message': '던전을 완료했습니다!'}
+    
+    # 현재 단어 설정 (미리 섞인 단어 인덱스에서 가져오기)
     words = load_toeic_words()
-    current_word = random.choice(words)
+    word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
+    current_word = words[word_index]
     dungeon_run['current_word'] = current_word
     
     # 몬스터 등급 결정 (확률 기반)
@@ -931,8 +936,9 @@ def answer_dungeon(player, dungeon_run, choice):
             else:
                 result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
             
-            # 처치한 단어 수 증가
+            # 처치한 단어 수 및 인덱스 증가
             dungeon_run['cleared_words'] += 1
+            dungeon_run['current_word_index'] += 1
             
             return {'success': True, 'correct': True, 'monster_defeated': True, 'game_over': False, 'message': result_msg}
         else:
@@ -959,16 +965,19 @@ def build_next_question(dungeon_run):
     """같은 몬스터에 대해 다음 문제 생성"""
     # 모든 단어에서 현재 단어와 다른 단어를 랜덤하게 선택
     words = load_toeic_words()
-    current_word = dungeon_run['current_word']['단어']
+    current_word_text = dungeon_run['current_word']['단어']
     
     # 현재 단어와 다른 단어들 중에서 랜덤 선택
-    available_words = [word for word in words if word['단어'] != current_word]
+    available_words = [word for word in words if word['단어'] != current_word_text]
     if available_words:
         new_word = random.choice(available_words)
         dungeon_run['current_word'] = new_word
         
         # 새로운 문제 생성
-        build_question(dungeon_run, None)
+        return build_question(dungeon_run, None)
+    else:
+        # 사용 가능한 다른 단어가 없으면 기존 문제 재생성
+        return build_question(dungeon_run, None)
 
 def update_compendium(player, dungeon_run):
     """몬스터 도감 업데이트"""
