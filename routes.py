@@ -285,6 +285,59 @@ def add_word():
     
     return redirect(url_for('quiz'))
 
+@app.route('/save_word_from_quiz', methods=['POST'])
+def save_word_from_quiz():
+    """퀴즈에서 단어 저장 (AJAX)"""
+    if 'player_data' not in session:
+        return jsonify({'success': False, 'message': '로그인이 필요합니다.'})
+    
+    try:
+        data = request.get_json()
+        word = data.get('word', '').strip()
+        meaning = data.get('meaning', '').strip()
+        category = data.get('category', '기본').strip()
+        
+        if not word or not meaning:
+            return jsonify({'success': False, 'message': '단어와 뜻을 모두 입력해주세요.'})
+        
+        if not category:
+            return jsonify({'success': False, 'message': '카테고리를 선택해주세요.'})
+        
+        player = session['player_data']
+        
+        # 단어 추가
+        success = game_logic.add_word_to_bank(word, meaning, category)
+        
+        if success:
+            # 경험치 지급
+            exp_gained = 0.5
+            player['경험치'] += exp_gained
+            
+            # 레벨업 체크
+            old_level = player['레벨']
+            while player['경험치'] >= player['레벨'] * 10:
+                player['경험치'] -= player['레벨'] * 10
+                player['레벨'] += 1
+                player['스탯_포인트'] += 3
+            
+            session['player_data'] = player
+            game_logic.save_game(player)
+            
+            level_up_message = ""
+            if player['레벨'] > old_level:
+                level_up_message = f" (레벨업! {old_level} → {player['레벨']})"
+            
+            return jsonify({
+                'success': True, 
+                'message': f'"{word}" 단어가 "{category}" 카테고리에 저장되었습니다! 경험치 +{exp_gained}{level_up_message}'
+            })
+        else:
+            return jsonify({'success': False, 'message': '이미 존재하는 단어입니다.'})
+            
+    except Exception as e:
+        print(f"Error saving word from quiz: {e}")
+        return jsonify({'success': False, 'message': '단어 저장 중 오류가 발생했습니다.'})
+
 @app.route('/delete_word', methods=['POST'])
 def delete_word():
     """단어 삭제"""

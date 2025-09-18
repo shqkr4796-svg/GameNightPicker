@@ -90,20 +90,34 @@
                             <h4 class="text-primary">단어 뜻 맞히기</h4>
                             <div class="word-card mb-4">
                                 <div class="word">{{ quiz_word['뜻'] }}</div>
-                                <button type="button" class="btn btn-outline-info btn-sm mt-2" 
-                                        onclick="speakWord('{{ quiz_word['단어'] }}')" title="정답 단어 발음 듣기">
-                                    <i class="fas fa-volume-up me-1"></i>정답 발음 듣기
-                                </button>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-outline-info btn-sm" 
+                                            onclick="speakWord('{{ quiz_word['단어'] }}')" title="정답 단어 발음 듣기">
+                                        <i class="fas fa-volume-up me-1"></i>정답 발음 듣기
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success btn-sm ms-2" 
+                                            onclick="showSaveWordModal('{{ quiz_word['단어'] }}', '{{ quiz_word['뜻'] }}')" 
+                                            title="이 단어를 단어 관리에 저장">
+                                        <i class="fas fa-bookmark me-1"></i>단어 저장
+                                    </button>
+                                </div>
                             </div>
                             <p>위 뜻에 해당하는 영어 단어를 입력하세요.</p>
                         {% else %}
                             <h4 class="text-primary">단어를 보고 뜻 맞히기</h4>
                             <div class="word-card mb-4">
                                 <div class="word">{{ quiz_word['단어'] }}</div>
-                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" 
-                                        onclick="speakWord('{{ quiz_word['단어'] }}')" title="단어 발음 듣기">
-                                    <i class="fas fa-volume-up me-1"></i>발음 듣기
-                                </button>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                                            onclick="speakWord('{{ quiz_word['단어'] }}')" title="단어 발음 듣기">
+                                        <i class="fas fa-volume-up me-1"></i>발음 듣기
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success btn-sm ms-2" 
+                                            onclick="showSaveWordModal('{{ quiz_word['단어'] }}', '{{ quiz_word['뜻'] }}')" 
+                                            title="이 단어를 단어 관리에 저장">
+                                        <i class="fas fa-bookmark me-1"></i>단어 저장
+                                    </button>
+                                </div>
                             </div>
                             <p>위 단어의 뜻을 한글로 입력하세요.</p>
                         {% endif %}
@@ -284,7 +298,138 @@
         document.addEventListener('DOMContentLoaded', function() {
             toggleCustomCategory();
         });
+        
+        // 단어 저장 모달 표시
+        function showSaveWordModal(word, meaning) {
+            document.getElementById('save-word').value = word;
+            document.getElementById('save-meaning').value = meaning;
+            
+            const modal = new bootstrap.Modal(document.getElementById('saveWordModal'));
+            modal.show();
+        }
+        
+        // 단어 저장
+        function saveWordToBank() {
+            const word = document.getElementById('save-word').value;
+            const meaning = document.getElementById('save-meaning').value;
+            const category = document.getElementById('save-category').value;
+            const customCategory = document.getElementById('save-custom-category').value;
+            
+            const finalCategory = category === 'custom' ? customCategory : category;
+            
+            if (!finalCategory) {
+                alert('카테고리를 선택하거나 입력해주세요.');
+                return;
+            }
+            
+            // AJAX로 단어 저장
+            fetch('/save_word_from_quiz', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    word: word,
+                    meaning: meaning,
+                    category: finalCategory
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 성공 메시지 표시
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+                    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; width: 300px;';
+                    alertDiv.innerHTML = `
+                        <i class="fas fa-check-circle me-2"></i>${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    
+                    // 3초 후 자동으로 제거
+                    setTimeout(() => {
+                        if (alertDiv.parentNode) {
+                            alertDiv.parentNode.removeChild(alertDiv);
+                        }
+                    }, 3000);
+                    
+                    // 모달 닫기
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('saveWordModal'));
+                    modal.hide();
+                } else {
+                    alert('오류: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('단어 저장 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 카테고리 선택 변경
+        function toggleSaveCategory() {
+            const select = document.getElementById('save-category');
+            const customInput = document.getElementById('save-custom-category');
+            
+            if (select.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
         </script>
+    </div>
+
+    <!-- 단어 저장 모달 -->
+    <div class="modal fade" id="saveWordModal" tabindex="-1" aria-labelledby="saveWordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="saveWordModalLabel">
+                        <i class="fas fa-bookmark me-2"></i>단어 저장하기
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="saveWordForm">
+                        <div class="mb-3">
+                            <label for="save-word" class="form-label">단어</label>
+                            <input type="text" class="form-control" id="save-word" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="save-meaning" class="form-label">뜻</label>
+                            <input type="text" class="form-control" id="save-meaning" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="save-category" class="form-label">카테고리</label>
+                            <select class="form-select" id="save-category" onchange="toggleSaveCategory()">
+                                {% if categories %}
+                                    {% for category in categories %}
+                                    <option value="{{ category }}">{{ category }}</option>
+                                    {% endfor %}
+                                    <option value="custom">새 카테고리 입력</option>
+                                {% else %}
+                                    <option value="custom" selected>새 카테고리 입력</option>
+                                {% endif %}
+                            </select>
+                            <input type="text" id="save-custom-category" class="form-control mt-2" 
+                                   placeholder="새 카테고리 이름" style="display: none;">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-success" onclick="saveWordToBank()">
+                        <i class="fas fa-save me-1"></i>저장
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="col-lg-4">
