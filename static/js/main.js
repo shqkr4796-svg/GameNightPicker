@@ -409,11 +409,11 @@ function showNotification(message, type = 'success', icon = 'check') {
     notification.className = `alert ${alertClass} position-fixed`;
     notification.style.cssText = `
         top: 20px;
-        right: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
         z-index: 10000;
         min-width: 250px;
         opacity: 0;
-        transform: translateY(-20px);
         transition: all 0.3s ease;
     `;
     notification.innerHTML = `
@@ -426,14 +426,14 @@ function showNotification(message, type = 'success', icon = 'check') {
     // 애니메이션으로 표시
     setTimeout(() => {
         notification.style.opacity = '1';
-        notification.style.transform = 'translateY(0)';
+        notification.style.transform = 'translateX(-50%) translateY(0)';
     }, 10);
     
     // 3초 후 자동으로 사라짐
     setTimeout(() => {
         if (notification && notification.parentNode) {
             notification.style.opacity = '0';
-            notification.style.transform = 'translateY(-20px)';
+            notification.style.transform = 'translateX(-50%) translateY(-20px)';
             setTimeout(() => {
                 if (notification && notification.parentNode) {
                     notification.remove();
