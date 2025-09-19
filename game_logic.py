@@ -333,32 +333,20 @@ def is_valid_word_entry(word, meaning):
     return True
 
 def add_word_to_bank(word, meaning, category='기본'):
-    """단어장에 단어 추가 (사용자 단어만)"""
+    """단어장에 단어 추가 (중복 허용)"""
     # 유효성 검사
     if not is_valid_word_entry(word, meaning):
         return False
     
-    # 기본 단어와 중복 확인
-    base_words = word_bank.copy()
-    base_word_texts = {base_word['단어'].lower() for base_word in base_words}
-    
-    if word.lower() in base_word_texts:
-        print(f"'{word}'는 이미 기본 단어장에 있습니다.")
-        return False
-    
-    # 사용자 단어 목록에서 중복 확인
+    # 사용자 단어에 바로 추가
     user_words = get_user_words()
-    user_word_texts = {user_word['단어'].lower() for user_word in user_words}
-    
-    if word.lower() not in user_word_texts:
-        new_word = {
-            '단어': word,
-            '뜻': meaning,
-            '카테고리': category
-        }
-        user_words.append(new_word)
-        return save_user_words(user_words)
-    return False
+    new_word = {
+        '단어': word,
+        '뜻': meaning,
+        '카테고리': category
+    }
+    user_words.append(new_word)
+    return save_user_words(user_words)
 
 def save_category_words_to_bank(dungeon_id, category_name):
     """던전 카테고리의 모든 단어를 사용자 단어장에 저장"""
@@ -440,45 +428,28 @@ def save_category_words_to_bank(dungeon_id, category_name):
         return {'success': False, 'message': '카테고리 단어 저장 중 오류가 발생했습니다.'}
 
 def add_words_to_bank(words, meanings, category, player):
-    """여러 단어를 단어장에 추가하고 새 단어에 대해 경험치 지급"""
-    # 기본 단어와 사용자 단어 분리해서 로드
-    base_words = word_bank.copy()
+    """여러 단어를 단어장에 추가 (중복 허용)"""
     user_words = get_user_words()
     
     added_count = 0
-    exp_gained = 0
-    
-    # 중복 확인용 세트 (기본 단어 + 사용자 단어)
-    base_word_texts = {base_word['단어'].lower() for base_word in base_words}
-    user_word_texts = {user_word['단어'].lower() for user_word in user_words}
-    existing_word_texts = base_word_texts | user_word_texts
     
     for word, meaning in zip(words, meanings):
         # 유효성 검사 먼저
         if not is_valid_word_entry(word, meaning):
             continue
             
-        # 중복 체크 (기본 단어 + 사용자 단어 모두 확인, 대소문자 무시)
-        if word.lower() not in existing_word_texts:
-            user_words.append({
-                '단어': word,
-                '뜻': meaning,
-                '카테고리': category
-            })
-            existing_word_texts.add(word.lower())  # 같은 요청 내에서 중복 방지
-            added_count += 1
-            
-            # 새 단어 등록 시 경험치 0.5 획득
-            player['경험치'] += 0.5
-            exp_gained += 0.5
+        # 중복 체크 없이 바로 추가
+        user_words.append({
+            '단어': word,
+            '뜻': meaning,
+            '카테고리': category
+        })
+        added_count += 1
     
     # 사용자 단어만 저장
     save_user_words(user_words)
     
-    # 레벨업 확인
-    level_ups = check_level_up(player)
-    
-    return added_count, exp_gained
+    return added_count
 
 def delete_word_from_bank(word_index):
     """단어장에서 단어 삭제 (사용자 단어만)"""
