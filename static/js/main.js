@@ -196,43 +196,11 @@ class SoundManager {
 // 전역 사운드 매니저 인스턴스
 let soundManager;
 
-// 간단한 버튼 상태 표시 함수
-function showButtonState(button, text, className = 'btn-info') {
-    if (!button) return;
-    
-    const originalText = button.innerHTML;
-    const originalClass = button.className;
-    
-    button.innerHTML = text;
-    button.className = button.className.replace(/btn-\w+/, className);
-    button.disabled = true;
-    
-    // 1초 후 원래 상태로 복원
-    setTimeout(() => {
-        button.innerHTML = originalText;
-        button.className = originalClass;
-        button.disabled = false;
-    }, 1000);
-}
-
-// 음성 합성 함수 - 네이티브 영어 발음 (상태 표시 포함)
-function speakWord(word, buttonElement) {
-    // 버튼 요소 찾기
-    let button = null;
-    if (buttonElement && buttonElement.target) {
-        button = buttonElement.target.closest('button');
-    } else if (buttonElement && buttonElement.tagName === 'BUTTON') {
-        button = buttonElement;
-    }
-    
+// 음성 합성 함수 - 네이티브 영어 발음
+function speakWord(word) {
     if ('speechSynthesis' in window) {
         // 이전 음성이 재생 중이면 중단
         speechSynthesis.cancel();
-        
-        // 버튼 상태 표시
-        if (button) {
-            showButtonState(button, '<i class="fas fa-volume-up"></i> 재생중...', 'btn-primary');
-        }
         
         const utterance = new SpeechSynthesisUtterance(word);
         
@@ -277,9 +245,6 @@ function speakWord(word, buttonElement) {
         
         speechSynthesis.speak(utterance);
     } else {
-        if (button) {
-            showButtonState(button, '<i class="fas fa-times"></i> 오류', 'btn-danger');
-        }
         alert('음성 합성을 지원하지 않는 브라우저입니다.');
     }
 }
@@ -290,20 +255,7 @@ function changeQuizCategory(category) {
 }
 
 // 퀴즈 세션 리셋
-function resetQuizSession(category, buttonElement) {
-    // 버튼 요소 찾기
-    let button = null;
-    if (buttonElement && buttonElement.target) {
-        button = buttonElement.target.closest('button');
-    } else if (buttonElement && buttonElement.tagName === 'BUTTON') {
-        button = buttonElement;
-    }
-    
-    // 버튼 상태 표시
-    if (button) {
-        showButtonState(button, '<i class="fas fa-sync fa-spin"></i> 리셋중...', 'btn-warning');
-    }
-    
+function resetQuizSession(category) {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/reset_quiz_session';
@@ -324,21 +276,8 @@ function resetQuizSession(category, buttonElement) {
 }
 
 // 틀린 문제 재도전
-function retryWrongQuestions(category, buttonElement) {
+function retryWrongQuestions(category) {
     if (confirm('틀린 문제들만 다시 풀어보시겠습니까?')) {
-        // 버튼 요소 찾기
-        let button = null;
-        if (buttonElement && buttonElement.target) {
-            button = buttonElement.target.closest('button');
-        } else if (buttonElement && buttonElement.tagName === 'BUTTON') {
-            button = buttonElement;
-        }
-        
-        // 버튼 상태 표시
-        if (button) {
-            showButtonState(button, '<i class="fas fa-redo"></i> 이동중...', 'btn-info');
-        }
-        
         window.location.href = '/quiz/retry_wrong?category=' + encodeURIComponent(category);
     }
 }
@@ -384,32 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 효과음 설정 UI 추가
     addSoundControlUI();
-    
-    // 모든 버튼에 클릭 시 간단한 상태 표시 추가
-    document.addEventListener('click', function(e) {
-        const button = e.target.closest('button');
-        if (!button) return;
-        
-        // 특별한 onclick 함수가 있는 버튼들은 제외 (이미 자체 상태 표시 있음)
-        if (button.hasAttribute('onclick')) {
-            const onclickValue = button.getAttribute('onclick');
-            if (onclickValue.includes('speakWord(') ||
-                onclickValue.includes('resetQuizSession(') ||
-                onclickValue.includes('retryWrongQuestions(') ||
-                onclickValue.includes('confirm(')) {
-                return;
-            }
-        }
-        
-        // 폼 제출 버튼은 제출 중 표시
-        if (button.type === 'submit') {
-            showButtonState(button, '<i class="fas fa-paper-plane"></i> 제출중...', 'btn-info');
-        } 
-        // 일반 버튼은 처리 중 표시
-        else {
-            showButtonState(button, '<i class="fas fa-spinner fa-spin"></i> 처리중...', 'btn-secondary');
-        }
-    });
 });
 
 // 효과음 제어 UI 추가
