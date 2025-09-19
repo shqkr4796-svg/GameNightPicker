@@ -303,6 +303,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
+    // flash 메시지를 팝업으로 변환
+    convertFlashMessagesToPopups();
+
     // 자동 저장 알림
     showAutoSaveStatus();
 
@@ -384,16 +387,23 @@ function addSoundControlUI() {
 }
 
 // 효과음 상태 알림 표시
-function showSoundStatusNotification(message, isEnabled) {
+// 일반 팝업 알림 함수
+function showNotification(message, type = 'success', icon = 'check') {
     // 기존 알림이 있으면 제거
-    const existingNotification = document.getElementById('sound-status-notification');
+    const existingNotification = document.getElementById('game-notification');
     if (existingNotification) {
         existingNotification.remove();
     }
     
     const notification = document.createElement('div');
-    notification.id = 'sound-status-notification';
-    notification.className = `alert alert-${isEnabled ? 'success' : 'warning'} position-fixed`;
+    notification.id = 'game-notification';
+    
+    let alertClass = 'alert-success';
+    if (type === 'error' || type === 'danger') alertClass = 'alert-danger';
+    else if (type === 'warning') alertClass = 'alert-warning';
+    else if (type === 'info') alertClass = 'alert-info';
+    
+    notification.className = `alert ${alertClass} position-fixed`;
     notification.style.cssText = `
         top: 20px;
         right: 20px;
@@ -404,7 +414,7 @@ function showSoundStatusNotification(message, isEnabled) {
         transition: all 0.3s ease;
     `;
     notification.innerHTML = `
-        <i class="fas fa-${isEnabled ? 'volume-up' : 'volume-mute'} me-2"></i>
+        <i class="fas fa-${icon} me-2"></i>
         ${message}
     `;
     
@@ -416,16 +426,74 @@ function showSoundStatusNotification(message, isEnabled) {
         notification.style.transform = 'translateY(0)';
     }, 10);
     
-    // 2초 후 자동 제거
+    // 3초 후 자동으로 사라짐
     setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateY(-20px)';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
+        if (notification && notification.parentNode) {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                if (notification && notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 3000);
+}
+
+function showSoundStatusNotification(message, isEnabled) {
+    showNotification(message, isEnabled ? 'success' : 'warning', isEnabled ? 'volume-up' : 'volume-mute');
+}
+
+// flash 메시지를 팝업으로 변환
+function convertFlashMessagesToPopups() {
+    const flashMessages = document.querySelectorAll('.alert.alert-dismissible');
+    
+    flashMessages.forEach(alert => {
+        // 기존 flash 메시지 내용 가져오기
+        const messageText = alert.textContent.trim();
+        
+        // 메시지 타입 결정
+        let type = 'success';
+        let icon = 'check';
+        
+        if (alert.classList.contains('alert-success')) {
+            type = 'success';
+            if (messageText.includes('정답')) {
+                icon = 'check-circle';
+            } else if (messageText.includes('게임을 불러왔습니다')) {
+                icon = 'download';
+            } else if (messageText.includes('레벨업') || messageText.includes('레벨이')) {
+                icon = 'arrow-up-circle';
+            } else if (messageText.includes('던전')) {
+                icon = 'map';
+            } else if (messageText.includes('완료') || messageText.includes('성공')) {
+                icon = 'check-circle';
+            } else {
+                icon = 'check';
             }
-        }, 300);
-    }, 2000);
+        } else if (alert.classList.contains('alert-danger') || alert.classList.contains('alert-error')) {
+            type = 'error';
+            if (messageText.includes('틀렸습니다')) {
+                icon = 'x-circle';
+            } else {
+                icon = 'alert-circle';
+            }
+        } else if (alert.classList.contains('alert-warning')) {
+            type = 'warning';
+            icon = 'alert-triangle';
+        } else if (alert.classList.contains('alert-info')) {
+            type = 'info';
+            icon = 'info';
+        }
+        
+        // 기존 flash 메시지 숨기기
+        alert.style.display = 'none';
+        
+        // 팝업으로 표시
+        setTimeout(() => {
+            showNotification(messageText, type, icon);
+        }, 100);
+    });
 }
 
 // 자동 저장 상태 표시
