@@ -303,11 +303,26 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // flash 메시지를 팝업으로 변환
+    // flash 메시지를 팝업으로 변환 (즉시 실행)
     convertFlashMessagesToPopups();
+    
+    // 약간의 지연 후 한번 더 실행 (DOM이 완전히 로드된 후)
+    setTimeout(() => {
+        convertFlashMessagesToPopups();
+    }, 100);
+    
+    // 추가로 500ms 후에도 한번 더 실행
+    setTimeout(() => {
+        convertFlashMessagesToPopups();
+    }, 500);
     
     // 동적으로 추가되는 메시지들도 감지
     setupDynamicMessageObserver();
+    
+    // 주기적으로 flash 메시지 확인 (혹시 놓친 것들을 위해)
+    setInterval(() => {
+        convertFlashMessagesToPopups();
+    }, 1000);
 
     // 자동 저장 알림
     showAutoSaveStatus();
@@ -412,9 +427,12 @@ function showNotification(message, type = 'success', icon = 'check') {
         left: 50%;
         transform: translateX(-50%) translateY(-20px);
         z-index: 10000;
-        min-width: 250px;
+        width: 80%;
+        max-width: 800px;
+        min-width: 400px;
         opacity: 0;
         transition: all 0.3s ease;
+        text-align: center;
     `;
     notification.innerHTML = `
         <i class="fas fa-${icon} me-2"></i>
@@ -485,12 +503,17 @@ function getMessageTypeAndIcon(messageText, alertElement) {
     return { type, icon };
 }
 
-// flash 메시지를 팝업으로 변환
+// flash 메시지를 팝업으로 변환  
 function convertFlashMessagesToPopups() {
-    // 모든 flash 메시지 찾기 (class가 alert인 것들)
-    const flashMessages = document.querySelectorAll('.alert');
+    // 모든 flash 메시지 찾기 (더 포괄적으로)
+    const flashMessages = document.querySelectorAll('.alert, [class*="alert-"], .flash-message');
     
     flashMessages.forEach(alert => {
+        // 우리가 만든 팝업은 건너뛰기
+        if (alert.id === 'game-notification' || alert.id === 'sound-status-notification') {
+            return;
+        }
+        
         // 이미 처리된 메시지는 건너뛰기
         if (alert.hasAttribute('data-popup-converted')) {
             return;
@@ -503,10 +526,10 @@ function convertFlashMessagesToPopups() {
         let messageText = alert.textContent.trim();
         
         // 닫기 버튼 텍스트 제거
-        messageText = messageText.replace(/×/g, '').trim();
+        messageText = messageText.replace(/×/g, '').replace(/✕/g, '').trim();
         
         // 메시지가 비어있으면 건너뛰기
-        if (!messageText) {
+        if (!messageText || messageText.length < 2) {
             return;
         }
         
@@ -514,14 +537,18 @@ function convertFlashMessagesToPopups() {
         const { type, icon } = getMessageTypeAndIcon(messageText, alert);
         
         // 기존 flash 메시지 완전히 제거
-        alert.remove();
+        alert.style.display = 'none';
+        setTimeout(() => alert.remove(), 100);
         
         // 팝업으로 표시
-        setTimeout(() => {
-            showNotification(messageText, type, icon);
-        }, 100);
+        showNotification(messageText, type, icon);
     });
 }
+
+// 글로벌 함수로 외부에서 호출 가능하게 만들기
+window.showGameNotification = function(message, type = 'success', icon = 'check') {
+    showNotification(message, type, icon);
+};
 
 // 동적으로 추가되는 메시지들을 감지하는 Observer 설정
 function setupDynamicMessageObserver() {
@@ -534,13 +561,14 @@ function setupDynamicMessageObserver() {
                         return;
                     }
                     
-                    // 새로 추가된 alert 메시지 확인 (Bootstrap alert만)
-                    if (node.classList.contains('alert') && 
-                        (node.classList.contains('alert-dismissible') || 
-                         node.classList.contains('alert-success') || 
-                         node.classList.contains('alert-danger') || 
-                         node.classList.contains('alert-warning') || 
-                         node.classList.contains('alert-info'))) {
+                    // 새로 추가된 alert 메시지 확인 (모든 alert 관련)
+                    if (node.classList.contains('alert') || 
+                        Array.from(node.classList).some(cls => cls.includes('alert'))) {
+                        
+                        // 우리가 만든 팝업은 무시
+                        if (node.id === 'game-notification' || node.id === 'sound-status-notification') {
+                            return;
+                        }
                         
                         // 이미 처리된 메시지가 아니면 처리
                         if (!node.hasAttribute('data-popup-converted')) {
@@ -550,8 +578,8 @@ function setupDynamicMessageObserver() {
                         }
                     }
                     
-                    // 자식 요소 중에 alert가 있는지 확인 (Bootstrap alert만)
-                    const alertsInNode = node.querySelectorAll('.alert.alert-dismissible, .alert-success, .alert-danger, .alert-warning, .alert-info');
+                    // 자식 요소 중에 alert가 있는지 확인 (모든 alert 관련)
+                    const alertsInNode = node.querySelectorAll('.alert, [class*="alert-"], .flash-message');
                     alertsInNode.forEach(alert => {
                         // 우리가 만든 팝업은 무시
                         if (alert.id === 'game-notification' || alert.id === 'sound-status-notification') {
