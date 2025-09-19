@@ -305,6 +305,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // flash 메시지를 팝업으로 변환
     convertFlashMessagesToPopups();
+    
+    // 동적으로 추가되는 메시지들도 감지
+    setupDynamicMessageObserver();
 
     // 자동 저장 알림
     showAutoSaveStatus();
@@ -444,56 +447,148 @@ function showSoundStatusNotification(message, isEnabled) {
     showNotification(message, isEnabled ? 'success' : 'warning', isEnabled ? 'volume-up' : 'volume-mute');
 }
 
+// 메시지 타입과 아이콘 결정하는 함수
+function getMessageTypeAndIcon(messageText, alertElement) {
+    let type = 'success';
+    let icon = 'check';
+    
+    if (alertElement.classList.contains('alert-success')) {
+        type = 'success';
+        if (messageText.includes('정답')) {
+            icon = 'check-circle';
+        } else if (messageText.includes('게임을 불러왔습니다')) {
+            icon = 'download';
+        } else if (messageText.includes('레벨업') || messageText.includes('레벨이')) {
+            icon = 'arrow-up-circle';
+        } else if (messageText.includes('던전')) {
+            icon = 'map';
+        } else if (messageText.includes('완료') || messageText.includes('성공')) {
+            icon = 'check-circle';
+        } else {
+            icon = 'check';
+        }
+    } else if (alertElement.classList.contains('alert-danger') || alertElement.classList.contains('alert-error')) {
+        type = 'error';
+        if (messageText.includes('틀렸습니다')) {
+            icon = 'x-circle';
+        } else {
+            icon = 'alert-circle';
+        }
+    } else if (alertElement.classList.contains('alert-warning')) {
+        type = 'warning';
+        icon = 'alert-triangle';
+    } else if (alertElement.classList.contains('alert-info')) {
+        type = 'info';
+        icon = 'info';
+    }
+    
+    return { type, icon };
+}
+
 // flash 메시지를 팝업으로 변환
 function convertFlashMessagesToPopups() {
-    const flashMessages = document.querySelectorAll('.alert.alert-dismissible');
+    // 모든 flash 메시지 찾기 (class가 alert인 것들)
+    const flashMessages = document.querySelectorAll('.alert');
     
     flashMessages.forEach(alert => {
-        // 기존 flash 메시지 내용 가져오기
-        const messageText = alert.textContent.trim();
-        
-        // 메시지 타입 결정
-        let type = 'success';
-        let icon = 'check';
-        
-        if (alert.classList.contains('alert-success')) {
-            type = 'success';
-            if (messageText.includes('정답')) {
-                icon = 'check-circle';
-            } else if (messageText.includes('게임을 불러왔습니다')) {
-                icon = 'download';
-            } else if (messageText.includes('레벨업') || messageText.includes('레벨이')) {
-                icon = 'arrow-up-circle';
-            } else if (messageText.includes('던전')) {
-                icon = 'map';
-            } else if (messageText.includes('완료') || messageText.includes('성공')) {
-                icon = 'check-circle';
-            } else {
-                icon = 'check';
-            }
-        } else if (alert.classList.contains('alert-danger') || alert.classList.contains('alert-error')) {
-            type = 'error';
-            if (messageText.includes('틀렸습니다')) {
-                icon = 'x-circle';
-            } else {
-                icon = 'alert-circle';
-            }
-        } else if (alert.classList.contains('alert-warning')) {
-            type = 'warning';
-            icon = 'alert-triangle';
-        } else if (alert.classList.contains('alert-info')) {
-            type = 'info';
-            icon = 'info';
+        // 이미 처리된 메시지는 건너뛰기
+        if (alert.hasAttribute('data-popup-converted')) {
+            return;
         }
         
-        // 기존 flash 메시지 숨기기
-        alert.style.display = 'none';
+        // 처리 완료 표시
+        alert.setAttribute('data-popup-converted', 'true');
+        
+        // 기존 flash 메시지 내용 가져오기
+        let messageText = alert.textContent.trim();
+        
+        // 닫기 버튼 텍스트 제거
+        messageText = messageText.replace(/×/g, '').trim();
+        
+        // 메시지가 비어있으면 건너뛰기
+        if (!messageText) {
+            return;
+        }
+        
+        // 메시지 타입 결정
+        const { type, icon } = getMessageTypeAndIcon(messageText, alert);
+        
+        // 기존 flash 메시지 완전히 제거
+        alert.remove();
         
         // 팝업으로 표시
         setTimeout(() => {
             showNotification(messageText, type, icon);
         }, 100);
     });
+}
+
+// 동적으로 추가되는 메시지들을 감지하는 Observer 설정
+function setupDynamicMessageObserver() {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType === 1 && node.classList) {
+                    // 새로 추가된 alert 메시지 확인
+                    if (node.classList.contains('alert')) {
+                        // 이미 처리된 메시지가 아니면 처리
+                        if (!node.hasAttribute('data-popup-converted')) {
+                            setTimeout(() => {
+                                convertSingleAlert(node);
+                            }, 50);
+                        }
+                    }
+                    
+                    // 자식 요소 중에 alert가 있는지 확인
+                    const alertsInNode = node.querySelectorAll('.alert');
+                    alertsInNode.forEach(alert => {
+                        if (!alert.hasAttribute('data-popup-converted')) {
+                            setTimeout(() => {
+                                convertSingleAlert(alert);
+                            }, 50);
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    // body 전체를 감시
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
+// 단일 alert 요소를 팝업으로 변환
+function convertSingleAlert(alert) {
+    // 이미 처리된 메시지는 건너뛰기
+    if (alert.hasAttribute('data-popup-converted')) {
+        return;
+    }
+    
+    // 처리 완료 표시
+    alert.setAttribute('data-popup-converted', 'true');
+    
+    // 기존 flash 메시지 내용 가져오기
+    let messageText = alert.textContent.trim();
+    
+    // 닫기 버튼 텍스트 제거
+    messageText = messageText.replace(/×/g, '').trim();
+    
+    // 메시지가 비어있으면 건너뛰기
+    if (!messageText) {
+        return;
+    }
+    
+    // 메시지 타입 결정
+    const { type, icon } = getMessageTypeAndIcon(messageText, alert);
+    
+    // 기존 flash 메시지 완전히 제거
+    alert.remove();
+    
+    // 팝업으로 표시
+    showNotification(messageText, type, icon);
 }
 
 // 자동 저장 상태 표시
