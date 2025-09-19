@@ -529,8 +529,19 @@ function setupDynamicMessageObserver() {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 if (node.nodeType === 1 && node.classList) {
-                    // 새로 추가된 alert 메시지 확인
-                    if (node.classList.contains('alert')) {
+                    // 우리가 만든 팝업은 무시 (무한루프 방지)
+                    if (node.id === 'game-notification' || node.id === 'sound-status-notification') {
+                        return;
+                    }
+                    
+                    // 새로 추가된 alert 메시지 확인 (Bootstrap alert만)
+                    if (node.classList.contains('alert') && 
+                        (node.classList.contains('alert-dismissible') || 
+                         node.classList.contains('alert-success') || 
+                         node.classList.contains('alert-danger') || 
+                         node.classList.contains('alert-warning') || 
+                         node.classList.contains('alert-info'))) {
+                        
                         // 이미 처리된 메시지가 아니면 처리
                         if (!node.hasAttribute('data-popup-converted')) {
                             setTimeout(() => {
@@ -539,9 +550,14 @@ function setupDynamicMessageObserver() {
                         }
                     }
                     
-                    // 자식 요소 중에 alert가 있는지 확인
-                    const alertsInNode = node.querySelectorAll('.alert');
+                    // 자식 요소 중에 alert가 있는지 확인 (Bootstrap alert만)
+                    const alertsInNode = node.querySelectorAll('.alert.alert-dismissible, .alert-success, .alert-danger, .alert-warning, .alert-info');
                     alertsInNode.forEach(alert => {
+                        // 우리가 만든 팝업은 무시
+                        if (alert.id === 'game-notification' || alert.id === 'sound-status-notification') {
+                            return;
+                        }
+                        
                         if (!alert.hasAttribute('data-popup-converted')) {
                             setTimeout(() => {
                                 convertSingleAlert(alert);
@@ -553,7 +569,7 @@ function setupDynamicMessageObserver() {
         });
     });
 
-    // body 전체를 감시
+    // body 전체를 감시하되, 우리가 만든 팝업 컨테이너는 제외
     observer.observe(document.body, {
         childList: true,
         subtree: true
