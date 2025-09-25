@@ -362,7 +362,15 @@ def save_category_words():
 @app.route('/delete_word', methods=['POST'])
 def delete_word():
     """단어 삭제"""
-    word_index = int(request.form.get('word_index', 0))
+    try:
+        word_index_str = request.form.get('word_index', '0')
+        if not word_index_str or word_index_str == '':
+            flash('잘못된 단어 인덱스입니다.', 'error')
+            return redirect(url_for('word_management'))
+        word_index = int(word_index_str)
+    except (ValueError, TypeError):
+        flash('잘못된 단어 인덱스입니다.', 'error')
+        return redirect(url_for('word_management'))
     
     result = game_logic.delete_word_from_bank(word_index)
     
@@ -395,7 +403,15 @@ def delete_multiple_words():
 @app.route('/edit_word', methods=['POST'])
 def edit_word():
     """단어 수정"""
-    word_index = int(request.form.get('word_index', 0))
+    try:
+        word_index_str = request.form.get('word_index', '0')
+        if not word_index_str or word_index_str == '':
+            flash('잘못된 단어 인덱스입니다.', 'error')
+            return redirect(url_for('word_management'))
+        word_index = int(word_index_str)
+    except (ValueError, TypeError):
+        flash('잘못된 단어 인덱스입니다.', 'error')
+        return redirect(url_for('word_management'))
     new_word = request.form.get('word', '').strip()
     new_meaning = request.form.get('meaning', '').strip()
     new_category = request.form.get('category', '기본')
@@ -430,22 +446,22 @@ def word_management():
         word_bank = [word for word in all_user_words if 
                     search_term.lower() in word.get('단어', '').lower() or 
                     search_term.lower() in word.get('뜻', '').lower()]
-    else:
-        # 인덱스 추가
-        for i, word in enumerate(word_bank):
-            word['인덱스'] = str(i)
     
     # 카테고리 필터
     category_filter = request.args.get('category', 'all')
     if category_filter != 'all':
-        if search_term:
-            word_bank = [word for word in word_bank if word.get('카테고리', '기본') == category_filter]
-        else:
-            # 사용자 단어에서만 카테고리 필터링
-            all_user_words = game_logic.get_user_words()
-            word_bank = [word for word in all_user_words if word.get('카테고리', '기본') == category_filter]
-            for i, word in enumerate(word_bank):
-                word['인덱스'] = str(i)
+        word_bank = [word for word in word_bank if word.get('카테고리', '기본') == category_filter]
+    
+    # 모든 경우에 인덱스 추가 (원본 단어장에서의 실제 인덱스)
+    all_user_words = game_logic.get_user_words()
+    for word in word_bank:
+        # 원본 단어장에서의 실제 인덱스 찾기
+        for original_idx, original_word in enumerate(all_user_words):
+            if (word.get('단어') == original_word.get('단어') and 
+                word.get('뜻') == original_word.get('뜻') and 
+                word.get('카테고리') == original_word.get('카테고리')):
+                word['인덱스'] = str(original_idx)
+                break
     
     return render_template('word_management.html', 
                          player=player, 
