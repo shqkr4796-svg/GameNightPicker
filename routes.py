@@ -50,35 +50,23 @@ def dashboard():
 
 @app.route('/daily_expressions')
 def daily_expressions():
-    """일일 표현 페이지"""
+    """일일 표현 페이지 - 무한 학습"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
     expressions = game_logic.get_daily_expressions()
-    current_date = player['날짜']
-    
-    # 새로운 날짜이면 진도 초기화
-    if player['일일표현_마지막날짜'] != current_date:
-        player['일일표현_진도'] = 0
-        player['일일표현_완료'] = False
-        player['일일표현_마지막날짜'] = current_date
-        session.modified = True
-    
-    progress = player['일일표현_진도']
-    completed = player['일일표현_완료']
-    # 완료했으면 current_index를 -1로 설정
-    current_index = -1 if completed else min(progress, 4)
+    progress = player.get('일일표현_진도', 0)
+    current_index = progress % len(expressions)  # 무한 순환
     
     return render_template('daily_expressions.html',
                          expressions=expressions,
                          progress=progress,
-                         completed=completed,
                          current_index=current_index)
 
 @app.route('/check_daily_expression', methods=['POST'])
 def check_daily_expression():
-    """일일 표현 확인"""
+    """일일 표현 확인 - 무한 학습"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
@@ -91,24 +79,20 @@ def check_daily_expression():
     
     # 부분 일치 확인 (사용자 입력이 정답을 포함하면 정답)
     if correct_expression in user_input or user_input in correct_expression:
-        player['일일표현_진도'] += 1
-        flash(f'정답입니다! ✓ ({player["일일표현_진도"]}/5)', 'success')
+        player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
+        flash(f'정답입니다! ✓ (총 {player["일일표현_진도"]}개 완료)', 'success')
         
-        # 5개를 모두 완료했는지 확인
-        if player['일일표현_진도'] >= 5:
-            player['일일표현_완료'] = True
-            # 보상: 경험치 +50
-            exp_gained = 50
-            player['경험치'] += exp_gained
-            flash(f'오늘의 표현 학습을 완료했습니다! 경험치 +{exp_gained} 획득! 🎉', 'success')
-            
-            # 레벨업 확인
-            while player['경험치'] >= player['경험치최대']:
-                player['경험치'] -= player['경험치최대']
-                player['레벨'] += 1
-                player['경험치최대'] = int(player['경험치최대'] * 1.1)
-                player['스탯포인트'] += 5
-                flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
+        # 매번 경험치 +10 보상
+        exp_gained = 10
+        player['경험치'] += exp_gained
+        
+        # 레벨업 확인
+        while player['경험치'] >= player['경험치최대']:
+            player['경험치'] -= player['경험치최대']
+            player['레벨'] += 1
+            player['경험치최대'] = int(player['경험치최대'] * 1.1)
+            player['스탯포인트'] += 5
+            flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
     else:
         flash(f'틀렸습니다. 다시 시도해보세요. (정답: {correct_expression})', 'error')
     

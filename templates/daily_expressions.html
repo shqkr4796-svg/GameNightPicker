@@ -14,34 +14,14 @@
             </div>
             <div class="card-body">
                 <div class="row text-center mb-4">
-                    <div class="col-md-4">
-                        <h6 class="text-muted mb-2">진행 상황</h6>
-                        <div class="progress" style="height: 25px;">
-                            <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: {{ (progress / 5 * 100) }}%;" 
-                                 aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="5">
-                                {{ progress }}/5
-                            </div>
-                        </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">학습한 표현</h6>
+                        <h3 class="text-primary">{{ progress }}</h3>
                     </div>
-                    <div class="col-md-4">
-                        <h6 class="text-muted mb-2">보상</h6>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">매 정답마다</h6>
                         <p class="mb-0">
-                            {% if completed %}
-                                <span class="badge bg-success">완료!</span>
-                            {% else %}
-                                <span class="badge bg-warning">완료 시 경험치 +50</span>
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div class="col-md-4">
-                        <h6 class="text-muted mb-2">상태</h6>
-                        <p class="mb-0">
-                            {% if completed %}
-                                <span class="badge bg-info">오늘 완료됨</span>
-                            {% else %}
-                                <span class="badge bg-secondary">진행 중</span>
-                            {% endif %}
+                            <span class="badge bg-success">경험치 +10</span>
                         </p>
                     </div>
                 </div>
@@ -49,10 +29,10 @@
         </div>
 
         <!-- 표현 카드 -->
-        {% if expressions and current_index >= 0 %}
+        {% if expressions %}
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">표현 #{{ current_index + 1 }}: {{ expressions[current_index].expression }}</h5>
+                <h5 class="mb-0">표현 #{{ (progress % len(expressions)) + 1 }}: {{ expressions[current_index].expression }}</h5>
             </div>
             <div class="card-body">
                 <div class="row mb-4">
@@ -100,30 +80,22 @@
                 </div>
             </div>
         </div>
-        {% elif completed %}
-        <div class="card mb-4 bg-success bg-opacity-10 border-success">
-            <div class="card-body text-center">
-                <h4 class="text-success mb-3">
-                    <i class="fas fa-check-circle me-2"></i>오늘의 표현 학습 완료!
-                </h4>
-                <p class="text-muted mb-0">내일 새로운 표현들을 배워보세요! 🌟</p>
-            </div>
-        </div>
         {% endif %}
 
-        <!-- 완료된 표현들 -->
+        <!-- 최근 학습한 표현들 -->
         {% if progress > 0 %}
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">학습한 표현 ({{ progress }}/5)</h5>
+                <h5 class="mb-0">최근 학습한 표현 (최대 10개)</h5>
             </div>
             <div class="card-body">
-                {% for i in range(progress) %}
+                {% set recent_count = [progress - 10, 0] | max %}
+                {% for i in range(recent_count, progress) %}
                 <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
                     <i class="fas fa-check-circle text-success me-2" style="font-size: 1.2rem;"></i>
                     <div>
-                        <strong>{{ expressions[i].expression }}</strong><br>
-                        <small class="text-muted">{{ expressions[i].meaning }}</small>
+                        <strong>{{ expressions[i % len(expressions)].expression }}</strong><br>
+                        <small class="text-muted">{{ expressions[i % len(expressions)].meaning }}</small>
                     </div>
                 </div>
                 {% endfor %}
