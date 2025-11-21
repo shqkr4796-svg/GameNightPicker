@@ -76,6 +76,14 @@ def load_game():
                 if '던전_인벤토리' not in player:
                     player['던전_인벤토리'] = {}
                 
+                # 일일 표현 필드 추가 (기존 플레이어 호환성)
+                if '일일표현_완료' not in player:
+                    player['일일표현_완료'] = False
+                if '일일표현_마지막날짜' not in player:
+                    player['일일표현_마지막날짜'] = 0
+                if '일일표현_진도' not in player:
+                    player['일일표현_진도'] = 0
+                
                 return player
     except Exception as e:
         print(f"불러오기 실패: {e}")
