@@ -101,15 +101,42 @@ def check_level_up(player):
     return level_ups
 
 def get_random_monster_image(rarity):
-    """등급별 몬스터 이미지"""
-    if rarity == '레어':
-        return '/static/monsters/rare_tier_cute_magic_creature.png'
-    elif rarity == '에픽':
-        return '/static/monsters/epic_tier_cool_boss_monster.png'
-    elif rarity == '유니크' or rarity == '레전드리':
-        return '/static/monsters/legendary_tier_majestic_boss.png'
-    else:
-        return '/static/monsters/cute_common_tier_monster.png'
+    """등급별 몬스터 이미지 - 무작위 선택"""
+    import random
+    
+    monster_images = {
+        '일반': [
+            '/static/monsters/cute_common_tier_monster.png',
+            '/static/monsters/cute_common_monster_variant_2.png',
+            '/static/monsters/cute_common_monster_variant_3.png'
+        ],
+        '레어': [
+            '/static/monsters/rare_tier_cute_magic_creature.png',
+            '/static/monsters/rare_tier_magic_creature_variant_2.png',
+            '/static/monsters/rare_tier_magic_creature_variant_3.png'
+        ],
+        '에픽': [
+            '/static/monsters/epic_tier_cool_boss_monster.png',
+            '/static/monsters/epic_tier_boss_monster_variant_2.png',
+            '/static/monsters/epic_tier_boss_monster_variant_3.png'
+        ],
+        '유니크': [
+            '/static/monsters/legendary_tier_majestic_boss.png',
+            '/static/monsters/legendary_tier_boss_variant_2.png',
+            '/static/monsters/legendary_tier_boss_variant_3.png'
+        ],
+        '레전드리': [
+            '/static/monsters/legendary_tier_majestic_boss.png',
+            '/static/monsters/legendary_tier_boss_variant_2.png',
+            '/static/monsters/legendary_tier_boss_variant_3.png'
+        ]
+    }
+    
+    # 등급이 '일반'이 아닌 경우 처리
+    if rarity not in monster_images:
+        rarity = '일반'
+    
+    return random.choice(monster_images[rarity])
 
 def get_tier_conditions():
     """티어별 조건 반환 (업적 포인트 기준)"""
