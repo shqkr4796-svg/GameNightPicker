@@ -63,13 +63,13 @@
                     <div class="col-md-12">
                         <h6 class="text-muted mb-3">1️⃣ 예문</h6>
                         {% for ex in expressions[selected_index].examples %}
-                        <div class="alert alert-info mb-2">
+                        <div class="alert alert-info mb-2 d-flex justify-content-between align-items-center">
                             <strong>{{ loop.index }}. {{ ex }}</strong>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="playAudio('{{ ex }}')">
+                                <i class="fas fa-volume-up"></i>재생
+                            </button>
                         </div>
                         {% endfor %}
-                        <button class="btn btn-primary w-100 mb-3" onclick="playAudio('{{ expressions[selected_index].example }}')">
-                            <i class="fas fa-volume-up me-2"></i>예문 재생
-                        </button>
                     </div>
                 </div>
 
