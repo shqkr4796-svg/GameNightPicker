@@ -65,7 +65,7 @@
                         {% for ex in expressions[selected_index].examples %}
                         <div class="alert alert-info mb-2 d-flex justify-content-between align-items-center">
                             <strong>{{ loop.index }}. {{ ex }}</strong>
-                            <button type="button" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem; white-space: nowrap;" onclick="playAudio('{{ ex }}')">
+                            <button type="button" class="btn btn-primary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem; white-space: nowrap;" onclick="playAudio('{{ ex }}', this)">
                                 <i class="fas fa-volume-up" style="font-size: 0.75rem; margin-right: 0.3rem;"></i>재생
                             </button>
                         </div>
@@ -131,7 +131,7 @@
 </div>
 
 <script>
-function playAudio(text) {
+function playAudio(text, button) {
     // 브라우저 기본 Web Speech API 사용 (오프라인 지원, API 필요 없음)
     if ('speechSynthesis' in window) {
         // 기존 발화 중지 - 무한재생 방지
@@ -139,9 +139,21 @@ function playAudio(text) {
         
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
-        utterance.rate = 0.8; // 천천히 재생
+        utterance.rate = 0.8; // 단어퀴즈와 동일한 속도
         utterance.pitch = 1;
         utterance.volume = 1;
+        
+        // 버튼 상태 표시
+        if (button) {
+            button.disabled = true;
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 0.75rem; margin-right: 0.3rem;"></i>재생 중...';
+            
+            utterance.onend = function() {
+                button.disabled = false;
+                button.innerHTML = originalHTML;
+            };
+        }
         
         window.speechSynthesis.speak(utterance);
     }
