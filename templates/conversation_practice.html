@@ -141,38 +141,55 @@ function loadAllVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
         
-        // 남자 음성 찾기
+        // 모든 사용 가능한 음성 출력 (디버깅용)
+        const voiceNames = voices.map(v => v.name).join(', ');
+        console.log('Available voices:', voiceNames);
+        
+        // 남자 음성 찾기 - 명시적으로 'Male' 포함한 음성 우선
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
-                const name = voice.name.toLowerCase();
-                // 명시적 남자 음성
-                if (name.includes('male') || name.includes('david') || name.includes('mark') || name.includes('alex') || name.includes('tom') || name.includes('bruce')) {
+                const name = voice.name;
+                // 정확하게 'Male' 포함하거나 알려진 남자 이름
+                if (name.includes('Male') || name.includes('David') || name.includes('Mark') || name.includes('Alex') || name.includes('Tom') || name.includes('Bruce')) {
                     cachedMaleVoice = voice;
-                    console.log('Loaded male voice:', voice.name);
+                    console.log('Loaded male voice (explicit Male):', voice.name);
                     break;
                 }
             }
         }
         
-        // 남자 음성이 없으면 Google US English 사용
+        // 'Male' 없으면 Google US English 사용
         if (!cachedMaleVoice) {
             for (let voice of voices) {
-                if (voice.lang === 'en-US' && voice.name.includes('Google')) {
+                if (voice.lang === 'en-US' && voice.name === 'Google US English') {
                     cachedMaleVoice = voice;
-                    console.log('Loaded male voice (Google):', voice.name);
+                    console.log('Loaded male voice (Google US English):', voice.name);
                     break;
                 }
             }
         }
         
-        // 여자 음성 찾기
+        // 그래도 없으면 'Zira'/'Samantha' 등 여자 음성이 아닌 첫 번째 음성
+        if (!cachedMaleVoice) {
+            for (let voice of voices) {
+                if (voice.lang === 'en-US') {
+                    const name = voice.name.toLowerCase();
+                    if (!name.includes('zira') && !name.includes('samantha') && !name.includes('victoria') && !name.includes('karen') && !name.includes('moira') && !name.includes('flo')) {
+                        cachedMaleVoice = voice;
+                        console.log('Loaded male voice (fallback):', voice.name);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // 여자 음성 찾기 - Zira/Samantha 우선
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
-                const name = voice.name.toLowerCase();
-                // 명시적 여자 음성
-                if (name.includes('zira') || name.includes('female') || name.includes('samantha') || name.includes('victoria') || name.includes('moira') || name.includes('karen')) {
+                const name = voice.name;
+                if (name.includes('Zira') || name.includes('Samantha') || name.includes('Victoria') || name.includes('Karen') || name.includes('Moira')) {
                     cachedFemaleVoice = voice;
-                    console.log('Loaded female voice:', voice.name);
+                    console.log('Loaded female voice (explicit):', voice.name);
                     break;
                 }
             }
@@ -188,6 +205,9 @@ function loadAllVoices() {
                 }
             }
         }
+        
+        console.log('Final male voice:', cachedMaleVoice?.name || 'NONE');
+        console.log('Final female voice:', cachedFemaleVoice?.name || 'NONE');
     }
 }
 
