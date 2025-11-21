@@ -4,6 +4,7 @@ import os
 import hashlib
 from datetime import datetime
 from data.game_data import *
+from data.monsters import get_monster_by_id, get_monsters_by_rarity
 
 SAVE_FILE = 'savegame.json'
 EVENTS_FILE = 'events.json'
@@ -102,70 +103,21 @@ def check_level_up(player):
 
 def get_all_monster_images():
     """게임에 존재하는 모든 몬스터 이미지 반환"""
-    monster_images = {
-        '레어': [
-            '/static/monsters/rare_1.png',
-            '/static/monsters/rare_2.png',
-            '/static/monsters/rare_3.png',
-            '/static/monsters/rare_4.png',
-            '/static/monsters/rare_5.png',
-            '/static/monsters/rare_6.png',
-            '/static/monsters/rare_7.png',
-            '/static/monsters/rare_8.png',
-            '/static/monsters/rare_9.png',
-            '/static/monsters/rare_10.png'
-        ],
-        '에픽': [
-            '/static/monsters/epic_1.png',
-            '/static/monsters/epic_2.png',
-            '/static/monsters/epic_3.png',
-            '/static/monsters/epic_4.png',
-            '/static/monsters/epic_5.png',
-            '/static/monsters/epic_6.png',
-            '/static/monsters/epic_7.png',
-            '/static/monsters/epic_8.png',
-            '/static/monsters/epic_9.png',
-            '/static/monsters/epic_10.png'
-        ],
-        '유니크': [
-            '/static/monsters/unique_1.png',
-            '/static/monsters/unique_2.png',
-            '/static/monsters/unique_3.png',
-            '/static/monsters/unique_4.png',
-            '/static/monsters/unique_5.png',
-            '/static/monsters/unique_6.png',
-            '/static/monsters/unique_7.png',
-            '/static/monsters/unique_8.png',
-            '/static/monsters/unique_9.png',
-            '/static/monsters/unique_10.png'
-        ],
-        '레전드리': [
-            '/static/monsters/legendary_1.png',
-            '/static/monsters/legendary_2.png',
-            '/static/monsters/legendary_3.png',
-            '/static/monsters/legendary_4.png',
-            '/static/monsters/legendary_5.png',
-            '/static/monsters/legendary_6.png',
-            '/static/monsters/legendary_7.png',
-            '/static/monsters/legendary_8.png',
-            '/static/monsters/legendary_9.png',
-            '/static/monsters/legendary_10.png',
-            '/static/monsters/legendary_11.png',
-            '/static/monsters/legendary_12.png'
-        ]
-    }
+    from data.monsters import monsters_data
     
     all_monsters = {}
-    for rarity, images in monster_images.items():
-        for idx, image in enumerate(images, 1):
-            monster_id = f"{rarity}_{idx}"
-            all_monsters[monster_id] = {
-                '이름': f'{rarity} 몬스터 #{idx}',
-                '등급': rarity,
-                '이미지': image,
-                '공격력범위': f"{get_monster_stats(rarity)['공격력']}~{get_monster_stats(rarity)['공격력']}",
-                '체력범위': f"{get_monster_stats(rarity)['체력']}~{get_monster_stats(rarity)['체력']}"
-            }
+    for monster_id, monster_data in monsters_data.items():
+        rarity = monster_data['등급']
+        attack_range = monster_data['공격력']
+        hp_range = monster_data['체력']
+        
+        all_monsters[monster_id] = {
+            '이름': monster_data['이름'],
+            '등급': rarity,
+            '이미지': '',
+            '공격력범위': f"{attack_range[0]}~{attack_range[1]}",
+            '체력범위': f"{hp_range[0]}~{hp_range[1]}"
+        }
     
     return all_monsters
 
@@ -1577,13 +1529,21 @@ def next_monster(dungeon_run, dungeon):
     
     dungeon_run['current_rarity'] = selected_rarity
     
-    # 몬스터 ID 생성 (단어 + 등급 기반 해시)
-    monster_seed = f"{current_word['단어']}_{selected_rarity}"
-    monster_id = hashlib.md5(monster_seed.encode()).hexdigest()[:8]
+    # 등급별 몬스터 ID 랜덤 선택
+    monsters_in_rarity = get_monsters_by_rarity(selected_rarity)
+    if monsters_in_rarity:
+        monster_id = random.choice(monsters_in_rarity)
+    else:
+        # 폴백: 레어 몬스터 선택
+        monster_id = random.choice(get_monsters_by_rarity('레어'))
+    
     dungeon_run['monster_id'] = monster_id
     
-    # 몬스터 이미지 등급별 랜덤 할당
-    dungeon_run['monster_image'] = get_random_monster_image(selected_rarity)
+    # 몬스터 데이터 가져오기
+    monster_data = get_monster_by_id(monster_id)
+    
+    # 몬스터 이미지는 비워두기 (나중에 추가 예정)
+    dungeon_run['monster_image'] = ''
     
     # 몬스터 HP 설정
     dungeon_run['monster_hp'] = monster_rarities[selected_rarity]['required_correct']
@@ -1761,20 +1721,18 @@ def build_next_question(dungeon_run):
         
         return result
 
-def get_monster_stats(rarity):
-    """등급별 몬스터 공격력/체력 랜덤 설정"""
-    ranges = {
-        '일반': {'공격력': (2, 5), '체력': (10, 20)},
-        '레어': {'공격력': (5, 10), '체력': (10, 100)},
-        '에픽': {'공격력': (11, 20), '체력': (110, 200)},
-        '유니크': {'공격력': (30, 200), '체력': (300, 5000)},
-        '레전드리': {'공격력': (300, 3000), '체력': (6000, 50000)}
-    }
+def get_monster_stats(monster_id):
+    """몬스터 고유 스탯 생성 (몬스터 ID 기반)"""
+    monster_data = get_monster_by_id(monster_id)
+    if not monster_data:
+        return {'공격력': 5, '체력': 20}
     
-    stat_range = ranges.get(rarity, ranges['일반'])
+    attack_range = monster_data['공격력']
+    hp_range = monster_data['체력']
+    
     return {
-        '공격력': random.randint(stat_range['공격력'][0], stat_range['공격력'][1]),
-        '체력': random.randint(stat_range['체력'][0], stat_range['체력'][1])
+        '공격력': random.randint(attack_range[0], attack_range[1]),
+        '체력': random.randint(hp_range[0], hp_range[1])
     }
 
 def update_compendium(player, dungeon_run):
@@ -1786,16 +1744,21 @@ def update_compendium(player, dungeon_run):
             
         monster_id = dungeon_run['monster_id']
         rarity = dungeon_run['current_rarity']
-        word = dungeon_run['current_word']['단어']
-        monster_stats = get_monster_stats(rarity)
+        
+        # 몬스터 데이터 가져오기
+        monster_data = get_monster_by_id(monster_id)
+        if not monster_data:
+            return False
+        
+        monster_name = monster_data['이름']
+        monster_stats = get_monster_stats(monster_id)
         
         is_new_monster = False
         if monster_id not in player['도감']:
             player['도감'][monster_id] = {
-                '이름': f"{word} {rarity}",
+                '이름': monster_name,
                 '등급': rarity,
-                '단어': word,
-                '이미지': dungeon_run.get('monster_image', '/static/images/monster_1.png'),
+                '이미지': '',
                 '최초처치일': datetime.now().isoformat(),
                 '처치수': 1,
                 '포획됨': True,
@@ -1809,7 +1772,6 @@ def update_compendium(player, dungeon_run):
         return is_new_monster
     except Exception as e:
         print(f"도감 업데이트 오류: {e}")
-        # 오류가 발생해도 게임이 멈추지 않도록 pass
         return False
 
 def check_dungeon_clear(dungeon_run):
