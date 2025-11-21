@@ -6,18 +6,18 @@
 <div class="row">
     <!-- 플레이어 상태 -->
     <div class="col-lg-8">
-        <div class="card status-card mb-2">
-            <div class="card-header py-2">
-                <h5 class="mb-0" style="font-size: 1rem;">
+        <div class="card status-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
                     <i class="fas fa-user me-2"></i>플레이어 상태
                 </h5>
             </div>
-            <div class="card-body p-2">
-                <div class="row g-2">
+            <div class="card-body">
+                <div class="row g-4">
                     <!-- 기본 정보 -->
                     <div class="col-md-6">
-                        <div class="bg-light p-2 rounded">
-                            <h6 class="text-muted mb-2" style="font-size: 0.8rem;">기본 정보</h6>
+                        <div class="bg-light p-3 rounded">
+                            <h6 class="text-muted mb-3">기본 정보</h6>
                             <div class="row">
                                 <div class="col-6">
                                     <strong>레벨:</strong> {{ player['레벨'] }}<br>
@@ -37,8 +37,8 @@
 
                     <!-- 스탯 정보 -->
                     <div class="col-md-6">
-                        <div class="bg-light p-2 rounded">
-                            <h6 class="text-muted mb-2" style="font-size: 0.8rem;">능력치</h6>
+                        <div class="bg-light p-3 rounded">
+                            <h6 class="text-muted mb-3">능력치</h6>
                             <div class="row">
                                 <div class="col-6">
                                     <strong>힘:</strong> {{ player['힘'] }}<br>
@@ -56,10 +56,10 @@
                 </div>
 
                 <!-- 진행 상황 바 -->
-                <div class="row mt-1 g-2">
+                <div class="row mt-4">
                     <div class="col-md-6">
-                        <label class="form-label" style="font-size: 0.8rem; margin-bottom: 2px;">경험치</label>
-                        <div class="progress" style="height: 20px;">
+                        <label class="form-label">경험치</label>
+                        <div class="progress" style="height: 32px;">
                             <div class="progress-bar d-flex align-items-center justify-content-center" 
                                  style="width: {{ (player['경험치'] / player['경험치최대'] * 100) }}%; font-size: 14px; font-weight: 500;">
                                 {{ player['경험치'] }}/{{ player['경험치최대'] }}
@@ -67,8 +67,8 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label" style="font-size: 0.8rem; margin-bottom: 2px;">건강</label>
-                        <div class="progress" style="height: 20px;">
+                        <label class="form-label">건강</label>
+                        <div class="progress" style="height: 32px;">
                             <div class="progress-bar bg-danger d-flex align-items-center justify-content-center" 
                                  style="width: {{ (player['체력'] / 10 * 100) }}%; font-size: 14px; font-weight: 500;">
                                 {{ "%.1f"|format(player['체력']) }}
@@ -76,8 +76,8 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label" style="font-size: 0.8rem; margin-bottom: 2px;">기력</label>
-                        <div class="progress" style="height: 20px;">
+                        <label class="form-label">기력</label>
+                        <div class="progress" style="height: 32px;">
                             <div class="progress-bar bg-info d-flex align-items-center justify-content-center" 
                                  style="width: {{ (player['기력'] / 10 * 100) }}%; font-size: 14px; font-weight: 500;">
                                 {{ "%.1f"|format(player['기력']) }}
@@ -89,8 +89,8 @@
         </div>
 
         <!-- 플레이어 티어 -->
-        <div class="card mb-2">
-            <div class="card-header py-2">
+        <div class="card mb-4">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="fas fa-trophy me-2"></i>플레이어 티어
                 </h5>
@@ -179,14 +179,14 @@
         </div>
 
         <!-- 현재 상황 -->
-        <div class="card mb-2">
-            <div class="card-header py-2">
+        <div class="card mb-4">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i class="fas fa-map-marker-alt me-2"></i>현재 상황
                 </h5>
             </div>
-            <div class="card-body p-2" style="font-size: 0.85rem;">
-                <div class="row g-2">
+            <div class="card-body">
+                <div class="row">
                     <div class="col-md-4">
                         <strong>직장:</strong><br>
                         <span class="text-muted">{{ player['직장'] or '무직' }}</span>
@@ -205,13 +205,13 @@
 
         <!-- 스탯 차트 -->
         <div class="card">
-            <div class="card-header py-2">
-                <h5 class="mb-0" style="font-size: 1rem;">
+            <div class="card-header">
+                <h5 class="mb-0">
                     <i class="fas fa-chart-bar me-2"></i>능력치 분포
                 </h5>
             </div>
-            <div class="card-body p-2">
-                <canvas id="statsChart" width="400" height="150"></canvas>
+            <div class="card-body">
+                <canvas id="statsChart" width="400" height="200"></canvas>
             </div>
         </div>
     </div>
@@ -219,15 +219,15 @@
     <!-- 사이드바 -->
     <div class="col-lg-4">
         <!-- 빠른 액션 -->
-        <div class="card mb-2">
-            <div class="card-header py-2">
+        <div class="card mb-4">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i data-feather="zap" class="me-2"></i>빠른 액션
                 </h5>
             </div>
-            <div class="card-body p-2">
-                <div class="d-grid gap-1" style="font-size: 0.85rem;">
-                    <form method="POST" action="{{ url_for('sleep') }}" class="mb-1">
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <form method="POST" action="{{ url_for('sleep') }}" class="mb-2">
                         <button type="submit" class="btn btn-success w-100">
                             <i data-feather="moon" class="me-2"></i>잠자기 (기력/체력 회복)
                         </button>
@@ -251,17 +251,17 @@
 
         <!-- 스탯 분배 -->
         {% if player['스탯포인트'] > 0 %}
-        <div class="card mb-2">
-            <div class="card-header py-2">
+        <div class="card mb-4">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i data-feather="trending-up" class="me-2"></i>스탯 분배
                 </h5>
             </div>
-            <div class="card-body p-2" style="font-size: 0.85rem;">
-                <p class="text-muted mb-2">남은 스탯 포인트: {{ player['스탯포인트'] }}</p>
+            <div class="card-body">
+                <p class="text-muted">남은 스탯 포인트: {{ player['스탯포인트'] }}</p>
                 <form method="POST" action="{{ url_for('allocate_stats') }}">
-                    <div class="mb-2">
-                        <select name="stat_type" class="form-select form-select-sm" required>
+                    <div class="mb-3">
+                        <select name="stat_type" class="form-select" required>
                             <option value="">스탯 선택</option>
                             <option value="힘">힘</option>
                             <option value="지능">지능</option>
@@ -270,8 +270,8 @@
                             <option value="운">운</option>
                         </select>
                     </div>
-                    <div class="mb-2">
-                        <input type="number" name="points" class="form-control form-control-sm" 
+                    <div class="mb-3">
+                        <input type="number" name="points" class="form-control" 
                                min="1" max="{{ player['스탯포인트'] }}" required 
                                placeholder="분배할 포인트">
                     </div>
@@ -284,35 +284,35 @@
         {% endif %}
 
         <!-- 통계 -->
-        <div class="card mb-2">
-            <div class="card-header py-2">
+        <div class="card mb-4">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i data-feather="pie-chart" class="me-2"></i>통계
                 </h5>
             </div>
-            <div class="card-body p-2" style="font-size: 0.8rem;">
-                <div class="row text-center g-1">
+            <div class="card-body">
+                <div class="row text-center">
                     <div class="col-6">
                         <div class="border-end">
-                            <h6 class="text-primary mb-0" style="font-size: 0.9rem;">{{ "%.1f"|format(stats['quiz_accuracy']) }}%</h6>
+                            <h6 class="text-primary">{{ "%.1f"|format(stats['quiz_accuracy']) }}%</h6>
                             <small class="text-muted">퀴즈 정답률</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <h6 class="text-success mb-0" style="font-size: 0.9rem;">{{ stats['wealth_rank'] }}</h6>
+                        <h6 class="text-success">{{ stats['wealth_rank'] }}</h6>
                         <small class="text-muted">재산 등급</small>
                     </div>
                 </div>
-                <hr class="my-1">
-                <div class="row text-center g-1">
+                <hr>
+                <div class="row text-center">
                     <div class="col-6">
                         <div class="border-end">
-                            <h6 class="text-info mb-0" style="font-size: 0.9rem;">{{ stats['days_played'] }}일</h6>
+                            <h6 class="text-info">{{ stats['days_played'] }}일</h6>
                             <small class="text-muted">플레이 일수</small>
                         </div>
                     </div>
                     <div class="col-6">
-                        <h6 class="text-warning mb-0" style="font-size: 0.9rem;">{{ achievements|length }}</h6>
+                        <h6 class="text-warning">{{ achievements|length }}</h6>
                         <small class="text-muted">달성한 성취</small>
                     </div>
                 </div>
@@ -322,15 +322,15 @@
         <!-- 최근 성취 -->
         {% if achievements %}
         <div class="card">
-            <div class="card-header py-2">
+            <div class="card-header">
                 <h5 class="mb-0">
                     <i data-feather="award" class="me-2"></i>최근 성취
                 </h5>
             </div>
-            <div class="card-body p-2" style="font-size: 0.85rem;">
+            <div class="card-body">
                 {% for achievement in achievements[:3] %}
-                <div class="d-flex align-items-center mb-1">
-                    <i data-feather="check-circle" class="text-success me-1" size="14"></i>
+                <div class="d-flex align-items-center mb-2">
+                    <i data-feather="check-circle" class="text-success me-2" size="16"></i>
                     <small>{{ achievement }}</small>
                 </div>
                 {% endfor %}
