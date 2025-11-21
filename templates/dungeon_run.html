@@ -314,7 +314,7 @@ function submitChoice(choice) {
             // 게임 오버 또는 클리어
             window.location.href = '{{ url_for("dungeons") }}';
         } else {
-            // 즉시 페이지 새로고침 (Flask 메시지 자동 표시)
+            // 지연 없이 즉시 페이지 새로고침
             location.reload();
         }
     })
