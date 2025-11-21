@@ -25,7 +25,10 @@ def create_new_player():
         '던전클리어횟수': 0,  # 던전 클리어 횟수
         '무기_인벤토리': {},  # 무기 인벤토리
         '장착된_무기': None,  # 장착된 무기
-        '던전_인벤토리': {}  # 던전 아이템 인벤토리
+        '던전_인벤토리': {},  # 던전 아이템 인벤토리
+        '일일표현_완료': False,  # 오늘 일일 표현 완료 여부
+        '일일표현_마지막날짜': 0,  # 마지막 완료한 날짜
+        '일일표현_진도': 0  # 오늘의 표현 진도 (0-5)
     }
 
 def save_game(player_data):
@@ -1725,3 +1728,46 @@ def use_dungeon_item(player, item_name, dungeon_run=None):
         # 기타 효과들은 필요시 추가 구현
     
     return {'success': True, 'message': result_message.strip(), 'item': item_data}
+
+# ============== 일일 표현 시스템 ==============
+
+def get_daily_expressions():
+    """오늘의 표현 5개 반환"""
+    expressions = [
+        {
+            'expression': 'Break the ice',
+            'example': 'Let me break the ice by introducing myself.',
+            'meaning': '어색한 분위기를 깨뜨리다',
+            'situation': '처음 만난 사람들과의 대화를 시작할 때',
+            'tip': '얼음을 깨뜨린다는 의미에서 비롯된 관용구입니다.'
+        },
+        {
+            'expression': 'Piece of cake',
+            'example': 'This project is a piece of cake for me.',
+            'meaning': '아주 쉬운 일',
+            'situation': '어떤 일이 매우 간단하고 쉬울 때',
+            'tip': '케이크 한 조각처럼 쉽다는 의미입니다.'
+        },
+        {
+            'expression': 'Under the weather',
+            'example': 'I am feeling under the weather today.',
+            'meaning': '기분이 좋지 않은, 몸이 안 좋은',
+            'situation': '감기나 피로로 컨디션이 안 좋을 때',
+            'tip': '날씨 아래에 있다는 의미에서 나온 표현입니다.'
+        },
+        {
+            'expression': 'Cost an arm and a leg',
+            'example': 'This vacation will cost us an arm and a leg.',
+            'meaning': '매우 비싼, 많은 비용이 드는',
+            'situation': '가격이 매우 비싼 물건이나 서비스를 설명할 때',
+            'tip': '팔과 다리를 써야 할 정도로 비싸다는 의미입니다.'
+        },
+        {
+            'expression': 'Hit the books',
+            'example': 'I need to hit the books for my exam.',
+            'meaning': '열심히 공부하다',
+            'situation': '시험 준비나 공부에 집중할 때',
+            'tip': '책을 치면서 공부한다는 의미입니다.'
+        }
+    ]
+    return expressions

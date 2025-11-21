@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}일일 표현 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <!-- 일일 표현 헤더 -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-sparkles me-2"></i>오늘의 표현 학습
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row text-center mb-4">
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">진행 상황</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ (progress / 5 * 100) }}%;" 
+                                 aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="5">
+                                {{ progress }}/5
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">보상</h6>
+                        <p class="mb-0">
+                            {% if completed %}
+                                <span class="badge bg-success">완료!</span>
+                            {% else %}
+                                <span class="badge bg-warning">완료 시 경험치 +50</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">상태</h6>
+                        <p class="mb-0">
+                            {% if completed %}
+                                <span class="badge bg-info">오늘 완료됨</span>
+                            {% else %}
+                                <span class="badge bg-secondary">진행 중</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 표현 카드 -->
+        {% if expressions %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">표현 #{{ current_index + 1 }}: {{ expressions[current_index].expression }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h6 class="text-muted mb-3">1️⃣ 예문 듣기</h6>
+                        <div class="alert alert-info mb-3">
+                            <strong>예문:</strong> {{ expressions[current_index].example }}
+                        </div>
+                        <button class="btn btn-primary w-100 mb-3" onclick="playAudio()">
+                            <i class="fas fa-volume-up me-2"></i>예문 재생
+                        </button>
+                        <audio id="audioPlayer" style="display: none;">
+                            <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <h6 class="text-muted mb-3">2️⃣ 따라 말하기</h6>
+                        <form method="POST" action="{{ url_for('check_daily_expression') }}" class="mb-3">
+                            <input type="hidden" name="index" value="{{ current_index }}">
+                            <div class="input-group">
+                                <input type="text" name="user_input" class="form-control" 
+                                       placeholder="표현을 입력하고 엔터를 누르세요"
+                                       required>
+                                <button class="btn btn-success" type="submit">
+                                    <i class="fas fa-check me-2"></i>제출
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6 class="text-muted mb-3">3️⃣ 의미 및 설명</h6>
+                        <div class="alert alert-light border">
+                            <p><strong>의미:</strong> {{ expressions[current_index].meaning }}</p>
+                            <p><strong>상황:</strong> {{ expressions[current_index].situation }}</p>
+                            <hr class="my-2">
+                            <p class="mb-0"><strong>팁:</strong> {{ expressions[current_index].tip }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 완료된 표현들 -->
+        {% if progress > 0 %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">학습한 표현 ({{ progress }}/5)</h5>
+            </div>
+            <div class="card-body">
+                {% for i in range(progress) %}
+                <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
+                    <i class="fas fa-check-circle text-success me-2" style="font-size: 1.2rem;"></i>
+                    <div>
+                        <strong>{{ expressions[i].expression }}</strong><br>
+                        <small class="text-muted">{{ expressions[i].meaning }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function playAudio() {
+    // 실제 환경에서는 TTS API를 사용하거나 미리 녹음된 음성 파일을 사용합니다
+    const text = document.querySelector('.alert-info strong').nextSibling.textContent;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
+}
+</script>
+{% endblock %}
