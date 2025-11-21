@@ -918,7 +918,28 @@ def answer_dungeon():
             else:
                 # 던전 클리어 횟수 증가
                 player['던전클리어횟수'] = player.get('던전클리어횟수', 0) + 1
-                flash('던전을 클리어했습니다!', 'success')
+                
+                # 커스텀 던전 클리어 보상 지급
+                dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+                if dungeon and dungeon['id'] == 'custom_user_words':
+                    # 보상 금액 지급
+                    reward_money = dungeon.get('reward_money', 200000)
+                    player['돈'] += reward_money
+                    
+                    # 보너스 경험치 지급 (cleared_words * 배율)
+                    exp_multiplier = dungeon.get('reward_exp_multiplier', 1.5)
+                    bonus_exp = int(dungeon_run['cleared_words'] * exp_multiplier)
+                    player['경험치'] += bonus_exp
+                    
+                    # 레벨업 체크
+                    leveled_up = game_logic.check_level_up(player)
+                    
+                    flash(f'커스텀 던전 클리어! 보상: {reward_money:,}원 + {bonus_exp} 경험치', 'success')
+                    if leveled_up:
+                        flash(f'레벨 업! 현재 레벨: {player["레벨"]}', 'success')
+                else:
+                    flash('던전을 클리어했습니다!', 'success')
+                
                 # 틀린 문제가 있으면 세션에 저장하여 재도전 옵션 제공
                 if wrong_questions:
                     session['last_wrong_questions'] = {

@@ -1161,6 +1161,20 @@ def load_toeic_words():
 
 def load_words_by_source(word_source, category_filter=None, difficulty_filter=None):
     """카테고리별 단어 로드"""
+    # user_custom인 경우 사용자가 등록한 단어만 가져오기
+    if word_source == 'user_custom':
+        user_words = get_user_words()  # 사용자가 추가한 단어만
+        
+        if not user_words or len(user_words) == 0:
+            return []  # 사용자 단어가 없으면 빈 리스트 반환
+        
+        # 단어가 부족한 경우 반복하여 확장 (최소 50개)
+        if len(user_words) < 50:
+            extended_words = user_words * (50 // len(user_words) + 1)
+            return extended_words[:50]
+        
+        return user_words
+    
     # user_bank인 경우 사용자 단어장에서 가져오기
     if word_source == 'user_bank':
         all_words = get_word_bank()  # 기본 + 사용자 단어 병합
@@ -1233,6 +1247,14 @@ def init_dungeon_run(player, dungeon_id):
     if player['레벨'] < dungeon['레벨_제한']:
         return {'success': False, 'message': f'레벨 {dungeon["레벨_제한"]} 이상만 입장 가능합니다.'}
     
+    # 커스텀 던전 입장료 확인
+    if dungeon.get('entry_fee', 0) > 0:
+        entry_fee = dungeon['entry_fee']
+        if player['돈'] < entry_fee:
+            return {'success': False, 'message': f'입장료가 부족합니다. (필요: {entry_fee:,}원, 보유: {player["돈"]:,}원)'}
+        # 입장료 차감
+        player['돈'] -= entry_fee
+    
     # 던전별 단어 로드 (카테고리에 맞는 단어 사용)
     words = load_words_by_source(
         dungeon.get('word_source', 'toeic'),
@@ -1240,6 +1262,9 @@ def init_dungeon_run(player, dungeon_id):
         difficulty_filter=dungeon.get('difficulty_filter')
     )
     if not words:
+        # 커스텀 던전인데 사용자 단어가 없는 경우
+        if dungeon_id == 'custom_user_words':
+            return {'success': False, 'message': '등록된 단어가 없습니다. 단어 관리에서 단어를 먼저 등록해주세요.'}
         return {'success': False, 'message': '단어를 로드할 수 없습니다.'}
     
     # 던전 실행 상태 초기화 - 단어 순서 랜덤화

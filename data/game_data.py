@@ -130,6 +130,22 @@ dungeons = [
         'clear_condition': 350,  # 350개 몬스터 처치
         'max_health': 3
     },
+    
+    # 커스텀 던전 (사용자 단어)
+    {
+        'id': 'custom_user_words',
+        '이름': '커스텀 던전 (내 단어장)',
+        '난이도': '커스텀',
+        '레벨_제한': 1,
+        '설명': '내가 등록한 단어들로 구성된 특별 던전입니다. 입장료 100,000원, 클리어 보상 경험치 + 200,000원',
+        'word_source': 'user_custom',
+        'rarity_distribution': {'레어': 0.4, '에픽': 0.35, '유니크': 0.2, '레전드리': 0.05},
+        'clear_condition': 50,  # 기본값, 실제로는 사용자 단어 수에 따라 조정
+        'max_health': 5,
+        'entry_fee': 100000,  # 입장료
+        'reward_money': 200000,  # 클리어 시 보상 금액
+        'reward_exp_multiplier': 1.5  # 경험치 보상 배율
+    },
 ]
 
 # 몬스터 등급별 요구 정답 수
