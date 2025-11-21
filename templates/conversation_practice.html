@@ -132,69 +132,72 @@
 </div>
 
 <script>
-// 글로벌 음성 캐시
+// 글로벌 음성 캐시 및 성별
 let cachedVoice = null;
+let currentGender = 'male'; // 기본값
 
 // 음성 로드 및 캐싱 - 캐릭터 성별에 맞는 미국 현지인 음성
 function initializeVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
-        const speakerImg = document.getElementById('alienMessage')?.dataset.speaker || '';
-        const isFemale = speakerImg.includes('woman');
-        const isMale = speakerImg.includes('man');
         
-        if (isFemale) {
-            // 여자 미국 현지인 음성
-            const femalePreferred = [
-                'Microsoft Zira',
-                'Google US English Female',
-                'Samantha',
-                'Victoria',
-                'moira',
-                'Karen'
-            ];
-            
-            for (let preferred of femalePreferred) {
-                for (let voice of voices) {
-                    if (voice.lang === 'en-US' && voice.name.includes(preferred)) {
+        // 성별 감지: 페이지의 이미지 태그에서 직접 읽기
+        const imgTag = document.querySelector('img[alt]');
+        const srcOrAlt = (imgTag?.src || imgTag?.alt || '').toLowerCase();
+        
+        currentGender = srcOrAlt.includes('woman') || srcOrAlt.includes('emma') || srcOrAlt.includes('olivia') ? 'female' : 'male';
+        
+        console.log('Speaker detected:', currentGender, 'Image:', srcOrAlt);
+        
+        if (currentGender === 'female') {
+            // 여자 음성 선택
+            for (let voice of voices) {
+                if (voice.lang === 'en-US') {
+                    const name = voice.name.toLowerCase();
+                    // 여자 음성 특징
+                    if (name.includes('zira') || name.includes('female') || name.includes('samantha') || name.includes('victoria') || name.includes('moira') || name.includes('karen')) {
                         cachedVoice = voice;
+                        console.log('Selected female voice:', voice.name);
                         return;
                     }
                 }
             }
-            
-            // 대체: 여자 음성
+            // 대체: 여자인 것 같은 첫 번째 음성
             for (let voice of voices) {
-                if (voice.lang === 'en-US' && !voice.name.includes('Male')) {
+                if (voice.lang === 'en-US' && !voice.name.toLowerCase().includes('male')) {
                     cachedVoice = voice;
+                    console.log('Selected fallback female voice:', voice.name);
                     return;
                 }
             }
-        } else if (isMale) {
-            // 남자 미국 현지인 음성 - Male/David/Mark 포함 음성 우선
+        } else {
+            // 남자 음성 선택 - 명확하게 남자 음성을 선택
             for (let voice of voices) {
                 if (voice.lang === 'en-US') {
-                    const voiceName = voice.name.toLowerCase();
-                    if (voiceName.includes('male') || voiceName.includes('david') || voiceName.includes('mark') || voiceName.includes('alex') || voiceName.includes('bruce') || voiceName.includes('tom')) {
+                    const name = voice.name.toLowerCase();
+                    // 남자 음성 특징 - Male 포함하거나 알려진 남자 이름
+                    if (name.includes('male') || name.includes('david') || name.includes('mark') || name.includes('alex') || name.includes('tom') || name.includes('bruce') || name.includes('google us english')) {
                         cachedVoice = voice;
+                        console.log('Selected male voice:', voice.name);
                         return;
                     }
                 }
             }
-            
-            // 대체: 여자 음성이 아닌 다른 음성
+            // 대체: 여자가 아닌 첫 번째 음성
             for (let voice of voices) {
-                if (voice.lang === 'en-US' && !voice.name.includes('Zira') && !voice.name.includes('Samantha') && !voice.name.includes('Victoria')) {
+                if (voice.lang === 'en-US' && !voice.name.toLowerCase().includes('zira') && !voice.name.toLowerCase().includes('samantha') && !voice.name.toLowerCase().includes('victoria')) {
                     cachedVoice = voice;
+                    console.log('Selected fallback male voice:', voice.name);
                     return;
                 }
             }
         }
         
-        // 최후: 일반 en-US 음성
+        // 최후의 수단
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
                 cachedVoice = voice;
+                console.log('Selected default voice:', voice.name);
                 return;
             }
         }
