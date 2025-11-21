@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <!-- 현재 직업 상태 -->
         {% if player['직장'] %}
         <div class="card work-card mb-4 border-success">
@@ -15,7 +15,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-12 col-sm-6">
                         <h4 class="text-success">{{ player['직장'] }}</h4>
                         <p class="text-muted mb-3">월급: {{ "{:,}".format(player['직장정보']['월급']) }}원</p>
                         
