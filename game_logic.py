@@ -161,17 +161,23 @@ def get_tier_conditions():
     return [
         {'name': '언랭크', 'image': None, 'color': 'secondary', 'conditions': {'dungeon': 0, 'real_estate': 0, 'level': 1, 'achievement_points': 0}},
         {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 3, 'achievement_points': 5}},
-        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 1, 'level': 7, 'achievement_points': 20}},
-        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 1, 'level': 12, 'achievement_points': 40}},
-        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 1, 'level': 18, 'achievement_points': 70}},
-        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 1, 'level': 25, 'achievement_points': 120}},
-        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 1, 'level': 35, 'achievement_points': 161}}
+        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 2, 'level': 7, 'achievement_points': 20}},
+        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 3, 'level': 12, 'achievement_points': 40}},
+        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 5, 'level': 18, 'achievement_points': 70}},
+        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 7, 'level': 25, 'achievement_points': 120}},
+        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 10, 'level': 35, 'achievement_points': 161}}
     ]
 
 def get_player_tier(player):
     """플레이어 통계에 따른 티어 계산 (업적 포인트 기준)"""
     dungeon_clears = player.get('던전클리어횟수', 0)
-    real_estate_count = 1 if player.get('거주지') else 0
+    # 여러 부동산 소유 지원
+    if isinstance(player.get('부동산들'), list):
+        real_estate_count = len(player['부동산들'])
+    elif player.get('거주지'):
+        real_estate_count = 1
+    else:
+        real_estate_count = 0
     level = player['레벨']
     achievement_points = get_achievement_points(player)
     
@@ -710,7 +716,7 @@ def get_real_estate():
     return real_estate
 
 def buy_property(player, property_id):
-    """부동산 구매"""
+    """부동산 구매 (여러 개 소유 가능)"""
     if property_id < 0 or property_id >= len(real_estate):
         return {'success': False, 'message': '잘못된 부동산 선택입니다.'}
     
@@ -719,35 +725,60 @@ def buy_property(player, property_id):
     if player['돈'] < property_info['매매']:
         return {'success': False, 'message': '돈이 부족합니다.'}
     
-    # 기존 거주지가 있다면 최대기력 감소
-    if player['거주지']:
-        for prop in real_estate:
-            if prop['이름'] == player['거주지']:
-                player['최대기력'] -= prop['기력회복']
-                break
+    # 부동산들 리스트 초기화 (기존 거주지 마이그레이션)
+    if '부동산들' not in player:
+        player['부동산들'] = []
+        if player.get('거주지'):
+            player['부동산들'].append({
+                'name': player['거주지'],
+                'buy_date': player.get('부동산구매날짜', player['날짜']),
+                'last_rent_date': player.get('마지막월세날짜', player.get('부동산구매날짜', player['날짜']))
+            })
+    
+    # 같은 부동산 중복 구매 방지
+    for prop in player['부동산들']:
+        if prop['name'] == property_info['이름']:
+            return {'success': False, 'message': '이미 소유한 부동산입니다.'}
     
     player['돈'] -= property_info['매매']
-    player['거주지'] = property_info['이름']
+    player['부동산들'].append({
+        'name': property_info['이름'],
+        'buy_date': player['날짜'],
+        'last_rent_date': player['날짜']
+    })
     player['최대기력'] += property_info['기력회복']
     player['기력'] = min(player['최대기력'], player['기력'])
     
-    # 부동산 구매 날짜 기록 (30일마다 월세 받기 위함)
-    player['부동산구매날짜'] = player['날짜']
-    player['마지막월세날짜'] = player['날짜']  # 마지막 월세 받은 날
+    # 첫 거주지는 거주지로 설정
+    if len(player['부동산들']) == 1:
+        player['거주지'] = property_info['이름']
     
-    return {'success': True, 'message': f"{property_info['이름']}을(를) 구매했습니다! 최대 기력이 {property_info['기력회복']}만큼 증가했습니다. 30일마다 월세 수입을 받습니다."}
+    return {'success': True, 'message': f"{property_info['이름']}을(를) 구매했습니다! 최대 기력이 {property_info['기력회복']}만큼 증가했습니다. (총 {len(player['부동산들'])}개 소유)"}
 
-def sell_property(player):
-    """부동산 판매"""
-    if player['거주지'] is None:
-        return {'success': False, 'message': '거주지가 없습니다.'}
+def sell_property(player, property_name=None):
+    """부동산 판매 (현재 거주지 기본값)"""
+    if '부동산들' not in player or len(player['부동산들']) == 0:
+        return {'success': False, 'message': '소유한 부동산이 없습니다.'}
+    
+    sell_target = property_name or player.get('거주지')
+    if not sell_target:
+        return {'success': False, 'message': '판매할 부동산이 없습니다.'}
     
     for prop in real_estate:
-        if prop['이름'] == player['거주지']:
-            sell_price = int(prop['매매'] * 0.8)  # 80% 가격으로 판매
+        if prop['이름'] == sell_target:
+            sell_price = int(prop['매매'] * 0.8)
             player['돈'] += sell_price
-            player['거주지'] = None
-            return {'success': True, 'message': f"{sell_price}원에 판매했습니다."}
+            player['최대기력'] -= prop['기력회복']
+            player['기력'] = min(player['최대기력'], player['기력'])
+            
+            player['부동산들'] = [p for p in player['부동산들'] if p['name'] != sell_target]
+            
+            if player['부동산들']:
+                player['거주지'] = player['부동산들'][0]['name']
+            else:
+                player['거주지'] = None
+            
+            return {'success': True, 'message': f"{sell_target}을(를) {sell_price}원에 판매했습니다."}
     
     return {'success': False, 'message': '판매 오류가 발생했습니다.'}
 
@@ -899,21 +930,38 @@ def sleep(player):
     player['시간'] += 8
     
     # 월세 메시지 초기화
-    rent_message = None
+    rent_messages = []
     
     if player['시간'] >= 24:
         player['시간'] -= 24
         player['날짜'] += 1
         
-        # 30일마다 월세 수입
-        rent_message = None
-        if player['거주지'] and '부동산구매날짜' in player:
-            # 구매일로부터 30일이 지났는지 확인
+        # 여러 부동산에서 월세 수입
+        if '부동산들' in player and len(player['부동산들']) > 0:
+            for i, prop_dict in enumerate(player['부동산들']):
+                prop_name = prop_dict['name']
+                last_rent_day = prop_dict.get('last_rent_date', prop_dict.get('buy_date', player['날짜']))
+                days_since_last_rent = player['날짜'] - last_rent_day
+                
+                # 30일마다 월세 지급
+                if days_since_last_rent >= 30:
+                    for prop in real_estate:
+                        if prop['이름'] == prop_name:
+                            player['돈'] += prop['월세']
+                            player['부동산들'][i]['last_rent_date'] = player['날짜']
+                            rent_cycles = days_since_last_rent // 30
+                            if rent_cycles > 1:
+                                rent_messages.append(f'{prop_name} 월세 {prop["월세"]:,}원 ({rent_cycles}개월분)')
+                                player['돈'] += prop['월세'] * (rent_cycles - 1)
+                            else:
+                                rent_messages.append(f'{prop_name} 월세 {prop["월세"]:,}원')
+                            break
+        # 하위호환성: 거주지만 있는 경우
+        elif player['거주지'] and '부동산구매날짜' in player:
             days_since_purchase = player['날짜'] - player.get('부동산구매날짜', 0)
             last_rent_day = player.get('마지막월세날짜', player.get('부동산구매날짜', 0))
             days_since_last_rent = player['날짜'] - last_rent_day
             
-            # 30일마다 월세 지급 (마지막 월세 받은 날로부터 30일 후)
             if days_since_last_rent >= 30:
                 for prop in real_estate:
                     if prop['이름'] == player['거주지']:
@@ -921,10 +969,10 @@ def sleep(player):
                         player['마지막월세날짜'] = player['날짜']
                         rent_cycles = days_since_last_rent // 30
                         if rent_cycles > 1:
-                            rent_message = f'부동산 월세 수입으로 {prop["월세"]:,}원을 받았습니다. ({rent_cycles}개월분)'
-                            player['돈'] += prop['월세'] * (rent_cycles - 1)  # 추가 개월분
+                            rent_messages.append(f'부동산 월세 수입 {prop["월세"]:,}원 ({rent_cycles}개월분)')
+                            player['돈'] += prop['월세'] * (rent_cycles - 1)
                         else:
-                            rent_message = f'부동산 월세 수입으로 {prop["월세"]:,}원을 받았습니다.'
+                            rent_messages.append(f'부동산 월세 수입 {prop["월세"]:,}원')
                         break
     
     # 업적용 통계 업데이트
@@ -934,8 +982,9 @@ def sleep(player):
     
     # 월세 수입 메시지 추가
     base_message = f'충분히 잠을 잤습니다. 기력 +{total_recovery} (기본 4 + 집 보너스 {bonus_recovery}), 체력이 회복되었습니다.'
-    if rent_message is not None:
-        return {'message': f'{base_message} {rent_message}'}
+    if rent_messages:
+        rent_text = ', '.join(rent_messages)
+        return {'message': f'{base_message} {rent_text}'}
     else:
         return {'message': base_message}
 
