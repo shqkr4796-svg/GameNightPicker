@@ -33,10 +33,10 @@
                                 <a href="{{ url_for('compendium', rarity='에픽') }}" class="btn {% if filter_rarity == '에픽' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                                     <i class="fas fa-star me-1"></i>에픽
                                 </a>
-                                <a href="{{ url_for('compendium', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                                <a href="{{ url_for('compendium', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-light border border-2 border-warning{% endif %}">
                                     <i class="fas fa-star me-1"></i>유니크
                                 </a>
-                                <a href="{{ url_for('compendium', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                                <a href="{{ url_for('compendium', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-light border border-2 border-danger{% endif %}">
                                     <i class="fas fa-star me-1"></i>레전드리
                                 </a>
                             </div>
