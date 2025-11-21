@@ -1542,8 +1542,11 @@ def next_monster(dungeon_run, dungeon):
     # 몬스터 데이터 가져오기
     monster_data = get_monster_by_id(monster_id)
     
-    # 몬스터 이미지는 비워두기 (나중에 추가 예정)
-    dungeon_run['monster_image'] = ''
+    # 몬스터 이미지 설정
+    if monster_data:
+        dungeon_run['monster_image'] = monster_data.get('이미지', '')
+    else:
+        dungeon_run['monster_image'] = ''
     
     # 몬스터 HP 설정
     dungeon_run['monster_hp'] = monster_rarities[selected_rarity]['required_correct']
