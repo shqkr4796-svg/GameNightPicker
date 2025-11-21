@@ -1987,12 +1987,110 @@ def get_daily_expressions():
             'example': 'Speak of the devil! There he comes!',
             'examples': [
                 'Speak of the devil! There he comes!',
-                'We were just talking about her. Speak of the devil!',
-                'I was thinking about calling you. Speak of the devil, you called!'
+                'We were just talking about her. Speak of the devil!'
             ],
             'meaning': '얘기 나누던 사람이 나타났다',
             'situation': '우리가 얘기하던 사람이 때마침 나타났을 때',
             'tip': '악마라고 얘기하면 나타난다는 미신에서 나왔습니다.'
+        },
+        {
+            'expression': 'Couldn\'t care less',
+            'example': 'I couldn\'t care less about what others think.',
+            'examples': [
+                'I couldn\'t care less about what others think.',
+                'He couldn\'t care less about the game result.'
+            ],
+            'meaning': '관심이 없다, 신경 안 쓴다',
+            'situation': '어떤 것에 대해 전혀 관심이 없을 때',
+            'tip': '이 표현은 매우 자주 사용되는 일상 표현입니다.'
+        },
+        {
+            'expression': 'Hang in there',
+            'example': 'Hang in there, you can do it!',
+            'examples': [
+                'Hang in there, you can do it!',
+                'Things will get better. Just hang in there.'
+            ],
+            'meaning': '힘내, 계속해',
+            'situation': '누군가를 격려하거나 응원할 때',
+            'tip': '매우 긍정적이고 따뜻한 표현입니다.'
+        },
+        {
+            'expression': 'Just a minute',
+            'example': 'Wait, just a minute please!',
+            'examples': [
+                'Wait, just a minute please!',
+                'Just a minute, I need to check something.'
+            ],
+            'meaning': '잠깐만, 잠시만',
+            'situation': '누군가에게 잠깐 시간을 달라고 할 때',
+            'tip': '매우 일상적인 표현입니다.'
+        },
+        {
+            'expression': 'Let me know',
+            'example': 'Let me know if you need anything.',
+            'examples': [
+                'Let me know if you need anything.',
+                'Let me know what you think about this.'
+            ],
+            'meaning': '알려줘, 말해줘',
+            'situation': '정보나 의견을 요청할 때',
+            'tip': '매우 자주 쓰이는 표현입니다.'
+        },
+        {
+            'expression': 'Long time no see',
+            'example': 'Long time no see! How have you been?',
+            'examples': [
+                'Long time no see! How have you been?',
+                'It has been ages. Long time no see, buddy!'
+            ],
+            'meaning': '오랜만이야, 오랜 시간 못 봤어',
+            'situation': '오래전에 만난 사람을 다시 만났을 때',
+            'tip': '친한 친구나 아는 사람을 만날 때 사용합니다.'
+        },
+        {
+            'expression': 'By the way',
+            'example': 'By the way, did you see the new movie?',
+            'examples': [
+                'By the way, did you see the new movie?',
+                'Oh, by the way, I forgot to tell you something.'
+            ],
+            'meaning': '그런데, 참고로',
+            'situation': '대화 중에 다른 주제를 꺼낼 때',
+            'tip': '회화에서 매우 자주 사용됩니다.'
+        },
+        {
+            'expression': 'How about you',
+            'example': 'I like pizza. How about you?',
+            'examples': [
+                'I like pizza. How about you?',
+                'I am going to the beach tomorrow. How about you?'
+            ],
+            'meaning': '넌 어때?, 넌 어떻게?',
+            'situation': '상대방의 의견이나 계획을 묻을 때',
+            'tip': '회화에서 정말 자주 사용되는 표현입니다.'
+        },
+        {
+            'expression': 'I promise',
+            'example': 'I promise I will be on time.',
+            'examples': [
+                'I promise I will be on time.',
+                'I promise I won\'t tell anyone about this.'
+            ],
+            'meaning': '약속해, 약속할게',
+            'situation': '어떤 것을 보장하거나 약속할 때',
+            'tip': '신뢰를 나타내는 표현입니다.'
+        },
+        {
+            'expression': 'That sounds great',
+            'example': 'Let\'s go to the beach tomorrow. That sounds great!',
+            'examples': [
+                'Let\'s go to the beach tomorrow. That sounds great!',
+                'I got a promotion! That sounds great!'
+            ],
+            'meaning': '좋은데?, 좋다',
+            'situation': '누군가의 제안이나 좋은 소식에 동의할 때',
+            'tip': '긍정적인 반응을 표현합니다.'
         }
     ]
     return expressions
