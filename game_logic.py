@@ -108,31 +108,46 @@ def get_random_monster_image(rarity):
         '일반': [
             '/static/monsters/cute_common_tier_monster.png',
             '/static/monsters/cute_common_monster_variant_2.png',
-            '/static/monsters/cute_common_monster_variant_3.png'
+            '/static/monsters/cute_common_monster_variant_3.png',
+            '/static/monsters/common_monster_variant_4.png',
+            '/static/monsters/common_monster_variant_5.png',
+            '/static/monsters/common_monster_variant_6.png'
         ],
         '레어': [
             '/static/monsters/rare_tier_cute_magic_creature.png',
             '/static/monsters/rare_tier_magic_creature_variant_2.png',
-            '/static/monsters/rare_tier_magic_creature_variant_3.png'
+            '/static/monsters/rare_tier_magic_creature_variant_3.png',
+            '/static/monsters/rare_tier_magic_variant_4.png',
+            '/static/monsters/rare_tier_magic_variant_5.png',
+            '/static/monsters/rare_tier_magic_variant_6.png'
         ],
         '에픽': [
             '/static/monsters/epic_tier_cool_boss_monster.png',
             '/static/monsters/epic_tier_boss_monster_variant_2.png',
-            '/static/monsters/epic_tier_boss_monster_variant_3.png'
+            '/static/monsters/epic_tier_boss_monster_variant_3.png',
+            '/static/monsters/epic_tier_boss_variant_4.png',
+            '/static/monsters/epic_tier_boss_variant_5.png',
+            '/static/monsters/epic_tier_boss_variant_6.png'
         ],
         '유니크': [
             '/static/monsters/legendary_tier_majestic_boss.png',
             '/static/monsters/legendary_tier_boss_variant_2.png',
-            '/static/monsters/legendary_tier_boss_variant_3.png'
+            '/static/monsters/legendary_tier_boss_variant_3.png',
+            '/static/monsters/legendary_tier_variant_4.png',
+            '/static/monsters/legendary_tier_variant_5.png',
+            '/static/monsters/legendary_tier_variant_6.png'
         ],
         '레전드리': [
             '/static/monsters/legendary_tier_majestic_boss.png',
             '/static/monsters/legendary_tier_boss_variant_2.png',
-            '/static/monsters/legendary_tier_boss_variant_3.png'
+            '/static/monsters/legendary_tier_boss_variant_3.png',
+            '/static/monsters/legendary_tier_variant_4.png',
+            '/static/monsters/legendary_tier_variant_5.png',
+            '/static/monsters/legendary_tier_variant_6.png'
         ]
     }
     
-    # 등급이 '일반'이 아닌 경우 처리
+    # 등급이 없으면 일반으로 처리
     if rarity not in monster_images:
         rarity = '일반'
     
