@@ -207,100 +207,173 @@ def take_quiz():
                 full_word_info = word_info
                 break
         
-        if full_word_info and full_word_info not in session[wrong_session_key]:
-            session[wrong_session_key].append(full_word_info)
-            session.modified = True
+        wrong_question = {
+            'word': quiz_word,
+            'meaning': full_word_info['뜻'] if full_word_info else '알 수 없음',
+            'question_type': question_type,
+            'correct_answer': correct_answer,
+            'player_answer': answer,
+            'category': selected_category
+        }
         
-        message = f'틀렸습니다. 정답: {correct_answer}'
+        # 중복 방지: 같은 단어의 틀린 문제가 이미 있으면 덮어쓰기
+        session[wrong_session_key] = [q for q in session[wrong_session_key] if q['word'] != quiz_word]
+        session[wrong_session_key].append(wrong_question)
+        session.modified = True
+        
+        message = f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.'
         message_type = 'error'
     
-    return jsonify({
-        'correct': result['correct'],
-        'message': message,
-        'message_type': message_type,
-        'exp_gained': result.get('exp_gained', 0)
-    })
+    # AJAX 요청인지 확인
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # 다음 단어 가져오기
+        word_bank = game_logic.get_word_by_category(selected_category)
+        session_key = f'quiz_session_correct_{selected_category}'
+        correct_words = session.get(session_key, [])
+        available_words = [word for word in word_bank if word['단어'] not in correct_words]
+        
+        total_words = len(word_bank)
+        completed_words = len(correct_words)
+        
+        if len(available_words) > 0:
+            import random
+            next_quiz_word = random.choice(available_words)
+            
+            # 다음 문제의 유형 결정
+            if selected_language == 'english':
+                next_question_type = '단어맞히기'
+            elif selected_language == 'korean':
+                next_question_type = '뜻맞히기'
+            else:
+                next_question_type = random.choice(['뜻맞히기', '단어맞히기'])
+            
+            wrong_session_key = f'quiz_session_wrong_{selected_category}'
+            wrong_questions = session.get(wrong_session_key, [])
+            
+            return jsonify({
+                'success': True,
+                'correct': result['correct'],
+                'message': message,
+                'message_type': message_type,
+                'next_word': next_quiz_word,
+                'next_question_type': next_question_type,
+                'completed_words': completed_words,
+                'total_words': total_words,
+                'all_completed': False,
+                'wrong_questions_count': len(wrong_questions),
+                'has_wrong_questions': len(wrong_questions) > 0
+            })
+        else:
+            # 모든 단어를 맞혔을 때
+            return jsonify({
+                'success': True,
+                'correct': result['correct'],
+                'message': message,
+                'message_type': message_type,
+                'completed_words': completed_words,
+                'total_words': total_words,
+                'all_completed': True
+            })
+    
+    # 기존 방식 (form submit)
+    flash(message, message_type)
+    return redirect(url_for('quiz', category=selected_category, language=selected_language))
 
 @app.route('/reset_quiz_session', methods=['POST'])
 def reset_quiz_session():
     """퀴즈 세션 초기화"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
-    
     selected_category = request.form.get('selected_category', 'all')
-    
-    # 해당 카테고리의 세션 초기화
+    selected_language = request.form.get('selected_language', request.args.get('language', 'random'))
     session_key = f'quiz_session_correct_{selected_category}'
     wrong_session_key = f'quiz_session_wrong_{selected_category}'
-    
     if session_key in session:
         del session[session_key]
     if wrong_session_key in session:
         del session[wrong_session_key]
-    
-    session.modified = True
-    flash('퀴즈 진행 상황이 초기화되었습니다.', 'info')
-    
-    return redirect(url_for('quiz', category=selected_category))
+    flash('새로운 퀴즈 세션을 시작합니다!', 'info')
+    return redirect(url_for('quiz', category=selected_category, language=selected_language))
 
 @app.route('/quiz/retry_wrong')
-def quiz_retry_wrong():
-    """틀린 문제 다시 풀기"""
+def retry_wrong_quiz():
+    """틀린 문제 재도전"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
-    player = session['player_data']
-    selected_category = request.args.get('category', 'all')
-    
-    wrong_session_key = f'quiz_session_wrong_{selected_category}'
+    category = request.args.get('category', 'all')
+    selected_language = request.args.get('language', 'random')
+    wrong_session_key = f'quiz_session_wrong_{category}'
     wrong_questions = session.get(wrong_session_key, [])
     
     if not wrong_questions:
         flash('틀린 문제가 없습니다.', 'info')
-        return redirect(url_for('quiz', category=selected_category))
+        return redirect(url_for('quiz', category=category, language=selected_language))
+    
+    # 틀린 문제들을 재도전 모드로 초기화
+    session['wrong_questions_retry_mode'] = True
+    session['wrong_questions_retry_category'] = category
+    session['wrong_questions_retry_index'] = 0
+    session['wrong_questions_retry_correct'] = []
     
     return render_template('quiz_wrong_retry.html',
-                         player=player,
+                         player=session['player_data'],
                          wrong_questions=wrong_questions,
-                         selected_category=selected_category,
-                         total_wrong=len(wrong_questions))
+                         category=category,
+                         current_index=0)
 
 @app.route('/quiz/retry_wrong/answer', methods=['POST'])
-def quiz_retry_wrong_answer():
-    """틀린 문제 답변"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
+def answer_wrong_quiz():
+    """틀린 문제 재도전 답안 처리"""
+    if 'player_data' not in session or not session.get('wrong_questions_retry_mode'):
+        return redirect(url_for('quiz'))
     
     player = session['player_data']
-    selected_category = request.form.get('selected_category', 'all')
+    category = session.get('wrong_questions_retry_category', 'all')
+    wrong_session_key = f'quiz_session_wrong_{category}'
+    wrong_questions = session.get(wrong_session_key, [])
+    current_index = session.get('wrong_questions_retry_index', 0)
+    
+    if current_index >= len(wrong_questions):
+        flash('모든 틀린 문제를 완료했습니다!', 'success')
+        session.pop('wrong_questions_retry_mode', None)
+        return redirect(url_for('quiz', category=category))
+    
+    current_question = wrong_questions[current_index]
     answer = request.form.get('answer', '').strip()
-    question_type = request.form.get('question_type')
-    correct_answer = request.form.get('correct_answer')
-    word_to_remove = request.form.get('word_to_remove')
+    correct_answer = current_question['correct_answer']
     
-    result = game_logic.process_quiz_answer(player, answer, correct_answer, question_type)
-    
-    if result['correct']:
-        wrong_session_key = f'quiz_session_wrong_{selected_category}'
-        if wrong_session_key in session:
-            session[wrong_session_key] = [w for w in session[wrong_session_key] if w.get('단어') != word_to_remove]
-            session.modified = True
-        
-        message = f'정답! 경험치 +{result["exp_gained"]}'
-        message_type = 'success'
-    else:
-        message = f'틀렸습니다. 정답: {correct_answer}'
-        message_type = 'error'
-    
+    result = game_logic.process_quiz_answer(player, answer, correct_answer, current_question['question_type'])
     session['player_data'] = player
     game_logic.save_game(player)
     
-    return jsonify({
-        'correct': result['correct'],
-        'message': message,
-        'message_type': message_type,
-        'exp_gained': result.get('exp_gained', 0)
-    })
+    if result['correct']:
+        # 맞춘 문제를 기록
+        if 'wrong_questions_retry_correct' not in session:
+            session['wrong_questions_retry_correct'] = []
+        session['wrong_questions_retry_correct'].append(current_index)
+        
+        # 틀린 문제 목록에서 제거
+        wrong_questions.pop(current_index)
+        session[wrong_session_key] = wrong_questions
+        
+        flash(f'정답! 경험치 +{result["exp_gained"]}', 'success')
+        
+        # 다음 문제로 이동하지만 인덱스는 증가하지 않음 (문제가 제거되었으므로)
+        if current_index >= len(wrong_questions):
+            # 모든 문제 완료
+            flash('모든 틀린 문제를 완료했습니다!', 'success')
+            session.pop('wrong_questions_retry_mode', None)
+            return redirect(url_for('quiz', category=category))
+    else:
+        # 틀렸으면 다음 문제로 이동
+        session['wrong_questions_retry_index'] = current_index + 1
+        flash(f'틀렸습니다. 정답은 "{correct_answer}"입니다.', 'error')
+        
+        if session['wrong_questions_retry_index'] >= len(wrong_questions):
+            flash('틀린 문제 재도전을 완료했습니다.', 'info')
+            session.pop('wrong_questions_retry_mode', None)
+            return redirect(url_for('quiz', category=category))
+    
+    return redirect(url_for('retry_wrong_quiz', category=category))
 
 @app.route('/add_word', methods=['POST'])
 def add_word():
@@ -308,70 +381,125 @@ def add_word():
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
-    word = request.form.get('word')
-    meaning = request.form.get('meaning')
-    example = request.form.get('example')
+    player = session['player_data']
+    words_text = request.form.get('words', '').strip()
+    meanings_text = request.form.get('meanings', '').strip()
+    
+    # 카테고리 처리: 새 카테고리가 선택되면 사용자 입력값 사용
     category = request.form.get('category', '기본')
+    if category == 'custom':
+        custom_category = request.form.get('custom_category', '').strip()
+        if custom_category:
+            category = custom_category
+        else:
+            flash('새 카테고리 이름을 입력해주세요.', 'error')
+            return redirect(url_for('quiz'))
     
-    result = game_logic.add_user_word(word, meaning, example, category)
-    
-    if result['success']:
-        flash(f'단어 "{word}"가 추가되었습니다!', 'success')
+    if words_text and meanings_text:
+        words = [w.strip() for w in words_text.split('\n') if w.strip()]
+        meanings = [m.strip() for m in meanings_text.split('\n') if m.strip()]
+        
+        if len(words) != len(meanings):
+            flash('단어와 뜻의 개수가 다릅니다. 같은 순서로 입력해주세요.', 'error')
+        else:
+            added_count = game_logic.add_words_to_bank(words, meanings, category, player)
+            
+            if added_count > 0:
+                session['player_data'] = player
+                game_logic.save_game(player)
+                flash(f'{added_count}개의 단어가 "{category}" 카테고리에 추가되었습니다!', 'success')
+            else:
+                flash('추가할 수 있는 단어가 없습니다.', 'info')
     else:
-        flash(result['message'], 'error')
+        flash('단어와 뜻을 모두 입력해주세요.', 'error')
     
-    return redirect(url_for('word_management'))
+    return redirect(url_for('quiz'))
 
 @app.route('/save_word_from_quiz', methods=['POST'])
 def save_word_from_quiz():
-    """퀴즈에서 단어 저장"""
+    """퀴즈에서 단어 저장 (AJAX)"""
     if 'player_data' not in session:
-        return redirect(url_for('index'))
+        return jsonify({'success': False, 'message': '로그인이 필요합니다.'})
     
-    word = request.form.get('word')
-    meaning = request.form.get('meaning')
-    
-    result = game_logic.add_user_word(word, meaning, '', '기본')
-    
-    if result['success']:
-        return jsonify({'success': True, 'message': f'단어 "{word}"가 저장되었습니다!'})
-    else:
-        return jsonify({'success': False, 'message': result['message']})
+    try:
+        data = request.get_json()
+        word = data.get('word', '').strip()
+        meaning = data.get('meaning', '').strip()
+        category = data.get('category', '기본').strip()
+        
+        if not word or not meaning:
+            return jsonify({'success': False, 'message': '단어와 뜻을 모두 입력해주세요.'})
+        
+        if not category:
+            return jsonify({'success': False, 'message': '카테고리를 선택해주세요.'})
+        
+        player = session['player_data']
+        
+        # 단어 추가
+        success = game_logic.add_word_to_bank(word, meaning, category)
+        
+        if success:
+            session['player_data'] = player
+            game_logic.save_game(player)
+            
+            return jsonify({
+                'success': True, 
+                'message': f'"{word}" 단어가 "{category}" 카테고리에 저장되었습니다!'
+            })
+        else:
+            return jsonify({'success': False, 'message': '단어 저장 중 오류가 발생했습니다.'})
+            
+    except Exception as e:
+        print(f"Error saving word from quiz: {e}")
+        return jsonify({'success': False, 'message': '단어 저장 중 오류가 발생했습니다.'})
 
 @app.route('/save_category_words', methods=['POST'])
 def save_category_words():
-    """카테고리 단어 저장"""
-    data = request.get_json()
-    category = data.get('category')
-    words = data.get('words', [])
+    """던전 카테고리의 모든 단어를 사용자 단어장에 저장"""
+    if 'player_data' not in session:
+        return jsonify({'success': False, 'message': '로그인이 필요합니다.'})
     
-    success_count = 0
-    for word_data in words:
-        result = game_logic.add_user_word(
-            word_data.get('word'),
-            word_data.get('meaning'),
-            word_data.get('example', ''),
-            category
-        )
+    try:
+        data = request.get_json()
+        dungeon_id = data.get('dungeon_id', '').strip()
+        category_name = data.get('category_name', '').strip()
+        
+        if not dungeon_id or not category_name:
+            return jsonify({'success': False, 'message': '던전 ID와 카테고리 이름이 필요합니다.'})
+        
+        result = game_logic.save_category_words_to_bank(dungeon_id, category_name)
+        
         if result['success']:
-            success_count += 1
-    
-    return jsonify({
-        'success': True,
-        'message': f'{success_count}개의 단어가 저장되었습니다!'
-    })
+            return jsonify({
+                'success': True,
+                'message': result['message'],
+                'added_count': result['added_count'],
+                'total_words': result['total_words']
+            })
+        else:
+            return jsonify(result)
+            
+    except Exception as e:
+        print(f"Error saving category words: {e}")
+        return jsonify({'success': False, 'message': '카테고리 단어 저장 중 오류가 발생했습니다.'})
 
 @app.route('/delete_word', methods=['POST'])
 def delete_word():
     """단어 삭제"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
+    try:
+        word_index_str = request.form.get('word_index', '0')
+        if not word_index_str or word_index_str == '':
+            flash('잘못된 단어 인덱스입니다.', 'error')
+            return redirect(url_for('word_management'))
+        word_index = int(word_index_str)
+    except (ValueError, TypeError):
+        flash('잘못된 단어 인덱스입니다.', 'error')
+        return redirect(url_for('word_management'))
     
-    word = request.form.get('word')
-    result = game_logic.delete_user_word(word)
+    result = game_logic.delete_word_from_bank(word_index)
     
     if result['success']:
-        flash(f'단어 "{word}"가 삭제되었습니다!', 'success')
+        flash(result['message'], 'success')
     else:
         flash(result['message'], 'error')
     
@@ -380,56 +508,79 @@ def delete_word():
 @app.route('/delete_multiple_words', methods=['POST'])
 def delete_multiple_words():
     """여러 단어 삭제"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
+    word_indices_str = request.form.get('word_indices', '')
     
-    words = request.form.getlist('words[]')
+    if not word_indices_str:
+        flash('삭제할 단어를 선택해주세요.', 'error')
+        return redirect(url_for('word_management'))
     
-    success_count = 0
-    for word in words:
-        result = game_logic.delete_user_word(word)
-        if result['success']:
-            success_count += 1
+    word_indices = word_indices_str.split(',')
+    result = game_logic.delete_multiple_words_from_bank(word_indices)
     
-    flash(f'{success_count}개의 단어가 삭제되었습니다!', 'success')
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
     return redirect(url_for('word_management'))
 
 @app.route('/change_multiple_categories', methods=['POST'])
 def change_multiple_categories():
-    """여러 단어 카테고리 변경"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
+    """여러 단어의 카테고리 일괄 변경"""
+    word_indices_str = request.form.get('word_indices', '')
+    new_category = request.form.get('new_category', '').strip()
+    custom_category = request.form.get('custom_category', '').strip()
     
-    words = request.form.getlist('words[]')
-    new_category = request.form.get('category')
+    if not word_indices_str:
+        flash('카테고리를 변경할 단어를 선택해주세요.', 'error')
+        return redirect(url_for('word_management'))
     
-    success_count = 0
-    for word in words:
-        result = game_logic.change_word_category(word, new_category)
-        if result['success']:
-            success_count += 1
+    # 새 카테고리가 custom이면 사용자 입력값 사용
+    if new_category == 'custom':
+        if custom_category:
+            new_category = custom_category
+        else:
+            flash('새 카테고리 이름을 입력해주세요.', 'error')
+            return redirect(url_for('word_management'))
     
-    flash(f'{success_count}개의 단어 카테고리가 변경되었습니다!', 'success')
+    if not new_category:
+        flash('변경할 카테고리를 선택해주세요.', 'error')
+        return redirect(url_for('word_management'))
+    
+    word_indices = word_indices_str.split(',')
+    result = game_logic.change_multiple_categories(word_indices, new_category)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
     return redirect(url_for('word_management'))
 
 @app.route('/edit_word', methods=['POST'])
 def edit_word():
     """단어 수정"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
+    try:
+        word_index_str = request.form.get('word_index', '0')
+        if not word_index_str or word_index_str == '':
+            flash('잘못된 단어 인덱스입니다.', 'error')
+            return redirect(url_for('word_management'))
+        word_index = int(word_index_str)
+    except (ValueError, TypeError):
+        flash('잘못된 단어 인덱스입니다.', 'error')
+        return redirect(url_for('word_management'))
+    new_word = request.form.get('word', '').strip()
+    new_meaning = request.form.get('meaning', '').strip()
+    new_category = request.form.get('category', '기본')
     
-    old_word = request.form.get('old_word')
-    new_word = request.form.get('word')
-    meaning = request.form.get('meaning')
-    example = request.form.get('example', '')
-    category = request.form.get('category', '기본')
-    
-    result = game_logic.edit_user_word(old_word, new_word, meaning, example, category)
-    
-    if result['success']:
-        flash(f'단어가 수정되었습니다!', 'success')
+    if new_word and new_meaning:
+        result = game_logic.edit_word_in_bank(word_index, new_word, new_meaning, new_category)
+        if result['success']:
+            flash(result['message'], 'success')
+        else:
+            flash(result['message'], 'error')
     else:
-        flash(result['message'], 'error')
+        flash('단어와 뜻을 모두 입력해주세요.', 'error')
     
     return redirect(url_for('word_management'))
 
@@ -440,81 +591,101 @@ def word_management():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    words = game_logic.get_user_words()
-    categories = list(set([word.get('카테고리', '기본') for word in words]))
-    categories.sort()
+    word_bank = game_logic.get_user_words()
+    # 사용자 단어에서만 카테고리 추출
+    categories = list(set([word.get('카테고리', '기본') for word in word_bank]))
     
-    return render_template('word_management.html',
-                         player=player,
-                         words=words,
+    # 검색 기능
+    search_term = request.args.get('search', '').strip()
+    if search_term:
+        # 사용자 단어에서만 검색
+        all_user_words = game_logic.get_user_words()
+        word_bank = [word for word in all_user_words if 
+                    search_term.lower() in word.get('단어', '').lower() or 
+                    search_term.lower() in word.get('뜻', '').lower()]
+    
+    # 카테고리 필터
+    category_filter = request.args.get('category', 'all')
+    if category_filter != 'all':
+        word_bank = [word for word in word_bank if word.get('카테고리', '기본') == category_filter]
+    
+    # 모든 경우에 인덱스 추가 (원본 단어장에서의 실제 인덱스)
+    all_user_words = game_logic.get_user_words()
+    for word in word_bank:
+        # 원본 단어장에서의 실제 인덱스 찾기
+        for original_idx, original_word in enumerate(all_user_words):
+            if (word.get('단어') == original_word.get('단어') and 
+                word.get('뜻') == original_word.get('뜻') and 
+                word.get('카테고리') == original_word.get('카테고리')):
+                word['인덱스'] = str(original_idx)
+                break
+    
+    return render_template('word_management.html', 
+                         player=player, 
+                         word_bank=word_bank,
                          categories=categories,
-                         total_words=len(words))
+                         search_term=search_term,
+                         category_filter=category_filter)
 
 @app.route('/search_words')
 def search_words_route():
-    return redirect(url_for('word_management'))
+    """단어 검색 API"""
+    search_term = request.args.get('q', '')
+    results = game_logic.search_words(search_term) if search_term else []
+    return jsonify({'results': results})
 
 @app.route('/job')
 def job():
-    """직업 선택 페이지"""
+    """직업 관리 페이지"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
+    jobs = game_logic.get_jobs()
     
-    return render_template('job.html', player=player, jobs=game_logic.get_jobs())
+    return render_template('job.html', player=player, jobs=jobs)
 
 @app.route('/apply_job', methods=['POST'])
 def apply_job():
-    """직업 선택"""
+    """취업 신청"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
-    job_name = request.form.get('job')
+    job_id = int(request.form.get('job_id', 0))
     
-    # 직업 정보 가져오기
-    jobs = game_logic.get_jobs()
-    selected_job = None
-    for job in jobs:
-        if job['이름'] == job_name:
-            selected_job = job
-            break
+    result = game_logic.apply_for_job(player, job_id)
+    session['player_data'] = player
+    game_logic.save_game(player)
     
-    if selected_job:
-        player['직장'] = job_name
-        player['직장정보'] = selected_job
-        flash(f'{job_name} 직업을 선택했습니다!', 'success')
-        game_logic.save_game(player)
-        session['player_data'] = player
-        game_logic.record_event(f'{job_name} 직업 시작')
+    if result['success']:
+        flash(result['message'], 'success')
     else:
-        flash('직업을 찾을 수 없습니다.', 'error')
+        flash(result['message'], 'error')
     
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('job'))
 
-@app.route('/shop')
-def shop():
-    """상점"""
+@app.route('/work', methods=['POST'])
+def work():
+    """근무하기"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
-    shop_items = game_logic.get_shop_items()
-    return render_template('shop.html', player=player, shop_items=shop_items)
-
-@app.route('/inventory')
-def inventory():
-    """인벤토리"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
+    result = game_logic.work(player)
+    session['player_data'] = player
+    game_logic.save_game(player)
     
-    player = session['player_data']
-    return render_template('inventory.html', player=player)
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('job'))
 
 @app.route('/real_estate')
 def real_estate():
-    """부동산"""
+    """부동산 페이지"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
@@ -523,35 +694,123 @@ def real_estate():
     
     return render_template('real_estate.html', player=player, properties=properties)
 
-@app.route('/work', methods=['POST'])
-def work():
-    """일하기"""
+@app.route('/buy_property', methods=['POST'])
+def buy_property():
+    """부동산 구매"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
-    result = game_logic.work(player)
+    property_id = int(request.form.get('property_id', 0))
     
+    result = game_logic.buy_property(player, property_id)
     session['player_data'] = player
     game_logic.save_game(player)
     
-    flash(result['message'], result['type'])
-    return redirect(url_for('dashboard'))
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('real_estate'))
 
-@app.route('/sleep', methods=['POST'])
-def sleep():
-    """잠자기"""
+@app.route('/sell_property', methods=['POST'])
+def sell_property():
+    """부동산 판매"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
-    result = game_logic.sleep(player)
-    
+    result = game_logic.sell_property(player)
     session['player_data'] = player
     game_logic.save_game(player)
     
-    flash(result['message'], 'success')
-    return redirect(url_for('dashboard'))
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('real_estate'))
+
+@app.route('/shop')
+def shop():
+    """상점 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    items = game_logic.get_shop_items()
+    
+    return render_template('shop.html', player=player, items=items)
+
+@app.route('/buy_item', methods=['POST'])
+def buy_item():
+    """아이템 구매"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    item_id = int(request.form.get('item_id', 0))
+    
+    result = game_logic.buy_item(player, item_id)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('shop'))
+
+@app.route('/equip_weapon', methods=['POST'])
+def equip_weapon():
+    """무기 장착"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    weapon_name = request.form.get('weapon_name', '')
+    
+    result = game_logic.equip_weapon(player, weapon_name)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('inventory'))
+
+@app.route('/unequip_weapon', methods=['POST'])
+def unequip_weapon():
+    """무기 해제"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    result = game_logic.unequip_weapon(player)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('inventory'))
+
+@app.route('/inventory')
+def inventory():
+    """인벤토리 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    shop_items = game_logic.get_shop_items()
+    return render_template('inventory.html', player=player, shop_items=shop_items)
 
 @app.route('/allocate_stats', methods=['POST'])
 def allocate_stats():
@@ -563,51 +822,35 @@ def allocate_stats():
     stat_type = request.form.get('stat_type')
     points = int(request.form.get('points', 0))
     
-    result = game_logic.allocate_stats(player, stat_type, points)
-    
+    result = game_logic.allocate_stat_points(player, stat_type, points)
     session['player_data'] = player
     game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('dashboard'))
+
+@app.route('/sleep', methods=['POST'])
+def sleep():
+    """잠자기"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    result = game_logic.sleep(player)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    # 랜덤 이벤트 체크
+    event = game_logic.check_random_event(player)
+    if event:
+        flash(f"이벤트 발생: {event['메시지']}", 'info')
     
     flash(result['message'], 'success')
     return redirect(url_for('dashboard'))
-
-@app.route('/buy_item', methods=['POST'])
-def buy_item():
-    """아이템 구매"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
-    
-    player = session['player_data']
-    item_name = request.form.get('item_name')
-    
-    result = game_logic.buy_item(player, item_name)
-    
-    session['player_data'] = player
-    game_logic.save_game(player)
-    
-    flash(result['message'], 'success' if result['success'] else 'error')
-    return redirect(url_for('shop'))
-
-@app.route('/buy_property', methods=['POST'])
-def buy_property():
-    """부동산 구매"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
-    
-    player = session['player_data']
-    property_name = request.form.get('property_name')
-    
-    result = game_logic.buy_property(player, property_name)
-    
-    session['player_data'] = player
-    game_logic.save_game(player)
-    
-    flash(result['message'], 'success' if result['success'] else 'error')
-    
-    if result['success']:
-        game_logic.record_event(f'{property_name} 구매')
-    
-    return redirect(url_for('real_estate'))
 
 @app.route('/achievements')
 def achievements():
@@ -616,49 +859,51 @@ def achievements():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    
-    # 플레이어의 성취 조건들 가져오기
-    achieved_conditions = game_logic.get_player_achievements(player)
-    all_achievements = game_logic.get_all_achievements()
-    
-    # 성취를 난이도별로 분류
-    achievements_by_difficulty = {}
-    for achievement in all_achievements:
-        difficulty = achievement['난이도']
-        is_achieved = achievement['조건'] in achieved_conditions
-        
-        if difficulty not in achievements_by_difficulty:
-            achievements_by_difficulty[difficulty] = {'achieved': [], 'not_achieved': []}
-        
-        if is_achieved:
-            achievements_by_difficulty[difficulty]['achieved'].append(achievement)
-        else:
-            achievements_by_difficulty[difficulty]['not_achieved'].append(achievement)
-    
-    # 성취 포인트 계산
+    achievements = game_logic.get_all_achievements()
+    player_achievements = game_logic.get_player_achievements(player)
     achievement_points = game_logic.get_achievement_points(player)
     
-    return render_template('achievements.html',
-                         player=player,
-                         achievements_by_difficulty=achievements_by_difficulty,
-                         achievement_points=achievement_points,
-                         total_achievements=len(all_achievements),
-                         achieved_count=len(achieved_conditions))
+    return render_template('achievements.html', 
+                         player=player, 
+                         achievements=achievements,
+                         player_achievements=player_achievements,
+                         achievement_points=achievement_points)
+
+@app.route('/api/player_stats')
+def api_player_stats():
+    """플레이어 통계 API (차트용)"""
+    if 'player_data' not in session:
+        return jsonify({'error': 'No player data'})
+    
+    player = session['player_data']
+    stats = {
+        'stats': [player['힘'], player['지능'], player['외모'], player['체력스탯'], player['운']],
+        'labels': ['힘', '지능', '외모', '체력', '운'],
+        'level': player['레벨'],
+        'exp': player['경험치'],
+        'max_exp': player['경험치최대']
+    }
+    
+    return jsonify(stats)
+
+# ============== 던전 시스템 라우트 ==============
 
 @app.route('/dungeons')
 def dungeons():
-    """던전 목록"""
+    """던전 목록 페이지"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
     dungeons = game_logic.get_dungeons()
     
-    return render_template('dungeons.html', player=player, dungeons=dungeons)
+    return render_template('dungeons.html', 
+                         player=player, 
+                         dungeons=dungeons)
 
-@app.route('/dungeon_preview/<dungeon_id>')
+@app.route('/dungeon/<dungeon_id>/preview')
 def dungeon_preview(dungeon_id):
-    """던전 미리보기"""
+    """던전 미리보기 페이지"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
@@ -666,169 +911,286 @@ def dungeon_preview(dungeon_id):
     dungeon = game_logic.get_dungeon_by_id(dungeon_id)
     
     if not dungeon:
-        flash('던전을 찾을 수 없습니다.', 'error')
+        flash('존재하지 않는 던전입니다.', 'error')
         return redirect(url_for('dungeons'))
     
-    return render_template('dungeon_preview.html', player=player, dungeon=dungeon)
+    # 던전별 단어 로드 (모든 단어 표시)
+    words = game_logic.load_words_by_source(dungeon.get('word_source', 'toeic'))
+    
+    return render_template('dungeon_preview.html', 
+                         player=player, 
+                         dungeon=dungeon,
+                         all_words=words,
+                         total_words=len(words))
 
-@app.route('/start_dungeon/<dungeon_id>', methods=['POST'])
-def start_dungeon(dungeon_id):
+@app.route('/dungeon/start', methods=['POST'])
+def start_dungeon():
     """던전 시작"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
+    dungeon_id = request.form.get('dungeon_id')
     
-    # 던전 정보 가져오기
-    dungeon = game_logic.get_dungeon_by_id(dungeon_id)
-    if not dungeon:
-        flash('던전을 찾을 수 없습니다.', 'error')
+    # 최소 체력 확인 (체력 = 기력)
+    if player['기력'] < 1:
+        flash('던전에 입장하려면 최소 기력 1이 필요합니다.', 'error')
         return redirect(url_for('dungeons'))
     
-    # 입장료 확인
-    if player['돈'] < dungeon['입장료']:
-        flash('입장료가 부족합니다.', 'error')
+    # 던전 실행 초기화
+    result = game_logic.init_dungeon_run(player, dungeon_id)
+    
+    if not result['success']:
+        flash(result['message'], 'error')
         return redirect(url_for('dungeons'))
     
-    # 입장료 차감
-    player['돈'] -= dungeon['입장료']
-    
-    # 던전 초기화
-    dungeon_run = game_logic.initialize_dungeon_run(player, dungeon)
-    
-    session['player_data'] = player
-    session['dungeon_run'] = dungeon_run
-    session.modified = True
+    # 입장료 차감이 반영되도록 먼저 게임 저장
     game_logic.save_game(player)
     
-    flash(f'{dungeon["이름"]} 던전에 진입했습니다!', 'success')
+    # 세션에 던전 실행 상태 및 수정된 플레이어 데이터 저장
+    session['dungeon_run'] = result['dungeon_run']
+    session['player_data'] = player
+    
+    # 입장료가 있는 던전인 경우 안내
+    dungeon = game_logic.get_dungeon_by_id(dungeon_id)
+    if dungeon and dungeon.get('entry_fee', 0) > 0:
+        flash(f'던전에 입장했습니다! (입장료 {dungeon["entry_fee"]:,}원 차감)', 'success')
+    else:
+        flash('던전에 입장했습니다!', 'success')
+    
     return redirect(url_for('dungeon_run'))
 
-@app.route('/dungeon_run')
+@app.route('/dungeon/run')
 def dungeon_run():
-    """던전 진행"""
+    """던전 실행 화면"""
     if 'player_data' not in session or 'dungeon_run' not in session:
         return redirect(url_for('dungeons'))
     
     player = session['player_data']
     dungeon_run = session['dungeon_run']
     
-    return render_template('dungeon_run.html', player=player, dungeon_run=dungeon_run)
+    # 던전런에서 플래시 메시지 확인 및 처리
+    if 'flash_message' in dungeon_run:
+        flash(dungeon_run['flash_message'], 'info')
+        del dungeon_run['flash_message']  # 메시지 표시 후 삭제
+        session['dungeon_run'] = dungeon_run  # 세션 업데이트
+    
+    dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+    
+    # 던전 클리어 확인
+    if game_logic.check_dungeon_clear(dungeon_run):
+        flash('던전을 클리어했습니다! 축하합니다!', 'success')
+        # 던전 실행 상태 삭제
+        session.pop('dungeon_run', None)
+        return redirect(url_for('dungeons'))
+    
+    return render_template('dungeon_run.html', 
+                         player=player, 
+                         dungeon=dungeon,
+                         dungeon_run=dungeon_run)
 
 @app.route('/dungeon/answer', methods=['POST'])
-def dungeon_answer():
-    """던전 문제 답변"""
+def answer_dungeon():
+    """던전 답변 처리"""
     if 'player_data' not in session or 'dungeon_run' not in session:
+        flash('던전 정보가 없습니다.', 'error')
         return redirect(url_for('dungeons'))
     
     player = session['player_data']
     dungeon_run = session['dungeon_run']
     
-    answer = request.form.get('answer', '').strip()
-    question_type = request.form.get('question_type')
-    correct_answer = request.form.get('correct_answer')
+    # 안전한 choice 값 처리
+    try:
+        choice = int(request.form.get('choice', -1))
+    except (ValueError, TypeError):
+        flash('잘못된 선택입니다. 다시 시도해주세요.', 'error')
+        return redirect(url_for('dungeon_run'))
     
-    # 정답 확인
-    answer_lower = answer.lower()
-    correct_lower = correct_answer.lower()
-    is_correct = answer_lower == correct_lower
+    # 선택지 유효성 검사
+    if 'current_options' not in dungeon_run or not dungeon_run['current_options']:
+        flash('게임 오류가 발생했습니다. 던전을 다시 시작해주세요.', 'error')
+        session.pop('dungeon_run', None)
+        return redirect(url_for('dungeons'))
     
-    result_msg = ""
+    if choice < 0 or choice >= len(dungeon_run['current_options']):
+        flash('잘못된 선택입니다. 다시 시도해주세요.', 'error')
+        return redirect(url_for('dungeon_run'))
     
-    if is_correct:
-        result_msg = "정답입니다! 몬스터에게 피해를 입혔습니다!"
-        
-        # 플레이어 공격 - 몬스터 진행도 증가
-        dungeon_run['monster_progress'] += 1
-        
-        # 경험치 획득
-        exp_gained = 10 + dungeon_run['cleared_words'] * 2
-        player['경험치'] += exp_gained
-        result_msg += f" (경험치 +{exp_gained})"
-        
-        # 레벨업 확인
-        while player['경험치'] >= player['경험치최대']:
-            player['경험치'] -= player['경험치최대']
-            player['레벨'] += 1
-            player['경험치최대'] = int(player['경험치최대'] * 1.1)
-            player['스탯포인트'] += 5
-            result_msg += f" | 레벨업! (Lv.{player['레벨']})"
-        
-        # 몬스터 처치 확인
-        if dungeon_run['monster_progress'] >= dungeon_run['monster_hp']:
-            result_msg += f" | 몬스터를 처치했습니다!"
-            
-            # 몬스터 정보 추가
-            rarity = game_logic.get_monster_rarity()
-            monster_data = game_logic.get_random_monster(rarity)
-            
-            is_new_monster = game_logic.update_compendium(player, dungeon_run)
-            if is_new_monster:
-                result_msg += f" {rarity} 몬스터를 처치하고 새로운 몬스터를 도감에 추가했습니다!"
+    # 답변 처리
+    result = game_logic.answer_dungeon(player, dungeon_run, choice)
+    
+    if result.get('game_over', False):
+        flash(result['message'], 'error')
+        session.pop('dungeon_run', None)  # 던전 실행 상태 삭제
+        session['player_data'] = player
+        game_logic.save_game(player)
+        return redirect(url_for('dungeons'))
+    
+    flash(result['message'], 'success' if result['correct'] else 'warning')
+    
+    # 몬스터가 처치되었으면 다음 몬스터 생성
+    if result.get('monster_defeated'):
+        # 틀린 문제 모드인지 확인
+        if dungeon_run.get('wrong_questions_mode'):
+            # 틀린 문제 모드의 경우 완료 체크 후 다음 문제로
+            if dungeon_run['current_wrong_index'] >= len(dungeon_run['wrong_questions_list']):
+                next_result = {'success': False, 'message': '틀린 문제 복습을 완료했습니다!'}
             else:
-                result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
+                next_result = game_logic.next_wrong_question(dungeon_run)
         else:
-            result_msg += f" ({dungeon_run['monster_progress']}/{dungeon_run['monster_hp']})"
-        
-        # 처치한 단어 수 및 인덱스 증가
-        dungeon_run['cleared_words'] += 1
-        dungeon_run['current_word_index'] += 1
-        
-        # 다음 몬스터 생성
-        dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
-        next_result = game_logic.next_monster(dungeon_run, dungeon)
+            # 일반 던전의 경우 다음 몬스터 생성
+            dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+            next_result = game_logic.next_monster(dungeon_run, dungeon)
         
         if not next_result['success']:
             # 던전 클리어
-            flash('던전을 클리어했습니다!', 'success')
+            wrong_questions = dungeon_run.get('wrong_questions', [])
+            
+            if dungeon_run.get('wrong_questions_mode'):
+                flash('틀린 문제 복습을 완료했습니다!', 'success')
+            else:
+                # 던전 클리어 횟수 증가
+                player['던전클리어횟수'] = player.get('던전클리어횟수', 0) + 1
+                
+                # 커스텀 던전 클리어 보상 지급
+                dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+                if dungeon and dungeon['id'] == 'custom_user_words':
+                    # 보상 금액 지급
+                    reward_money = dungeon.get('reward_money', 200000)
+                    player['돈'] += reward_money
+                    
+                    # 보너스 경험치 지급 (cleared_words * 배율)
+                    exp_multiplier = dungeon.get('reward_exp_multiplier', 1.5)
+                    bonus_exp = int(dungeon_run['cleared_words'] * exp_multiplier)
+                    player['경험치'] += bonus_exp
+                    
+                    # 레벨업 체크
+                    leveled_up = game_logic.check_level_up(player)
+                    
+                    flash(f'커스텀 던전 클리어! 보상: {reward_money:,}원 + {bonus_exp} 경험치', 'success')
+                    if leveled_up:
+                        flash(f'레벨 업! 현재 레벨: {player["레벨"]}', 'success')
+                else:
+                    flash('던전을 클리어했습니다!', 'success')
+                
+                # 틀린 문제가 있으면 세션에 저장하여 재도전 옵션 제공
+                if wrong_questions:
+                    session['last_wrong_questions'] = {
+                        'questions': wrong_questions,
+                        'original_dungeon_id': dungeon_run['dungeon_id']
+                    }
+                    flash(f'{len(wrong_questions)}개의 틀린 문제가 있습니다. 다시 도전해보세요!', 'info')
+            
             session.pop('dungeon_run', None)
             session['player_data'] = player
-            session.modified = True
             game_logic.save_game(player)
             return redirect(url_for('dungeons'))
-    else:
-        # 플레이어 피격 - 체력 감소
-        damage = 2
-        player['체력'] -= damage
-        result_msg = f"틀렸습니다! 몬스터에게 {damage} 피해를 입었습니다. (체력 -{damage})"
-        result_msg += f" (정답: {correct_answer})"
         
-        # 게임 오버 확인
-        if player['체력'] <= 0:
-            flash('게임 오버! 던전에서 탈출했습니다.', 'danger')
-            session.pop('dungeon_run', None)
-            session['player_data'] = player
-            session.modified = True
-            game_logic.save_game(player)
-            return redirect(url_for('dungeons'))
+        # 던전런에서 플래시 메시지 확인 및 처리
+        if 'flash_message' in dungeon_run:
+            flash(dungeon_run['flash_message'], 'info')
+            del dungeon_run['flash_message']  # 메시지 표시 후 삭제
+    
+    # 상태 업데이트
+    session['dungeon_run'] = dungeon_run
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    return redirect(url_for('dungeon_run'))
+
+@app.route('/dungeon/leave', methods=['POST'])
+def leave_dungeon():
+    """던전 나가기"""
+    if 'dungeon_run' in session:
+        session.pop('dungeon_run', None)
+    
+    flash('던전에서 나갔습니다. 진행 상황이 초기화됩니다.', 'info')
+    return redirect(url_for('dungeons'))
+
+@app.route('/dungeon/retry_wrong', methods=['POST'])
+def retry_wrong_questions():
+    """틀린 문제들로 재도전"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    # 세션에서 틀린 문제들 가져오기
+    last_wrong = session.get('last_wrong_questions')
+    if not last_wrong or not last_wrong.get('questions'):
+        flash('재도전할 틀린 문제가 없습니다.', 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 최소 체력 확인 (체력 = 기력)
+    if player['기력'] < 1:
+        flash('던전에 입장하려면 최소 기력 1이 필요합니다.', 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 기력 소모
+    player['기력'] -= 1
+    
+    # 틀린 문제들로 던전 초기화
+    result = game_logic.init_wrong_questions_dungeon(
+        player, 
+        last_wrong['questions'], 
+        last_wrong['original_dungeon_id']
+    )
+    
+    if not result['success']:
+        flash(result['message'], 'error')
+        return redirect(url_for('dungeons'))
+    
+    # 세션에 던전 실행 상태 저장
+    session['dungeon_run'] = result['dungeon_run']
+    session['player_data'] = player
+    session.modified = True
+    
+    # 데이터 저장 (일관성을 위해)
+    game_logic.save_game(player)
+    
+    # 사용한 틀린 문제 정보 삭제
+    session.pop('last_wrong_questions', None)
+    
+    flash('틀린 문제들로 재도전을 시작합니다!', 'success')
+    return redirect(url_for('dungeon_run'))
+
+@app.route('/compendium')
+def compendium():
+    """몬스터 도감 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    return render_template('compendium.html', 
+                         player=player)
+
+@app.route('/dungeon/use_item', methods=['POST'])
+def use_dungeon_item():
+    """던전 아이템 사용"""
+    if 'player_data' not in session or 'dungeon_run' not in session:
+        return redirect(url_for('dungeons'))
+    
+    player = session['player_data']
+    dungeon_run = session['dungeon_run']
+    item_name = request.form.get('item_name')
+    
+    if not item_name:
+        flash('아이템을 선택해주세요.', 'error')
+        return redirect(url_for('dungeon_run'))
+    
+    # 아이템 사용
+    result = game_logic.use_dungeon_item(player, item_name, dungeon_run)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
     
     # 상태 업데이트
     session['player_data'] = player
     session['dungeon_run'] = dungeon_run
-    session.modified = True
     game_logic.save_game(player)
-    
-    flash(result_msg, 'success' if is_correct else 'warning')
-    return redirect(url_for('dungeon_run'))
-
-@app.route('/dungeon/use_item', methods=['POST'])
-def use_dungeon_item():
-    """던전에서 아이템 사용"""
-    if 'player_data' not in session or 'dungeon_run' not in session:
-        return redirect(url_for('dungeons'))
-    
-    player = session['player_data']
-    dungeon_run = session['dungeon_run']
-    
-    item_name = request.form.get('item_name')
-    result = game_logic.use_dungeon_item(player, item_name, dungeon_run)
-    
-    session['player_data'] = player
-    session['dungeon_run'] = dungeon_run
-    session.modified = True
-    game_logic.save_game(player)
-    
-    flash(result['message'], 'success' if result['success'] else 'error')
     
     return redirect(url_for('dungeon_run'))
 
@@ -855,26 +1217,12 @@ def use_hint():
     # 힌트 사용 횟수 차감
     player['던전_버프']['힌트 사용'] -= 1
     
-    # 현재 문제 옵션에서 정답을 제외한 옵션들 선택
-    current_options = dungeon_run.get('options', [])
-    correct_answer = dungeon_run.get('correct_answer', '')
+    # 힌트 생성 (4지선다를 2지선다로 줄이기)
+    current_options = dungeon_run['current_options']
+    correct_answer_index = dungeon_run['correct_answer_index']
     
-    if not current_options or not correct_answer:
-        flash('현재 문제 정보를 찾을 수 없습니다.', 'error')
-        return redirect(url_for('dungeon_run'))
-    
-    # 정답의 인덱스 찾기
-    correct_answer_index = -1
-    for i, opt in enumerate(current_options):
-        if opt == correct_answer:
-            correct_answer_index = i
-            break
-    
-    if correct_answer_index == -1:
-        flash('정답을 찾을 수 없습니다.', 'error')
-        return redirect(url_for('dungeon_run'))
-    
-    # 정답을 제외한 옵션들 중에서 하나를 제거
+    # 정답과 오답 1개만 남기기 (랜덤하게 선택)
+    correct_answer = current_options[correct_answer_index]
     wrong_options = [opt for i, opt in enumerate(current_options) if i != correct_answer_index]
     selected_wrong = random.choice(wrong_options)
     
@@ -927,12 +1275,19 @@ def skip_question():
     
     # 몬스터 처치 확인
     if dungeon_run['monster_progress'] >= dungeon_run['monster_hp']:
-        result_msg += " 몬스터를 처치했습니다!"
+        # 몬스터 처치
+        rarity = dungeon_run['current_rarity']
+        capture_rate = game_logic.monster_rarities[rarity]['capture_rate']
         
-        # 경험치 획득
-        exp_gained = 10 + dungeon_run['cleared_words'] * 2
-        player['경험치'] += exp_gained
-        result_msg += f" (경험치 +{exp_gained})"
+        if random.random() < capture_rate:
+            # 몬스터 포획 성공
+            is_new_monster = game_logic.update_compendium(player, dungeon_run)
+            if is_new_monster:
+                result_msg += f" {rarity} 몬스터를 처치하고 새로운 몬스터를 도감에 추가했습니다!"
+            else:
+                result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
+        else:
+            result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
         
         # 처치한 단어 수 및 인덱스 증가
         dungeon_run['cleared_words'] += 1
@@ -968,34 +1323,3 @@ def skip_question():
     game_logic.save_game(player)
     
     return redirect(url_for('dungeon_run'))
-
-@app.route('/compendium')
-def compendium():
-    """몬스터 도감"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
-    
-    player = session['player_data']
-    compendium_data = game_logic.get_compendium_data(player)
-    
-    return render_template('compendium.html', player=player, compendium=compendium_data)
-
-@app.route('/api/player_stats')
-def api_player_stats():
-    """플레이어 통계 API"""
-    if 'player_data' not in session:
-        return jsonify({'error': 'No player data'}), 400
-    
-    player = session['player_data']
-    stats = game_logic.get_player_stats(player)
-    
-    return jsonify({
-        'labels': ['힘', '지능', '외모', '체력', '운'],
-        'stats': [
-            player['힘'],
-            player['지능'],
-            player['외모'],
-            player['체력스탯'],
-            player['운']
-        ]
-    })
