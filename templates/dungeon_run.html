@@ -84,14 +84,14 @@
                 </div>
                 
                 <!-- 선택지 -->
-                <form method="POST" action="{{ url_for('answer_dungeon') }}" class="quiz-form">
-                    <div class="row">
+                <div class="quiz-form">
+                    <div class="row" id="choicesContainer">
                         {% if dungeon_run.get('hint_used') %}
                             <!-- 힌트 사용 시 2지선다 -->
                             {% for i in range(2) %}
                             <div class="col-md-6 mb-3">
-                                <button type="submit" name="choice" value="{{ dungeon_run['current_options'].index(dungeon_run['hint_options'][i]) }}" 
-                                        class="btn btn-outline-success w-100 h-100 choice-btn"
+                                <button type="button" class="btn btn-outline-success w-100 h-100 choice-btn" 
+                                        onclick="submitChoice({{ dungeon_run['current_options'].index(dungeon_run['hint_options'][i]) }})"
                                         style="min-height: 60px; font-size: 1.1em;">
                                     {{ loop.index }}. {{ dungeon_run['hint_options'][i] }}
                                 </button>
@@ -106,8 +106,8 @@
                             <!-- 일반 4지선다 -->
                             {% for i in range(4) %}
                             <div class="col-md-6 mb-3">
-                                <button type="submit" name="choice" value="{{ i }}" 
-                                        class="btn btn-outline-primary w-100 h-100 choice-btn"
+                                <button type="button" class="btn btn-outline-primary w-100 h-100 choice-btn" 
+                                        onclick="submitChoice({{ i }})"
                                         style="min-height: 60px; font-size: 1.1em;">
                                     {{ loop.index }}. {{ dungeon_run['current_options'][i] }}
                                 </button>
@@ -115,7 +115,7 @@
                             {% endfor %}
                         {% endif %}
                     </div>
-                </form>
+                </div>
             </div>
             <div class="card-footer">
                 <form method="POST" action="{{ url_for('leave_dungeon') }}" class="d-inline">
@@ -294,6 +294,39 @@
 </style>
 
 <script>
+function submitChoice(choice) {
+    const formData = new FormData();
+    formData.append('choice', choice);
+    
+    // 버튼 비활성화
+    document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = true);
+    
+    fetch('{{ url_for("answer_dungeon") }}', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.game_over) {
+            // 게임 오버 또는 클리어
+            const message = data.clear ? '축하합니다! 던전을 클리어했습니다!' : data.message;
+            alert(message);
+            window.location.href = '{{ url_for("dungeons") }}';
+        } else {
+            // 다음 문제 로드
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다. 다시 시도해주세요.');
+        document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = false);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 몬스터 이미지 그리기
     drawMonster();

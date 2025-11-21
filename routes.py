@@ -1034,9 +1034,12 @@ def dungeon_run():
 
 @app.route('/dungeon/answer', methods=['POST'])
 def answer_dungeon():
-    """던전 답변 처리"""
+    """던전 답변 처리 (AJAX 지원)"""
     if 'player_data' not in session or 'dungeon_run' not in session:
-        flash('던전 정보가 없습니다.', 'error')
+        msg = '던전 정보가 없습니다.'
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'message': msg, 'game_over': True})
+        flash(msg, 'error')
         return redirect(url_for('dungeons'))
     
     player = session['player_data']
@@ -1046,98 +1049,83 @@ def answer_dungeon():
     try:
         choice = int(request.form.get('choice', -1))
     except (ValueError, TypeError):
-        flash('잘못된 선택입니다. 다시 시도해주세요.', 'error')
+        msg = '잘못된 선택입니다.'
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'message': msg})
+        flash(msg, 'error')
         return redirect(url_for('dungeon_run'))
     
     # 선택지 유효성 검사
     if 'current_options' not in dungeon_run or not dungeon_run['current_options']:
-        flash('게임 오류가 발생했습니다. 던전을 다시 시작해주세요.', 'error')
+        msg = '게임 오류가 발생했습니다.'
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            session.pop('dungeon_run', None)
+            return jsonify({'success': False, 'message': msg, 'game_over': True})
         session.pop('dungeon_run', None)
+        flash(msg, 'error')
         return redirect(url_for('dungeons'))
     
     if choice < 0 or choice >= len(dungeon_run['current_options']):
-        flash('잘못된 선택입니다. 다시 시도해주세요.', 'error')
+        msg = '잘못된 선택입니다.'
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'message': msg})
+        flash(msg, 'error')
         return redirect(url_for('dungeon_run'))
     
     # 답변 처리
     result = game_logic.answer_dungeon(player, dungeon_run, choice)
     
     if result.get('game_over', False):
-        flash(result['message'], 'error')
-        session.pop('dungeon_run', None)  # 던전 실행 상태 삭제
+        session.pop('dungeon_run', None)
         session['player_data'] = player
         game_logic.save_game(player)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'message': result['message'], 'game_over': True})
+        flash(result['message'], 'error')
         return redirect(url_for('dungeons'))
-    
-    flash(result['message'], 'success' if result['correct'] else 'warning')
     
     # 몬스터가 처치되었으면 다음 몬스터 생성
     if result.get('monster_defeated'):
-        # 틀린 문제 모드인지 확인
         if dungeon_run.get('wrong_questions_mode'):
-            # 틀린 문제 모드의 경우 완료 체크 후 다음 문제로
             if dungeon_run['current_wrong_index'] >= len(dungeon_run['wrong_questions_list']):
                 next_result = {'success': False, 'message': '틀린 문제 복습을 완료했습니다!'}
             else:
                 next_result = game_logic.next_wrong_question(dungeon_run)
         else:
-            # 일반 던전의 경우 다음 몬스터 생성
             dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
             next_result = game_logic.next_monster(dungeon_run, dungeon)
         
         if not next_result['success']:
-            # 던전 클리어
             wrong_questions = dungeon_run.get('wrong_questions', [])
-            
-            if dungeon_run.get('wrong_questions_mode'):
-                flash('틀린 문제 복습을 완료했습니다!', 'success')
-            else:
-                # 던전 클리어 횟수 증가
+            if not dungeon_run.get('wrong_questions_mode'):
                 player['던전클리어횟수'] = player.get('던전클리어횟수', 0) + 1
-                
-                # 커스텀 던전 클리어 보상 지급
-                dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
-                if dungeon and dungeon['id'] == 'custom_user_words':
-                    # 보상 금액 지급
-                    reward_money = dungeon.get('reward_money', 200000)
-                    player['돈'] += reward_money
-                    
-                    # 보너스 경험치 지급 (cleared_words * 배율)
-                    exp_multiplier = dungeon.get('reward_exp_multiplier', 1.5)
-                    bonus_exp = int(dungeon_run['cleared_words'] * exp_multiplier)
-                    player['경험치'] += bonus_exp
-                    
-                    # 레벨업 체크
-                    leveled_up = game_logic.check_level_up(player)
-                    
-                    flash(f'커스텀 던전 클리어! 보상: {reward_money:,}원 + {bonus_exp} 경험치', 'success')
-                    if leveled_up:
-                        flash(f'레벨 업! 현재 레벨: {player["레벨"]}', 'success')
-                else:
-                    flash('던전을 클리어했습니다!', 'success')
-                
-                # 틀린 문제가 있으면 세션에 저장하여 재도전 옵션 제공
-                if wrong_questions:
-                    session['last_wrong_questions'] = {
-                        'questions': wrong_questions,
-                        'original_dungeon_id': dungeon_run['dungeon_id']
-                    }
-                    flash(f'{len(wrong_questions)}개의 틀린 문제가 있습니다. 다시 도전해보세요!', 'info')
-            
             session.pop('dungeon_run', None)
             session['player_data'] = player
             game_logic.save_game(player)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': False, 'message': '던전을 클리어했습니다!', 'game_over': True, 'clear': True})
             return redirect(url_for('dungeons'))
-        
-        # 던전런에서 플래시 메시지 확인 및 처리
-        if 'flash_message' in dungeon_run:
-            flash(dungeon_run['flash_message'], 'info')
-            del dungeon_run['flash_message']  # 메시지 표시 후 삭제
     
     # 상태 업데이트
     session['dungeon_run'] = dungeon_run
     session['player_data'] = player
     game_logic.save_game(player)
+    
+    # AJAX 요청인 경우 JSON 반환
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+        return jsonify({
+            'success': result['correct'],
+            'message': result['message'],
+            'player_hp': dungeon_run['player_hp'],
+            'monster_hp': dungeon_run['monster_hp'],
+            'monster_progress': dungeon_run['monster_progress'],
+            'current_word': dungeon_run['current_word'],
+            'current_options': dungeon_run['current_options'],
+            'current_word_index': dungeon_run.get('current_word_index', 0),
+            'total_words': dungeon_run.get('total_words', 0),
+            'monster_defeated': result.get('monster_defeated', False)
+        })
     
     return redirect(url_for('dungeon_run'))
 
