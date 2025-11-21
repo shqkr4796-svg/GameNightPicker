@@ -310,6 +310,8 @@ function submitChoice(choice) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log('AJAX Response received:', JSON.stringify(data));
+        
         if (data.game_over) {
             // 게임 오버 또는 클리어
             const message = data.clear ? '축하합니다! 던전을 클리어했습니다!' : data.message;
@@ -317,16 +319,22 @@ function submitChoice(choice) {
             window.location.href = '{{ url_for("dungeons") }}';
         } else {
             // 메시지 표시
+            console.log('Message to show:', data.message);
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${data.success ? 'success' : 'warning'} alert-dismissible fade show`;
+            alertDiv.className = `alert alert-${data.success ? 'success' : 'warning'} alert-dismissible fade show mt-2 mb-3`;
             alertDiv.innerHTML = `
-                <i class="fas fa-${data.success ? 'check-circle' : 'exclamation-circle'} me-2"></i>
-                ${data.message}
+                <div>
+                    <i class="fas fa-${data.success ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+                    <span>${data.message}</span>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
             
-            const container = document.querySelector('.card-body');
-            container.insertBefore(alertDiv, container.firstChild);
+            // 선택지 컨테이너 바로 위에 메시지 추가
+            const choicesContainer = document.getElementById('choicesContainer');
+            choicesContainer.parentElement.insertBefore(alertDiv, choicesContainer);
+            
+            console.log('Message inserted. Will reload in 2 seconds...');
             
             // 2초 후 페이지 새로고침
             setTimeout(() => {
