@@ -820,11 +820,20 @@ def start_dungeon():
         flash(result['message'], 'error')
         return redirect(url_for('dungeons'))
     
-    # 세션에 던전 실행 상태 저장
+    # 입장료 차감이 반영되도록 먼저 게임 저장
+    game_logic.save_game(player)
+    
+    # 세션에 던전 실행 상태 및 수정된 플레이어 데이터 저장
     session['dungeon_run'] = result['dungeon_run']
     session['player_data'] = player
     
-    flash('던전에 입장했습니다!', 'success')
+    # 입장료가 있는 던전인 경우 안내
+    dungeon = game_logic.get_dungeon_by_id(dungeon_id)
+    if dungeon and dungeon.get('entry_fee', 0) > 0:
+        flash(f'던전에 입장했습니다! (입장료 {dungeon["entry_fee"]:,}원 차감)', 'success')
+    else:
+        flash('던전에 입장했습니다!', 'success')
+    
     return redirect(url_for('dungeon_run'))
 
 @app.route('/dungeon/run')

@@ -31,14 +31,34 @@
                                             <i class="fas fa-level-up-alt me-1"></i>필요 레벨: {{ dungeon['레벨_제한'] }}
                                         </small>
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="mb-2">
                                         <small class="text-muted">
                                             <i class="fas fa-target me-1"></i>클리어 조건: {{ dungeon['clear_condition'] }}마리 처치
                                         </small>
                                     </div>
+                                    {% if dungeon.get('entry_fee', 0) > 0 %}
+                                    <div class="mb-2">
+                                        <small class="text-warning">
+                                            <i class="fas fa-coins me-1"></i>입장료: {{ "{:,}".format(dungeon['entry_fee']) }}원
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                    {% if dungeon.get('reward_money', 0) > 0 %}
+                                    <div class="mb-3">
+                                        <small class="text-success">
+                                            <i class="fas fa-gift me-1"></i>클리어 보상: {{ "{:,}".format(dungeon['reward_money']) }}원 + 경험치
+                                        </small>
+                                    </div>
+                                    {% else %}
+                                    <div class="mb-3"></div>
+                                    {% endif %}
                                     
                                     {% if player['레벨'] >= dungeon['레벨_제한'] %}
-                                        {% if player['기력'] >= 1 %}
+                                        {% if dungeon.get('entry_fee', 0) > 0 and player['돈'] < dungeon['entry_fee'] %}
+                                            <span class="text-danger">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>입장료 부족
+                                            </span>
+                                        {% elif player['기력'] >= 1 %}
                                             <a href="{{ url_for('dungeon_preview', dungeon_id=dungeon['id']) }}" class="btn btn-primary btn-sm me-2">
                                                 <i class="fas fa-eye me-1"></i>미리보기
                                             </a>
