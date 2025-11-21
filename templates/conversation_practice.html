@@ -145,23 +145,21 @@ function loadAllVoices() {
         const voiceNames = voices.map(v => v.name).join(', ');
         console.log('Available voices:', voiceNames);
         
-        // 남자 음성 찾기 - 명시적으로 'Male' 포함한 음성 우선
+        // 남자 음성 찾기 - 모든 언어에서 알려진 남자 음성 이름 우선
+        const maleVoiceNames = ['Daniel', 'David', 'Mark', 'Alex', 'Tom', 'Bruce', 'Fred', 'Albert', 'Majed', 'Jester', 'Male'];
         for (let voice of voices) {
-            if (voice.lang === 'en-US') {
-                const name = voice.name;
-                // 정확하게 'Male' 포함하거나 알려진 남자 이름
-                if (name.includes('Male') || name.includes('David') || name.includes('Mark') || name.includes('Alex') || name.includes('Tom') || name.includes('Bruce')) {
-                    cachedMaleVoice = voice;
-                    console.log('Loaded male voice (explicit Male):', voice.name);
-                    break;
-                }
+            const name = voice.name;
+            if (maleVoiceNames.some(male => name.includes(male))) {
+                cachedMaleVoice = voice;
+                console.log('Loaded male voice (explicit name match):', voice.name);
+                break;
             }
         }
         
-        // 'Male' 없으면 Google US English 사용
+        // 없으면 Google US English 사용
         if (!cachedMaleVoice) {
             for (let voice of voices) {
-                if (voice.lang === 'en-US' && voice.name === 'Google US English') {
+                if (voice.name === 'Google US English') {
                     cachedMaleVoice = voice;
                     console.log('Loaded male voice (Google US English):', voice.name);
                     break;
@@ -169,16 +167,15 @@ function loadAllVoices() {
             }
         }
         
-        // 그래도 없으면 'Zira'/'Samantha' 등 여자 음성이 아닌 첫 번째 음성
+        // 그래도 없으면 여자 음성이 아닌 첫 번째 음성 (모든 언어 포함)
         if (!cachedMaleVoice) {
+            const femaleVoiceNames = ['zira', 'samantha', 'victoria', 'karen', 'moira', 'flo', 'kathy', 'tessa', 'paulina', 'monica', 'amelie', 'lekha', 'lana', 'kyoto'];
             for (let voice of voices) {
-                if (voice.lang === 'en-US') {
-                    const name = voice.name.toLowerCase();
-                    if (!name.includes('zira') && !name.includes('samantha') && !name.includes('victoria') && !name.includes('karen') && !name.includes('moira') && !name.includes('flo')) {
-                        cachedMaleVoice = voice;
-                        console.log('Loaded male voice (fallback):', voice.name);
-                        break;
-                    }
+                const name = voice.name.toLowerCase();
+                if (!femaleVoiceNames.some(female => name.includes(female))) {
+                    cachedMaleVoice = voice;
+                    console.log('Loaded male voice (non-female fallback):', voice.name);
+                    break;
                 }
             }
         }
