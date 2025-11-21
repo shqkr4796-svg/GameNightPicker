@@ -107,32 +107,29 @@ def submit_conversation():
         evaluation = game_logic.evaluate_conversation_response(user_response, expr_name, context_sentence)
         
         if evaluation.get('success'):
-            if evaluation.get('is_correct'):
+            score = evaluation.get('score', 0)
+            feedback = evaluation.get('feedback', '')
+            reason = evaluation.get('reason', '')
+            
+            if score >= 80:
+                # 80점 이상만 정답 처리
                 player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
-                score = evaluation.get('score', 80)
+                player['경험치'] += 15
                 
-                # 스코어 기반 경험치 (60점 이상만 정답)
-                if score >= 60:
-                    exp_gained = 15 if score >= 80 else 10
-                    player['경험치'] += exp_gained
-                    
-                    while player['경험치'] >= player['경험치최대']:
-                        player['경험치'] -= player['경험치최대']
-                        player['레벨'] += 1
-                        player['경험치최대'] = int(player['경험치최대'] * 1.1)
-                        player['스탯포인트'] += 5
-                        flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
-                    
-                    feedback = evaluation.get('feedback', '')
-                    reason = evaluation.get('reason', '')
-                    flash(f'정답! ✓ (점수: {score}/100)\n{feedback}\n{reason}', 'success')
-                else:
-                    feedback = evaluation.get('feedback', '')
-                    flash(f'거의 다왔어요! (점수: {score}/100)\n{feedback}\n다시 시도해보세요!', 'warning')
+                while player['경험치'] >= player['경험치최대']:
+                    player['경험치'] -= player['경험치최대']
+                    player['레벨'] += 1
+                    player['경험치최대'] = int(player['경험치최대'] * 1.1)
+                    player['스탯포인트'] += 5
+                    flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
+                
+                flash(f'정답! ✓ (점수: {score}/100)\n{feedback}\n{reason}', 'success')
+            elif score >= 60:
+                # 60~79점: 거의 다왔어요
+                flash(f'거의 다왔어요! (점수: {score}/100)\n{feedback}\n{reason}\n더 정교하게 표현을 사용해보세요!', 'warning')
             else:
-                feedback = evaluation.get('feedback', '')
-                reason = evaluation.get('reason', '')
-                flash(f'다시 시도해보세요.\n{feedback}\n{reason}', 'error')
+                # 60점 미만: 다시 시도
+                flash(f'다시 시도해보세요. (점수: {score}/100)\n{feedback}\n{reason}', 'error')
         else:
             flash(f'평가 중 오류가 발생했습니다. 다시 시도해주세요.', 'error')
     

@@ -2193,27 +2193,35 @@ def evaluate_conversation_response(user_response, target_expression, context_sen
             base_url=base_url
         )
         
-        prompt = f"""You are an English teacher evaluating a student's conversation response.
+        prompt = f"""You are a strict English teacher evaluating a student's conversation response.
 
 Context: The foreign speaker said: "{context_sentence}"
-Target expression/phrase the student should use: "{target_expression}"
+Target expression/phrase the student MUST use: "{target_expression}"
 
 Student's response: "{user_response}"
 
-Please evaluate if the student's response is:
-1. Grammatically correct
-2. Contextually appropriate (makes sense as a reply to the context)
-3. Uses or incorporates the target expression appropriately
+STRICT EVALUATION CRITERIA:
+1. Grammar: No tolerance for major grammar errors. Deduct significantly for tense, article, or subject-verb agreement mistakes.
+2. Natural English: Response must sound natural and fluent. Awkward phrasing or unnatural wording = lower score.
+3. Required Expression: The target expression "{target_expression}" MUST be clearly and directly used. Partial use or similar phrases are NOT sufficient.
+4. Context Appropriateness: Response must be a relevant and sensible reply.
+
+SCORING RULES (STRICT):
+- 90-100: Perfect response with correct grammar, natural flow, and required expression used properly
+- 80-89: Good response with minor issues, expression clearly used
+- 70-79: Acceptable but with noticeable grammar errors or awkward phrasing
+- 60-69: Marginal - significant grammar/naturalness issues but expression present
+- Below 60: FAIL - Missing expression or serious grammar/appropriateness problems
 
 Respond in JSON format with exactly these fields (in Korean):
 {{
   "is_correct": true/false,
   "score": 0-100,
   "feedback": "brief evaluation (한글로 작성)",
-  "reason": "why it's correct or incorrect (한글로 작성)"
+  "reason": "detailed explanation of why (한글로 작성)"
 }}
 
-Be lenient - partial use of the expression or similar phrasing counts as correct. Minor grammar mistakes are okay if the meaning is clear."""
+Only mark is_correct as true if score is 80 or higher AND the target expression is clearly present."""
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
