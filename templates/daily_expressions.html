@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-10 offset-lg-1">
+    <div class="col-12 col-lg-10 offset-lg-1">
         <!-- 헤더 -->
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
@@ -14,15 +14,15 @@
             </div>
             <div class="card-body">
                 <div class="row text-center">
-                    <div class="col-md-4">
+                    <div class="col-12 col-sm-4">
                         <h6 class="text-muted mb-2">학습한 표현</h6>
                         <h3 class="text-primary">{{ progress }}</h3>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-sm-4">
                         <h6 class="text-muted mb-2">총 표현 수</h6>
                         <h3 class="text-info">{{ expression_count }}</h3>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-12 col-sm-4">
                         <h6 class="text-muted mb-2">보상</h6>
                         <p class="mb-0">
                             <span class="badge bg-success">정답마다 경험치 +10</span>
@@ -60,7 +60,7 @@
             <div class="card-body">
                 <!-- 1. 예문 -->
                 <div class="row mb-4">
-                    <div class="col-md-12">
+                    <div class="col-12">
                         <h6 class="text-muted mb-3">1️⃣ 예문</h6>
                         {% for ex in expressions[selected_index].examples %}
                         <div class="alert alert-info mb-2 d-flex justify-content-between align-items-center">
@@ -75,7 +75,7 @@
 
                 <!-- 2. 의미 및 설명 -->
                 <div class="row mb-4">
-                    <div class="col-md-12">
+                    <div class="col-12">
                         <h6 class="text-muted mb-3">2️⃣ 의미 및 설명</h6>
                         <div class="alert alert-light border">
                             <p><strong>의미:</strong> {{ expressions[selected_index].meaning }}</p>
@@ -88,7 +88,7 @@
 
                 <!-- 3. 퀴즈 -->
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-12">
                         <h6 class="text-muted mb-3">3️⃣ 표현 입력 (정답 확인)</h6>
                         <form method="POST" action="{{ url_for('check_daily_expression') }}" class="mb-3">
                             <input type="hidden" name="index" value="{{ selected_index }}">

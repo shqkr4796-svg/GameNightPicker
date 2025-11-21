@@ -41,7 +41,7 @@
 </style>
 
 <div class="row">
-    <div class="col-lg-8 offset-lg-2">
+    <div class="col-12 col-lg-8 offset-lg-2">
         <!-- 헤더 -->
         <div class="card mb-4">
             <div class="card-header bg-success text-white">
@@ -60,11 +60,11 @@
             <div class="card-body">
                 <!-- 외국인 말 -->
                 <div class="row mb-4">
-                    <div class="col-md-3 text-center">
+                    <div class="col-12 col-sm-3 text-center mb-2 mb-sm-0">
                         <img src="{{ url_for('static', filename='images/' + speaker.image) }}" alt="{{ speaker.name }}" style="width: 100%; max-width: 150px; border-radius: 10px;">
-                        <p class="text-muted mt-2"><strong>{{ speaker.name }}</strong></p>
+                        <p class="text-muted mt-2 mb-0"><strong>{{ speaker.name }}</strong></p>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-12 col-sm-9">
                         <div class="alert alert-info alien-message" id="alienMessage" data-english="{{ alien_sentence }}" data-korean="{{ alien_translation }}">
                             <div class="alien-english">
                                 <h5 class="mb-0">{{ alien_sentence }}</h5>
@@ -87,7 +87,7 @@
 
                 <!-- 사용자 응답 -->
                 <div class="row mb-4">
-                    <div class="col-md-9">
+                    <div class="col-12 col-sm-9">
                         <form method="POST" action="{{ url_for('submit_conversation') }}">
                             <div class="form-group">
                                 <label for="user_response" class="form-label"><strong>당신의 응답:</strong></label>

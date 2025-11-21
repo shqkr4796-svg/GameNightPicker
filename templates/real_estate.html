@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <!-- 현재 거주지 -->
         {% if player['거주지'] %}
         <div class="card mb-4 border-success">
@@ -17,13 +17,13 @@
                 {% for property in properties %}
                     {% if property['이름'] == player['거주지'] %}
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <h4 class="text-success">{{ property['이름'] }}</h4>
                             <p class="text-muted mb-0">월세 수입: {{ "{:,}".format(property['월세']) }}원</p>
                             <p class="text-muted mb-0">매매가: {{ "{:,}".format(property['매매']) }}원</p>
                             <p class="text-muted">최대기력 증가: +{{ property['기력회복'] }}</p>
                         </div>
-                        <div class="col-md-6 text-end">
+                        <div class="col-12 col-sm-6 text-sm-end mt-2 mt-sm-0">
                             <form method="POST" action="{{ url_for('sell_property') }}">
                                 <button type="submit" class="btn btn-warning">
                                     <i data-feather="dollar-sign" class="me-2"></i>
@@ -60,7 +60,7 @@
                 <div class="row" id="propertiesList">
                     {% for property in properties %}
                     {% set can_afford = player['돈'] >= property['매매'] %}
-                    <div class="col-lg-6 mb-3 property-item"
+                    <div class="col-12 col-md-6 col-lg-6 mb-3 property-item"
                          data-price-range="{% if property['매매'] <= 10000000 %}low{% elif property['매매'] <= 50000000 %}mid{% elif property['매매'] <= 100000000 %}high{% else %}luxury{% endif %}">
                         <div class="card h-100 {% if not can_afford %}opacity-50{% endif %}">
                             <div class="card-body">

@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <!-- 퀴즈 섹션 -->
         <div class="card mb-4">
             <div class="card-header">
@@ -16,7 +16,7 @@
                 <!-- 카테고리 및 언어 선택 -->
                 <div class="mb-4">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <label class="form-label">퀴즈 카테고리 선택</label>
                             <select class="form-select" onchange="changeQuizCategory(this.value)">
                                 <option value="all" {{ 'selected' if selected_category == 'all' }}>전체 단어</option>
@@ -27,7 +27,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <label class="form-label">퀴즈 언어 선택</label>
                             <select class="form-select" onchange="changeQuizLanguage(this.value)">
                                 <option value="random" {{ 'selected' if selected_language == 'random' }}>랜덤 (영어↔한글)</option>
@@ -37,12 +37,12 @@
                         </div>
                     </div>
                     <div class="row mt-2">
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <div class="text-muted small">
                                 현재 카테고리: <strong>{{ selected_category if selected_category != 'all' else '전체' }}</strong>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <div class="text-muted small">
                                 현재 언어: <strong>
                                     {% if selected_language == 'english' %}영어 문제만

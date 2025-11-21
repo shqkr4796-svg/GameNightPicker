@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
@@ -18,7 +18,7 @@
                 </div>
                 
                 <div class="row mb-4">
-                    <div class="col-md-6">
+                    <div class="col-12 col-sm-6">
                         <h6><i class="fas fa-info-circle me-2"></i>던전 정보</h6>
                         <ul class="list-unstyled">
                             <li><strong>난이도:</strong> 
@@ -30,7 +30,7 @@
                             <li><strong>목표 단어:</strong> {{ dungeon['clear_condition'] }}개</li>
                         </ul>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-12 col-sm-6">
                         <h6><i class="fas fa-dragon me-2"></i>몬스터 등급 분포</h6>
                         {% for rarity, probability in dungeon['rarity_distribution'].items() %}
                         <div class="d-flex justify-content-between mb-1">
@@ -88,7 +88,7 @@
         </div>
     </div>
     
-    <div class="col-lg-4">
+    <div class="col-12 col-lg-4">
         <!-- 플레이어 준비 상태 -->
         <div class="card">
             <div class="card-header">

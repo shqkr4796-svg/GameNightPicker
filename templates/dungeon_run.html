@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
@@ -23,7 +23,7 @@
             <div class="card-body">
                 <!-- 체력 바 -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
+                    <div class="col-12 col-sm-6">
                         <h6><i class="fas fa-heart me-2 text-danger"></i>내 체력</h6>
                         <div class="progress mb-2" style="height: 25px;">
                             <div class="progress-bar bg-danger" role="progressbar" 
@@ -33,7 +33,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-12 col-sm-6">
                         <h6><i class="fas fa-dragon me-2 text-primary"></i>몬스터 체력</h6>
                         <div class="progress mb-2" style="height: 25px;">
                             <div class="progress-bar bg-{% if dungeon_run['current_rarity'] == '레어' %}success{% elif dungeon_run['current_rarity'] == '에픽' %}primary{% elif dungeon_run['current_rarity'] == '유니크' %}warning{% else %}danger{% endif %}" 
@@ -128,7 +128,7 @@
         </div>
     </div>
     
-    <div class="col-lg-4">
+    <div class="col-12 col-lg-4">
         <!-- 진행 상황 -->
         <div class="card mb-3">
             <div class="card-header">
