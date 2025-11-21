@@ -150,7 +150,10 @@ def get_all_monster_images():
             '/static/monsters/legendary_8.png',
             '/static/monsters/legendary_9.png',
             '/static/monsters/legendary_10.png',
-            '/static/monsters/legendary_11.png'
+            '/static/monsters/legendary_11.png',
+            '/static/monsters/legendary_12.png',
+            '/static/monsters/legendary_13.png',
+            '/static/monsters/legendary_14.png'
         ]
     }
     
@@ -220,7 +223,10 @@ def get_random_monster_image(rarity):
             '/static/monsters/legendary_8.png',
             '/static/monsters/legendary_9.png',
             '/static/monsters/legendary_10.png',
-            '/static/monsters/legendary_11.png'
+            '/static/monsters/legendary_11.png',
+            '/static/monsters/legendary_12.png',
+            '/static/monsters/legendary_13.png',
+            '/static/monsters/legendary_14.png'
         ]
     }
     
