@@ -100,18 +100,18 @@
                     <div class="col-md-6 text-center">
                         <div class="tier-display">
                             {% if stats['tier']['image'] %}
-                                <div class="tier-image mb-3">
+                                <div class="tier-image mb-2">
                                     <img src="{{ stats['tier']['image'] }}" alt="{{ stats['tier']['name'] }}" 
-                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid gold;">
+                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 2px solid gold;">
                                 </div>
                             {% else %}
-                                <div class="tier-icon mb-3" style="font-size: 4rem;">❓</div>
+                                <div class="tier-icon mb-2" style="font-size: 2rem;">❓</div>
                             {% endif %}
-                            <h4 class="mb-1">
-                                <span class="badge bg-{{ stats['tier']['color'] }} fs-5">
+                            <h6 class="mb-1">
+                                <span class="badge bg-{{ stats['tier']['color'] }} fs-6">
                                     {{ stats['tier']['name'] }}
                                 </span>
-                            </h4>
+                            </h6>
                         </div>
                     </div>
                     <div class="col-md-6">
