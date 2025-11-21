@@ -104,48 +104,52 @@ def get_all_monster_images():
     """게임에 존재하는 모든 몬스터 이미지 반환"""
     monster_images = {
         '레어': [
-            '/static/monsters/rare_cute_monster_1.png',
-            '/static/monsters/rare_monster_2.png',
-            '/static/monsters/rare_monster_3.png',
-            '/static/monsters/rare_monster_4.png',
-            '/static/monsters/rare_monster_5.png',
-            '/static/monsters/rare_monster_6.png',
-            '/static/monsters/rare_monster_7.png',
-            '/static/monsters/rare_monster_8.png',
-            '/static/monsters/rare_monster_9.png'
+            '/static/monsters/rare_1.png',
+            '/static/monsters/rare_2.png',
+            '/static/monsters/rare_3.png',
+            '/static/monsters/rare_4.png',
+            '/static/monsters/rare_5.png',
+            '/static/monsters/rare_6.png',
+            '/static/monsters/rare_7.png',
+            '/static/monsters/rare_8.png',
+            '/static/monsters/rare_9.png',
+            '/static/monsters/rare_10.png'
         ],
         '에픽': [
-            '/static/monsters/epic_boss_1.png',
-            '/static/monsters/epic_boss_2.png',
-            '/static/monsters/epic_boss_3.png',
-            '/static/monsters/epic_boss_4.png',
-            '/static/monsters/epic_boss_5.png',
-            '/static/monsters/epic_boss_6.png',
-            '/static/monsters/epic_boss_7.png',
-            '/static/monsters/epic_boss_8.png',
-            '/static/monsters/epic_boss_9.png'
+            '/static/monsters/epic_1.png',
+            '/static/monsters/epic_2.png',
+            '/static/monsters/epic_3.png',
+            '/static/monsters/epic_4.png',
+            '/static/monsters/epic_5.png',
+            '/static/monsters/epic_6.png',
+            '/static/monsters/epic_7.png',
+            '/static/monsters/epic_8.png',
+            '/static/monsters/epic_9.png',
+            '/static/monsters/epic_10.png'
         ],
         '유니크': [
-            '/static/monsters/unique_boss_1.png',
-            '/static/monsters/unique_boss_2.png',
-            '/static/monsters/unique_boss_3.png',
-            '/static/monsters/unique_boss_4.png',
-            '/static/monsters/unique_boss_5.png',
-            '/static/monsters/unique_boss_6.png',
-            '/static/monsters/unique_boss_7.png',
-            '/static/monsters/unique_boss_8.png',
-            '/static/monsters/unique_boss_9.png'
+            '/static/monsters/unique_1.png',
+            '/static/monsters/unique_2.png',
+            '/static/monsters/unique_3.png',
+            '/static/monsters/unique_4.png',
+            '/static/monsters/unique_5.png',
+            '/static/monsters/unique_6.png',
+            '/static/monsters/unique_7.png',
+            '/static/monsters/unique_8.png',
+            '/static/monsters/unique_9.png',
+            '/static/monsters/unique_10.png'
         ],
         '레전드리': [
-            '/static/monsters/legendary_boss_1.png',
-            '/static/monsters/legendary_boss_2.png',
-            '/static/monsters/legendary_supreme_1.png',
-            '/static/monsters/legendary_supreme_2.png',
-            '/static/monsters/legendary_supreme_3.png',
-            '/static/monsters/legendary_supreme_4.png',
-            '/static/monsters/legendary_supreme_5.png',
-            '/static/monsters/legendary_supreme_6.png',
-            '/static/monsters/legendary_supreme_7.png'
+            '/static/monsters/legendary_1.png',
+            '/static/monsters/legendary_2.png',
+            '/static/monsters/legendary_3.png',
+            '/static/monsters/legendary_4.png',
+            '/static/monsters/legendary_5.png',
+            '/static/monsters/legendary_6.png',
+            '/static/monsters/legendary_7.png',
+            '/static/monsters/legendary_8.png',
+            '/static/monsters/legendary_9.png',
+            '/static/monsters/legendary_10.png'
         ]
     }
     
@@ -169,48 +173,52 @@ def get_random_monster_image(rarity):
     
     monster_images = {
         '레어': [
-            '/static/monsters/rare_cute_monster_1.png',
-            '/static/monsters/rare_monster_2.png',
-            '/static/monsters/rare_monster_3.png',
-            '/static/monsters/rare_monster_4.png',
-            '/static/monsters/rare_monster_5.png',
-            '/static/monsters/rare_monster_6.png',
-            '/static/monsters/rare_monster_7.png',
-            '/static/monsters/rare_monster_8.png',
-            '/static/monsters/rare_monster_9.png'
+            '/static/monsters/rare_1.png',
+            '/static/monsters/rare_2.png',
+            '/static/monsters/rare_3.png',
+            '/static/monsters/rare_4.png',
+            '/static/monsters/rare_5.png',
+            '/static/monsters/rare_6.png',
+            '/static/monsters/rare_7.png',
+            '/static/monsters/rare_8.png',
+            '/static/monsters/rare_9.png',
+            '/static/monsters/rare_10.png'
         ],
         '에픽': [
-            '/static/monsters/epic_boss_1.png',
-            '/static/monsters/epic_boss_2.png',
-            '/static/monsters/epic_boss_3.png',
-            '/static/monsters/epic_boss_4.png',
-            '/static/monsters/epic_boss_5.png',
-            '/static/monsters/epic_boss_6.png',
-            '/static/monsters/epic_boss_7.png',
-            '/static/monsters/epic_boss_8.png',
-            '/static/monsters/epic_boss_9.png'
+            '/static/monsters/epic_1.png',
+            '/static/monsters/epic_2.png',
+            '/static/monsters/epic_3.png',
+            '/static/monsters/epic_4.png',
+            '/static/monsters/epic_5.png',
+            '/static/monsters/epic_6.png',
+            '/static/monsters/epic_7.png',
+            '/static/monsters/epic_8.png',
+            '/static/monsters/epic_9.png',
+            '/static/monsters/epic_10.png'
         ],
         '유니크': [
-            '/static/monsters/unique_boss_1.png',
-            '/static/monsters/unique_boss_2.png',
-            '/static/monsters/unique_boss_3.png',
-            '/static/monsters/unique_boss_4.png',
-            '/static/monsters/unique_boss_5.png',
-            '/static/monsters/unique_boss_6.png',
-            '/static/monsters/unique_boss_7.png',
-            '/static/monsters/unique_boss_8.png',
-            '/static/monsters/unique_boss_9.png'
+            '/static/monsters/unique_1.png',
+            '/static/monsters/unique_2.png',
+            '/static/monsters/unique_3.png',
+            '/static/monsters/unique_4.png',
+            '/static/monsters/unique_5.png',
+            '/static/monsters/unique_6.png',
+            '/static/monsters/unique_7.png',
+            '/static/monsters/unique_8.png',
+            '/static/monsters/unique_9.png',
+            '/static/monsters/unique_10.png'
         ],
         '레전드리': [
-            '/static/monsters/legendary_boss_1.png',
-            '/static/monsters/legendary_boss_2.png',
-            '/static/monsters/legendary_supreme_1.png',
-            '/static/monsters/legendary_supreme_2.png',
-            '/static/monsters/legendary_supreme_3.png',
-            '/static/monsters/legendary_supreme_4.png',
-            '/static/monsters/legendary_supreme_5.png',
-            '/static/monsters/legendary_supreme_6.png',
-            '/static/monsters/legendary_supreme_7.png'
+            '/static/monsters/legendary_1.png',
+            '/static/monsters/legendary_2.png',
+            '/static/monsters/legendary_3.png',
+            '/static/monsters/legendary_4.png',
+            '/static/monsters/legendary_5.png',
+            '/static/monsters/legendary_6.png',
+            '/static/monsters/legendary_7.png',
+            '/static/monsters/legendary_8.png',
+            '/static/monsters/legendary_9.png',
+            '/static/monsters/legendary_10.png'
         ]
     }
     
