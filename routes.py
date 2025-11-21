@@ -122,7 +122,8 @@ def take_quiz():
             session[session_key].append(quiz_word)
             session.modified = True
         
-        flash(f'정답! 경험치 +{result["exp_gained"]}', 'success')
+        message = f'정답! 경험치 +{result["exp_gained"]}'
+        message_type = 'success'
     else:
         # 틀린 문제 저장 (카테고리별로)
         wrong_session_key = f'quiz_session_wrong_{selected_category}'
@@ -151,8 +152,57 @@ def take_quiz():
         session[wrong_session_key].append(wrong_question)
         session.modified = True
         
-        flash(f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.', 'error')
+        message = f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.'
+        message_type = 'error'
     
+    # AJAX 요청인지 확인
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # 다음 단어 가져오기
+        word_bank = game_logic.get_word_by_category(selected_category)
+        session_key = f'quiz_session_correct_{selected_category}'
+        correct_words = session.get(session_key, [])
+        available_words = [word for word in word_bank if word['단어'] not in correct_words]
+        
+        total_words = len(word_bank)
+        completed_words = len(correct_words)
+        
+        if len(available_words) > 0:
+            import random
+            next_quiz_word = random.choice(available_words)
+            
+            # 다음 문제의 유형 결정
+            if selected_language == 'english':
+                next_question_type = '단어맞히기'
+            elif selected_language == 'korean':
+                next_question_type = '뜻맞히기'
+            else:
+                next_question_type = random.choice(['뜻맞히기', '단어맞히기'])
+            
+            return jsonify({
+                'success': True,
+                'correct': result['correct'],
+                'message': message,
+                'message_type': message_type,
+                'next_word': next_quiz_word,
+                'next_question_type': next_question_type,
+                'completed_words': completed_words,
+                'total_words': total_words,
+                'all_completed': False
+            })
+        else:
+            # 모든 단어를 맞혔을 때
+            return jsonify({
+                'success': True,
+                'correct': result['correct'],
+                'message': message,
+                'message_type': message_type,
+                'completed_words': completed_words,
+                'total_words': total_words,
+                'all_completed': True
+            })
+    
+    # 기존 방식 (form submit)
+    flash(message, message_type)
     return redirect(url_for('quiz', category=selected_category, language=selected_language))
 
 @app.route('/reset_quiz_session', methods=['POST'])
