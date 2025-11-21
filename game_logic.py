@@ -1740,7 +1740,7 @@ def use_dungeon_item(player, item_name, dungeon_run=None):
 # ============== 일일 표현 시스템 ==============
 
 def get_daily_expressions():
-    """오늘의 표현 5개 반환"""
+    """일일 표현 - 20가지 회화 표현"""
     expressions = [
         {
             'expression': 'Break the ice',
@@ -1776,6 +1776,118 @@ def get_daily_expressions():
             'meaning': '열심히 공부하다',
             'situation': '시험 준비나 공부에 집중할 때',
             'tip': '책을 치면서 공부한다는 의미입니다.'
+        },
+        {
+            'expression': 'On cloud nine',
+            'example': 'She has been on cloud nine since she got engaged.',
+            'meaning': '매우 행복한, 넋을 잃을 정도로 기쁜',
+            'situation': '사랑에 빠지거나 매우 기쁠 때',
+            'tip': '9번째 구름 위에 있을 정도로 행복하다는 뜻입니다.'
+        },
+        {
+            'expression': 'It rains cats and dogs',
+            'example': 'It is raining cats and dogs outside.',
+            'meaning': '매우 심하게 내리다 (비가)',
+            'situation': '비가 폭주할 때',
+            'tip': '개와 고양이가 내린다는 과장된 표현입니다.'
+        },
+        {
+            'expression': 'Go the extra mile',
+            'example': 'She always goes the extra mile for her customers.',
+            'meaning': '특별한 노력을 하다, 추가로 더 하다',
+            'situation': '누군가가 기대 이상의 노력을 할 때',
+            'tip': '한 마일을 더 간다는 뜻입니다.'
+        },
+        {
+            'expression': 'No pain, no gain',
+            'example': 'No pain, no gain. You have to work hard to succeed.',
+            'meaning': '고생 없이 얻는 것 없다',
+            'situation': '성공을 위해서는 노력이 필요하다고 말할 때',
+            'tip': '성공의 철칙을 나타내는 표현입니다.'
+        },
+        {
+            'expression': 'Better late than never',
+            'example': 'I know I am late, but better late than never.',
+            'meaning': '늦은 것이 안 하는 것보다 낫다',
+            'situation': '늦게 도착하거나 늦게 시작할 때의 변명',
+            'tip': '지각이나 지연을 정당화할 때 사용합니다.'
+        },
+        {
+            'expression': 'Spill the beans',
+            'example': 'I cannot spill the beans about the surprise party.',
+            'meaning': '비밀을 말하다, 중요한 정보를 누설하다',
+            'situation': '누군가가 비밀을 말하려고 할 때',
+            'tip': '콩을 쏟아서 비밀이 알려진다는 의미입니다.'
+        },
+        {
+            'expression': 'Bite the bullet',
+            'example': 'Sometimes you just have to bite the bullet.',
+            'meaning': '어려운 상황을 받아들이다, 최선을 다하다',
+            'situation': '어쩔 수 없는 상황에 직면했을 때',
+            'tip': '전쟁 중에 마취 없이 치료할 때 총알을 깨물었던 데서 비롯되었습니다.'
+        },
+        {
+            'expression': 'See eye to eye',
+            'example': 'We do not see eye to eye on this issue.',
+            'meaning': '의견이 같다, 동의하다 (또는 그 반대)',
+            'situation': '타인과 같은 의견을 가지고 있을 때',
+            'tip': '같은 높이로 눈맞춘다는 뜻입니다.'
+        },
+        {
+            'expression': 'Give someone a hand',
+            'example': 'Can you give me a hand with this project?',
+            'meaning': '누군가를 도와주다',
+            'situation': '다른 사람에게 도움을 청하거나 도와줄 때',
+            'tip': '손을 주어서 도와준다는 의미입니다.'
+        },
+        {
+            'expression': 'Keep your fingers crossed',
+            'example': 'I am keeping my fingers crossed for your interview.',
+            'meaning': '행운을 빌다, 희망을 가지다',
+            'situation': '누군가가 좋은 결과를 기원할 때',
+            'tip': '손가락을 교차시키면 행운이 온다고 믿습니다.'
+        },
+        {
+            'expression': 'Catch you later',
+            'example': 'I have to go now. Catch you later!',
+            'meaning': '나중에 봐, 인사',
+            'situation': '누군가와 헤어질 때 인사하는 표현',
+            'tip': '캐주얼한 작별 인사로 매우 자주 사용됩니다.'
+        },
+        {
+            'expression': 'No worries',
+            'example': 'I made a mistake. - No worries, it happens.',
+            'meaning': '괜찮아, 걱정하지 마',
+            'situation': '누군가를 안심시키거나 격려할 때',
+            'tip': '걱정하지 말라는 매우 일반적인 표현입니다.'
+        },
+        {
+            'expression': 'That is piece of cake',
+            'example': 'The test was a piece of cake.',
+            'meaning': '매우 쉬운, 문제없는',
+            'situation': '어떤 일이 쉬울 때 자신 있게 말할 때',
+            'tip': '케이크 조각처럼 쉽다는 의미입니다.'
+        },
+        {
+            'expression': 'Once in a blue moon',
+            'example': 'I see him once in a blue moon.',
+            'meaning': '매우 드물게, 거의 없이',
+            'situation': '무언가가 거의 일어나지 않을 때',
+            'tip': '파란 달은 매우 드물다는 데서 비롯되었습니다.'
+        },
+        {
+            'expression': 'Get the ball rolling',
+            'example': 'Let us get the ball rolling with this new project.',
+            'meaning': '일을 시작하다, 시작하다',
+            'situation': '새로운 프로젝트나 계획을 시작할 때',
+            'tip': '공을 굴려서 시작한다는 의미입니다.'
+        },
+        {
+            'expression': 'Speak of the devil',
+            'example': 'Speak of the devil! There he comes!',
+            'meaning': '얘기 나누던 사람이 나타났다',
+            'situation': '우리가 얘기하던 사람이 때마침 나타났을 때',
+            'tip': '악마라고 얘기하면 나타난다는 미신에서 나왔습니다.'
         }
     ]
     return expressions
