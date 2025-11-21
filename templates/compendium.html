@@ -33,10 +33,10 @@
                                 <a href="{{ url_for('compendium', rarity='에픽') }}" class="btn {% if filter_rarity == '에픽' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                                     <i class="fas fa-star me-1"></i>에픽
                                 </a>
-                                <a href="{{ url_for('compendium', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-light border border-2 border-warning{% endif %}">
+                                <a href="{{ url_for('compendium', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-filter-warning{% endif %}">
                                     <i class="fas fa-star me-1"></i>유니크
                                 </a>
-                                <a href="{{ url_for('compendium', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-light border border-2 border-danger{% endif %}">
+                                <a href="{{ url_for('compendium', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-filter-danger{% endif %}">
                                     <i class="fas fa-star me-1"></i>레전드리
                                 </a>
                             </div>
@@ -164,6 +164,37 @@
 .btn-group-sm .btn {
     font-size: 0.875rem;
     padding: 0.375rem 0.75rem;
+}
+
+/* 커스텀 필터 버튼 스타일 */
+.btn-filter-warning {
+    background-color: #fff;
+    color: #ff9800 !important;
+    border: 2px solid #ff9800;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-filter-warning:hover {
+    background-color: #ff9800;
+    color: #fff !important;
+    border-color: #ff9800;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.btn-filter-danger {
+    background-color: #fff;
+    color: #dc3545 !important;
+    border: 2px solid #dc3545;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-filter-danger:hover {
+    background-color: #dc3545;
+    color: #fff !important;
+    border-color: #dc3545;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
 }
 </style>
 {% endblock %}
