@@ -134,20 +134,39 @@
 // 글로벌 음성 캐시
 let cachedVoice = null;
 
-// 음성 로드 및 캐싱
+// 음성 로드 및 캐싱 - 여자 미국 현지인 음성
 function initializeVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
         
-        // 첫 번째: Google US English 찾기
+        // 우선순위: 여자 미국 현지인 음성 찾기
+        const preferredNames = [
+            'Microsoft Zira',
+            'Google US English Female',
+            'Samantha',
+            'Victoria',
+            'moira',
+            'Karen'
+        ];
+        
+        for (let preferred of preferredNames) {
+            for (let voice of voices) {
+                if (voice.lang === 'en-US' && voice.name.includes(preferred)) {
+                    cachedVoice = voice;
+                    return;
+                }
+            }
+        }
+        
+        // 대체: 여자 음성 찾기
         for (let voice of voices) {
-            if (voice.lang === 'en-US' && voice.name.includes('Google')) {
+            if (voice.lang === 'en-US' && !voice.name.includes('Male')) {
                 cachedVoice = voice;
                 return;
             }
         }
         
-        // 두 번째: 일반 en-US 음성
+        // 최후: 일반 en-US 음성
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
                 cachedVoice = voice;

@@ -65,7 +65,7 @@
                         <p class="text-muted mt-2 mb-0"><strong>{{ speaker.name }}</strong></p>
                     </div>
                     <div class="col-12 col-sm-9">
-                        <div class="alert alert-info alien-message" id="alienMessage" data-english="{{ alien_sentence }}" data-korean="{{ alien_translation }}">
+                        <div class="alert alert-info alien-message" id="alienMessage" data-english="{{ alien_sentence }}" data-korean="{{ alien_translation }}" data-speaker="{{ speaker.image }}">
                             <div class="alien-english">
                                 <h5 class="mb-0">{{ alien_sentence }}</h5>
                             </div>
@@ -135,20 +135,70 @@
 // 글로벌 음성 캐시
 let cachedVoice = null;
 
-// 음성 로드 및 캐싱
+// 음성 로드 및 캐싱 - 캐릭터 성별에 맞는 미국 현지인 음성
 function initializeVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
+        const speakerImg = document.getElementById('alienMessage')?.dataset.speaker || '';
+        const isFemale = speakerImg.includes('female') || speakerImg.includes('woman') || speakerImg.includes('girl');
         
-        // 첫 번째: Google US English 찾기
-        for (let voice of voices) {
-            if (voice.lang === 'en-US' && voice.name.includes('Google')) {
-                cachedVoice = voice;
-                return;
+        if (isFemale) {
+            // 여자 미국 현지인 음성
+            const femalePreferred = [
+                'Microsoft Zira',
+                'Google US English Female',
+                'Samantha',
+                'Victoria',
+                'moira',
+                'Karen'
+            ];
+            
+            for (let preferred of femalePreferred) {
+                for (let voice of voices) {
+                    if (voice.lang === 'en-US' && voice.name.includes(preferred)) {
+                        cachedVoice = voice;
+                        return;
+                    }
+                }
+            }
+            
+            // 대체: 여자 음성
+            for (let voice of voices) {
+                if (voice.lang === 'en-US' && !voice.name.includes('Male')) {
+                    cachedVoice = voice;
+                    return;
+                }
+            }
+        } else {
+            // 남자 미국 현지인 음성
+            const malePreferred = [
+                'Microsoft Mark',
+                'Microsoft David',
+                'Google US English',
+                'Alex',
+                'Bruce',
+                'Tom'
+            ];
+            
+            for (let preferred of malePreferred) {
+                for (let voice of voices) {
+                    if (voice.lang === 'en-US' && voice.name.includes(preferred)) {
+                        cachedVoice = voice;
+                        return;
+                    }
+                }
+            }
+            
+            // 대체: 남자 음성
+            for (let voice of voices) {
+                if (voice.lang === 'en-US' && (voice.name.includes('Male') || voice.name.includes('Mark') || voice.name.includes('David') || voice.name.includes('Alex'))) {
+                    cachedVoice = voice;
+                    return;
+                }
             }
         }
         
-        // 두 번째: 일반 en-US 음성
+        // 최후: 일반 en-US 음성
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
                 cachedVoice = voice;
