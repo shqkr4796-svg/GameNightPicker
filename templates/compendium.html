@@ -68,17 +68,23 @@
 
                 <!-- 몬스터 이미지 -->
                 <div class="card-body text-center">
-                    {% if monster.get('이미지') %}
+                    {% if monster.get('이미지') and monster['이미지'] != '' %}
                         <img src="{{ monster['이미지'] }}" alt="{{ monster['이름'] }}" 
                              class="monster-gallery-image" style="width: 180px; height: 180px; object-fit: contain; margin-bottom: 15px;">
+                    {% else %}
+                        <div class="monster-gallery-image" style="width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; font-size: 3rem; color: #ccc;">
+                            <i class="fas fa-dragon"></i>
+                        </div>
                     {% endif %}
 
                     <!-- 몬스터 정보 -->
                     <div class="monster-info mb-3">
+                        {% if monster.get('단어') %}
                         <div class="mb-2">
                             <strong>단어:</strong>
                             <span class="text-primary">{{ monster['단어'] }}</span>
                         </div>
+                        {% endif %}
                         <div class="mb-2">
                             <strong>공격력:</strong>
                             <span class="badge bg-danger">{{ monster.get('공격력', 0) }}</span>
