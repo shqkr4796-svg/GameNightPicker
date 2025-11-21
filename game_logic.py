@@ -114,7 +114,7 @@ def get_all_monster_images():
         all_monsters[monster_id] = {
             '이름': monster_data['이름'],
             '등급': rarity,
-            '이미지': '',
+            '이미지': monster_data.get('이미지', ''),
             '공격력범위': f"{attack_range[0]}~{attack_range[1]}",
             '체력범위': f"{hp_range[0]}~{hp_range[1]}"
         }
