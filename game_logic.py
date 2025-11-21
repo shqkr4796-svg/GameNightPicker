@@ -2166,3 +2166,14 @@ def get_conversation_translation(expression_name):
         'That sounds great': "내일 해변에 가는 거 어때?"
     }
     return translations.get(expression_name, "이것에 대해 어떻게 대답하시겠어요?")
+
+def get_foreign_speakers():
+    """외국인 강사 정보"""
+    speakers = [
+        {'name': 'SAM', 'image': 'handsome_man_portrait_sam.png'},
+        {'name': 'OLIVIA', 'image': 'beautiful_woman_portrait_olivia.png'},
+        {'name': 'JAMES', 'image': 'athletic_man_portrait_james.png'},
+        {'name': 'EMMA', 'image': 'blonde_woman_portrait_emma.png'},
+        {'name': 'MICHAEL', 'image': 'man_with_glasses_portrait_michael.png'}
+    ]
+    return speakers

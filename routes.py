@@ -73,9 +73,11 @@ def conversation_practice():
     
     player = session['player_data']
     expressions = game_logic.get_daily_expressions()
+    speakers = game_logic.get_foreign_speakers()
     
-    # 랜덤 표현 선택
+    # 랜덤 표현과 외국인 선택
     random_expr = random.choice(expressions)
+    random_speaker = random.choice(speakers)
     alien_sentence = game_logic.get_conversation_prompt(random_expr)
     alien_translation = game_logic.get_conversation_translation(random_expr['expression'])
     
@@ -83,6 +85,7 @@ def conversation_practice():
                          expression=random_expr,
                          alien_sentence=alien_sentence,
                          alien_translation=alien_translation,
+                         speaker=random_speaker,
                          player=player)
 
 @app.route('/submit_conversation', methods=['POST'])
