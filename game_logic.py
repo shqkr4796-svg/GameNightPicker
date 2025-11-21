@@ -1745,6 +1745,11 @@ def get_daily_expressions():
         {
             'expression': 'Break the ice',
             'example': 'Let me break the ice by introducing myself.',
+            'examples': [
+                'Let me break the ice by introducing myself.',
+                'She broke the ice with a funny joke.',
+                'Breaking the ice on your first day is important.'
+            ],
             'meaning': '어색한 분위기를 깨뜨리다',
             'situation': '처음 만난 사람들과의 대화를 시작할 때',
             'tip': '얼음을 깨뜨린다는 의미에서 비롯된 관용구입니다.'
@@ -1752,6 +1757,11 @@ def get_daily_expressions():
         {
             'expression': 'Piece of cake',
             'example': 'This project is a piece of cake for me.',
+            'examples': [
+                'This project is a piece of cake for me.',
+                'The exam was a piece of cake.',
+                'Learning English is no piece of cake.'
+            ],
             'meaning': '아주 쉬운 일',
             'situation': '어떤 일이 매우 간단하고 쉬울 때',
             'tip': '케이크 한 조각처럼 쉽다는 의미입니다.'
@@ -1759,6 +1769,11 @@ def get_daily_expressions():
         {
             'expression': 'Under the weather',
             'example': 'I am feeling under the weather today.',
+            'examples': [
+                'I am feeling under the weather today.',
+                'My mom has been under the weather lately.',
+                'He called in sick, saying he was under the weather.'
+            ],
             'meaning': '기분이 좋지 않은, 몸이 안 좋은',
             'situation': '감기나 피로로 컨디션이 안 좋을 때',
             'tip': '날씨 아래에 있다는 의미에서 나온 표현입니다.'
@@ -1766,6 +1781,11 @@ def get_daily_expressions():
         {
             'expression': 'Cost an arm and a leg',
             'example': 'This vacation will cost us an arm and a leg.',
+            'examples': [
+                'This vacation will cost us an arm and a leg.',
+                'That new car costs an arm and a leg.',
+                'Tuition fees cost students an arm and a leg.'
+            ],
             'meaning': '매우 비싼, 많은 비용이 드는',
             'situation': '가격이 매우 비싼 물건이나 서비스를 설명할 때',
             'tip': '팔과 다리를 써야 할 정도로 비싸다는 의미입니다.'
@@ -1773,6 +1793,11 @@ def get_daily_expressions():
         {
             'expression': 'Hit the books',
             'example': 'I need to hit the books for my exam.',
+            'examples': [
+                'I need to hit the books for my exam.',
+                'We should hit the books tonight.',
+                'Students hit the books before the finals.'
+            ],
             'meaning': '열심히 공부하다',
             'situation': '시험 준비나 공부에 집중할 때',
             'tip': '책을 치면서 공부한다는 의미입니다.'
@@ -1780,6 +1805,11 @@ def get_daily_expressions():
         {
             'expression': 'On cloud nine',
             'example': 'She has been on cloud nine since she got engaged.',
+            'examples': [
+                'She has been on cloud nine since she got engaged.',
+                'He is on cloud nine after winning the lottery.',
+                'The couple has been on cloud nine since their wedding.'
+            ],
             'meaning': '매우 행복한, 넋을 잃을 정도로 기쁜',
             'situation': '사랑에 빠지거나 매우 기쁠 때',
             'tip': '9번째 구름 위에 있을 정도로 행복하다는 뜻입니다.'
@@ -1787,6 +1817,11 @@ def get_daily_expressions():
         {
             'expression': 'It rains cats and dogs',
             'example': 'It is raining cats and dogs outside.',
+            'examples': [
+                'It is raining cats and dogs outside.',
+                'When it rains cats and dogs, I stay indoors.',
+                'Yesterday, it rained cats and dogs all day.'
+            ],
             'meaning': '매우 심하게 내리다 (비가)',
             'situation': '비가 폭주할 때',
             'tip': '개와 고양이가 내린다는 과장된 표현입니다.'
@@ -1794,6 +1829,11 @@ def get_daily_expressions():
         {
             'expression': 'Go the extra mile',
             'example': 'She always goes the extra mile for her customers.',
+            'examples': [
+                'She always goes the extra mile for her customers.',
+                'To succeed, you need to go the extra mile.',
+                'The team went the extra mile to finish the project.'
+            ],
             'meaning': '특별한 노력을 하다, 추가로 더 하다',
             'situation': '누군가가 기대 이상의 노력을 할 때',
             'tip': '한 마일을 더 간다는 뜻입니다.'
@@ -1801,6 +1841,11 @@ def get_daily_expressions():
         {
             'expression': 'No pain, no gain',
             'example': 'No pain, no gain. You have to work hard to succeed.',
+            'examples': [
+                'No pain, no gain. You have to work hard to succeed.',
+                'Remember, no pain, no gain when working out.',
+                'Success requires effort - no pain, no gain.'
+            ],
             'meaning': '고생 없이 얻는 것 없다',
             'situation': '성공을 위해서는 노력이 필요하다고 말할 때',
             'tip': '성공의 철칙을 나타내는 표현입니다.'
@@ -1808,6 +1853,11 @@ def get_daily_expressions():
         {
             'expression': 'Better late than never',
             'example': 'I know I am late, but better late than never.',
+            'examples': [
+                'I know I am late, but better late than never.',
+                'He arrived three hours late, but better late than never.',
+                'Better late than never, I finally finished the book.'
+            ],
             'meaning': '늦은 것이 안 하는 것보다 낫다',
             'situation': '늦게 도착하거나 늦게 시작할 때의 변명',
             'tip': '지각이나 지연을 정당화할 때 사용합니다.'
@@ -1815,6 +1865,11 @@ def get_daily_expressions():
         {
             'expression': 'Spill the beans',
             'example': 'I cannot spill the beans about the surprise party.',
+            'examples': [
+                'I cannot spill the beans about the surprise party.',
+                'She accidentally spilled the beans about the secret.',
+                'Do not spill the beans until the announcement.'
+            ],
             'meaning': '비밀을 말하다, 중요한 정보를 누설하다',
             'situation': '누군가가 비밀을 말하려고 할 때',
             'tip': '콩을 쏟아서 비밀이 알려진다는 의미입니다.'
@@ -1822,6 +1877,11 @@ def get_daily_expressions():
         {
             'expression': 'Bite the bullet',
             'example': 'Sometimes you just have to bite the bullet.',
+            'examples': [
+                'Sometimes you just have to bite the bullet.',
+                'She bit the bullet and quit her job.',
+                'You have to bite the bullet and accept the consequences.'
+            ],
             'meaning': '어려운 상황을 받아들이다, 최선을 다하다',
             'situation': '어쩔 수 없는 상황에 직면했을 때',
             'tip': '전쟁 중에 마취 없이 치료할 때 총알을 깨물었던 데서 비롯되었습니다.'
@@ -1829,6 +1889,11 @@ def get_daily_expressions():
         {
             'expression': 'See eye to eye',
             'example': 'We do not see eye to eye on this issue.',
+            'examples': [
+                'We do not see eye to eye on this issue.',
+                'The two companies finally saw eye to eye on the deal.',
+                'My parents and I see eye to eye about my future.'
+            ],
             'meaning': '의견이 같다, 동의하다 (또는 그 반대)',
             'situation': '타인과 같은 의견을 가지고 있을 때',
             'tip': '같은 높이로 눈맞춘다는 뜻입니다.'
@@ -1836,6 +1901,11 @@ def get_daily_expressions():
         {
             'expression': 'Give someone a hand',
             'example': 'Can you give me a hand with this project?',
+            'examples': [
+                'Can you give me a hand with this project?',
+                'I gave her a hand moving the furniture.',
+                'Will you give me a hand finishing this work?'
+            ],
             'meaning': '누군가를 도와주다',
             'situation': '다른 사람에게 도움을 청하거나 도와줄 때',
             'tip': '손을 주어서 도와준다는 의미입니다.'
@@ -1843,6 +1913,11 @@ def get_daily_expressions():
         {
             'expression': 'Keep your fingers crossed',
             'example': 'I am keeping my fingers crossed for your interview.',
+            'examples': [
+                'I am keeping my fingers crossed for your interview.',
+                'Keep your fingers crossed for good weather tomorrow.',
+                'We are all keeping our fingers crossed for the test results.'
+            ],
             'meaning': '행운을 빌다, 희망을 가지다',
             'situation': '누군가가 좋은 결과를 기원할 때',
             'tip': '손가락을 교차시키면 행운이 온다고 믿습니다.'
@@ -1850,6 +1925,11 @@ def get_daily_expressions():
         {
             'expression': 'Catch you later',
             'example': 'I have to go now. Catch you later!',
+            'examples': [
+                'I have to go now. Catch you later!',
+                'Catch you later, I have an appointment.',
+                'See you at the party. Catch you later!'
+            ],
             'meaning': '나중에 봐, 인사',
             'situation': '누군가와 헤어질 때 인사하는 표현',
             'tip': '캐주얼한 작별 인사로 매우 자주 사용됩니다.'
@@ -1857,6 +1937,11 @@ def get_daily_expressions():
         {
             'expression': 'No worries',
             'example': 'I made a mistake. - No worries, it happens.',
+            'examples': [
+                'I made a mistake. - No worries, it happens.',
+                'No worries, I will help you fix it.',
+                'Sorry I am late. - No worries, take your time.'
+            ],
             'meaning': '괜찮아, 걱정하지 마',
             'situation': '누군가를 안심시키거나 격려할 때',
             'tip': '걱정하지 말라는 매우 일반적인 표현입니다.'
@@ -1864,6 +1949,11 @@ def get_daily_expressions():
         {
             'expression': 'That is piece of cake',
             'example': 'The test was a piece of cake.',
+            'examples': [
+                'The test was a piece of cake.',
+                'Building a website is a piece of cake for him.',
+                'That problem is a piece of cake to solve.'
+            ],
             'meaning': '매우 쉬운, 문제없는',
             'situation': '어떤 일이 쉬울 때 자신 있게 말할 때',
             'tip': '케이크 조각처럼 쉽다는 의미입니다.'
@@ -1871,6 +1961,11 @@ def get_daily_expressions():
         {
             'expression': 'Once in a blue moon',
             'example': 'I see him once in a blue moon.',
+            'examples': [
+                'I see him once in a blue moon.',
+                'Once in a blue moon, I treat myself to something nice.',
+                'We get together once in a blue moon.'
+            ],
             'meaning': '매우 드물게, 거의 없이',
             'situation': '무언가가 거의 일어나지 않을 때',
             'tip': '파란 달은 매우 드물다는 데서 비롯되었습니다.'
@@ -1878,6 +1973,11 @@ def get_daily_expressions():
         {
             'expression': 'Get the ball rolling',
             'example': 'Let us get the ball rolling with this new project.',
+            'examples': [
+                'Let us get the ball rolling with this new project.',
+                'We need to get the ball rolling on the proposal.',
+                'I will get the ball rolling and send the email.'
+            ],
             'meaning': '일을 시작하다, 시작하다',
             'situation': '새로운 프로젝트나 계획을 시작할 때',
             'tip': '공을 굴려서 시작한다는 의미입니다.'
@@ -1885,6 +1985,11 @@ def get_daily_expressions():
         {
             'expression': 'Speak of the devil',
             'example': 'Speak of the devil! There he comes!',
+            'examples': [
+                'Speak of the devil! There he comes!',
+                'We were just talking about her. Speak of the devil!',
+                'I was thinking about calling you. Speak of the devil, you called!'
+            ],
             'meaning': '얘기 나누던 사람이 나타났다',
             'situation': '우리가 얘기하던 사람이 때마침 나타났을 때',
             'tip': '악마라고 얘기하면 나타난다는 미신에서 나왔습니다.'

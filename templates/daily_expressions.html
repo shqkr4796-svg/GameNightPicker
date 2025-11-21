@@ -62,11 +62,13 @@
                 <div class="row mb-4">
                     <div class="col-md-12">
                         <h6 class="text-muted mb-3">1️⃣ 예문</h6>
-                        <div class="alert alert-info mb-3">
-                            <strong>{{ expressions[selected_index].example }}</strong>
+                        {% for ex in expressions[selected_index].examples %}
+                        <div class="alert alert-info mb-2">
+                            <strong>{{ loop.index }}. {{ ex }}</strong>
                         </div>
+                        {% endfor %}
                         <button class="btn btn-primary w-100 mb-3" onclick="playAudio('{{ expressions[selected_index].example }}')">
-                            <i class="fas fa-volume-up me-2"></i>예문 재생 (오프라인 지원)
+                            <i class="fas fa-volume-up me-2"></i>예문 재생
                         </button>
                     </div>
                 </div>
