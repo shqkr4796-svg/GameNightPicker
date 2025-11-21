@@ -22,24 +22,24 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="row align-items-center">
-                        <div class="col-md-8">
+                        <div class="col-12">
                             <div class="btn-group btn-group-sm" role="group">
-                                <a href="{{ url_for('compendium', rarity='all') }}" class="btn btn-outline-primary {% if filter_rarity == 'all' %}active{% endif %}">
+                                <a href="{{ url_for('compendium', rarity='all') }}" class="btn {% if filter_rarity == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                                     <i class="fas fa-th me-1"></i>전체
                                 </a>
-                                {% for rarity in rarities %}
-                                <a href="{{ url_for('compendium', rarity=rarity) }}" class="btn btn-outline-{% if rarity == '레어' %}success{% elif rarity == '에픽' %}primary{% elif rarity == '유니크' %}warning{% else %}danger{% endif %} {% if filter_rarity == rarity %}active{% endif %}">
-                                    <i class="fas fa-star me-1"></i>{{ rarity }}
+                                <a href="{{ url_for('compendium', rarity='레어') }}" class="btn {% if filter_rarity == '레어' %}btn-success{% else %}btn-outline-success{% endif %}">
+                                    <i class="fas fa-star me-1"></i>레어
                                 </a>
-                                {% endfor %}
+                                <a href="{{ url_for('compendium', rarity='에픽') }}" class="btn {% if filter_rarity == '에픽' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                    <i class="fas fa-star me-1"></i>에픽
+                                </a>
+                                <a href="{{ url_for('compendium', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                                    <i class="fas fa-star me-1"></i>유니크
+                                </a>
+                                <a href="{{ url_for('compendium', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                                    <i class="fas fa-star me-1"></i>레전드리
+                                </a>
                             </div>
-                        </div>
-                        <div class="col-md-4 text-end">
-                            <form method="POST" action="{{ url_for('export_monsters') }}" style="display: inline;">
-                                <button type="submit" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-download me-1"></i>내보내기
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>

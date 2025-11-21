@@ -1683,15 +1683,20 @@ def build_next_question(dungeon_run):
         return result
 
 def get_monster_stats(rarity):
-    """등급별 몬스터 공격력/체력 설정"""
-    stats = {
-        '일반': {'공격력': 2, '체력': 15},
-        '레어': {'공격력': 5, '체력': 25},
-        '에픽': {'공격력': 10, '체력': 40},
-        '유니크': {'공격력': 15, '체력': 60},
-        '레전드리': {'공격력': 20, '체력': 100}
+    """등급별 몬스터 공격력/체력 랜덤 설정"""
+    ranges = {
+        '일반': {'공격력': (2, 5), '체력': (10, 20)},
+        '레어': {'공격력': (5, 10), '체력': (10, 100)},
+        '에픽': {'공격력': (11, 20), '체력': (110, 200)},
+        '유니크': {'공격력': (30, 200), '체력': (300, 5000)},
+        '레전드리': {'공격력': (300, 3000), '체력': (6000, 50000)}
     }
-    return stats.get(rarity, stats['일반'])
+    
+    stat_range = ranges.get(rarity, ranges['일반'])
+    return {
+        '공격력': random.randint(stat_range['공격력'][0], stat_range['공격력'][1]),
+        '체력': random.randint(stat_range['체력'][0], stat_range['체력'][1])
+    }
 
 def update_compendium(player, dungeon_run):
     """몬스터 도감 업데이트"""

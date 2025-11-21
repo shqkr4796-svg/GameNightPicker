@@ -1225,31 +1225,6 @@ def delete_monster(monster_id):
     
     return redirect(url_for('compendium'))
 
-@app.route('/export_monsters', methods=['POST'])
-def export_monsters():
-    """몬스터 내보내기 - 모든 몬스터 JSON으로 내보내기"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
-    
-    player = session['player_data']
-    import json as json_module
-    
-    compendium = player.get('도감', {})
-    
-    # JSON 형식으로 내보내기
-    export_data = {
-        '내보낸_날짜': datetime.now().isoformat(),
-        '총_몬스터_수': len(compendium),
-        '몬스터들': compendium
-    }
-    
-    from flask import make_response
-    response = make_response(json_module.dumps(export_data, ensure_ascii=False, indent=2))
-    response.headers['Content-Disposition'] = f'attachment; filename=monsters_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
-    response.headers['Content-Type'] = 'application/json; charset=utf-8'
-    
-    return response
-
 @app.route('/dungeon/use_item', methods=['POST'])
 def use_dungeon_item():
     """던전 아이템 사용"""
