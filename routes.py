@@ -67,7 +67,8 @@ def daily_expressions():
     
     progress = player['일일표현_진도']
     completed = player['일일표현_완료']
-    current_index = min(progress, 4)  # 0~4 인덱스
+    # 완료했으면 current_index를 -1로 설정
+    current_index = -1 if completed else min(progress, 4)
     
     return render_template('daily_expressions.html',
                          expressions=expressions,

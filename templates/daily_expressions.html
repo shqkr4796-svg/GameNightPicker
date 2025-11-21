@@ -49,7 +49,7 @@
         </div>
 
         <!-- 표현 카드 -->
-        {% if expressions %}
+        {% if expressions and current_index >= 0 %}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">표현 #{{ current_index + 1 }}: {{ expressions[current_index].expression }}</h5>
@@ -98,6 +98,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        {% elif completed %}
+        <div class="card mb-4 bg-success bg-opacity-10 border-success">
+            <div class="card-body text-center">
+                <h4 class="text-success mb-3">
+                    <i class="fas fa-check-circle me-2"></i>오늘의 표현 학습 완료!
+                </h4>
+                <p class="text-muted mb-0">내일 새로운 표현들을 배워보세요! 🌟</p>
             </div>
         </div>
         {% endif %}
