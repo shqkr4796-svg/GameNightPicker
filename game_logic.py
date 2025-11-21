@@ -546,6 +546,29 @@ def edit_word_in_bank(word_index, new_word, new_meaning, new_category):
         print(f"Error in edit_word_in_bank: {e}")
         return {'success': False, 'message': '단어 수정 중 오류가 발생했습니다.'}
 
+def change_multiple_categories(word_indices, new_category):
+    """여러 단어의 카테고리를 일괄 변경 (사용자 단어만)"""
+    user_words = get_user_words()
+    
+    try:
+        word_indices = [int(idx) for idx in word_indices]
+        changed_count = 0
+        
+        # 각 인덱스에 해당하는 단어의 카테고리 변경
+        for index in word_indices:
+            if 0 <= index < len(user_words):
+                user_words[index]['카테고리'] = new_category
+                changed_count += 1
+        
+        if changed_count > 0:
+            save_user_words(user_words)
+            return {'success': True, 'message': f'{changed_count}개 단어의 카테고리가 "{new_category}"로 변경되었습니다.'}
+        else:
+            return {'success': False, 'message': '변경할 수 있는 단어가 없습니다.'}
+    except Exception as e:
+        print(f"Error in change_multiple_categories: {e}")
+        return {'success': False, 'message': '카테고리 변경 중 오류가 발생했습니다.'}
+
 def get_word_by_category(category='all'):
     """카테고리별 단어 조회"""
     current_word_bank = get_word_bank()

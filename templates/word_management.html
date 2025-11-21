@@ -77,6 +77,10 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">단어 목록</h5>
                     <div class="d-flex gap-2 align-items-center">
+                        <button type="button" class="btn btn-primary btn-sm" id="changeCategoryBtn" 
+                                onclick="showChangeCategoryModal()" style="display: none;">
+                            <i class="fas fa-folder me-1"></i> 카테고리 변경
+                        </button>
                         <button type="button" class="btn btn-danger btn-sm" id="deleteSelectedBtn" 
                                 onclick="confirmMultipleDelete(this)" style="display: none;">
                             <i class="fas fa-trash-alt me-1"></i> 선택 삭제
@@ -240,6 +244,42 @@
         </div>
     </div>
 </div>
+
+<!-- 카테고리 일괄 변경 모달 -->
+<div class="modal fade" id="changeCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">카테고리 일괄 변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('change_multiple_categories') }}">
+                <div class="modal-body">
+                    <p>선택한 <strong id="category_change_count"></strong>개의 단어 카테고리를 변경합니다.</p>
+                    <div class="mb-3">
+                        <label for="new_category_select" class="form-label">변경할 카테고리</label>
+                        <select class="form-select" id="new_category_select" name="new_category" onchange="toggleNewCategoryInput()">
+                            <option value="">선택하세요</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}">{{ cat }}</option>
+                            {% endfor %}
+                            <option value="custom">새 카테고리 입력</option>
+                        </select>
+                        <input type="text" id="new_category_input" name="custom_category" 
+                               class="form-control mt-2 d-none" placeholder="새 카테고리 이름">
+                    </div>
+                    <input type="hidden" id="category_word_indices" name="word_indices">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-folder me-1"></i> 변경
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -309,11 +349,44 @@ function confirmDelete(index, word, buttonElement = null) {
 function updateDeleteButton() {
     const checkboxes = document.querySelectorAll('.word-checkbox:checked');
     const deleteBtn = document.getElementById('deleteSelectedBtn');
+    const categoryBtn = document.getElementById('changeCategoryBtn');
     
     if (checkboxes.length > 0) {
         deleteBtn.style.display = 'inline-block';
+        categoryBtn.style.display = 'inline-block';
     } else {
         deleteBtn.style.display = 'none';
+        categoryBtn.style.display = 'none';
+    }
+}
+
+function showChangeCategoryModal() {
+    const checkboxes = document.querySelectorAll('.word-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert('카테고리를 변경할 단어를 선택해주세요.');
+        return;
+    }
+    
+    const indices = Array.from(checkboxes).map(cb => cb.value);
+    document.getElementById('category_word_indices').value = indices.join(',');
+    document.getElementById('category_change_count').textContent = indices.length;
+    
+    const modal = new bootstrap.Modal(document.getElementById('changeCategoryModal'));
+    modal.show();
+}
+
+function toggleNewCategoryInput() {
+    const select = document.getElementById('new_category_select');
+    const input = document.getElementById('new_category_input');
+    
+    if (select.value === 'custom') {
+        input.classList.remove('d-none');
+        input.required = true;
+        input.focus();
+    } else {
+        input.classList.add('d-none');
+        input.required = false;
+        input.value = '';
     }
 }
 

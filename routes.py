@@ -400,6 +400,39 @@ def delete_multiple_words():
     
     return redirect(url_for('word_management'))
 
+@app.route('/change_multiple_categories', methods=['POST'])
+def change_multiple_categories():
+    """여러 단어의 카테고리 일괄 변경"""
+    word_indices_str = request.form.get('word_indices', '')
+    new_category = request.form.get('new_category', '').strip()
+    custom_category = request.form.get('custom_category', '').strip()
+    
+    if not word_indices_str:
+        flash('카테고리를 변경할 단어를 선택해주세요.', 'error')
+        return redirect(url_for('word_management'))
+    
+    # 새 카테고리가 custom이면 사용자 입력값 사용
+    if new_category == 'custom':
+        if custom_category:
+            new_category = custom_category
+        else:
+            flash('새 카테고리 이름을 입력해주세요.', 'error')
+            return redirect(url_for('word_management'))
+    
+    if not new_category:
+        flash('변경할 카테고리를 선택해주세요.', 'error')
+        return redirect(url_for('word_management'))
+    
+    word_indices = word_indices_str.split(',')
+    result = game_logic.change_multiple_categories(word_indices, new_category)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('word_management'))
+
 @app.route('/edit_word', methods=['POST'])
 def edit_word():
     """단어 수정"""
