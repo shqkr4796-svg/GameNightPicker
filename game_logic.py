@@ -2218,7 +2218,11 @@ Be lenient - partial use of the expression or similar phrasing counts as correct
         )
         
         import json
-        result_text = response.choices[0].message.content.strip()
+        content = response.choices[0].message.content
+        if not content:
+            raise ValueError("AI 응답이 비어있습니다.")
+        
+        result_text = content.strip()
         
         # JSON 추출
         if "```json" in result_text:
