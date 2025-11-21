@@ -325,72 +325,118 @@ function submitChoice(choice) {
     });
 }
 
-// 몬스터 등장 효과음 재생
+// 글로벌 오디오 컨텍스트
+let audioContext = null;
+
+// 오디오 컨텍스트 초기화
+function initAudioContext() {
+    if (!audioContext) {
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('오디오 컨텍스트 초기화 완료');
+        } catch(e) {
+            console.log('오디오 컨텍스트 초기화 실패:', e);
+        }
+    }
+}
+
+// 몬스터 등장 효과음 재생 - 더 강한 사운드
 function playMonsterAppearanceSound(rarity) {
     try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // 오디오 컨텍스트 초기화
+        if (!audioContext) {
+            initAudioContext();
+        }
+        
+        if (!audioContext) {
+            console.log('오디오 지원 안됨');
+            return;
+        }
+        
         const now = audioContext.currentTime;
         
-        // 등급별 음성 설정
+        // 등급별 음성 설정 (더 크고 명확함)
         const soundSettings = {
             '레어': { 
                 frequencies: [400], 
-                duration: 0.4, 
-                volume: 0.2 
+                duration: 0.5, 
+                volume: 0.4,
+                description: '레어 효과음'
             },
             '에픽': { 
                 frequencies: [500, 600], 
-                duration: 0.5, 
-                volume: 0.25 
+                duration: 0.6, 
+                volume: 0.5,
+                description: '에픽 효과음'
             },
             '유니크': { 
                 frequencies: [700, 800, 900], 
-                duration: 0.6, 
-                volume: 0.3 
+                duration: 0.7, 
+                volume: 0.6,
+                description: '유니크 효과음'
             },
             '레전드리': { 
-                frequencies: [800, 1000, 1200], 
-                duration: 0.8, 
-                volume: 0.35 
+                frequencies: [800, 1000, 1200, 1400], 
+                duration: 0.9, 
+                volume: 0.7,
+                description: '레전드리 효과음'
             }
         };
         
         const config = soundSettings[rarity] || soundSettings['레어'];
+        
+        console.log('재생 중:', config.description);
+        
+        // 마스터 게인 (볼륨 조절용)
+        const masterGain = audioContext.createGain();
+        masterGain.gain.setValueAtTime(config.volume, now);
+        masterGain.connect(audioContext.destination);
         
         // 각 주파수별로 오실레이터 생성
         config.frequencies.forEach((freq, index) => {
             const osc = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             
-            osc.type = ['sine', 'triangle', 'sawtooth'][index % 3];
-            osc.frequency.value = freq;
+            osc.type = ['sine', 'square', 'triangle', 'sawtooth'][index % 4];
+            osc.frequency.setValueAtTime(freq, now);
+            
+            // 주파수 변화 (더 역동적)
+            osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + config.duration * 0.3);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + config.duration);
             
             // 볼륨 설정
-            gainNode.gain.setValueAtTime(config.volume / config.frequencies.length, now);
+            gainNode.gain.setValueAtTime(0.8 / config.frequencies.length, now);
             gainNode.gain.exponentialRampToValueAtTime(0.01, now + config.duration);
             
             osc.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+            gainNode.connect(masterGain);
             
             osc.start(now);
             osc.stop(now + config.duration);
         });
     } catch(e) {
-        console.log('음성 재생 불가:', e);
+        console.log('효과음 재생 에러:', e);
     }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 몬스터 이미지 그리기
-    drawMonster();
+    // 몬스터 이미지 그리기 (canvas 있을 때만)
+    const canvas = document.getElementById('monster-display');
+    if (canvas) {
+        try {
+            drawMonster();
+        } catch(e) {
+            console.log('몬스터 드로우 스킵:', e);
+        }
+    }
     
     // 몬스터 등장 효과음 재생
-    const rarityElement = document.querySelector('[class*="bg-"]');
     const rarity = '{{ dungeon_run["current_rarity"] }}';
     if (rarity) {
+        // 페이지 로드 직후 효과음 재생
         setTimeout(() => {
             playMonsterAppearanceSound(rarity);
-        }, 300);
+        }, 200);
     }
     
     // 선택지 클릭 효과
@@ -410,6 +456,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function drawMonster() {
     const canvas = document.getElementById('monster-display');
+    if (!canvas) return; // canvas가 없으면 함수 종료
+    
     const ctx = canvas.getContext('2d');
     const monsterId = canvas.dataset.monsterId;
     const rarity = canvas.dataset.rarity;
