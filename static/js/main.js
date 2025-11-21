@@ -310,6 +310,18 @@ function submitQuizAnswer(event) {
                 progressBar.style.width = percentage + '%';
             }
             
+            // 틀린 문제 재도전 버튼 동적 업데이트
+            if (data.has_wrong_questions) {
+                const wrongBtnContainer = document.getElementById('wrong-btn-container');
+                const wrongCount = document.getElementById('wrong-count');
+                if (wrongBtnContainer) {
+                    wrongBtnContainer.style.display = 'inline';
+                }
+                if (wrongCount) {
+                    wrongCount.textContent = data.wrong_questions_count;
+                }
+            }
+            
             // 모든 단어 완료 여부 확인
             if (data.all_completed) {
                 // 모든 단어 완료 페이지로 이동
