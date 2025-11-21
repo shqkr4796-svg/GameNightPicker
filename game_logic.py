@@ -2181,9 +2181,17 @@ def get_foreign_speakers():
 def evaluate_conversation_response(user_response, target_expression, context_sentence):
     """AI를 사용하여 사용자 응답의 문법과 적절성 평가"""
     try:
+        import os
         from openai import OpenAI
         
-        client = OpenAI()
+        # Replit AI 통합 환경 변수 사용
+        api_key = os.environ.get('AI_INTEGRATIONS_OPENAI_API_KEY')
+        base_url = os.environ.get('AI_INTEGRATIONS_OPENAI_BASE_URL')
+        
+        client = OpenAI(
+            api_key=api_key,
+            base_url=base_url
+        )
         
         prompt = f"""You are an English teacher evaluating a student's conversation response.
 
