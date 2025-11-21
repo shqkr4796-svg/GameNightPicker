@@ -2193,23 +2193,23 @@ def evaluate_conversation_response(user_response, target_expression, context_sen
             base_url=base_url
         )
         
-        prompt = f"""Analyze this English conversation response and provide brief coaching.
+        prompt = f"""영어 회화 학생의 응답을 분석하고 짧은 코칭을 제공하세요.
 
-Speaker said: "{context_sentence}"
-Expression to use: "{target_expression}"
-Student said: "{user_response}"
+상대가 말한 것: "{context_sentence}"
+사용해야 할 표현: "{target_expression}"
+학생이 말한 것: "{user_response}"
 
-Respond in Korean with JSON format (keep each feedback to 1 short line):
+반드시 한글로만 JSON 형식으로 응답하세요 (각 피드백은 1줄):
 {{
-  "grammar": "Grammar issue if any (1 line)",
-  "tip": "How to use the expression better (1 line)",
-  "better": "Better response example"
+  "grammar": "문법 오류 및 개선 방법 (1줄)",
+  "tip": "표현을 더 잘 사용하는 팁 (1줄)",
+  "better": "더 나은 답변 예시"
 }}"""
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are an English conversation evaluator. Respond only with valid JSON."},
+                {"role": "system", "content": "당신은 영어 회화 코칭 전문가입니다. 항상 한글로만 응답하고 유효한 JSON만 반환하세요."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
