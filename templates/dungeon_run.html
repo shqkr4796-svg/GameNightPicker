@@ -340,7 +340,7 @@ function initAudioContext() {
     }
 }
 
-// 몬스터 등장 효과음 재생 - 더 강한 사운드
+// 몬스터 등장 효과음 재생 - 최대 볼륨
 function playMonsterAppearanceSound(rarity) {
     try {
         // 오디오 컨텍스트 초기화
@@ -355,30 +355,30 @@ function playMonsterAppearanceSound(rarity) {
         
         const now = audioContext.currentTime;
         
-        // 등급별 음성 설정 (더 크고 명확함)
+        // 등급별 음성 설정 (최대 볼륨)
         const soundSettings = {
             '레어': { 
                 frequencies: [400], 
                 duration: 0.5, 
-                volume: 0.4,
+                volume: 1.0,
                 description: '레어 효과음'
             },
             '에픽': { 
                 frequencies: [500, 600], 
                 duration: 0.6, 
-                volume: 0.5,
+                volume: 1.0,
                 description: '에픽 효과음'
             },
             '유니크': { 
                 frequencies: [700, 800, 900], 
                 duration: 0.7, 
-                volume: 0.6,
+                volume: 1.0,
                 description: '유니크 효과음'
             },
             '레전드리': { 
                 frequencies: [800, 1000, 1200, 1400], 
                 duration: 0.9, 
-                volume: 0.7,
+                volume: 1.0,
                 description: '레전드리 효과음'
             }
         };
@@ -387,7 +387,7 @@ function playMonsterAppearanceSound(rarity) {
         
         console.log('재생 중:', config.description);
         
-        // 마스터 게인 (볼륨 조절용)
+        // 마스터 게인 (최대 볼륨)
         const masterGain = audioContext.createGain();
         masterGain.gain.setValueAtTime(config.volume, now);
         masterGain.connect(audioContext.destination);
@@ -400,12 +400,12 @@ function playMonsterAppearanceSound(rarity) {
             osc.type = ['sine', 'square', 'triangle', 'sawtooth'][index % 4];
             osc.frequency.setValueAtTime(freq, now);
             
-            // 주파수 변화 (더 역동적)
+            // 주파수 변화
             osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + config.duration * 0.3);
             osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + config.duration);
             
-            // 볼륨 설정
-            gainNode.gain.setValueAtTime(0.8 / config.frequencies.length, now);
+            // 최대 게인 설정
+            gainNode.gain.setValueAtTime(1.0 / config.frequencies.length, now);
             gainNode.gain.exponentialRampToValueAtTime(0.01, now + config.duration);
             
             osc.connect(gainNode);
