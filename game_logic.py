@@ -103,13 +103,13 @@ def check_level_up(player):
 def get_random_monster_image(rarity):
     """등급별 몬스터 이미지"""
     if rarity == '레어':
-        return '/static/monsters/rare_tier_monster_glowing_green.png'
+        return '/static/monsters/rare_tier_cute_magic_creature.png'
     elif rarity == '에픽':
-        return '/static/monsters/epic_tier_purple_boss_monster.png'
+        return '/static/monsters/epic_tier_cool_boss_monster.png'
     elif rarity == '유니크' or rarity == '레전드리':
-        return '/static/monsters/legendary_unique_gold_crown_boss.png'
+        return '/static/monsters/legendary_tier_majestic_boss.png'
     else:
-        return '/static/monsters/common_monster_pixel_art.png'
+        return '/static/monsters/cute_common_tier_monster.png'
 
 def get_tier_conditions():
     """티어별 조건 반환 (업적 포인트 기준)"""
