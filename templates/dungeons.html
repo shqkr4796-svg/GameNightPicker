@@ -62,12 +62,9 @@
                                             <a href="{{ url_for('dungeon_preview', dungeon_id=dungeon['id']) }}" class="btn btn-primary btn-sm me-2">
                                                 <i class="fas fa-eye me-1"></i>미리보기
                                             </a>
-                                            <form class="d-inline" method="POST" action="{{ url_for('start_dungeon') }}">
-                                                <input type="hidden" name="dungeon_id" value="{{ dungeon['id'] }}">
-                                                <button type="submit" class="btn btn-success btn-sm">
-                                                    <i class="fas fa-play me-1"></i>입장
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-success btn-sm" onclick="startDungeon('{{ dungeon['id'] }}')">
+                                                <i class="fas fa-play me-1"></i>입장
+                                            </button>
                                         {% else %}
                                             <span class="text-danger">
                                                 <i class="fas fa-exclamation-triangle me-1"></i>기력 부족 (1 필요)
@@ -163,4 +160,52 @@
         </div>
     </div>
 </div>
+
+<script>
+function startDungeon(dungeonId) {
+    const formData = new FormData();
+    formData.append('dungeon_id', dungeonId);
+    
+    fetch('{{ url_for("start_dungeon") }}', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 성공 메시지 표시
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.container').insertBefore(alert, document.querySelector('.row'));
+            
+            // 페이지 이동 (1.5초 후)
+            setTimeout(() => {
+                window.location.href = data.redirect;
+            }, 1500);
+        } else {
+            // 실패 메시지 표시
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show';
+            alert.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.container').insertBefore(alert, document.querySelector('.row'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다. 다시 시도해주세요.');
+    });
+}
+</script>
 {% endblock %}
