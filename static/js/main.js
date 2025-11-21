@@ -312,10 +312,10 @@ function submitQuizAnswer(event) {
             
             // 틀린 문제 재도전 버튼 동적 업데이트
             if (data.has_wrong_questions) {
-                const wrongBtnContainer = document.getElementById('wrong-btn-container');
+                const wrongBtn = document.getElementById('retry-wrong-btn');
                 const wrongCount = document.getElementById('wrong-count');
-                if (wrongBtnContainer) {
-                    wrongBtnContainer.style.display = 'inline';
+                if (wrongBtn) {
+                    wrongBtn.style.display = 'inline-block';
                 }
                 if (wrongCount) {
                     wrongCount.textContent = data.wrong_questions_count;
