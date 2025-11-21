@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}모든 몬스터{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- 타이틀 섹션 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-monster me-2"></i>모든 몬스터 카탈로그</h2>
+                <div class="badge bg-info fs-6">총 24마리</div>
+            </div>
+            <small class="text-muted">게임에 존재하는 모든 몬스터들의 정보입니다. 던전에서 만날 수 있습니다!</small>
+        </div>
+    </div>
+
+    <!-- 필터 섹션 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="{{ url_for('all_monsters', rarity='all') }}" class="btn {% if filter_rarity == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            <i class="fas fa-th me-1"></i>전체 (24)
+                        </a>
+                        <a href="{{ url_for('all_monsters', rarity='레어') }}" class="btn {% if filter_rarity == '레어' %}btn-success{% else %}btn-outline-success{% endif %}">
+                            <i class="fas fa-star me-1"></i>레어 (6)
+                        </a>
+                        <a href="{{ url_for('all_monsters', rarity='에픽') }}" class="btn {% if filter_rarity == '에픽' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            <i class="fas fa-star me-1"></i>에픽 (6)
+                        </a>
+                        <a href="{{ url_for('all_monsters', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-filter-warning{% endif %}">
+                            <i class="fas fa-star me-1"></i>유니크 (6)
+                        </a>
+                        <a href="{{ url_for('all_monsters', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-filter-danger{% endif %}">
+                            <i class="fas fa-star me-1"></i>레전드리 (6)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 몬스터 갤러리 -->
+    {% if all_monsters %}
+    <div class="row g-3">
+        {% for monster_id, monster in all_monsters.items() %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card h-100 monster-card border-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %} shadow-sm hover-shadow">
+                <!-- 등급 배지 -->
+                <div class="card-header bg-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %} d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 text-white">{{ monster['이름'] }}</h6>
+                    <span class="badge bg-light text-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %}">
+                        {{ monster['등급'] }}
+                    </span>
+                </div>
+
+                <!-- 몬스터 이미지 -->
+                <div class="card-body text-center">
+                    {% if monster.get('이미지') %}
+                        <img src="{{ monster['이미지'] }}" alt="{{ monster['이름'] }}" 
+                             class="monster-gallery-image" style="width: 200px; height: 200px; object-fit: contain; margin-bottom: 15px;">
+                    {% endif %}
+
+                    <!-- 몬스터 정보 -->
+                    <div class="monster-info mb-3">
+                        <div class="mb-2">
+                            <strong>공격력:</strong>
+                            <span class="badge bg-danger">{{ monster.get('공격력범위', '5~10') }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>체력:</strong>
+                            <span class="badge bg-success">{{ monster.get('체력범위', '10~100') }}</span>
+                        </div>
+                        <small class="text-muted d-block">
+                            <i class="fas fa-info-circle me-1"></i>
+                            {% if monster['등급'] == '레어' %}
+                                낮은 난이도의 몬스터입니다.
+                            {% elif monster['등급'] == '에픽' %}
+                                중간 난이도의 몬스터입니다.
+                            {% elif monster['등급'] == '유니크' %}
+                                높은 난이도의 몬스터입니다.
+                            {% elif monster['등급'] == '레전드리' %}
+                                매우 높은 난이도의 최상위 몬스터입니다.
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center py-5">
+        <i class="fas fa-filter text-muted mb-3" style="font-size: 3rem; display: block;"></i>
+        <h5 class="mt-3">선택한 등급의 몬스터가 없습니다</h5>
+    </div>
+    {% endif %}
+
+    <!-- 돌아가기 버튼 -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('compendium') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>도감으로 돌아가기
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.monster-gallery-image {
+    border-radius: 8px;
+    padding: 10px;
+    background: #f8f9fa;
+}
+
+.monster-card {
+    transition: all 0.3s ease;
+}
+
+.monster-info {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.btn-group-sm .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* 커스텀 필터 버튼 스타일 */
+.btn-filter-warning {
+    background-color: #fff;
+    color: #ff9800 !important;
+    border: 2px solid #ff9800;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-filter-warning:hover {
+    background-color: #ff9800;
+    color: #fff !important;
+    border-color: #ff9800;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+.btn-filter-danger {
+    background-color: #fff;
+    color: #dc3545 !important;
+    border: 2px solid #dc3545;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-filter-danger:hover {
+    background-color: #dc3545;
+    color: #fff !important;
+    border-color: #dc3545;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+</style>
+{% endblock %}

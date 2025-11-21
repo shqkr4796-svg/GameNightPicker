@@ -1206,6 +1206,30 @@ def compendium():
                          rarities=rarities,
                          total_monsters=total_monsters)
 
+@app.route('/all_monsters')
+def all_monsters():
+    """게임에 존재하는 모든 몬스터 정보 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    filter_rarity = request.args.get('rarity', 'all')
+    
+    # 모든 몬스터 정보 가져오기
+    all_monsters_data = game_logic.get_all_monster_images()
+    
+    # 필터링
+    if filter_rarity != 'all':
+        all_monsters_data = {k: v for k, v in all_monsters_data.items() if v.get('등급') == filter_rarity}
+    
+    rarities = ['레어', '에픽', '유니크', '레전드리']
+    
+    return render_template('all_monsters.html',
+                         player=player,
+                         all_monsters=all_monsters_data,
+                         filter_rarity=filter_rarity,
+                         rarities=rarities)
+
 @app.route('/delete_monster/<monster_id>', methods=['POST'])
 def delete_monster(monster_id):
     """몬스터 삭제"""

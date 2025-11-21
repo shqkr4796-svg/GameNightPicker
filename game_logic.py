@@ -100,6 +100,57 @@ def check_level_up(player):
         level_ups += 1
     return level_ups
 
+def get_all_monster_images():
+    """게임에 존재하는 모든 몬스터 이미지 반환"""
+    monster_images = {
+        '레어': [
+            '/static/monsters/rare_tier_cute_magic_creature.png',
+            '/static/monsters/rare_tier_magic_creature_variant_2.png',
+            '/static/monsters/rare_tier_magic_creature_variant_3.png',
+            '/static/monsters/rare_tier_magic_variant_4.png',
+            '/static/monsters/rare_tier_magic_variant_5.png',
+            '/static/monsters/rare_tier_magic_variant_6.png'
+        ],
+        '에픽': [
+            '/static/monsters/epic_tier_cool_boss_monster.png',
+            '/static/monsters/epic_tier_boss_monster_variant_2.png',
+            '/static/monsters/epic_tier_boss_monster_variant_3.png',
+            '/static/monsters/epic_tier_boss_variant_4.png',
+            '/static/monsters/epic_tier_boss_variant_5.png',
+            '/static/monsters/epic_tier_boss_variant_6.png'
+        ],
+        '유니크': [
+            '/static/monsters/legendary_tier_majestic_boss.png',
+            '/static/monsters/legendary_tier_boss_variant_2.png',
+            '/static/monsters/legendary_tier_boss_variant_3.png',
+            '/static/monsters/legendary_tier_variant_4.png',
+            '/static/monsters/legendary_tier_variant_5.png',
+            '/static/monsters/legendary_tier_variant_6.png'
+        ],
+        '레전드리': [
+            '/static/monsters/legendary_tier_majestic_boss.png',
+            '/static/monsters/legendary_tier_boss_variant_2.png',
+            '/static/monsters/legendary_tier_boss_variant_3.png',
+            '/static/monsters/legendary_tier_variant_4.png',
+            '/static/monsters/legendary_tier_variant_5.png',
+            '/static/monsters/legendary_tier_variant_6.png'
+        ]
+    }
+    
+    all_monsters = {}
+    for rarity, images in monster_images.items():
+        for idx, image in enumerate(images, 1):
+            monster_id = f"{rarity}_{idx}"
+            all_monsters[monster_id] = {
+                '이름': f'{rarity} 몬스터 #{idx}',
+                '등급': rarity,
+                '이미지': image,
+                '공격력범위': f"{get_monster_stats(rarity)['공격력']}~{get_monster_stats(rarity)['공격력']}",
+                '체력범위': f"{get_monster_stats(rarity)['체력']}~{get_monster_stats(rarity)['체력']}"
+            }
+    
+    return all_monsters
+
 def get_random_monster_image(rarity):
     """등급별 몬스터 이미지 - 무작위 선택"""
     import random
