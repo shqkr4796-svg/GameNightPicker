@@ -77,10 +77,12 @@ def conversation_practice():
     # 랜덤 표현 선택
     random_expr = random.choice(expressions)
     alien_sentence = game_logic.get_conversation_prompt(random_expr)
+    alien_translation = game_logic.get_conversation_translation(random_expr['expression'])
     
     return render_template('conversation_practice.html',
                          expression=random_expr,
                          alien_sentence=alien_sentence,
+                         alien_translation=alien_translation,
                          player=player)
 
 @app.route('/submit_conversation', methods=['POST'])

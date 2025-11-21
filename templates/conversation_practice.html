@@ -3,6 +3,43 @@
 {% block title %}대화 연습 - 라이프 시뮬레이션{% endblock %}
 
 {% block content %}
+<style>
+    .alien-message {
+        position: relative;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    
+    .alien-english {
+        transition: opacity 0.3s ease;
+    }
+    
+    .alien-korean {
+        position: absolute;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+    
+    .alien-message.revealed .alien-english {
+        opacity: 0;
+    }
+    
+    .alien-message.revealed .alien-korean {
+        opacity: 1;
+    }
+    
+    .play-button {
+        margin-left: 10px;
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+</style>
+
 <div class="row">
     <div class="col-lg-8 offset-lg-2">
         <!-- 헤더 -->
@@ -28,9 +65,20 @@
                         <p class="text-muted mt-2"><strong>Foreigner</strong></p>
                     </div>
                     <div class="col-md-9">
-                        <div class="alert alert-info" style="min-height: 100px; display: flex; align-items: center;">
-                            <h5 class="mb-0">{{ alien_sentence }}</h5>
+                        <div class="alert alert-info alien-message" id="alienMessage" data-english="{{ alien_sentence }}" data-korean="{{ alien_translation }}">
+                            <div class="alien-english">
+                                <h5 class="mb-0">{{ alien_sentence }}</h5>
+                            </div>
+                            <div class="alien-korean">
+                                <h5 class="mb-0">{{ alien_translation }}</h5>
+                            </div>
                         </div>
+                        <div class="text-muted small mt-2">
+                            💡 길게 누르면 의미를 볼 수 있습니다
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary play-button" id="playBtn" title="발음 듣기">
+                            <i class="fas fa-play me-1"></i>재생
+                        </button>
                     </div>
                 </div>
 
@@ -81,4 +129,71 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const alienMessage = document.getElementById('alienMessage');
+        const playBtn = document.getElementById('playBtn');
+        const englishText = alienMessage.dataset.english;
+        
+        // 길게 누르기 (터치와 마우스 지원)
+        let touchTimeout;
+        
+        alienMessage.addEventListener('touchstart', function(e) {
+            touchTimeout = setTimeout(() => {
+                alienMessage.classList.add('revealed');
+            }, 500);
+        });
+        
+        alienMessage.addEventListener('touchend', function(e) {
+            clearTimeout(touchTimeout);
+            if (e.changedTouches.length === 0) {
+                alienMessage.classList.remove('revealed');
+            }
+        });
+        
+        alienMessage.addEventListener('mousedown', function(e) {
+            touchTimeout = setTimeout(() => {
+                alienMessage.classList.add('revealed');
+            }, 500);
+        });
+        
+        alienMessage.addEventListener('mouseup', function(e) {
+            clearTimeout(touchTimeout);
+            alienMessage.classList.remove('revealed');
+        });
+        
+        alienMessage.addEventListener('mouseleave', function(e) {
+            clearTimeout(touchTimeout);
+            alienMessage.classList.remove('revealed');
+        });
+        
+        // 재생 버튼 - Web Speech API 사용
+        playBtn.addEventListener('click', function() {
+            if ('speechSynthesis' in window) {
+                // 기존 발화 중지
+                speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(englishText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                
+                // 재생 중 버튼 상태 변경
+                playBtn.disabled = true;
+                playBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>재생 중...';
+                
+                utterance.onend = function() {
+                    playBtn.disabled = false;
+                    playBtn.innerHTML = '<i class="fas fa-play me-1"></i>재생';
+                };
+                
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
+            }
+        });
+    });
+</script>
 {% endblock %}

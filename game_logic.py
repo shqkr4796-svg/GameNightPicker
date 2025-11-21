@@ -2130,3 +2130,39 @@ def get_conversation_prompt(expression_data):
         'That sounds great': "Would you like to go to the beach tomorrow?"
     }
     return conversation_starters.get(expression_data['expression'], "How would you respond to this?")
+
+def get_conversation_translation(expression_name):
+    """대화 프롬프트의 한글 해석"""
+    translations = {
+        'Break the ice': "나는 여기서 아무도 모르는 새로운 사람입니다. 뭘 해야 할까요?",
+        'Piece of cake': "이 과제가 정말 어려워 보이는데, 당신은 어떻게 생각하세요?",
+        'Under the weather': "며칠 동안 당신을 못 봤는데, 괜찮아요?",
+        'Cost an arm and a leg': "그 새로운 레스토랑 가격을 봤나요?",
+        'Hit the books': "시험이 다음 주네요. 뭘 할 계획이에요?",
+        'On cloud nine': "오늘 정말 행복해 보이는데, 뭐가 있었어요?",
+        'It rains cats and dogs': "이 날씨 봤어요? 어떻게 생각하세요?",
+        'Go the extra mile': "이 프로젝트를 제 시간에 마쳐야 하는데, 열심히 일할 의향이 있어요?",
+        'No pain, no gain': "훈련이 정말 힘든데, 계속해야 할까요?",
+        'Better late than never': "이 보고서가 늦었지만, 완료했어요!",
+        'Spill the beans': "뭔가 말하고 싶은 게 있는 것 같은데!",
+        'Bite the bullet': "어려운 결정을 내려야 하는데, 어떻게 생각하세요?",
+        'See eye to eye': "우리는 이 프로젝트에 대해 의견이 다르네요.",
+        'Give someone a hand': "박스가 너무 많아서 옮길 수 없어요. 도와줄 수 있어요?",
+        'Keep your fingers crossed': "내일 시험을 보는데, 응원해 주세요!",
+        'Catch you later': "이제 가야 해요. 곧 봐요!",
+        'No worries': "실수해서 미안해요.",
+        'That is piece of cake': "그 문제가 어렵다고 생각해요?",
+        'Once in a blue moon': "얼마나 자주 휴가를 떠나세요?",
+        'Get the ball rolling': "새 프로젝트를 곧 시작해야 할 것 같은데요.",
+        'Speak of the devil': "너의 얘기를 하고 있었어!",
+        'Couldn\'t care less': "이 소문에 대해 어떻게 생각해요?",
+        'Hang in there': "정말 힘든 시간을 보내고 있어요.",
+        'Just a minute': "잠깐만, 뭔가 물어볼 게 있어!",
+        'Let me know': "당신의 의견이 필요해요.",
+        'Long time no see': "오랜만이야, 잘 지냈어?",
+        'By the way': "가기 전에 한 가지 더!",
+        'How about you': "나는 피자를 좋아해. 너는 어떤 음식을 좋아해?",
+        'I promise': "정말 이것을 끝낼 때까지 도와줄 거야?",
+        'That sounds great': "내일 해변에 가는 거 어때?"
+    }
+    return translations.get(expression_name, "이것에 대해 어떻게 대답하시겠어요?")
