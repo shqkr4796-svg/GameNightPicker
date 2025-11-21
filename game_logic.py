@@ -104,48 +104,48 @@ def get_all_monster_images():
     """게임에 존재하는 모든 몬스터 이미지 반환"""
     monster_images = {
         '레어': [
-            '/static/monsters/rare_tier_cute_magic_creature.png',
-            '/static/monsters/rare_tier_magic_creature_variant_2.png',
-            '/static/monsters/rare_tier_magic_creature_variant_3.png',
-            '/static/monsters/rare_tier_magic_variant_4.png',
-            '/static/monsters/rare_tier_magic_variant_5.png',
-            '/static/monsters/rare_tier_magic_variant_6.png',
-            '/static/monsters/rare_tier_magic_variant_7.png',
-            '/static/monsters/rare_tier_magic_variant_8.png',
-            '/static/monsters/rare_tier_magic_variant_9.png'
+            '/static/monsters/rare_cute_monster_1.png',
+            '/static/monsters/rare_monster_2.png',
+            '/static/monsters/rare_monster_3.png',
+            '/static/monsters/rare_monster_4.png',
+            '/static/monsters/rare_monster_5.png',
+            '/static/monsters/rare_monster_6.png',
+            '/static/monsters/rare_monster_7.png',
+            '/static/monsters/rare_monster_8.png',
+            '/static/monsters/rare_monster_9.png'
         ],
         '에픽': [
-            '/static/monsters/epic_tier_cool_boss_monster.png',
-            '/static/monsters/epic_tier_boss_monster_variant_2.png',
-            '/static/monsters/epic_tier_boss_monster_variant_3.png',
-            '/static/monsters/epic_tier_boss_variant_4.png',
-            '/static/monsters/epic_tier_boss_variant_5.png',
-            '/static/monsters/epic_tier_boss_variant_6.png',
-            '/static/monsters/epic_tier_boss_variant_7.png',
-            '/static/monsters/epic_tier_boss_variant_8.png',
-            '/static/monsters/epic_tier_boss_variant_9.png'
+            '/static/monsters/epic_boss_1.png',
+            '/static/monsters/epic_boss_2.png',
+            '/static/monsters/epic_boss_3.png',
+            '/static/monsters/epic_boss_4.png',
+            '/static/monsters/epic_boss_5.png',
+            '/static/monsters/epic_boss_6.png',
+            '/static/monsters/epic_boss_7.png',
+            '/static/monsters/epic_boss_8.png',
+            '/static/monsters/epic_boss_9.png'
         ],
         '유니크': [
-            '/static/monsters/legendary_tier_majestic_boss.png',
-            '/static/monsters/legendary_tier_boss_variant_2.png',
-            '/static/monsters/legendary_tier_boss_variant_3.png',
-            '/static/monsters/legendary_tier_variant_4.png',
-            '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png',
-            '/static/monsters/legendary_tier_variant_7.png',
-            '/static/monsters/legendary_tier_variant_8.png',
-            '/static/monsters/legendary_tier_variant_9.png'
+            '/static/monsters/unique_boss_1.png',
+            '/static/monsters/unique_boss_2.png',
+            '/static/monsters/unique_boss_3.png',
+            '/static/monsters/unique_boss_4.png',
+            '/static/monsters/unique_boss_5.png',
+            '/static/monsters/unique_boss_6.png',
+            '/static/monsters/unique_boss_7.png',
+            '/static/monsters/unique_boss_8.png',
+            '/static/monsters/unique_boss_9.png'
         ],
         '레전드리': [
-            '/static/monsters/legendary_tier_majestic_boss.png',
-            '/static/monsters/legendary_tier_boss_variant_2.png',
-            '/static/monsters/legendary_tier_boss_variant_3.png',
-            '/static/monsters/legendary_tier_variant_4.png',
-            '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png',
-            '/static/monsters/legendary_tier_variant_7.png',
-            '/static/monsters/legendary_tier_variant_8.png',
-            '/static/monsters/legendary_tier_variant_9.png'
+            '/static/monsters/legendary_boss_1.png',
+            '/static/monsters/legendary_boss_2.png',
+            '/static/monsters/legendary_supreme_1.png',
+            '/static/monsters/legendary_supreme_2.png',
+            '/static/monsters/legendary_supreme_3.png',
+            '/static/monsters/legendary_supreme_4.png',
+            '/static/monsters/legendary_supreme_5.png',
+            '/static/monsters/legendary_supreme_6.png',
+            '/static/monsters/legendary_supreme_7.png'
         ]
     }
     
@@ -168,66 +168,55 @@ def get_random_monster_image(rarity):
     import random
     
     monster_images = {
-        '일반': [
-            '/static/monsters/cute_common_tier_monster.png',
-            '/static/monsters/cute_common_monster_variant_2.png',
-            '/static/monsters/cute_common_monster_variant_3.png',
-            '/static/monsters/common_monster_variant_4.png',
-            '/static/monsters/common_monster_variant_5.png',
-            '/static/monsters/common_monster_variant_6.png',
-            '/static/monsters/common_monster_variant_7.png',
-            '/static/monsters/common_monster_variant_8.png',
-            '/static/monsters/common_monster_variant_9.png'
-        ],
         '레어': [
-            '/static/monsters/rare_tier_cute_magic_creature.png',
-            '/static/monsters/rare_tier_magic_creature_variant_2.png',
-            '/static/monsters/rare_tier_magic_creature_variant_3.png',
-            '/static/monsters/rare_tier_magic_variant_4.png',
-            '/static/monsters/rare_tier_magic_variant_5.png',
-            '/static/monsters/rare_tier_magic_variant_6.png',
-            '/static/monsters/rare_tier_magic_variant_7.png',
-            '/static/monsters/rare_tier_magic_variant_8.png',
-            '/static/monsters/rare_tier_magic_variant_9.png'
+            '/static/monsters/rare_cute_monster_1.png',
+            '/static/monsters/rare_monster_2.png',
+            '/static/monsters/rare_monster_3.png',
+            '/static/monsters/rare_monster_4.png',
+            '/static/monsters/rare_monster_5.png',
+            '/static/monsters/rare_monster_6.png',
+            '/static/monsters/rare_monster_7.png',
+            '/static/monsters/rare_monster_8.png',
+            '/static/monsters/rare_monster_9.png'
         ],
         '에픽': [
-            '/static/monsters/epic_tier_cool_boss_monster.png',
-            '/static/monsters/epic_tier_boss_monster_variant_2.png',
-            '/static/monsters/epic_tier_boss_monster_variant_3.png',
-            '/static/monsters/epic_tier_boss_variant_4.png',
-            '/static/monsters/epic_tier_boss_variant_5.png',
-            '/static/monsters/epic_tier_boss_variant_6.png',
-            '/static/monsters/epic_tier_boss_variant_7.png',
-            '/static/monsters/epic_tier_boss_variant_8.png',
-            '/static/monsters/epic_tier_boss_variant_9.png'
+            '/static/monsters/epic_boss_1.png',
+            '/static/monsters/epic_boss_2.png',
+            '/static/monsters/epic_boss_3.png',
+            '/static/monsters/epic_boss_4.png',
+            '/static/monsters/epic_boss_5.png',
+            '/static/monsters/epic_boss_6.png',
+            '/static/monsters/epic_boss_7.png',
+            '/static/monsters/epic_boss_8.png',
+            '/static/monsters/epic_boss_9.png'
         ],
         '유니크': [
-            '/static/monsters/legendary_tier_majestic_boss.png',
-            '/static/monsters/legendary_tier_boss_variant_2.png',
-            '/static/monsters/legendary_tier_boss_variant_3.png',
-            '/static/monsters/legendary_tier_variant_4.png',
-            '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png',
-            '/static/monsters/legendary_tier_variant_7.png',
-            '/static/monsters/legendary_tier_variant_8.png',
-            '/static/monsters/legendary_tier_variant_9.png'
+            '/static/monsters/unique_boss_1.png',
+            '/static/monsters/unique_boss_2.png',
+            '/static/monsters/unique_boss_3.png',
+            '/static/monsters/unique_boss_4.png',
+            '/static/monsters/unique_boss_5.png',
+            '/static/monsters/unique_boss_6.png',
+            '/static/monsters/unique_boss_7.png',
+            '/static/monsters/unique_boss_8.png',
+            '/static/monsters/unique_boss_9.png'
         ],
         '레전드리': [
-            '/static/monsters/legendary_tier_majestic_boss.png',
-            '/static/monsters/legendary_tier_boss_variant_2.png',
-            '/static/monsters/legendary_tier_boss_variant_3.png',
-            '/static/monsters/legendary_tier_variant_4.png',
-            '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png',
-            '/static/monsters/legendary_tier_variant_7.png',
-            '/static/monsters/legendary_tier_variant_8.png',
-            '/static/monsters/legendary_tier_variant_9.png'
+            '/static/monsters/legendary_boss_1.png',
+            '/static/monsters/legendary_boss_2.png',
+            '/static/monsters/legendary_supreme_1.png',
+            '/static/monsters/legendary_supreme_2.png',
+            '/static/monsters/legendary_supreme_3.png',
+            '/static/monsters/legendary_supreme_4.png',
+            '/static/monsters/legendary_supreme_5.png',
+            '/static/monsters/legendary_supreme_6.png',
+            '/static/monsters/legendary_supreme_7.png'
         ]
     }
     
-    # 등급이 없으면 일반으로 처리
+    # 등급이 없으면 레어로 처리
     if rarity not in monster_images:
-        rarity = '일반'
+        rarity = '레어'
     
     return random.choice(monster_images[rarity])
 
