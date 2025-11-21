@@ -140,7 +140,8 @@ function initializeVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
         const speakerImg = document.getElementById('alienMessage')?.dataset.speaker || '';
-        const isFemale = speakerImg.includes('female') || speakerImg.includes('woman') || speakerImg.includes('girl');
+        const isFemale = speakerImg.includes('woman');
+        const isMale = speakerImg.includes('man');
         
         if (isFemale) {
             // 여자 미국 현지인 음성
@@ -169,29 +170,21 @@ function initializeVoices() {
                     return;
                 }
             }
-        } else {
-            // 남자 미국 현지인 음성
-            const malePreferred = [
-                'Microsoft Mark',
-                'Microsoft David',
-                'Google US English',
-                'Alex',
-                'Bruce',
-                'Tom'
-            ];
-            
-            for (let preferred of malePreferred) {
-                for (let voice of voices) {
-                    if (voice.lang === 'en-US' && voice.name.includes(preferred)) {
+        } else if (isMale) {
+            // 남자 미국 현지인 음성 - Male/David/Mark 포함 음성 우선
+            for (let voice of voices) {
+                if (voice.lang === 'en-US') {
+                    const voiceName = voice.name.toLowerCase();
+                    if (voiceName.includes('male') || voiceName.includes('david') || voiceName.includes('mark') || voiceName.includes('alex') || voiceName.includes('bruce') || voiceName.includes('tom')) {
                         cachedVoice = voice;
                         return;
                     }
                 }
             }
             
-            // 대체: 남자 음성
+            // 대체: 여자 음성이 아닌 다른 음성
             for (let voice of voices) {
-                if (voice.lang === 'en-US' && (voice.name.includes('Male') || voice.name.includes('Mark') || voice.name.includes('David') || voice.name.includes('Alex'))) {
+                if (voice.lang === 'en-US' && !voice.name.includes('Zira') && !voice.name.includes('Samantha') && !voice.name.includes('Victoria')) {
                     cachedVoice = voice;
                     return;
                 }
