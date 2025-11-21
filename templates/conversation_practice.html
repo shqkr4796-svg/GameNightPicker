@@ -132,101 +132,107 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const alienMessage = document.getElementById('alienMessage');
-        const playBtn = document.getElementById('playBtn');
-        const englishText = alienMessage.dataset.english;
+// 글로벌 음성 캐시
+let cachedVoice = null;
+
+// 음성 로드 및 캐싱
+function initializeVoices() {
+    if ('speechSynthesis' in window) {
+        const voices = window.speechSynthesis.getVoices();
         
-        // 길게 누르기 (터치와 마우스 지원)
-        let touchTimeout;
-        
-        alienMessage.addEventListener('touchstart', function(e) {
-            touchTimeout = setTimeout(() => {
-                alienMessage.classList.add('revealed');
-            }, 500);
-        });
-        
-        alienMessage.addEventListener('touchend', function(e) {
-            clearTimeout(touchTimeout);
-            if (e.changedTouches.length === 0) {
-                alienMessage.classList.remove('revealed');
+        // 첫 번째: Google US English 찾기
+        for (let voice of voices) {
+            if (voice.lang === 'en-US' && voice.name.includes('Google')) {
+                cachedVoice = voice;
+                return;
             }
-        });
-        
-        alienMessage.addEventListener('mousedown', function(e) {
-            touchTimeout = setTimeout(() => {
-                alienMessage.classList.add('revealed');
-            }, 500);
-        });
-        
-        alienMessage.addEventListener('mouseup', function(e) {
-            clearTimeout(touchTimeout);
-            alienMessage.classList.remove('revealed');
-        });
-        
-        alienMessage.addEventListener('mouseleave', function(e) {
-            clearTimeout(touchTimeout);
-            alienMessage.classList.remove('revealed');
-        });
-        
-        // 음성 선택 함수 (단어퀴즈와 동일한 음성 사용)
-        function getConsistentVoice() {
-            const voices = window.speechSynthesis.getVoices();
-            let selectedVoice = null;
-            
-            // 첫 번째: Google US English 찾기
-            for (let voice of voices) {
-                if (voice.lang === 'en-US' && voice.name.includes('Google')) {
-                    selectedVoice = voice;
-                    break;
-                }
-            }
-            
-            // 두 번째: 일반 en-US 음성
-            if (!selectedVoice) {
-                for (let voice of voices) {
-                    if (voice.lang === 'en-US') {
-                        selectedVoice = voice;
-                        break;
-                    }
-                }
-            }
-            
-            return selectedVoice;
         }
         
-        // 재생 버튼 - Web Speech API 사용
-        playBtn.addEventListener('click', function() {
-            if ('speechSynthesis' in window) {
-                // 기존 발화 중지
-                speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(englishText);
-                utterance.lang = 'en-US';
-                utterance.rate = 0.8;
-                utterance.pitch = 1;
-                utterance.volume = 1;
-                
-                // 단어퀴즈와 동일한 음성 설정
-                const voice = getConsistentVoice();
-                if (voice) {
-                    utterance.voice = voice;
-                }
-                
-                // 재생 중 버튼 상태 변경
-                playBtn.disabled = true;
-                playBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>재생 중...';
-                
-                utterance.onend = function() {
-                    playBtn.disabled = false;
-                    playBtn.innerHTML = '<i class="fas fa-play me-1"></i>재생';
-                };
-                
-                speechSynthesis.speak(utterance);
-            } else {
-                alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
+        // 두 번째: 일반 en-US 음성
+        for (let voice of voices) {
+            if (voice.lang === 'en-US') {
+                cachedVoice = voice;
+                return;
             }
-        });
+        }
+    }
+}
+
+// 음성 로드 완료 대기
+window.speechSynthesis.onvoiceschanged = function() {
+    initializeVoices();
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeVoices();
+    
+    const alienMessage = document.getElementById('alienMessage');
+    const playBtn = document.getElementById('playBtn');
+    const englishText = alienMessage.dataset.english;
+    
+    // 길게 누르기 (터치와 마우스 지원)
+    let touchTimeout;
+    
+    alienMessage.addEventListener('touchstart', function(e) {
+        touchTimeout = setTimeout(() => {
+            alienMessage.classList.add('revealed');
+        }, 500);
     });
+    
+    alienMessage.addEventListener('touchend', function(e) {
+        clearTimeout(touchTimeout);
+        if (e.changedTouches.length === 0) {
+            alienMessage.classList.remove('revealed');
+        }
+    });
+    
+    alienMessage.addEventListener('mousedown', function(e) {
+        touchTimeout = setTimeout(() => {
+            alienMessage.classList.add('revealed');
+        }, 500);
+    });
+    
+    alienMessage.addEventListener('mouseup', function(e) {
+        clearTimeout(touchTimeout);
+        alienMessage.classList.remove('revealed');
+    });
+    
+    alienMessage.addEventListener('mouseleave', function(e) {
+        clearTimeout(touchTimeout);
+        alienMessage.classList.remove('revealed');
+    });
+    
+    // 재생 버튼 - Web Speech API 사용
+    playBtn.addEventListener('click', function() {
+        if ('speechSynthesis' in window) {
+            // 기존 발화 중지
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(englishText);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            // 캐싱된 음성 사용
+            if (cachedVoice) {
+                utterance.voice = cachedVoice;
+            }
+            
+            // 재생 중 버튼 상태 변경
+            playBtn.disabled = true;
+            playBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>재생 중...';
+            
+            utterance.onend = function() {
+                playBtn.disabled = false;
+                playBtn.innerHTML = '<i class="fas fa-play me-1"></i>재생';
+            };
+            
+            speechSynthesis.speak(utterance);
+        } else {
+            alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
+        }
+    });
+});
 </script>
 {% endblock %}

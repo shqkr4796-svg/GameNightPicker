@@ -131,37 +131,45 @@
 </div>
 
 <script>
-// 음성 선택 함수 (단어퀴즈와 동일한 음성 사용)
-function getConsistentVoice() {
-    const voices = window.speechSynthesis.getVoices();
-    // Google US English 또는 기본 영어 음성 선택
-    let selectedVoice = null;
-    
-    // 첫 번째: Google US English 찾기
-    for (let voice of voices) {
-        if (voice.lang === 'en-US' && voice.name.includes('Google')) {
-            selectedVoice = voice;
-            break;
+// 글로벌 음성 캐시
+let cachedVoice = null;
+
+// 음성 로드 및 캐싱
+function initializeVoices() {
+    if ('speechSynthesis' in window) {
+        const voices = window.speechSynthesis.getVoices();
+        
+        // 첫 번째: Google US English 찾기
+        for (let voice of voices) {
+            if (voice.lang === 'en-US' && voice.name.includes('Google')) {
+                cachedVoice = voice;
+                return;
+            }
         }
-    }
-    
-    // 두 번째: 일반 en-US 음성
-    if (!selectedVoice) {
+        
+        // 두 번째: 일반 en-US 음성
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
-                selectedVoice = voice;
-                break;
+                cachedVoice = voice;
+                return;
             }
         }
     }
-    
-    return selectedVoice;
 }
 
+// 음성 로드 완료 대기
+window.speechSynthesis.onvoiceschanged = function() {
+    initializeVoices();
+};
+
+// 페이지 로드 시 음성 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    initializeVoices();
+});
+
 function playAudio(text, button) {
-    // 브라우저 기본 Web Speech API 사용 (오프라인 지원, API 필요 없음)
     if ('speechSynthesis' in window) {
-        // 기존 발화 중지 - 무한재생 방지
+        // 기존 발화 중지
         window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
@@ -170,10 +178,9 @@ function playAudio(text, button) {
         utterance.pitch = 1;
         utterance.volume = 1;
         
-        // 단어퀴즈와 동일한 음성 설정
-        const voice = getConsistentVoice();
-        if (voice) {
-            utterance.voice = voice;
+        // 캐싱된 음성 사용
+        if (cachedVoice) {
+            utterance.voice = cachedVoice;
         }
         
         // 버튼 상태 표시
