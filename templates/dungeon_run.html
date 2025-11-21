@@ -325,19 +325,85 @@ function submitChoice(choice) {
     });
 }
 
+// 몬스터 등장 효과음 재생
+function playMonsterAppearanceSound(rarity) {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioContext.currentTime;
+        
+        // 등급별 음성 설정
+        const soundSettings = {
+            '레어': { 
+                frequencies: [400], 
+                duration: 0.4, 
+                volume: 0.2 
+            },
+            '에픽': { 
+                frequencies: [500, 600], 
+                duration: 0.5, 
+                volume: 0.25 
+            },
+            '유니크': { 
+                frequencies: [700, 800, 900], 
+                duration: 0.6, 
+                volume: 0.3 
+            },
+            '레전드리': { 
+                frequencies: [800, 1000, 1200], 
+                duration: 0.8, 
+                volume: 0.35 
+            }
+        };
+        
+        const config = soundSettings[rarity] || soundSettings['레어'];
+        
+        // 각 주파수별로 오실레이터 생성
+        config.frequencies.forEach((freq, index) => {
+            const osc = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            osc.type = ['sine', 'triangle', 'sawtooth'][index % 3];
+            osc.frequency.value = freq;
+            
+            // 볼륨 설정
+            gainNode.gain.setValueAtTime(config.volume / config.frequencies.length, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + config.duration);
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            osc.start(now);
+            osc.stop(now + config.duration);
+        });
+    } catch(e) {
+        console.log('음성 재생 불가:', e);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 몬스터 이미지 그리기
     drawMonster();
+    
+    // 몬스터 등장 효과음 재생
+    const rarityElement = document.querySelector('[class*="bg-"]');
+    const rarity = '{{ dungeon_run["current_rarity"] }}';
+    if (rarity) {
+        setTimeout(() => {
+            playMonsterAppearanceSound(rarity);
+        }, 300);
+    }
     
     // 선택지 클릭 효과
     document.querySelectorAll('.choice-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             // 피해 효과
             const monster = document.getElementById('monster-display');
-            monster.classList.add('damage');
-            setTimeout(() => {
-                monster.classList.remove('damage');
-            }, 500);
+            if (monster) {
+                monster.classList.add('damage');
+                setTimeout(() => {
+                    monster.classList.remove('damage');
+                }, 500);
+            }
         });
     });
 });
