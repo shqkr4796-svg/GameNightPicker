@@ -2193,35 +2193,26 @@ def evaluate_conversation_response(user_response, target_expression, context_sen
             base_url=base_url
         )
         
-        prompt = f"""You are a strict English teacher evaluating a student's conversation response.
+        prompt = f"""You are a friendly English conversation coach. Analyze the student's response and provide helpful coaching feedback.
 
 Context: The foreign speaker said: "{context_sentence}"
-Target expression/phrase the student MUST use: "{target_expression}"
+Target expression to use: "{target_expression}"
 
 Student's response: "{user_response}"
 
-STRICT EVALUATION CRITERIA:
-1. Grammar: No tolerance for major grammar errors. Deduct significantly for tense, article, or subject-verb agreement mistakes.
-2. Natural English: Response must sound natural and fluent. Awkward phrasing or unnatural wording = lower score.
-3. Required Expression: The target expression "{target_expression}" MUST be clearly and directly used. Partial use or similar phrases are NOT sufficient.
-4. Context Appropriateness: Response must be a relevant and sensible reply.
-
-SCORING RULES (STRICT):
-- 90-100: Perfect response with correct grammar, natural flow, and required expression used properly
-- 80-89: Good response with minor issues, expression clearly used
-- 70-79: Acceptable but with noticeable grammar errors or awkward phrasing
-- 60-69: Marginal - significant grammar/naturalness issues but expression present
-- Below 60: FAIL - Missing expression or serious grammar/appropriateness problems
-
-Respond in JSON format with exactly these fields (in Korean):
+Provide coaching feedback in JSON format with these fields (in Korean):
 {{
-  "is_correct": true/false,
-  "score": 0-100,
-  "feedback": "brief evaluation (한글로 작성)",
-  "reason": "detailed explanation of why (한글로 작성)"
+  "grammar_feedback": "Specific grammar corrections or improvements needed (2-3 sentences)",
+  "conversation_tips": "Tips on how to use the expression more naturally in conversation (2-3 sentences)",
+  "alternative_response": "A natural example of how to respond better",
+  "strengths": "What was good about the response (1 sentence)"
 }}
 
-Only mark is_correct as true if score is 80 or higher AND the target expression is clearly present."""
+Focus on:
+1. Grammar mistakes and how to fix them
+2. How to use the target expression naturally
+3. Making the conversation sound more natural and fluent
+4. Positive encouragement"""
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -2249,10 +2240,10 @@ Only mark is_correct as true if score is 80 or higher AND the target expression 
         result = json.loads(result_text)
         return {
             'success': True,
-            'is_correct': result.get('is_correct', False),
-            'score': result.get('score', 0),
-            'feedback': result.get('feedback', ''),
-            'reason': result.get('reason', '')
+            'grammar_feedback': result.get('grammar_feedback', ''),
+            'conversation_tips': result.get('conversation_tips', ''),
+            'alternative_response': result.get('alternative_response', ''),
+            'strengths': result.get('strengths', '')
         }
     except Exception as e:
         print(f"AI 평가 오류: {e}")

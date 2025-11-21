@@ -103,35 +103,34 @@ def submit_conversation():
     target_expr = next((e for e in expressions if e['expression'] == expr_name), None)
     
     if target_expr and user_response:
-        # AI를 사용하여 응답 평가
-        evaluation = game_logic.evaluate_conversation_response(user_response, expr_name, context_sentence)
+        # AI를 사용하여 코칭 피드백 제공
+        coaching = game_logic.evaluate_conversation_response(user_response, expr_name, context_sentence)
         
-        if evaluation.get('success'):
-            score = evaluation.get('score', 0)
-            feedback = evaluation.get('feedback', '')
-            reason = evaluation.get('reason', '')
+        if coaching.get('success'):
+            grammar_feedback = coaching.get('grammar_feedback', '')
+            conversation_tips = coaching.get('conversation_tips', '')
+            alternative = coaching.get('alternative_response', '')
+            strengths = coaching.get('strengths', '')
             
-            if score >= 80:
-                # 80점 이상만 정답 처리
-                player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
-                player['경험치'] += 15
-                
-                while player['경험치'] >= player['경험치최대']:
-                    player['경험치'] -= player['경험치최대']
-                    player['레벨'] += 1
-                    player['경험치최대'] = int(player['경험치최대'] * 1.1)
-                    player['스탯포인트'] += 5
-                    flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
-                
-                flash(f'정답! ✓ (점수: {score}/100)\n{feedback}\n{reason}', 'success')
-            elif score >= 60:
-                # 60~79점: 거의 다왔어요
-                flash(f'거의 다왔어요! (점수: {score}/100)\n{feedback}\n{reason}\n더 정교하게 표현을 사용해보세요!', 'warning')
-            else:
-                # 60점 미만: 다시 시도
-                flash(f'다시 시도해보세요. (점수: {score}/100)\n{feedback}\n{reason}', 'error')
+            # 코칭 메시지 표시 (경험치 없음)
+            coaching_message = f"""
+📝 문법 피드백:
+{grammar_feedback}
+
+💡 회화 팁:
+{conversation_tips}
+
+✨ 당신의 응답에서 좋은 점:
+{strengths}
+
+💬 더 나은 예시:
+{alternative}
+
+👉 다시 시도하거나 새로운 표현으로 진행하세요!
+"""
+            flash(coaching_message, 'info')
         else:
-            flash(f'평가 중 오류가 발생했습니다. 다시 시도해주세요.', 'error')
+            flash(f'코칭 중 오류가 발생했습니다. 다시 시도해주세요.', 'error')
     
     session['player_data'] = player
     session.modified = True
