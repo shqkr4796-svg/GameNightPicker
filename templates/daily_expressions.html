@@ -133,10 +133,18 @@
 <script>
 function playAudio(text) {
     // 브라우저 기본 Web Speech API 사용 (오프라인 지원, API 필요 없음)
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.8; // 천천히 재생
-    window.speechSynthesis.speak(utterance);
+    if ('speechSynthesis' in window) {
+        // 기존 발화 중지 - 무한재생 방지
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8; // 천천히 재생
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        
+        window.speechSynthesis.speak(utterance);
+    }
 }
 </script>
 {% endblock %}

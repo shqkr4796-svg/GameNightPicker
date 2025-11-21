@@ -403,6 +403,36 @@
                 customInput.value = '';
             }
         }
+        
+        // 단어 발음 재생 함수
+        function speakWord(word, button) {
+            if ('speechSynthesis' in window) {
+                // 기존 발화 중지
+                speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                
+                // 버튼 상태 변경
+                if (button) {
+                    button.disabled = true;
+                    const originalHTML = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>재생 중...';
+                    
+                    utterance.onend = function() {
+                        button.disabled = false;
+                        button.innerHTML = originalHTML;
+                    };
+                }
+                
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
+            }
+        }
         </script>
     </div>
 
