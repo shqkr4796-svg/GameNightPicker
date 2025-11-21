@@ -4,78 +4,101 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8 offset-lg-2">
-        <!-- 일일 표현 헤더 -->
+    <div class="col-lg-10 offset-lg-1">
+        <!-- 헤더 -->
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-sparkles me-2"></i>오늘의 표현 학습
+                    <i class="fas fa-lightbulb me-2"></i>표현 학습
                 </h4>
             </div>
             <div class="card-body">
-                <div class="row text-center mb-4">
-                    <div class="col-md-6">
+                <div class="row text-center">
+                    <div class="col-md-4">
                         <h6 class="text-muted mb-2">학습한 표현</h6>
                         <h3 class="text-primary">{{ progress }}</h3>
                     </div>
-                    <div class="col-md-6">
-                        <h6 class="text-muted mb-2">매 정답마다</h6>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">총 표현 수</h6>
+                        <h3 class="text-info">{{ expression_count }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">보상</h6>
                         <p class="mb-0">
-                            <span class="badge bg-success">경험치 +10</span>
+                            <span class="badge bg-success">정답마다 경험치 +10</span>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 표현 카드 -->
-        {% if expressions %}
+        <!-- 표현 목록 -->
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">표현 #{{ (progress % len(expressions)) + 1 }}: {{ expressions[current_index].expression }}</h5>
+                <h5 class="mb-0">표현 선택</h5>
             </div>
             <div class="card-body">
+                <div class="row">
+                    {% for expr in expressions %}
+                    <div class="col-lg-6 col-md-12 mb-2">
+                        <a href="{{ url_for('daily_expressions', index=loop.index0) }}" class="btn btn-outline-primary w-100 text-start" style="white-space: normal; height: auto; padding: 12px;">
+                            <strong>{{ loop.index }}. {{ expr.expression }}</strong><br>
+                            <small class="text-muted">{{ expr.meaning }}</small>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 선택된 표현 학습 -->
+        {% if selected_index is not none and expressions[selected_index] %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">표현 #{{ selected_index + 1 }}: {{ expressions[selected_index].expression }}</h5>
+            </div>
+            <div class="card-body">
+                <!-- 1. 예문 -->
                 <div class="row mb-4">
                     <div class="col-md-12">
-                        <h6 class="text-muted mb-3">1️⃣ 예문 듣기</h6>
+                        <h6 class="text-muted mb-3">1️⃣ 예문</h6>
                         <div class="alert alert-info mb-3">
-                            <strong>예문:</strong> {{ expressions[current_index].example }}
+                            <strong>{{ expressions[selected_index].example }}</strong>
                         </div>
-                        <button class="btn btn-primary w-100 mb-3" onclick="playAudio()">
-                            <i class="fas fa-volume-up me-2"></i>예문 재생
+                        <button class="btn btn-primary w-100 mb-3" onclick="playAudio('{{ expressions[selected_index].example }}')">
+                            <i class="fas fa-volume-up me-2"></i>예문 재생 (오프라인 지원)
                         </button>
-                        <audio id="audioPlayer" style="display: none;">
-                            <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
-                        </audio>
                     </div>
                 </div>
 
+                <!-- 2. 의미 및 설명 -->
                 <div class="row mb-4">
                     <div class="col-md-12">
-                        <h6 class="text-muted mb-3">2️⃣ 따라 말하기</h6>
+                        <h6 class="text-muted mb-3">2️⃣ 의미 및 설명</h6>
+                        <div class="alert alert-light border">
+                            <p><strong>의미:</strong> {{ expressions[selected_index].meaning }}</p>
+                            <p><strong>상황:</strong> {{ expressions[selected_index].situation }}</p>
+                            <hr class="my-2">
+                            <p class="mb-0"><strong>팁:</strong> {{ expressions[selected_index].tip }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 퀴즈 -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6 class="text-muted mb-3">3️⃣ 표현 입력 (정답 확인)</h6>
                         <form method="POST" action="{{ url_for('check_daily_expression') }}" class="mb-3">
-                            <input type="hidden" name="index" value="{{ current_index }}">
+                            <input type="hidden" name="index" value="{{ selected_index }}">
                             <div class="input-group">
                                 <input type="text" name="user_input" class="form-control" 
                                        placeholder="표현을 입력하고 엔터를 누르세요"
-                                       required>
+                                       required autofocus>
                                 <button class="btn btn-success" type="submit">
                                     <i class="fas fa-check me-2"></i>제출
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <h6 class="text-muted mb-3">3️⃣ 의미 및 설명</h6>
-                        <div class="alert alert-light border">
-                            <p><strong>의미:</strong> {{ expressions[current_index].meaning }}</p>
-                            <p><strong>상황:</strong> {{ expressions[current_index].situation }}</p>
-                            <hr class="my-2">
-                            <p class="mb-0"><strong>팁:</strong> {{ expressions[current_index].tip }}</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -94,8 +117,8 @@
                 <div class="d-flex align-items-center mb-2 p-2 bg-light rounded">
                     <i class="fas fa-check-circle text-success me-2" style="font-size: 1.2rem;"></i>
                     <div>
-                        <strong>{{ expressions[i % len(expressions)].expression }}</strong><br>
-                        <small class="text-muted">{{ expressions[i % len(expressions)].meaning }}</small>
+                        <strong>{{ expressions[i % expression_count].expression }}</strong><br>
+                        <small class="text-muted">{{ expressions[i % expression_count].meaning }}</small>
                     </div>
                 </div>
                 {% endfor %}
@@ -106,11 +129,11 @@
 </div>
 
 <script>
-function playAudio() {
-    // 실제 환경에서는 TTS API를 사용하거나 미리 녹음된 음성 파일을 사용합니다
-    const text = document.querySelector('.alert-info strong').nextSibling.textContent;
+function playAudio(text) {
+    // 브라우저 기본 Web Speech API 사용 (오프라인 지원, API 필요 없음)
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
+    utterance.rate = 0.8; // 천천히 재생
     window.speechSynthesis.speak(utterance);
 }
 </script>

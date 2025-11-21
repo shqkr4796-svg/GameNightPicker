@@ -50,19 +50,20 @@ def dashboard():
 
 @app.route('/daily_expressions')
 def daily_expressions():
-    """일일 표현 페이지 - 무한 학습"""
+    """일일 표현 페이지 - 표현 목록"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
     expressions = game_logic.get_daily_expressions()
+    selected_index = request.args.get('index', None, type=int)
     progress = player.get('일일표현_진도', 0)
-    current_index = progress % len(expressions)  # 무한 순환
     
     return render_template('daily_expressions.html',
                          expressions=expressions,
                          progress=progress,
-                         current_index=current_index)
+                         selected_index=selected_index,
+                         expression_count=len(expressions))
 
 @app.route('/check_daily_expression', methods=['POST'])
 def check_daily_expression():
@@ -100,7 +101,7 @@ def check_daily_expression():
     session.modified = True
     game_logic.save_game(player)
     
-    return redirect(url_for('daily_expressions'))
+    return redirect(url_for('daily_expressions', index=index))
 
 @app.route('/quiz')
 def quiz():
