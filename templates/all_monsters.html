@@ -9,7 +9,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h2><i class="fas fa-monster me-2"></i>모든 몬스터 카탈로그</h2>
-                <div class="badge bg-info fs-6">총 24마리</div>
+                <div class="badge bg-info fs-6">총 36마리</div>
             </div>
             <small class="text-muted">게임에 존재하는 모든 몬스터들의 정보입니다. 던전에서 만날 수 있습니다!</small>
         </div>
@@ -22,19 +22,19 @@
                 <div class="card-body">
                     <div class="btn-group btn-group-sm" role="group">
                         <a href="{{ url_for('all_monsters', rarity='all') }}" class="btn {% if filter_rarity == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                            <i class="fas fa-th me-1"></i>전체 (24)
+                            <i class="fas fa-th me-1"></i>전체 (36)
                         </a>
                         <a href="{{ url_for('all_monsters', rarity='레어') }}" class="btn {% if filter_rarity == '레어' %}btn-success{% else %}btn-outline-success{% endif %}">
-                            <i class="fas fa-star me-1"></i>레어 (6)
+                            <i class="fas fa-star me-1"></i>레어 (9)
                         </a>
                         <a href="{{ url_for('all_monsters', rarity='에픽') }}" class="btn {% if filter_rarity == '에픽' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                            <i class="fas fa-star me-1"></i>에픽 (6)
+                            <i class="fas fa-star me-1"></i>에픽 (9)
                         </a>
                         <a href="{{ url_for('all_monsters', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-filter-warning{% endif %}">
-                            <i class="fas fa-star me-1"></i>유니크 (6)
+                            <i class="fas fa-star me-1"></i>유니크 (9)
                         </a>
                         <a href="{{ url_for('all_monsters', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-filter-danger{% endif %}">
-                            <i class="fas fa-star me-1"></i>레전드리 (6)
+                            <i class="fas fa-star me-1"></i>레전드리 (9)
                         </a>
                     </div>
                 </div>

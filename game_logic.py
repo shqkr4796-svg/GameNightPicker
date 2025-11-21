@@ -109,7 +109,10 @@ def get_all_monster_images():
             '/static/monsters/rare_tier_magic_creature_variant_3.png',
             '/static/monsters/rare_tier_magic_variant_4.png',
             '/static/monsters/rare_tier_magic_variant_5.png',
-            '/static/monsters/rare_tier_magic_variant_6.png'
+            '/static/monsters/rare_tier_magic_variant_6.png',
+            '/static/monsters/rare_tier_magic_variant_7.png',
+            '/static/monsters/rare_tier_magic_variant_8.png',
+            '/static/monsters/rare_tier_magic_variant_9.png'
         ],
         '에픽': [
             '/static/monsters/epic_tier_cool_boss_monster.png',
@@ -117,7 +120,10 @@ def get_all_monster_images():
             '/static/monsters/epic_tier_boss_monster_variant_3.png',
             '/static/monsters/epic_tier_boss_variant_4.png',
             '/static/monsters/epic_tier_boss_variant_5.png',
-            '/static/monsters/epic_tier_boss_variant_6.png'
+            '/static/monsters/epic_tier_boss_variant_6.png',
+            '/static/monsters/epic_tier_boss_variant_7.png',
+            '/static/monsters/epic_tier_boss_variant_8.png',
+            '/static/monsters/epic_tier_boss_variant_9.png'
         ],
         '유니크': [
             '/static/monsters/legendary_tier_majestic_boss.png',
@@ -125,7 +131,10 @@ def get_all_monster_images():
             '/static/monsters/legendary_tier_boss_variant_3.png',
             '/static/monsters/legendary_tier_variant_4.png',
             '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png'
+            '/static/monsters/legendary_tier_variant_6.png',
+            '/static/monsters/legendary_tier_variant_7.png',
+            '/static/monsters/legendary_tier_variant_8.png',
+            '/static/monsters/legendary_tier_variant_9.png'
         ],
         '레전드리': [
             '/static/monsters/legendary_tier_majestic_boss.png',
@@ -133,7 +142,10 @@ def get_all_monster_images():
             '/static/monsters/legendary_tier_boss_variant_3.png',
             '/static/monsters/legendary_tier_variant_4.png',
             '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png'
+            '/static/monsters/legendary_tier_variant_6.png',
+            '/static/monsters/legendary_tier_variant_7.png',
+            '/static/monsters/legendary_tier_variant_8.png',
+            '/static/monsters/legendary_tier_variant_9.png'
         ]
     }
     
@@ -162,7 +174,10 @@ def get_random_monster_image(rarity):
             '/static/monsters/cute_common_monster_variant_3.png',
             '/static/monsters/common_monster_variant_4.png',
             '/static/monsters/common_monster_variant_5.png',
-            '/static/monsters/common_monster_variant_6.png'
+            '/static/monsters/common_monster_variant_6.png',
+            '/static/monsters/common_monster_variant_7.png',
+            '/static/monsters/common_monster_variant_8.png',
+            '/static/monsters/common_monster_variant_9.png'
         ],
         '레어': [
             '/static/monsters/rare_tier_cute_magic_creature.png',
@@ -170,7 +185,10 @@ def get_random_monster_image(rarity):
             '/static/monsters/rare_tier_magic_creature_variant_3.png',
             '/static/monsters/rare_tier_magic_variant_4.png',
             '/static/monsters/rare_tier_magic_variant_5.png',
-            '/static/monsters/rare_tier_magic_variant_6.png'
+            '/static/monsters/rare_tier_magic_variant_6.png',
+            '/static/monsters/rare_tier_magic_variant_7.png',
+            '/static/monsters/rare_tier_magic_variant_8.png',
+            '/static/monsters/rare_tier_magic_variant_9.png'
         ],
         '에픽': [
             '/static/monsters/epic_tier_cool_boss_monster.png',
@@ -178,7 +196,10 @@ def get_random_monster_image(rarity):
             '/static/monsters/epic_tier_boss_monster_variant_3.png',
             '/static/monsters/epic_tier_boss_variant_4.png',
             '/static/monsters/epic_tier_boss_variant_5.png',
-            '/static/monsters/epic_tier_boss_variant_6.png'
+            '/static/monsters/epic_tier_boss_variant_6.png',
+            '/static/monsters/epic_tier_boss_variant_7.png',
+            '/static/monsters/epic_tier_boss_variant_8.png',
+            '/static/monsters/epic_tier_boss_variant_9.png'
         ],
         '유니크': [
             '/static/monsters/legendary_tier_majestic_boss.png',
@@ -186,7 +207,10 @@ def get_random_monster_image(rarity):
             '/static/monsters/legendary_tier_boss_variant_3.png',
             '/static/monsters/legendary_tier_variant_4.png',
             '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png'
+            '/static/monsters/legendary_tier_variant_6.png',
+            '/static/monsters/legendary_tier_variant_7.png',
+            '/static/monsters/legendary_tier_variant_8.png',
+            '/static/monsters/legendary_tier_variant_9.png'
         ],
         '레전드리': [
             '/static/monsters/legendary_tier_majestic_boss.png',
@@ -194,7 +218,10 @@ def get_random_monster_image(rarity):
             '/static/monsters/legendary_tier_boss_variant_3.png',
             '/static/monsters/legendary_tier_variant_4.png',
             '/static/monsters/legendary_tier_variant_5.png',
-            '/static/monsters/legendary_tier_variant_6.png'
+            '/static/monsters/legendary_tier_variant_6.png',
+            '/static/monsters/legendary_tier_variant_7.png',
+            '/static/monsters/legendary_tier_variant_8.png',
+            '/static/monsters/legendary_tier_variant_9.png'
         ]
     }
     
