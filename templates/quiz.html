@@ -404,6 +404,32 @@
             }
         }
         
+        // 음성 선택 함수 (일관된 음성 사용)
+        function getConsistentVoice() {
+            const voices = window.speechSynthesis.getVoices();
+            let selectedVoice = null;
+            
+            // 첫 번째: Google US English 찾기
+            for (let voice of voices) {
+                if (voice.lang === 'en-US' && voice.name.includes('Google')) {
+                    selectedVoice = voice;
+                    break;
+                }
+            }
+            
+            // 두 번째: 일반 en-US 음성
+            if (!selectedVoice) {
+                for (let voice of voices) {
+                    if (voice.lang === 'en-US') {
+                        selectedVoice = voice;
+                        break;
+                    }
+                }
+            }
+            
+            return selectedVoice;
+        }
+        
         // 단어 발음 재생 함수
         function speakWord(word, button) {
             if ('speechSynthesis' in window) {
@@ -415,6 +441,12 @@
                 utterance.rate = 0.8;
                 utterance.pitch = 1;
                 utterance.volume = 1;
+                
+                // 일관된 음성 설정
+                const voice = getConsistentVoice();
+                if (voice) {
+                    utterance.voice = voice;
+                }
                 
                 // 버튼 상태 변경
                 if (button) {
