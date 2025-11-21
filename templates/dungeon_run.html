@@ -311,28 +311,11 @@ function submitChoice(choice) {
     .then(response => response.json())
     .then(data => {
         if (data.game_over) {
-            // 게임 오버 또는 클리어 - alert로 표시
-            const message = data.clear ? '축하합니다! 던전을 클리어했습니다!' : data.message;
-            alert(message);
+            // 게임 오버 또는 클리어
             window.location.href = '{{ url_for("dungeons") }}';
         } else {
-            // 정답/오답 메시지를 UI 알람으로 표시
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${data.success ? 'success' : 'warning'} alert-dismissible fade show`;
-            alertDiv.innerHTML = `
-                <i class="fas fa-${data.success ? 'check-circle' : 'times-circle'} me-2"></i>
-                ${data.message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            // 페이지 상단에 메시지 추가
-            const firstRow = document.querySelector('.row');
-            firstRow.parentElement.insertBefore(alertDiv, firstRow);
-            
-            // 2초 후 페이지 새로고침
-            setTimeout(() => {
-                location.reload();
-            }, 2000);
+            // 즉시 페이지 새로고침 (Flask 메시지 자동 표시)
+            location.reload();
         }
     })
     .catch(error => {

@@ -1111,7 +1111,10 @@ def answer_dungeon():
     session['player_data'] = player
     game_logic.save_game(player)
     
-    # AJAX 요청인 경우 JSON 반환
+    # Flash 메시지 설정
+    flash(result['message'], 'success' if result['correct'] else 'warning')
+    
+    # AJAX 요청인 경우 JSON 반환 (페이지 새로고침 시 flash 메시지 자동 표시)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return jsonify({
             'success': result['correct'],
