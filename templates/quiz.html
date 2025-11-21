@@ -161,13 +161,12 @@
                                     onclick="resetQuizSession('{{ selected_category }}', this)">
                                 <i class="fas fa-redo me-2"></i>새 세션
                             </button>
-                            <div id="wrong-btn-container" style="display: {% if has_wrong_questions %}inline{% else %}none{% endif %}; margin-left: 8px;">
-                                <button type="button" class="btn btn-warning btn-lg"
-                                        id="retry-wrong-btn"
-                                        onclick="retryWrongQuestions('{{ selected_category }}', this)">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>틀린 문제 재도전 (<span id="wrong-count">{{ wrong_questions|length }}</span>)
-                                </button>
-                            </div>
+                            <button type="button" class="btn btn-warning btn-lg ms-2"
+                                    id="retry-wrong-btn"
+                                    style="display: {% if has_wrong_questions %}inline-block{% else %}none{% endif %};"
+                                    onclick="retryWrongQuestions('{{ selected_category }}', this)">
+                                <i class="fas fa-exclamation-triangle me-2"></i>틀린 문제 재도전 (<span id="wrong-count">{{ wrong_questions|length }}</span>)
+                            </button>
                         </div>
                     </form>
                     
