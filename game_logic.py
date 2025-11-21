@@ -2170,10 +2170,10 @@ def get_conversation_translation(expression_name):
 def get_foreign_speakers():
     """외국인 강사 정보"""
     speakers = [
-        {'name': 'SAM', 'image': 'handsome_man_portrait_sam.png'},
-        {'name': 'OLIVIA', 'image': 'beautiful_woman_portrait_olivia.png'},
-        {'name': 'JAMES', 'image': 'athletic_man_portrait_james.png'},
-        {'name': 'EMMA', 'image': 'blonde_woman_portrait_emma.png'},
-        {'name': 'MICHAEL', 'image': 'man_with_glasses_portrait_michael.png'}
+        {'name': 'SAM', 'image': 'young_idol_man_sam.png'},
+        {'name': 'OLIVIA', 'image': 'young_idol_woman_olivia.png'},
+        {'name': 'JAMES', 'image': 'young_idol_man_james.png'},
+        {'name': 'EMMA', 'image': 'young_idol_woman_emma.png'},
+        {'name': 'MICHAEL', 'image': 'young_idol_man_michael.png'}
     ]
     return speakers
