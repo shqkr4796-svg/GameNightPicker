@@ -316,22 +316,23 @@ function submitChoice(choice) {
             alert(message);
             window.location.href = '{{ url_for("dungeons") }}';
         } else {
-            // 정답/오답 메시지를 UI로 표시
+            // 정답/오답 메시지를 UI로 표시 (Bootstrap alert)
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${data.success ? 'success' : 'warning'} alert-dismissible fade show`;
+            alertDiv.className = `alert alert-${data.success ? 'success' : 'warning'} alert-dismissible fade show mt-3`;
             alertDiv.innerHTML = `
+                <i class="fas fa-${data.success ? 'check-circle' : 'times-circle'} me-2"></i>
                 ${data.message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
             
-            // 페이지 최상단에 메시지 추가
-            const container = document.querySelector('.container-fluid') || document.querySelector('.container');
-            container.insertBefore(alertDiv, container.firstChild);
+            // 카드 바디의 가장 위에 추가
+            const cardBody = document.querySelector('.card-body');
+            cardBody.insertBefore(alertDiv, cardBody.firstChild);
             
-            // 2초 후 페이지 새로고침
+            // 5초 후 페이지 새로고침
             setTimeout(() => {
-                location.reload();
-            }, 2000);
+                window.location.href = '{{ url_for("dungeon_run") }}';
+            }, 5000);
         }
     })
     .catch(error => {
