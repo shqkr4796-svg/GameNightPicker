@@ -145,26 +145,24 @@ function loadAllVoices() {
         const voiceNames = voices.map(v => v.name).join(', ');
         console.log('Available voices:', voiceNames);
         
-        // 남자 음성 찾기 - Google US English 우선 (가장 안정적)
+        // 남자 음성 찾기 - Daniel 우선 (가장 자연스러운 남자 음성)
+        const preferredMaleNames = ['Daniel', 'Fred', 'David', 'Mark', 'Alex', 'Tom', 'Bruce', 'Male'];
         for (let voice of voices) {
-            if (voice.name === 'Google US English') {
+            const name = voice.name;
+            if (preferredMaleNames.some(male => name.includes(male))) {
                 cachedMaleVoice = voice;
-                console.log('Loaded male voice (Google US English):', voice.name);
+                console.log('Loaded male voice (preferred):', voice.name);
                 break;
             }
         }
         
-        // 없으면 en-US 명시적 남자 음성 우선 (Daniel, Fred, Albert 등)
+        // 없으면 Google US English 사용
         if (!cachedMaleVoice) {
-            const preferredMaleNames = ['Daniel', 'Fred', 'Albert', 'David', 'Mark', 'Alex', 'Tom', 'Bruce', 'Male'];
             for (let voice of voices) {
-                if (voice.lang === 'en-US') {
-                    const name = voice.name;
-                    if (preferredMaleNames.some(male => name.includes(male))) {
-                        cachedMaleVoice = voice;
-                        console.log('Loaded male voice (en-US preferred):', voice.name);
-                        break;
-                    }
+                if (voice.name === 'Google US English') {
+                    cachedMaleVoice = voice;
+                    console.log('Loaded male voice (Google US English):', voice.name);
+                    break;
                 }
             }
         }
