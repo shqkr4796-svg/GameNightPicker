@@ -1682,6 +1682,17 @@ def build_next_question(dungeon_run):
         
         return result
 
+def get_monster_stats(rarity):
+    """등급별 몬스터 공격력/체력 설정"""
+    stats = {
+        '일반': {'공격력': 2, '체력': 15},
+        '레어': {'공격력': 5, '체력': 25},
+        '에픽': {'공격력': 10, '체력': 40},
+        '유니크': {'공격력': 15, '체력': 60},
+        '레전드리': {'공격력': 20, '체력': 100}
+    }
+    return stats.get(rarity, stats['일반'])
+
 def update_compendium(player, dungeon_run):
     """몬스터 도감 업데이트"""
     try:
@@ -1692,6 +1703,7 @@ def update_compendium(player, dungeon_run):
         monster_id = dungeon_run['monster_id']
         rarity = dungeon_run['current_rarity']
         word = dungeon_run['current_word']['단어']
+        monster_stats = get_monster_stats(rarity)
         
         is_new_monster = False
         if monster_id not in player['도감']:
@@ -1702,7 +1714,9 @@ def update_compendium(player, dungeon_run):
                 '이미지': dungeon_run.get('monster_image', '/static/images/monster_1.png'),
                 '최초처치일': datetime.now().isoformat(),
                 '처치수': 1,
-                '포획됨': True
+                '포획됨': True,
+                '공격력': monster_stats['공격력'],
+                '체력': monster_stats['체력']
             }
             is_new_monster = True
         else:

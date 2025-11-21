@@ -3,115 +3,167 @@
 {% block title %}몬스터 도감{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-book me-2"></i>몬스터 도감
-                </h5>
-                <small class="text-muted">던전에서 처치한 몬스터들이 등록됩니다.</small>
+<div class="container-fluid py-4">
+    <!-- 타이틀 섹션 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-book me-2"></i>몬스터 도감</h2>
+                <div class="badge bg-primary fs-6">총 {{ total_monsters }}마리</div>
             </div>
-            <div class="card-body">
-                {% if player['도감'] %}
-                    <div class="row">
-                        {% for monster_id, monster in player['도감'].items() %}
-                        <div class="col-lg-4 col-md-6 mb-3">
-                            <div class="card h-100 border-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %}">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0">{{ monster['이름'] }}</h6>
-                                    <span class="badge bg-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %}">
-                                        {{ monster['등급'] }}
-                                    </span>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-center mb-3">
-                                        <!-- 몬스터 이미지 -->
-                                        {% if monster.get('이미지') %}
-                                            <img src="{{ monster['이미지'] }}" alt="{{ monster['이름'] }}" 
-                                                 class="monster-image" style="width: 80px; height: 80px; object-fit: contain;">
-                                        {% else %}
-                                            <canvas id="monster-{{ monster_id }}" width="64" height="64" class="border rounded" 
-                                                    data-monster-id="{{ monster_id }}" 
-                                                    data-rarity="{{ monster['등급'] }}"
-                                                    data-word="{{ monster['단어'] }}">
-                                            </canvas>
-                                        {% endif %}
-                                    </div>
-                                    <div class="small">
-                                        <div class="mb-1">
-                                            <strong>단어:</strong> {{ monster['단어'] }}
-                                        </div>
-                                        <div class="mb-1">
-                                            <strong>처치 횟수:</strong> {{ monster['처치수'] }}회
-                                        </div>
-                                        <div class="mb-1">
-                                            <strong>최초 처치:</strong> 
-                                            <span class="text-muted">{{ monster['최초처치일'][:10] }}</span>
-                                        </div>
-                                    </div>
-                                </div>
+            <small class="text-muted">던전에서 처치한 모든 몬스터들을 확인하고 관리할 수 있습니다.</small>
+        </div>
+    </div>
+
+    <!-- 필터 및 액션 버튼 섹션 -->
+    {% if player.get('도감') %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{{ url_for('compendium', rarity='all') }}" class="btn btn-outline-primary {% if filter_rarity == 'all' %}active{% endif %}">
+                                    <i class="fas fa-th me-1"></i>전체
+                                </a>
+                                {% for rarity in rarities %}
+                                <a href="{{ url_for('compendium', rarity=rarity) }}" class="btn btn-outline-{% if rarity == '레어' %}success{% elif rarity == '에픽' %}primary{% elif rarity == '유니크' %}warning{% else %}danger{% endif %} {% if filter_rarity == rarity %}active{% endif %}">
+                                    <i class="fas fa-star me-1"></i>{{ rarity }}
+                                </a>
+                                {% endfor %}
                             </div>
                         </div>
-                        {% endfor %}
+                        <div class="col-md-4 text-end">
+                            <form method="POST" action="{{ url_for('export_monsters') }}" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-download me-1"></i>내보내기
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-book text-muted mb-3" style="font-size: 4rem;"></i>
-                        <h4 class="text-muted">도감이 비어있습니다</h4>
-                        <p class="text-muted">던전에서 몬스터를 처치하여 도감을 채워보세요!</p>
-                        <a href="{{ url_for('dungeons') }}" class="btn btn-primary">
-                            <i class="fas fa-dungeon me-1"></i>던전으로 가기
-                        </a>
-                    </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- 몬스터 갤러리 -->
+    {% if compendium %}
+    <div class="row g-3">
+        {% for monster_id, monster in compendium.items() %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card h-100 monster-card border-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %} shadow-sm hover-shadow">
+                <!-- 등급 배지 -->
+                <div class="card-header bg-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %} d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 text-white">{{ monster['이름'] }}</h6>
+                    <span class="badge bg-light text-{% if monster['등급'] == '레어' %}success{% elif monster['등급'] == '에픽' %}primary{% elif monster['등급'] == '유니크' %}warning{% else %}danger{% endif %}">
+                        {{ monster['등급'] }}
+                    </span>
+                </div>
+
+                <!-- 몬스터 이미지 -->
+                <div class="card-body text-center">
+                    {% if monster.get('이미지') %}
+                        <img src="{{ monster['이미지'] }}" alt="{{ monster['이름'] }}" 
+                             class="monster-gallery-image" style="width: 180px; height: 180px; object-fit: contain; margin-bottom: 15px;">
+                    {% endif %}
+
+                    <!-- 몬스터 정보 -->
+                    <div class="monster-info mb-3">
+                        <div class="mb-2">
+                            <strong>단어:</strong>
+                            <span class="text-primary">{{ monster['단어'] }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>공격력:</strong>
+                            <span class="badge bg-danger">{{ monster.get('공격력', 0) }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>체력:</strong>
+                            <span class="badge bg-success">{{ monster.get('체력', 0) }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>처치 횟수:</strong>
+                            <span class="text-muted">{{ monster['처치수'] }}회</span>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <strong>최초 처치:</strong> {{ monster['최초처치일'][:10] }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- 삭제 버튼 -->
+                    <form method="POST" action="{{ url_for('delete_monster', monster_id=monster_id) }}" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('정말 삭제하시겠습니까?');">
+                            <i class="fas fa-trash me-1"></i>삭제
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info text-center py-5" role="alert">
+                <i class="fas fa-filter text-muted mb-3" style="font-size: 3rem; display: block;"></i>
+                <h5 class="mt-3">선택한 등급의 몬스터가 없습니다</h5>
+                <p class="text-muted">다른 필터를 시도해보세요!</p>
+                <a href="{{ url_for('compendium') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-redo me-1"></i>모든 몬스터 보기
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <!-- 빈 도감 메시지 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-book-open text-muted mb-3" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">도감이 비어있습니다</h4>
+                    <p class="text-muted mb-4">던전에서 몬스터를 처치하여 도감을 채워보세요!</p>
+                    <a href="{{ url_for('dungeons') }}" class="btn btn-primary">
+                        <i class="fas fa-dungeon me-1"></i>던전으로 가기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
-<script>
-// 도트 몬스터 이미지 생성 (기본 버전)
-document.addEventListener('DOMContentLoaded', function() {
-    const canvases = document.querySelectorAll('canvas[id^="monster-"]');
-    canvases.forEach(canvas => {
-        const ctx = canvas.getContext('2d');
-        const monsterId = canvas.dataset.monsterId;
-        const rarity = canvas.dataset.rarity;
-        const word = canvas.dataset.word;
-        
-        // 간단한 도트 몬스터 그리기
-        drawSimpleMonster(ctx, monsterId, rarity, word);
-    });
-});
-
-function drawSimpleMonster(ctx, monsterId, rarity, word) {
-    // 등급별 색상
-    const colors = {
-        '레어': '#00ff00',
-        '에픽': '#9932cc', 
-        '유니크': '#ff8c00',
-        '레전드리': '#ffd700'
-    };
-    
-    const color = colors[rarity] || '#999999';
-    
-    // 간단한 도트 몬스터 그리기
-    ctx.fillStyle = color;
-    
-    // 몸체
-    ctx.fillRect(20, 30, 24, 20);
-    
-    // 머리
-    ctx.fillRect(24, 20, 16, 16);
-    
-    // 눈
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(28, 26, 2, 2);
-    ctx.fillRect(34, 26, 2, 2);
-    
-    // 입
-    ctx.fillRect(30, 32, 4, 1);
+<style>
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
 }
-</script>
+
+.monster-gallery-image {
+    border-radius: 8px;
+    padding: 10px;
+    background: #f8f9fa;
+}
+
+.monster-card {
+    transition: all 0.3s ease;
+}
+
+.monster-info {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.btn-group-sm .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+</style>
 {% endblock %}

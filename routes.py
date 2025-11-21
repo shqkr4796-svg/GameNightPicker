@@ -1,9 +1,10 @@
-from flask import render_template, request, redirect, url_for, flash, session, jsonify
+from flask import render_template, request, redirect, url_for, flash, session, jsonify, make_response
 from app import app
 import game_logic
 import json
 import os
 import random
+from datetime import datetime
 
 @app.route('/')
 def index():
@@ -1186,9 +1187,68 @@ def compendium():
         return redirect(url_for('index'))
     
     player = session['player_data']
+    filter_rarity = request.args.get('rarity', 'all')
+    
+    # 도감 데이터 가져오기
+    compendium = player.get('도감', {})
+    
+    # 필터링
+    if filter_rarity != 'all':
+        compendium = {k: v for k, v in compendium.items() if v.get('등급') == filter_rarity}
+    
+    rarities = ['레어', '에픽', '유니크', '레전드리']
+    total_monsters = len(player.get('도감', {}))
     
     return render_template('compendium.html', 
-                         player=player)
+                         player=player,
+                         compendium=compendium,
+                         filter_rarity=filter_rarity,
+                         rarities=rarities,
+                         total_monsters=total_monsters)
+
+@app.route('/delete_monster/<monster_id>', methods=['POST'])
+def delete_monster(monster_id):
+    """몬스터 삭제"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    if '도감' in player and monster_id in player['도감']:
+        monster_name = player['도감'][monster_id]['이름']
+        del player['도감'][monster_id]
+        session['player_data'] = player
+        game_logic.save_game(player)
+        flash(f'"{monster_name}"을(를) 도감에서 삭제했습니다.', 'success')
+    else:
+        flash('몬스터를 찾을 수 없습니다.', 'error')
+    
+    return redirect(url_for('compendium'))
+
+@app.route('/export_monsters', methods=['POST'])
+def export_monsters():
+    """몬스터 내보내기 - 모든 몬스터 JSON으로 내보내기"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    import json as json_module
+    
+    compendium = player.get('도감', {})
+    
+    # JSON 형식으로 내보내기
+    export_data = {
+        '내보낸_날짜': datetime.now().isoformat(),
+        '총_몬스터_수': len(compendium),
+        '몬스터들': compendium
+    }
+    
+    from flask import make_response
+    response = make_response(json_module.dumps(export_data, ensure_ascii=False, indent=2))
+    response.headers['Content-Disposition'] = f'attachment; filename=monsters_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    
+    return response
 
 @app.route('/dungeon/use_item', methods=['POST'])
 def use_dungeon_item():
