@@ -249,6 +249,143 @@ function speakWord(word) {
     }
 }
 
+// 퀴즈 AJAX 답변 제출
+function submitQuizAnswer(event) {
+    event.preventDefault();
+    
+    const form = document.getElementById('quiz-form');
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('submit-btn');
+    const answerInput = document.getElementById('answer-input');
+    
+    // 제출 버튼 비활성화
+    submitBtn.disabled = true;
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>처리 중...';
+    
+    // AJAX 요청
+    fetch('/take_quiz', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 결과 메시지 표시 (플래시 메시지)
+            const messageType = data.message_type === 'success' ? 'success' : 'danger';
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${messageType} alert-dismissible fade show`;
+            alertDiv.setAttribute('role', 'alert');
+            alertDiv.innerHTML = `
+                <i class="fas fa-${messageType === 'success' ? 'check-circle' : 'times-circle'} me-2"></i>
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.innerHTML = '';
+            resultDiv.appendChild(alertDiv);
+            
+            // 효과음 재생
+            if (soundManager) {
+                if (data.correct) {
+                    soundManager.playQuizCorrect();
+                } else {
+                    soundManager.playQuizWrong();
+                }
+            }
+            
+            // 진행률 업데이트
+            const progressText = document.querySelector('.badge.bg-primary');
+            if (progressText) {
+                progressText.textContent = `${data.completed_words}/${data.total_words}`;
+            }
+            
+            const progressBar = document.querySelector('.progress-bar');
+            if (progressBar && data.total_words > 0) {
+                const percentage = (data.completed_words / data.total_words) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+            
+            // 모든 단어 완료 여부 확인
+            if (data.all_completed) {
+                // 모든 단어 완료 페이지로 이동
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                // 다음 단어로 업데이트
+                const nextWord = data.next_word;
+                const nextQuestionType = data.next_question_type;
+                
+                // 단어 카드 업데이트
+                const wordCard = document.querySelector('.word-card .word');
+                if (wordCard) {
+                    if (nextQuestionType === '뜻맞히기') {
+                        wordCard.textContent = nextWord['뜻'];
+                    } else {
+                        wordCard.textContent = nextWord['단어'];
+                    }
+                }
+                
+                // 질문 제목 업데이트
+                const questionTitle = document.querySelector('.text-center h4');
+                if (questionTitle) {
+                    if (nextQuestionType === '뜻맞히기') {
+                        questionTitle.textContent = '단어 뜻 맞히기';
+                    } else {
+                        questionTitle.textContent = '단어를 보고 뜻 맞히기';
+                    }
+                }
+                
+                // form 필드 업데이트
+                form.querySelector('input[name="question_type"]').value = nextQuestionType;
+                form.querySelector('input[name="correct_answer"]').value = 
+                    nextQuestionType === '뜻맞히기' ? nextWord['단어'] : nextWord['뜻'];
+                form.querySelector('input[name="quiz_word"]').value = nextWord['단어'];
+                
+                // 입력 필드 초기화 및 포커스
+                answerInput.value = '';
+                answerInput.focus();
+                
+                // 발음 듣기 버튼 업데이트 (있으면)
+                const speakBtn = document.querySelector('.btn-outline-info, .btn-outline-primary');
+                if (speakBtn) {
+                    speakBtn.onclick = function() {
+                        if (nextQuestionType === '뜻맞히기') {
+                            speakWord(nextWord['단어'], this);
+                        } else {
+                            speakWord(nextWord['단어'], this);
+                        }
+                    };
+                }
+                
+                // 결과 메시지를 스크롤해서 보이게 함
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            <i class="fas fa-times-circle me-2"></i>
+            오류가 발생했습니다: ${error.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.getElementById('quiz-result').appendChild(alertDiv);
+    })
+    .finally(() => {
+        // 제출 버튼 활성화
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    });
+}
+
 // 퀴즈 카테고리 변경
 function changeQuizCategory(category) {
     window.location.href = `/quiz?category=${category}`;

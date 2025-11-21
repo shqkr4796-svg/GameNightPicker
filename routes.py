@@ -178,6 +178,9 @@ def take_quiz():
             else:
                 next_question_type = random.choice(['뜻맞히기', '단어맞히기'])
             
+            wrong_session_key = f'quiz_session_wrong_{selected_category}'
+            wrong_questions = session.get(wrong_session_key, [])
+            
             return jsonify({
                 'success': True,
                 'correct': result['correct'],
@@ -187,7 +190,9 @@ def take_quiz():
                 'next_question_type': next_question_type,
                 'completed_words': completed_words,
                 'total_words': total_words,
-                'all_completed': False
+                'all_completed': False,
+                'wrong_questions_count': len(wrong_questions),
+                'has_wrong_questions': len(wrong_questions) > 0
             })
         else:
             # 모든 단어를 맞혔을 때
