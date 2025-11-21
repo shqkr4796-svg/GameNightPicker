@@ -978,26 +978,17 @@ def get_recent_events():
     return []
 
 def get_achievements(player):
-    """성취 확인"""
-    achievements = []
+    """성취 확인 - 플레이어가 달성한 성취 이름 반환"""
+    achieved_conditions = get_player_achievements(player)
+    achievements_list = get_all_achievements()
     
-    # 레벨 관련 성취
-    if player['레벨'] >= 10:
-        achievements.append('레벨 마스터')
+    # 조건 이름을 성취 이름으로 변환
+    achievement_names = []
+    for achievement in achievements_list:
+        if achievement['조건'] in achieved_conditions:
+            achievement_names.append(achievement['이름'])
     
-    # 돈 관련 성취
-    if player['돈'] >= 1000000:
-        achievements.append('백만장자')
-    
-    # 퀴즈 관련 성취
-    if player['정답_퀴즈'] >= 100:
-        achievements.append('퀴즈왕')
-    
-    # 직업 관련 성취
-    if player['직장'] and 'CEO' in player['직장']:
-        achievements.append('성공한 사업가')
-    
-    return achievements
+    return achievement_names
 
 def get_all_achievements():
     """모든 성취 목록 - 완전한 30개 업적과 난이도별 포인트"""
