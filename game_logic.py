@@ -2193,26 +2193,18 @@ def evaluate_conversation_response(user_response, target_expression, context_sen
             base_url=base_url
         )
         
-        prompt = f"""You are a friendly English conversation coach. Analyze the student's response and provide helpful coaching feedback.
+        prompt = f"""Analyze this English conversation response and provide brief coaching.
 
-Context: The foreign speaker said: "{context_sentence}"
-Target expression to use: "{target_expression}"
+Speaker said: "{context_sentence}"
+Expression to use: "{target_expression}"
+Student said: "{user_response}"
 
-Student's response: "{user_response}"
-
-Provide coaching feedback in JSON format with these fields (in Korean):
+Respond in Korean with JSON format (keep each feedback to 1 short line):
 {{
-  "grammar_feedback": "Specific grammar corrections or improvements needed (2-3 sentences)",
-  "conversation_tips": "Tips on how to use the expression more naturally in conversation (2-3 sentences)",
-  "alternative_response": "A natural example of how to respond better",
-  "strengths": "What was good about the response (1 sentence)"
-}}
-
-Focus on:
-1. Grammar mistakes and how to fix them
-2. How to use the target expression naturally
-3. Making the conversation sound more natural and fluent
-4. Positive encouragement"""
+  "grammar": "Grammar issue if any (1 line)",
+  "tip": "How to use the expression better (1 line)",
+  "better": "Better response example"
+}}"""
 
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -2240,10 +2232,9 @@ Focus on:
         result = json.loads(result_text)
         return {
             'success': True,
-            'grammar_feedback': result.get('grammar_feedback', ''),
-            'conversation_tips': result.get('conversation_tips', ''),
-            'alternative_response': result.get('alternative_response', ''),
-            'strengths': result.get('strengths', '')
+            'grammar': result.get('grammar', ''),
+            'tip': result.get('tip', ''),
+            'better': result.get('better', '')
         }
     except Exception as e:
         print(f"AI 평가 오류: {e}")

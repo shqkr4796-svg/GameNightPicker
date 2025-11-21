@@ -107,27 +107,11 @@ def submit_conversation():
         coaching = game_logic.evaluate_conversation_response(user_response, expr_name, context_sentence)
         
         if coaching.get('success'):
-            grammar_feedback = coaching.get('grammar_feedback', '')
-            conversation_tips = coaching.get('conversation_tips', '')
-            alternative = coaching.get('alternative_response', '')
-            strengths = coaching.get('strengths', '')
+            grammar = coaching.get('grammar', '')
+            tip = coaching.get('tip', '')
+            better = coaching.get('better', '')
             
-            # 코칭 메시지 표시 (경험치 없음)
-            coaching_message = f"""
-📝 문법 피드백:
-{grammar_feedback}
-
-💡 회화 팁:
-{conversation_tips}
-
-✨ 당신의 응답에서 좋은 점:
-{strengths}
-
-💬 더 나은 예시:
-{alternative}
-
-👉 다시 시도하거나 새로운 표현으로 진행하세요!
-"""
+            coaching_message = f"📝 {grammar}\n💡 {tip}\n💬 {better}"
             flash(coaching_message, 'info')
         else:
             flash(f'코칭 중 오류가 발생했습니다. 다시 시도해주세요.', 'error')
