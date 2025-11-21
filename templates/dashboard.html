@@ -21,7 +21,7 @@
                             <div class="row">
                                 <div class="col-6">
                                     <strong>레벨:</strong> {{ player['레벨'] }}<br>
-                                    <strong>경험치:</strong> {{ player['경험치'] }}/{{ player['경험치최대'] }}<br>
+                                    <strong>경험치:</strong> {{ player['경험치']|int }}/{{ player['경험치최대']|int }}<br>
                                     <strong>날짜:</strong> {{ player['날짜'] }}일<br>
                                     <strong>시간:</strong> {{ player['시간'] }}시
                                 </div>
@@ -62,7 +62,7 @@
                         <div class="progress" style="height: 32px;">
                             <div class="progress-bar d-flex align-items-center justify-content-center" 
                                  style="width: {{ (player['경험치'] / player['경험치최대'] * 100) }}%; font-size: 14px; font-weight: 500;">
-                                {{ player['경험치'] }}/{{ player['경험치최대'] }}
+                                {{ player['경험치']|int }}/{{ player['경험치최대']|int }}
                             </div>
                         </div>
                     </div>
