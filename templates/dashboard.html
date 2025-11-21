@@ -95,38 +95,38 @@
                     <i class="fas fa-trophy me-2"></i>플레이어 티어
                 </h5>
             </div>
-            <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-md-6 text-center">
-                        <div class="tier-display">
+            <div class="card-body p-2">
+                <div class="row g-2">
+                    <div class="col-md-4 text-center">
+                        <div class="tier-display" style="padding: 5px;">
                             {% if stats['tier']['image'] %}
-                                <div class="tier-image mb-2">
+                                <div class="tier-image mb-1">
                                     <img src="{{ stats['tier']['image'] }}" alt="{{ stats['tier']['name'] }}" 
-                                         style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 2px solid gold;">
+                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%; border: 2px solid gold;">
                                 </div>
                             {% else %}
-                                <div class="tier-icon mb-2" style="font-size: 2rem;">❓</div>
+                                <div class="tier-icon mb-1" style="font-size: 1.5rem;">❓</div>
                             {% endif %}
-                            <h6 class="mb-1">
-                                <span class="badge bg-{{ stats['tier']['color'] }} fs-6">
+                            <h6 class="mb-0" style="font-size: 0.85rem;">
+                                <span class="badge bg-{{ stats['tier']['color'] }}">
                                     {{ stats['tier']['name'] }}
                                 </span>
                             </h6>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <h6 class="text-muted mb-3">현재 달성 상황</h6>
-                        <div class="tier-stats">
-                            <div class="mb-2">
+                    <div class="col-md-8">
+                        <h6 class="text-muted mb-1" style="font-size: 0.85rem;">현재 달성 상황</h6>
+                        <div class="tier-stats" style="font-size: 0.8rem;">
+                            <div class="mb-1">
                                 <strong>던전 클리어:</strong> {{ stats['dungeon_clears'] }}회
                             </div>
-                            <div class="mb-2">
+                            <div class="mb-1">
                                 <strong>부동산 보유:</strong> {{ stats['real_estate_count'] }}개
                             </div>
-                            <div class="mb-2">
+                            <div class="mb-1">
                                 <strong>플레이어 레벨:</strong> {{ stats['level'] }}
                             </div>
-                            <div class="mb-2">
+                            <div class="mb-0">
                                 <strong>업적:</strong> {{ stats['achievement_points'] }}점
                             </div>
                         </div>
