@@ -101,16 +101,60 @@ def check_level_up(player):
     return level_ups
 
 def get_random_monster_image(rarity):
-    """등급별 몬스터 이미지"""
+    """등급별 몬스터 이미지를 랜덤으로 선택"""
     if rarity == '레어':
-        return '/static/monsters/rare_tier_monster_glowing_green.png'
+        rare_images = [
+            '/static/images/monster_1.png',
+            '/static/images/monster_2.png', 
+            '/static/images/monster_3.png',
+            '/static/images/monster_rare_1.png',
+            '/static/images/monster_rare_2.png', 
+            '/static/images/monster_rare_3.png',
+            '/static/images/monster_rare_4.png',
+            '/static/images/monster_rare_5.png',
+            '/static/images/monster_rare_6.png',
+            '/static/images/monster_rare_7.png',
+            '/static/images/monster_rare_8.png'
+        ]
+        return random.choice(rare_images)
     elif rarity == '에픽':
-        return '/static/monsters/epic_tier_purple_boss_monster.png'
-    elif rarity == '유니크' or rarity == '레전드리':
-        return '/static/monsters/legendary_unique_gold_crown_boss.png'
+        epic_images = [
+            '/static/images/epic_monster_1.png',
+            '/static/images/epic_monster_2.png',
+            '/static/images/epic_monster_3.png',
+            '/static/images/epic_monster_4.png',
+            '/static/images/epic_monster_5.png',
+            '/static/images/epic_monster_6.png',
+            '/static/images/epic_monster_7.png'
+        ]
+        return random.choice(epic_images)
+    elif rarity == '유니크':
+        unique_images = [
+            '/static/images/unique_monster_1.png',
+            '/static/images/unique_monster_2.png',
+            '/static/images/unique_monster_3.png',
+            '/static/images/unique_monster_4.png',
+            '/static/images/unique_monster_5.png',
+            '/static/images/unique_monster_6.png',
+            '/static/images/unique_monster_7.png',
+            '/static/images/unique_monster_8.png',
+            '/static/images/unique_monster_9.png'
+        ]
+        return random.choice(unique_images)
     else:
-        # 기본값 (일반/일반)
-        return '/static/monsters/common_monster_pixel_art.png'
+        # 레전더리는 전용 이미지 사용
+        legendary_images = [
+            '/static/images/legendary_monster_1.png',
+            '/static/images/legendary_monster_2.png',
+            '/static/images/legendary_monster_3.png',
+            '/static/images/legendary_monster_4.png',
+            '/static/images/legendary_monster_5.png',
+            '/static/images/legendary_monster_6.png',
+            '/static/images/legendary_monster_7.png',
+            '/static/images/legendary_monster_8.png',
+            '/static/images/legendary_monster_9.png'
+        ]
+        return random.choice(legendary_images)
 
 def get_tier_conditions():
     """티어별 조건 반환 (업적 포인트 기준)"""
