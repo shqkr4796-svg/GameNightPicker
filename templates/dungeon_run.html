@@ -298,7 +298,7 @@ function submitChoice(choice) {
     const formData = new FormData();
     formData.append('choice', choice);
     
-    // 버튼 비활성화
+    // 버튼 비활성화 (중복 클릭 방지)
     document.querySelectorAll('.choice-btn').forEach(btn => btn.disabled = true);
     
     fetch('{{ url_for("answer_dungeon") }}', {
@@ -310,12 +310,12 @@ function submitChoice(choice) {
     })
     .then(response => response.json())
     .then(data => {
+        // 지연 없이 즉시 페이지 이동
         if (data.game_over) {
-            // 게임 오버 또는 클리어
             window.location.href = '{{ url_for("dungeons") }}';
         } else {
-            // 지연 없이 즉시 페이지 새로고침
-            location.reload();
+            // location.reload() 대신 현재 URL로 직접 이동 (캐시 무시)
+            window.location.href = window.location.href;
         }
     })
     .catch(error => {
