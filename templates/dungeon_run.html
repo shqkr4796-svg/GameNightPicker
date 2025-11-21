@@ -340,10 +340,9 @@ function initAudioContext() {
     }
 }
 
-// 몬스터 등장 효과음 재생 - 최대 볼륨
+// 몬스터 등장 효과음 재생 - 다양한 효과
 function playMonsterAppearanceSound(rarity) {
     try {
-        // 오디오 컨텍스트 초기화
         if (!audioContext) {
             initAudioContext();
         }
@@ -354,69 +353,141 @@ function playMonsterAppearanceSound(rarity) {
         }
         
         const now = audioContext.currentTime;
-        
-        // 등급별 음성 설정 (최대 볼륨)
-        const soundSettings = {
-            '레어': { 
-                frequencies: [400], 
-                duration: 0.5, 
-                volume: 1.0,
-                description: '레어 효과음'
-            },
-            '에픽': { 
-                frequencies: [500, 600], 
-                duration: 0.6, 
-                volume: 1.0,
-                description: '에픽 효과음'
-            },
-            '유니크': { 
-                frequencies: [700, 800, 900], 
-                duration: 0.7, 
-                volume: 1.0,
-                description: '유니크 효과음'
-            },
-            '레전드리': { 
-                frequencies: [800, 1000, 1200, 1400], 
-                duration: 0.9, 
-                volume: 1.0,
-                description: '레전드리 효과음'
-            }
-        };
-        
-        const config = soundSettings[rarity] || soundSettings['레어'];
-        
-        console.log('재생 중:', config.description);
-        
-        // 마스터 게인 (최대 볼륨)
         const masterGain = audioContext.createGain();
-        masterGain.gain.setValueAtTime(config.volume, now);
         masterGain.connect(audioContext.destination);
         
-        // 각 주파수별로 오실레이터 생성
-        config.frequencies.forEach((freq, index) => {
-            const osc = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            osc.type = ['sine', 'square', 'triangle', 'sawtooth'][index % 4];
-            osc.frequency.setValueAtTime(freq, now);
-            
-            // 주파수 변화
-            osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + config.duration * 0.3);
-            osc.frequency.exponentialRampToValueAtTime(freq * 0.7, now + config.duration);
-            
-            // 최대 게인 설정
-            gainNode.gain.setValueAtTime(1.0 / config.frequencies.length, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, now + config.duration);
-            
-            osc.connect(gainNode);
-            gainNode.connect(masterGain);
-            
-            osc.start(now);
-            osc.stop(now + config.duration);
-        });
+        console.log('재생 중:', rarity, '효과음');
+        
+        if (rarity === '레어') {
+            // 레어: 부드러운 낮은 음 - 단순함
+            playSimpleBeep(now, 400, 0.5, masterGain, 0.6);
+        } 
+        else if (rarity === '에픽') {
+            // 에픽: 상승하는 피치 + 울림
+            playAscendingPitch(now, 500, 750, 0.6, masterGain, 0.8);
+        } 
+        else if (rarity === '유니크') {
+            // 유니크: 다중 하모닉 + 펄싱
+            playHarmonic(now, 600, 0.7, masterGain, 1.0);
+        } 
+        else if (rarity === '레전드리') {
+            // 레전드리: 강렬한 시작 + 복합 음색
+            playEpic(now, 0.9, masterGain, 1.0);
+        }
     } catch(e) {
         console.log('효과음 재생 에러:', e);
     }
+}
+
+// 단순 비프음 (레어용)
+function playSimpleBeep(now, freq, duration, masterGain, volume) {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+    
+    // 부드러운 음량 변화
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(volume * 0.7, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    
+    osc.connect(gain);
+    gain.connect(masterGain);
+    
+    osc.start(now);
+    osc.stop(now + duration);
+}
+
+// 상승하는 피치 (에픽용)
+function playAscendingPitch(now, startFreq, endFreq, duration, masterGain, volume) {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration * 0.7);
+    osc.frequency.exponentialRampToValueAtTime(startFreq * 0.8, now + duration);
+    
+    // 빠른 펄스 효과
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(volume, now + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+    
+    osc.connect(gain);
+    gain.connect(masterGain);
+    
+    osc.start(now);
+    osc.stop(now + duration);
+}
+
+// 다중 하모닉 (유니크용)
+function playHarmonic(now, baseFreq, duration, masterGain, volume) {
+    const harmonics = [baseFreq, baseFreq * 2, baseFreq * 3];
+    const waveforms = ['sine', 'triangle', 'sawtooth'];
+    
+    harmonics.forEach((freq, idx) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        osc.type = waveforms[idx % 3];
+        osc.frequency.setValueAtTime(freq, now);
+        
+        // 각 하모닉별로 다른 음량 변화 (펄싱 효과)
+        const pulseTime = duration / 4;
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(volume / (idx + 2), now + 0.06);
+        gain.gain.linearRampToValueAtTime(volume / (idx + 2) * 0.5, now + pulseTime);
+        gain.gain.linearRampToValueAtTime(volume / (idx + 2), now + pulseTime * 1.5);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        osc.connect(gain);
+        gain.connect(masterGain);
+        
+        osc.start(now);
+        osc.stop(now + duration);
+    });
+}
+
+// 강렬한 레전드리 사운드
+function playEpic(now, duration, masterGain, volume) {
+    // 저음 드럼 느낌
+    const kickOsc = audioContext.createOscillator();
+    const kickGain = audioContext.createGain();
+    
+    kickOsc.type = 'sine';
+    kickOsc.frequency.setValueAtTime(150, now);
+    kickOsc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+    
+    kickGain.gain.setValueAtTime(volume, now);
+    kickGain.gain.exponentialRampToValueAtTime(0.3, now + 0.2);
+    kickGain.gain.exponentialRampToValueAtTime(0.01, now + duration * 0.5);
+    
+    kickOsc.connect(kickGain);
+    kickGain.connect(masterGain);
+    
+    kickOsc.start(now);
+    kickOsc.stop(now + duration * 0.5);
+    
+    // 고음 효과 (시간차)
+    setTimeout(() => {
+        const highOsc = audioContext.createOscillator();
+        const highGain = audioContext.createGain();
+        
+        highOsc.type = 'square';
+        highOsc.frequency.setValueAtTime(1200, now + 0.1);
+        highOsc.frequency.exponentialRampToValueAtTime(800, now + duration);
+        
+        highGain.gain.setValueAtTime(0, now + 0.1);
+        highGain.gain.linearRampToValueAtTime(volume * 0.6, now + 0.15);
+        highGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        highOsc.connect(highGain);
+        highGain.connect(masterGain);
+        
+        highOsc.start(now + 0.1);
+        highOsc.stop(now + duration);
+    }, 0);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
