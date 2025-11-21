@@ -2094,3 +2094,39 @@ def get_daily_expressions():
         }
     ]
     return expressions
+
+def get_conversation_prompt(expression_data):
+    """표현에 맞는 대화 프롬프트 생성"""
+    conversation_starters = {
+        'Break the ice': "I'm new here and don't know anyone. What should I do?",
+        'Piece of cake': "This assignment looks really hard. How do you feel about it?",
+        'Under the weather': "I haven't seen you in days. Is everything okay?",
+        'Cost an arm and a leg': "Have you seen the prices at that new restaurant?",
+        'Hit the books': "The exam is next week. What are you planning to do?",
+        'On cloud nine': "You look so happy today! What happened?",
+        'It rains cats and dogs': "Look at this weather! What do you think?",
+        'Go the extra mile': "We need to finish this project on time. Are you willing to work hard?",
+        'No pain, no gain': "Training is really tough. Should I keep going?",
+        'Better late than never': "I know I'm late with this report, but I finished it!",
+        'Spill the beans': "You look like you have something to tell me!",
+        'Bite the bullet': "I have to make a difficult decision. What do you think?",
+        'See eye to eye': "You and I have different opinions about this project.",
+        'Give someone a hand': "I have too many boxes to carry. Can you help?",
+        'Keep your fingers crossed': "I'm taking the test tomorrow. Wish me luck!",
+        'Catch you later': "I need to go now. See you soon!",
+        'No worries': "I'm sorry I made a mistake.",
+        'That is piece of cake': "Do you think that problem is difficult?",
+        'Once in a blue moon': "How often do you go on vacation?",
+        'Get the ball rolling': "We should start this new project soon.",
+        'Speak of the devil': "I was just thinking about you!",
+        'Couldn\'t care less': "What do you think about this gossip?",
+        'Hang in there': "I'm having a really tough time.",
+        'Just a minute': "Wait, I need to ask you something!",
+        'Let me know': "I need your opinion on this.",
+        'Long time no see': "Hey, I haven't seen you in forever!",
+        'By the way': "Oh, one more thing before you leave!",
+        'How about you': "I love pizza. What's your favorite food?",
+        'I promise': "Will you really help me finish this?",
+        'That sounds great': "Would you like to go to the beach tomorrow?"
+    }
+    return conversation_starters.get(expression_data['expression'], "How would you respond to this?")

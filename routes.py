@@ -65,6 +65,65 @@ def daily_expressions():
                          selected_index=selected_index,
                          expression_count=len(expressions))
 
+@app.route('/conversation_practice')
+def conversation_practice():
+    """대화형 표현 연습"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    expressions = game_logic.get_daily_expressions()
+    
+    # 랜덤 표현 선택
+    random_expr = random.choice(expressions)
+    alien_sentence = game_logic.get_conversation_prompt(random_expr)
+    
+    return render_template('conversation_practice.html',
+                         expression=random_expr,
+                         alien_sentence=alien_sentence,
+                         player=player)
+
+@app.route('/submit_conversation', methods=['POST'])
+def submit_conversation():
+    """대화 응답 제출"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    user_response = request.form.get('user_response', '').strip().lower()
+    expr_name = request.form.get('expression', '').strip()
+    
+    expressions = game_logic.get_daily_expressions()
+    target_expr = next((e for e in expressions if e['expression'] == expr_name), None)
+    
+    if target_expr:
+        # 표현이나 예문의 주요 단어 포함 확인
+        target_words = set(target_expr['expression'].lower().split())
+        user_words = set(user_response.split())
+        
+        if target_words & user_words or any(word in user_response for word in target_expr['examples'][0].lower().split()):
+            player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
+            flash(f'정답! ✓ (총 {player["일일표현_진도"]}개 완료)', 'success')
+            
+            # 경험치 +15 (더 높음)
+            exp_gained = 15
+            player['경험치'] += exp_gained
+            
+            while player['경험치'] >= player['경험치최대']:
+                player['경험치'] -= player['경험치최대']
+                player['레벨'] += 1
+                player['경험치최대'] = int(player['경험치최대'] * 1.1)
+                player['스탯포인트'] += 5
+                flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
+        else:
+            flash(f'다시 시도해보세요. 힌트: {target_expr["expression"]}을 사용하세요!', 'error')
+    
+    session['player_data'] = player
+    session.modified = True
+    game_logic.save_game(player)
+    
+    return redirect(url_for('conversation_practice'))
+
 @app.route('/check_daily_expression', methods=['POST'])
 def check_daily_expression():
     """일일 표현 확인 - 무한 학습"""

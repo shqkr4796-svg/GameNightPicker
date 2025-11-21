@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}대화 연습 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <!-- 헤더 -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-users me-2"></i>외국인과 대화 연습
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <p class="text-muted mb-2">학습한 표현으로 자연스럽게 대화해보세요!</p>
+                <h3 class="text-success">경험치 +15</h3>
+            </div>
+        </div>
+
+        <!-- 대화 박스 -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <!-- 외국인 말 -->
+                <div class="row mb-4">
+                    <div class="col-md-3 text-center">
+                        <img src="{{ url_for('static', filename='images/foreign_conversation.jpg') }}" alt="외국인" style="width: 100%; max-width: 150px; border-radius: 10px;">
+                        <p class="text-muted mt-2"><strong>Foreigner</strong></p>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="alert alert-info" style="min-height: 100px; display: flex; align-items: center;">
+                            <h5 class="mb-0">{{ alien_sentence }}</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 구분선 -->
+                <hr class="my-4">
+
+                <!-- 사용자 응답 -->
+                <div class="row mb-4">
+                    <div class="col-md-9">
+                        <form method="POST" action="{{ url_for('submit_conversation') }}">
+                            <div class="form-group">
+                                <label for="user_response" class="form-label"><strong>당신의 응답:</strong></label>
+                                <textarea name="user_response" id="user_response" class="form-control" rows="3" 
+                                          placeholder="표현 '{{ expression.expression }}'을 사용해서 응답하세요..." required autofocus></textarea>
+                            </div>
+                            <input type="hidden" name="expression" value="{{ expression.expression }}">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-send me-2"></i>응답 제출
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <p class="text-muted"><strong>You</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 학습 정보 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">💡 학습 표현</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>표현:</strong> <span class="badge bg-primary">{{ expression.expression }}</span></p>
+                <p><strong>의미:</strong> {{ expression.meaning }}</p>
+                <p><strong>예문 1:</strong> {{ expression.examples[0] }}</p>
+                <p><strong>예문 2:</strong> {{ expression.examples[1] }}</p>
+                <p class="mb-0"><strong>팁:</strong> {{ expression.tip }}</p>
+            </div>
+        </div>
+
+        <!-- 새 대화 버튼 -->
+        <div class="text-center mb-4">
+            <a href="{{ url_for('conversation_practice') }}" class="btn btn-primary">
+                <i class="fas fa-redo me-2"></i>새로운 표현 시작
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
