@@ -90,38 +90,51 @@ def conversation_practice():
 
 @app.route('/submit_conversation', methods=['POST'])
 def submit_conversation():
-    """대화 응답 제출"""
+    """대화 응답 제출 - AI 평가"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
-    user_response = request.form.get('user_response', '').strip().lower()
+    user_response = request.form.get('user_response', '').strip()
     expr_name = request.form.get('expression', '').strip()
+    context_sentence = request.form.get('context_sentence', '').strip()
     
     expressions = game_logic.get_daily_expressions()
     target_expr = next((e for e in expressions if e['expression'] == expr_name), None)
     
-    if target_expr:
-        # 표현이나 예문의 주요 단어 포함 확인
-        target_words = set(target_expr['expression'].lower().split())
-        user_words = set(user_response.split())
+    if target_expr and user_response:
+        # AI를 사용하여 응답 평가
+        evaluation = game_logic.evaluate_conversation_response(user_response, expr_name, context_sentence)
         
-        if target_words & user_words or any(word in user_response for word in target_expr['examples'][0].lower().split()):
-            player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
-            flash(f'정답! ✓ (총 {player["일일표현_진도"]}개 완료)', 'success')
-            
-            # 경험치 +15 (더 높음)
-            exp_gained = 15
-            player['경험치'] += exp_gained
-            
-            while player['경험치'] >= player['경험치최대']:
-                player['경험치'] -= player['경험치최대']
-                player['레벨'] += 1
-                player['경험치최대'] = int(player['경험치최대'] * 1.1)
-                player['스탯포인트'] += 5
-                flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
+        if evaluation.get('success'):
+            if evaluation.get('is_correct'):
+                player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
+                score = evaluation.get('score', 80)
+                
+                # 스코어 기반 경험치 (60점 이상만 정답)
+                if score >= 60:
+                    exp_gained = 15 if score >= 80 else 10
+                    player['경험치'] += exp_gained
+                    
+                    while player['경험치'] >= player['경험치최대']:
+                        player['경험치'] -= player['경험치최대']
+                        player['레벨'] += 1
+                        player['경험치최대'] = int(player['경험치최대'] * 1.1)
+                        player['스탯포인트'] += 5
+                        flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
+                    
+                    feedback = evaluation.get('feedback', '')
+                    reason = evaluation.get('reason', '')
+                    flash(f'정답! ✓ (점수: {score}/100)\n{feedback}\n{reason}', 'success')
+                else:
+                    feedback = evaluation.get('feedback', '')
+                    flash(f'거의 다왔어요! (점수: {score}/100)\n{feedback}\n다시 시도해보세요!', 'warning')
+            else:
+                feedback = evaluation.get('feedback', '')
+                reason = evaluation.get('reason', '')
+                flash(f'다시 시도해보세요.\n{feedback}\n{reason}', 'error')
         else:
-            flash(f'다시 시도해보세요. 힌트: {target_expr["expression"]}을 사용하세요!', 'error')
+            flash(f'평가 중 오류가 발생했습니다. 다시 시도해주세요.', 'error')
     
     session['player_data'] = player
     session.modified = True

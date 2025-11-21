@@ -95,8 +95,9 @@
                                           placeholder="표현 '{{ expression.expression }}'을 사용해서 응답하세요..." required autofocus></textarea>
                             </div>
                             <input type="hidden" name="expression" value="{{ expression.expression }}">
+                            <input type="hidden" name="context_sentence" value="{{ alien_sentence }}">
                             <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-send me-2"></i>응답 제출
+                                <i class="fas fa-send me-2"></i>응답 제출 (AI 평가)
                             </button>
                         </form>
                     </div>

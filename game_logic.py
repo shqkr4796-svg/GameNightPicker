@@ -2177,3 +2177,66 @@ def get_foreign_speakers():
         {'name': 'MICHAEL', 'image': 'young_idol_man_michael.png'}
     ]
     return speakers
+
+def evaluate_conversation_response(user_response, target_expression, context_sentence):
+    """AI를 사용하여 사용자 응답의 문법과 적절성 평가"""
+    try:
+        from openai import OpenAI
+        
+        client = OpenAI()
+        
+        prompt = f"""You are an English teacher evaluating a student's conversation response.
+
+Context: The foreign speaker said: "{context_sentence}"
+Target expression/phrase the student should use: "{target_expression}"
+
+Student's response: "{user_response}"
+
+Please evaluate if the student's response is:
+1. Grammatically correct
+2. Contextually appropriate (makes sense as a reply to the context)
+3. Uses or incorporates the target expression appropriately
+
+Respond in JSON format with exactly these fields (in Korean):
+{{
+  "is_correct": true/false,
+  "score": 0-100,
+  "feedback": "brief evaluation (한글로 작성)",
+  "reason": "why it's correct or incorrect (한글로 작성)"
+}}
+
+Be lenient - partial use of the expression or similar phrasing counts as correct. Minor grammar mistakes are okay if the meaning is clear."""
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are an English conversation evaluator. Respond only with valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=200
+        )
+        
+        import json
+        result_text = response.choices[0].message.content.strip()
+        
+        # JSON 추출
+        if "```json" in result_text:
+            result_text = result_text.split("```json")[1].split("```")[0].strip()
+        elif "```" in result_text:
+            result_text = result_text.split("```")[1].split("```")[0].strip()
+        
+        result = json.loads(result_text)
+        return {
+            'success': True,
+            'is_correct': result.get('is_correct', False),
+            'score': result.get('score', 0),
+            'feedback': result.get('feedback', ''),
+            'reason': result.get('reason', '')
+        }
+    except Exception as e:
+        print(f"AI 평가 오류: {e}")
+        return {
+            'success': False,
+            'error': str(e)
+        }
