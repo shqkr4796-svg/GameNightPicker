@@ -968,29 +968,22 @@ def dungeon_preview(dungeon_id):
 
 @app.route('/dungeon/start', methods=['POST'])
 def start_dungeon():
-    """던전 시작 (AJAX 지원)"""
+    """던전 시작"""
     if 'player_data' not in session:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'success': False, 'message': '세션이 만료되었습니다.'})
         return redirect(url_for('index'))
     
     player = session['player_data']
     dungeon_id = request.form.get('dungeon_id')
     
-    # 최소 체력 확인
+    # 최소 체력 확인 (체력 = 기력)
     if player['기력'] < 1:
-        msg = '던전에 입장하려면 최소 기력 1이 필요합니다.'
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'success': False, 'message': msg})
-        flash(msg, 'error')
+        flash('던전에 입장하려면 최소 기력 1이 필요합니다.', 'error')
         return redirect(url_for('dungeons'))
     
     # 던전 실행 초기화
     result = game_logic.init_dungeon_run(player, dungeon_id)
     
     if not result['success']:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'success': False, 'message': result['message']})
         flash(result['message'], 'error')
         return redirect(url_for('dungeons'))
     
@@ -1001,13 +994,7 @@ def start_dungeon():
     session['dungeon_run'] = result['dungeon_run']
     session['player_data'] = player
     
-    # AJAX 요청인 경우 JSON 반환
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        dungeon = game_logic.get_dungeon_by_id(dungeon_id)
-        message = f'던전에 입장했습니다! (입장료 {dungeon["entry_fee"]:,}원 차감)' if dungeon and dungeon.get('entry_fee', 0) > 0 else '던전에 입장했습니다!'
-        return jsonify({'success': True, 'message': message, 'redirect': url_for('dungeon_run')})
-    
-    # 일반 요청인 경우 리디렉트
+    # 입장료가 있는 던전인 경우 안내
     dungeon = game_logic.get_dungeon_by_id(dungeon_id)
     if dungeon and dungeon.get('entry_fee', 0) > 0:
         flash(f'던전에 입장했습니다! (입장료 {dungeon["entry_fee"]:,}원 차감)', 'success')
