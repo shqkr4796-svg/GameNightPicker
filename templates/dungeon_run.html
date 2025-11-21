@@ -316,13 +316,22 @@ function submitChoice(choice) {
             alert(message);
             window.location.href = '{{ url_for("dungeons") }}';
         } else {
-            // 정답/오답 메시지를 alert로 표시
-            alert(data.message);
+            // 정답/오답 메시지를 UI로 표시
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${data.success ? 'success' : 'warning'} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
             
-            // 1초 후 페이지 새로고침
+            // 페이지 최상단에 메시지 추가
+            const container = document.querySelector('.container-fluid') || document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // 2초 후 페이지 새로고침
             setTimeout(() => {
                 location.reload();
-            }, 1000);
+            }, 2000);
         }
     })
     .catch(error => {
