@@ -1751,6 +1751,7 @@ def update_compendium(player, dungeon_run):
             return False
         
         monster_name = monster_data['이름']
+        monster_image = monster_data.get('이미지', '')
         monster_stats = get_monster_stats(monster_id)
         
         is_new_monster = False
@@ -1758,7 +1759,7 @@ def update_compendium(player, dungeon_run):
             player['도감'][monster_id] = {
                 '이름': monster_name,
                 '등급': rarity,
-                '이미지': '',
+                '이미지': monster_image,
                 '최초처치일': datetime.now().isoformat(),
                 '처치수': 1,
                 '포획됨': True,
