@@ -36,10 +36,7 @@
         </div>
     </div>
 
-    <!-- 합성 효과음 -->
-    <audio id="fusion-sound">
-        <source src="{{ url_for('static', filename='sounds/맞춘효과음.mp3') }}" type="audio/mpeg">
-    </audio>
+    <!-- 합성 효과음 (Web Audio API로 생성) -->
 
     <!-- 등급별 몬스터 선택 -->
     <form method="POST" action="{{ url_for('perform_fusion') }}" id="fusion-form">
@@ -207,13 +204,45 @@ document.addEventListener('DOMContentLoaded', function() {
         cb.addEventListener('change', updateSelection);
     });
 
+    // 빨려들어가는 합성 효과음 생성 (Web Audio API)
+    function playSuctionSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            
+            // Oscillator (주파수 감소: 2000Hz -> 200Hz)
+            const osc = audioContext.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(2000, now);
+            osc.frequency.exponentialRampToValueAtTime(200, now + 0.4);
+            
+            // Gain (음량 감소)
+            const gain = audioContext.createGain();
+            gain.gain.setValueAtTime(0.4, now);  // 높은 음량
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            
+            // 필터 (고주파 강화)
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(500, now);
+            filter.frequency.exponentialRampToValueAtTime(100, now + 0.4);
+            
+            // 연결
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            // 재생
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } catch (e) {
+            console.log('효과음 생성 실패:', e);
+        }
+    }
+
     // 합성 버튼 클릭 시 효과음 재생
     fusionBtn.addEventListener('click', function(e) {
-        // 효과음 재생
-        fusionSound.currentTime = 0;
-        fusionSound.play().catch(function(error) {
-            console.log('효과음 재생 실패:', error);
-        });
+        playSuctionSound();
     });
 });
 </script>
