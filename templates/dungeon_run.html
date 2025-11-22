@@ -21,6 +21,11 @@
                 </div>
             </div>
             <div class="card-body">
+                {% if dungeon['난이도'] == '커스텀' %}
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i><strong>💡 팁:</strong> 이 커스텀 던전은 <strong>티어 진행도에 영향을 주지 않습니다!</strong> 자유롭게 학습하세요.
+                </div>
+                {% endif %}
                 <!-- 체력 바 -->
                 <div class="row mb-4">
                     <div class="col-md-6">
