@@ -2459,35 +2459,68 @@ def merge_monsters(player, monster_ids):
     rarity_order = ['레어', '에픽', '유니크', '레전드리', '신화급']
     current_rarity_index = rarity_order.index(first_monster_rarity)
     
-    # 레전드리 3마리 합성 -> 신화급 확률적 획득
+    # 레전드리 3마리 합성 -> 신화급 30% 확률적 획득
     if first_monster_rarity == '레전드리':
-        # 신화급 3마리 중 랜덤 선택
-        mythic_monsters = ['신화급_1', '신화급_2', '신화급_3']
-        result_monster_id = random.choice(mythic_monsters)
-        result_monster_data = get_monster_by_id(result_monster_id)
-        
-        if not result_monster_data:
-            return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
-        
-        result_monster = {
-            '이름': result_monster_data['이름'],
-            '등급': '신화급',
-            '이미지': result_monster_data.get('이미지', ''),
-            '최초처치일': datetime.now().isoformat(),
-            '처치수': 0,
-            '포획됨': True,
-            '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
-            '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
-        }
-        
-        player['도감'][result_monster_id] = result_monster
-        return {
-            'success': True,
-            'message': f"축하합니다! 신화급 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
-            'result_monster_id': result_monster_id,
-            'result_monster_name': result_monster_data['이름'],
-            'is_mythic': True
-        }
+        if random.random() < 0.3:
+            # 신화급 30% 확률 획득
+            mythic_monsters = ['신화급_1', '신화급_2', '신화급_3']
+            result_monster_id = random.choice(mythic_monsters)
+            result_monster_data = get_monster_by_id(result_monster_id)
+            
+            if not result_monster_data:
+                return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
+            
+            result_monster = {
+                '이름': result_monster_data['이름'],
+                '등급': '신화급',
+                '이미지': result_monster_data.get('이미지', ''),
+                '최초처치일': datetime.now().isoformat(),
+                '처치수': 0,
+                '포획됨': True,
+                '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
+                '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
+            }
+            
+            player['도감'][result_monster_id] = result_monster
+            return {
+                'success': True,
+                'message': f"축하합니다! 신화급 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
+                'result_monster_id': result_monster_id,
+                'result_monster_name': result_monster_data['이름'],
+                'is_mythic': True
+            }
+        else:
+            # 70% 확률로 레전드리 재획득
+            legendary_monsters = get_monsters_by_rarity('레전드리')
+            
+            if not legendary_monsters:
+                return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
+            
+            result_monster_id = random.choice(legendary_monsters)
+            result_monster_data = get_monster_by_id(result_monster_id)
+            
+            if not result_monster_data:
+                return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
+            
+            result_monster = {
+                '이름': result_monster_data['이름'],
+                '등급': '레전드리',
+                '이미지': result_monster_data.get('이미지', ''),
+                '최초처치일': datetime.now().isoformat(),
+                '처치수': 0,
+                '포획됨': True,
+                '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
+                '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
+            }
+            
+            player['도감'][result_monster_id] = result_monster
+            return {
+                'success': True,
+                'message': f"합성 성공! 레전드리 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
+                'result_monster_id': result_monster_id,
+                'result_monster_name': result_monster_data['이름'],
+                'is_mythic': False
+            }
     
     # 등급별 상위 등급 획득 확률
     rarity_upgrade_chance = {
