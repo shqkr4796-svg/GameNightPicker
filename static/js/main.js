@@ -116,6 +116,12 @@ class SoundManager {
 
     // 포획 효과음 (몬스터 포획 시)
     playCapture() {
+        console.log('🎣 포획 효과음 재생 시작');
+        if (!this.enabled || !this.audioContext) {
+            console.log('❌ 포획 효과음 비활성화 또는 오디오 컨텍스트 없음');
+            return;
+        }
+        
         // 포획 효과음 (몬스터 볼 던지기 + 성공)
         // 포획 시작음 (낮은 음)
         this.createTone(440, 0.1, 'sine'); // A4 - 던지기 시작
@@ -135,6 +141,8 @@ class SoundManager {
         // 성공 팡팡 (최종 확인음)
         setTimeout(() => this.createTone(1000, 0.12, 'triangle'), 550); // G#5 - 성공1
         setTimeout(() => this.createTone(1200, 0.12, 'triangle'), 680); // B5 - 성공2
+        
+        console.log('✅ 포획 효과음 재생 완료');
     }
 
     // 이벤트 리스너 설정
@@ -174,14 +182,16 @@ class SoundManager {
                     if (node.nodeType === 1 && node.classList) {
                         if (node.classList.contains('alert-success')) {
                             const text = node.textContent.toLowerCase();
-                            if (text.includes('정답')) {
-                                this.playQuizCorrect();
-                            } else if (text.includes('레벨업') || text.includes('레벨이')) {
-                                this.playLevelUp();
-                            } else if (text.includes('도감에 등록했습니다') || text.includes('포획')) {
+                            // 포획/도감 관련 효과음을 가장 먼저 확인 (정답 전에)
+                            if (text.includes('도감에 등록했습니다') || text.includes('도감에 추가했습니다')) {
+                                console.log('🎣 포획 메시지 감지:', text.substring(0, 50));
                                 this.playCapture();
                             } else if (text.includes('새로운 몬스터를 도감에 추가')) {
                                 this.playMonsterCollected();
+                            } else if (text.includes('정답')) {
+                                this.playQuizCorrect();
+                            } else if (text.includes('레벨업') || text.includes('레벨이')) {
+                                this.playLevelUp();
                             } else {
                                 this.playSuccess();
                             }
