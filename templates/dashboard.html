@@ -4,346 +4,367 @@
 
 {% block content %}
 <div class="row">
-    <!-- 플레이어 상태 -->
+    <!-- 메인 정보 (탭 형식) -->
     <div class="col-lg-8">
-        <div class="card status-card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-user me-2"></i>플레이어 상태
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <!-- 기본 정보 -->
-                    <div class="col-md-6">
-                        <div class="bg-light p-3 rounded">
-                            <h6 class="text-muted mb-3">기본 정보</h6>
-                            <div class="row">
-                                <div class="col-6">
-                                    <strong>레벨:</strong> {{ player['레벨'] }}<br>
-                                    <strong>경험치:</strong> {{ player['경험치']|int }}/{{ player['경험치최대']|int }}<br>
-                                    <strong>날짜:</strong> {{ player['날짜'] }}일<br>
-                                    <strong>시간:</strong> {{ player['시간'] }}시
-                                </div>
-                                <div class="col-6">
-                                    <strong>건강:</strong> {{ "%.1f"|format(player['체력']) }}/10<br>
-                                    <strong>기력:</strong> {{ "%.1f"|format(player['기력']) }}/10<br>
-                                    <strong>돈:</strong> {{ "{:,}".format(player['돈']) }}원<br>
-                                    <strong>스탯 포인트:</strong> {{ player['스탯포인트'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 스탯 정보 -->
-                    <div class="col-md-6">
-                        <div class="bg-light p-3 rounded">
-                            <h6 class="text-muted mb-3">능력치</h6>
-                            <div class="row">
-                                <div class="col-6">
-                                    <strong>힘:</strong> {{ player['힘'] }}<br>
-                                    <strong>지능:</strong> {{ player['지능'] }}<br>
-                                    <strong>외모:</strong> {{ player['외모'] }}
-                                </div>
-                                <div class="col-6">
-                                    <strong>체력:</strong> {{ player['체력스탯'] }}<br>
-                                    <strong>운:</strong> {{ player['운'] }}<br>
-                                    <strong>총합:</strong> {{ stats['total_stats'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 진행 상황 바 -->
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <label class="form-label">경험치</label>
-                        <div class="progress" style="height: 32px;">
-                            <div class="progress-bar d-flex align-items-center justify-content-center" 
-                                 style="width: {{ (player['경험치'] / player['경험치최대'] * 100) }}%; font-size: 14px; font-weight: 500;">
-                                {{ player['경험치']|int }}/{{ player['경험치최대']|int }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-3">
-                        <label class="form-label">건강</label>
-                        <div class="progress" style="height: 32px;">
-                            <div class="progress-bar bg-danger d-flex align-items-center justify-content-center" 
-                                 style="width: {{ (player['체력'] / 10 * 100) }}%; font-size: 14px; font-weight: 500;">
-                                {{ "%.1f"|format(player['체력']) }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-3">
-                        <label class="form-label">기력</label>
-                        <div class="progress" style="height: 32px;">
-                            <div class="progress-bar bg-info d-flex align-items-center justify-content-center" 
-                                 style="width: {{ (player['기력'] / 10 * 100) }}%; font-size: 14px; font-weight: 500;">
-                                {{ "%.1f"|format(player['기력']) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 플레이어 티어 -->
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-trophy me-2"></i>플레이어 티어
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-md-6 text-center">
-                        <div class="tier-display">
-                            {% if stats['tier']['image'] %}
-                                <div class="tier-image mb-3">
-                                    <img src="{{ stats['tier']['image'] }}" alt="{{ stats['tier']['name'] }}" 
-                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid gold;">
-                                </div>
-                            {% else %}
-                                <div class="tier-icon mb-3" style="font-size: 4rem;">❓</div>
-                            {% endif %}
-                            <h4 class="mb-1">
-                                <span class="badge bg-{{ stats['tier']['color'] }} fs-5">
-                                    {{ stats['tier']['name'] }}
-                                </span>
-                            </h4>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-muted mb-3">현재 달성 상황</h6>
-                        <div class="tier-stats">
-                            <div class="mb-2">
-                                <strong>던전 클리어:</strong> {{ stats['dungeon_clears'] }}회
-                            </div>
-                            <div class="mb-2">
-                                <strong>부동산 보유:</strong> {{ stats['real_estate_count'] }}개
-                            </div>
-                            <div class="mb-2">
-                                <strong>플레이어 레벨:</strong> {{ stats['level'] }}
-                            </div>
-                            <div class="mb-2">
-                                <strong>업적:</strong> {{ stats['achievement_points'] }}점
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 티어 조건 토글 버튼 -->
-                <div class="tier-conditions-toggle">
-                    <div class="text-center mb-3">
-                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#tierConditions" aria-expanded="false">
-                            <i data-feather="eye"></i> 티어 조건 보기
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-status" data-bs-toggle="tab" data-bs-target="#panel-status" 
+                                type="button" role="tab" aria-controls="panel-status" aria-selected="true">
+                            <i class="fas fa-user me-2"></i>플레이어
                         </button>
-                    </div>
-                    
-                    <!-- 접을 수 있는 티어 조건 -->
-                    <div class="collapse" id="tierConditions">
-                        <h6 class="text-muted mb-3">티어 조건</h6>
-                        <div class="row">
-                            {% for tier in stats['tier_conditions'] %}
-                                {% if tier['name'] != '언랭크' %}
-                                    <div class="col-lg-4 col-md-6 mb-3">
-                                        <div class="card {% if tier['name'] == stats['tier']['name'] %}border-warning bg-warning bg-opacity-10{% endif %}" 
-                                             style="height: 100%;">
-                                            <div class="card-body text-center p-2">
-                                                {% if tier['image'] %}
-                                                    <img src="{{ tier['image'] }}" alt="{{ tier['name'] }}" 
-                                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;" class="mb-2">
-                                                {% endif %}
-                                                <h6 class="card-title mb-1">
-                                                    <span class="badge bg-{{ tier['color'] }}">{{ tier['name'] }}</span>
-                                                    {% if tier['name'] == stats['tier']['name'] %}
-                                                        <span class="badge bg-success ms-1">달성</span>
-                                                    {% endif %}
-                                                </h6>
-                                                <small class="text-muted">
-                                                    던전 {{ tier['conditions']['dungeon'] }}회<br>
-                                                    부동산 {{ tier['conditions']['real_estate'] }}개<br>
-                                                    레벨 {{ tier['conditions']['level'] }}<br>
-                                                    업적 {{ tier['conditions']['achievement_points'] }}점
-                                                </small>
-                                            </div>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-tier" data-bs-toggle="tab" data-bs-target="#panel-tier" 
+                                type="button" role="tab" aria-controls="panel-tier" aria-selected="false">
+                            <i class="fas fa-trophy me-2"></i>티어
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-situation" data-bs-toggle="tab" data-bs-target="#panel-situation" 
+                                type="button" role="tab" aria-controls="panel-situation" aria-selected="false">
+                            <i class="fas fa-map-marker-alt me-2"></i>현재상황
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-chart" data-bs-toggle="tab" data-bs-target="#panel-chart" 
+                                type="button" role="tab" aria-controls="panel-chart" aria-selected="false">
+                            <i class="fas fa-chart-bar me-2"></i>능력치
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="tab-content">
+                <!-- 플레이어 상태 탭 -->
+                <div class="tab-pane fade show active" id="panel-status" role="tabpanel" aria-labelledby="tab-status">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- 기본 정보 -->
+                            <div class="col-md-6">
+                                <div class="bg-light p-3 rounded">
+                                    <h6 class="text-muted mb-2" style="font-size: 0.9rem;">기본 정보</h6>
+                                    <div class="row" style="font-size: 0.9rem;">
+                                        <div class="col-6">
+                                            <strong>레벨:</strong> {{ player['레벨'] }}<br>
+                                            <strong>경험치:</strong> {{ player['경험치']|int }}/{{ player['경험치최대']|int }}<br>
+                                            <strong>날짜:</strong> {{ player['날짜'] }}일<br>
+                                            <strong>시간:</strong> {{ player['시간'] }}시
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>건강:</strong> {{ "%.1f"|format(player['체력']) }}/10<br>
+                                            <strong>기력:</strong> {{ "%.1f"|format(player['기력']) }}/10<br>
+                                            <strong>돈:</strong> {{ "{:,}".format(player['돈']) }}원<br>
+                                            <strong>스탯:</strong> {{ player['스탯포인트'] }}
                                         </div>
                                     </div>
-                                {% endif %}
-                            {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- 스탯 정보 -->
+                            <div class="col-md-6">
+                                <div class="bg-light p-3 rounded">
+                                    <h6 class="text-muted mb-2" style="font-size: 0.9rem;">능력치</h6>
+                                    <div class="row" style="font-size: 0.9rem;">
+                                        <div class="col-6">
+                                            <strong>힘:</strong> {{ player['힘'] }}<br>
+                                            <strong>지능:</strong> {{ player['지능'] }}<br>
+                                            <strong>외모:</strong> {{ player['외모'] }}
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>체력:</strong> {{ player['체력스탯'] }}<br>
+                                            <strong>운:</strong> {{ player['운'] }}<br>
+                                            <strong>총합:</strong> {{ stats['total_stats'] }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 진행 상황 바 -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <small class="form-label">경험치</small>
+                                <div class="progress" style="height: 24px;">
+                                    <div class="progress-bar d-flex align-items-center justify-content-center" 
+                                         style="width: {{ (player['경험치'] / player['경험치최대'] * 100) }}%; font-size: 12px; font-weight: 500;">
+                                        {{ player['경험치']|int }}/{{ player['경험치최대']|int }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <small class="form-label">건강</small>
+                                <div class="progress" style="height: 24px;">
+                                    <div class="progress-bar bg-danger d-flex align-items-center justify-content-center" 
+                                         style="width: {{ (player['체력'] / 10 * 100) }}%; font-size: 12px; font-weight: 500;">
+                                        {{ "%.1f"|format(player['체력']) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <small class="form-label">기력</small>
+                                <div class="progress" style="height: 24px;">
+                                    <div class="progress-bar bg-info d-flex align-items-center justify-content-center" 
+                                         style="width: {{ (player['기력'] / 10 * 100) }}%; font-size: 12px; font-weight: 500;">
+                                        {{ "%.1f"|format(player['기력']) }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 현재 상황 -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-map-marker-alt me-2"></i>현재 상황
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <strong>직장:</strong><br>
-                        <span class="text-muted">{{ player['직장'] or '무직' }}</span>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>거주지:</strong><br>
-                        <span class="text-muted">{{ player['거주지'] or '노숙자' }}</span>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>건강:</strong><br>
-                        <span class="text-muted">{{ player['질병'] or '건강함' }}</span>
+                <!-- 티어 탭 -->
+                <div class="tab-pane fade" id="panel-tier" role="tabpanel" aria-labelledby="tab-tier">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 text-center">
+                                <div class="tier-display">
+                                    {% if stats['tier']['image'] %}
+                                        <div class="tier-image mb-2">
+                                            <img src="{{ stats['tier']['image'] }}" alt="{{ stats['tier']['name'] }}" 
+                                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid gold;">
+                                        </div>
+                                    {% else %}
+                                        <div class="tier-icon mb-2" style="font-size: 3rem;">❓</div>
+                                    {% endif %}
+                                    <h5 class="mb-1">
+                                        <span class="badge bg-{{ stats['tier']['color'] }}">
+                                            {{ stats['tier']['name'] }}
+                                        </span>
+                                    </h5>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2" style="font-size: 0.9rem;">달성 상황</h6>
+                                <div class="tier-stats small">
+                                    <div class="mb-2">
+                                        <strong>던전 클리어:</strong> {{ stats['dungeon_clears'] }}회
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>부동산 보유:</strong> {{ stats['real_estate_count'] }}개
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>플레이어 레벨:</strong> {{ stats['level'] }}
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>업적:</strong> {{ stats['achievement_points'] }}점
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 티어 조건 토글 버튼 -->
+                        <div class="text-center mt-3">
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" 
+                                    data-bs-target="#tierConditions" aria-expanded="false">
+                                <i data-feather="eye"></i> 티어 조건 보기
+                            </button>
+                        </div>
+                        
+                        <!-- 접을 수 있는 티어 조건 -->
+                        <div class="collapse mt-3" id="tierConditions">
+                            <h6 class="text-muted mb-3" style="font-size: 0.9rem;">티어 조건</h6>
+                            <div class="row">
+                                {% for tier in stats['tier_conditions'] %}
+                                    {% if tier['name'] != '언랭크' %}
+                                        <div class="col-lg-4 col-md-6 mb-2">
+                                            <div class="card {% if tier['name'] == stats['tier']['name'] %}border-warning bg-warning bg-opacity-10{% endif %}" 
+                                                 style="height: 100%;">
+                                                <div class="card-body text-center p-2">
+                                                    {% if tier['image'] %}
+                                                        <img src="{{ tier['image'] }}" alt="{{ tier['name'] }}" 
+                                                             style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" class="mb-2">
+                                                    {% endif %}
+                                                    <h6 class="card-title mb-1">
+                                                        <span class="badge bg-{{ tier['color'] }}" style="font-size: 0.75rem;">{{ tier['name'] }}</span>
+                                                        {% if tier['name'] == stats['tier']['name'] %}
+                                                            <span class="badge bg-success ms-1" style="font-size: 0.75rem;">달성</span>
+                                                        {% endif %}
+                                                    </h6>
+                                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                                        던전 {{ tier['conditions']['dungeon'] }}회<br>
+                                                        부동산 {{ tier['conditions']['real_estate'] }}개<br>
+                                                        레벨 {{ tier['conditions']['level'] }}<br>
+                                                        업적 {{ tier['conditions']['achievement_points'] }}점
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 스탯 차트 -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-chart-bar me-2"></i>능력치 분포
-                </h5>
-            </div>
-            <div class="card-body">
-                <canvas id="statsChart" width="400" height="200"></canvas>
+                <!-- 현재 상황 탭 -->
+                <div class="tab-pane fade" id="panel-situation" role="tabpanel" aria-labelledby="tab-situation">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>직장:</strong><br>
+                                <span class="text-muted small">{{ player['직장'] or '무직' }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>거주지:</strong><br>
+                                <span class="text-muted small">{{ player['거주지'] or '노숙자' }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>건강:</strong><br>
+                                <span class="text-muted small">{{ player['질병'] or '건강함' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 능력치 차트 탭 -->
+                <div class="tab-pane fade" id="panel-chart" role="tabpanel" aria-labelledby="tab-chart">
+                    <div class="card-body">
+                        <canvas id="statsChart" width="400" height="150"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 사이드바 -->
+    <!-- 사이드바 (탭 형식) -->
     <div class="col-lg-4">
-        <!-- 빠른 액션 -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i data-feather="zap" class="me-2"></i>빠른 액션
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <form method="POST" action="{{ url_for('sleep') }}" class="mb-2">
-                        <button type="submit" class="btn btn-success w-100">
-                            <i data-feather="moon" class="me-2"></i>잠자기 (기력/체력 회복)
-                        </button>
-                    </form>
-                    
-                    {% if player['직장'] %}
-                    <form method="POST" action="{{ url_for('work') }}" class="mb-2">
-                        <button type="submit" class="btn btn-primary w-100" 
-                                {% if player['기력'] <= 0 %}disabled{% endif %}>
-                            <i data-feather="briefcase" class="me-2"></i>근무하기
-                        </button>
-                    </form>
-                    {% endif %}
-                    
-                    <a href="{{ url_for('quiz') }}" class="btn btn-info w-100">
-                        <i data-feather="book-open" class="me-2"></i>단어 퀴즈
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- 스탯 분배 -->
-        {% if player['스탯포인트'] > 0 %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i data-feather="trending-up" class="me-2"></i>스탯 분배
-                </h5>
-            </div>
-            <div class="card-body">
-                <p class="text-muted">남은 스탯 포인트: {{ player['스탯포인트'] }}</p>
-                <form method="POST" action="{{ url_for('allocate_stats') }}">
-                    <div class="mb-3">
-                        <select name="stat_type" class="form-select" required>
-                            <option value="">스탯 선택</option>
-                            <option value="힘">힘</option>
-                            <option value="지능">지능</option>
-                            <option value="외모">외모</option>
-                            <option value="체력">체력</option>
-                            <option value="운">운</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <input type="number" name="points" class="form-control" 
-                               min="1" max="{{ player['스탯포인트'] }}" required 
-                               placeholder="분배할 포인트">
-                    </div>
-                    <button type="submit" class="btn btn-warning w-100">
-                        <i data-feather="plus" class="me-2"></i>스탯 분배
-                    </button>
-                </form>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- 통계 -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i data-feather="pie-chart" class="me-2"></i>통계
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-6">
-                        <div class="border-end">
-                            <h6 class="text-primary">{{ "%.1f"|format(stats['quiz_accuracy']) }}%</h6>
-                            <small class="text-muted">퀴즈 정답률</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <h6 class="text-success">{{ stats['wealth_rank'] }}</h6>
-                        <small class="text-muted">재산 등급</small>
-                    </div>
-                </div>
-                <hr>
-                <div class="row text-center">
-                    <div class="col-6">
-                        <div class="border-end">
-                            <h6 class="text-info">{{ stats['days_played'] }}일</h6>
-                            <small class="text-muted">플레이 일수</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <h6 class="text-warning">{{ achievements|length }}</h6>
-                        <small class="text-muted">달성한 성취</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 최근 성취 -->
-        {% if achievements %}
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <i data-feather="award" class="me-2"></i>최근 성취
-                </h5>
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-action" data-bs-toggle="tab" data-bs-target="#panel-action" 
+                                type="button" role="tab" aria-controls="panel-action" aria-selected="true">
+                            <i data-feather="zap" class="me-2"></i>액션
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-stats-dist" data-bs-toggle="tab" data-bs-target="#panel-stats-dist" 
+                                type="button" role="tab" aria-controls="panel-stats-dist" aria-selected="false">
+                            <i data-feather="pie-chart" class="me-2"></i>통계
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-achievement" data-bs-toggle="tab" data-bs-target="#panel-achievement" 
+                                type="button" role="tab" aria-controls="panel-achievement" aria-selected="false">
+                            <i data-feather="award" class="me-2"></i>성취
+                        </button>
+                    </li>
+                </ul>
             </div>
-            <div class="card-body">
-                {% for achievement in achievements[:3] %}
-                <div class="d-flex align-items-center mb-2">
-                    <i data-feather="check-circle" class="text-success me-2" size="16"></i>
-                    <small>{{ achievement }}</small>
+
+            <div class="tab-content">
+                <!-- 빠른 액션 탭 -->
+                <div class="tab-pane fade show active" id="panel-action" role="tabpanel" aria-labelledby="tab-action">
+                    <div class="card-body">
+                        <div class="d-grid gap-2 mb-3">
+                            <form method="POST" action="{{ url_for('sleep') }}">
+                                <button type="submit" class="btn btn-success w-100 btn-sm">
+                                    <i data-feather="moon" class="me-2"></i>잠자기
+                                </button>
+                            </form>
+                            
+                            {% if player['직장'] %}
+                            <form method="POST" action="{{ url_for('work') }}">
+                                <button type="submit" class="btn btn-primary w-100 btn-sm" 
+                                        {% if player['기력'] <= 0 %}disabled{% endif %}>
+                                    <i data-feather="briefcase" class="me-2"></i>근무하기
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            <a href="{{ url_for('quiz') }}" class="btn btn-info w-100 btn-sm">
+                                <i data-feather="book-open" class="me-2"></i>단어 퀴즈
+                            </a>
+                        </div>
+
+                        <!-- 스탯 분배 (액션 탭에 포함) -->
+                        {% if player['스탯포인트'] > 0 %}
+                        <div class="bg-light p-3 rounded mt-3">
+                            <h6 class="text-muted mb-2" style="font-size: 0.9rem;">스탯 분배</h6>
+                            <p class="text-muted small mb-2">남은 포인트: {{ player['스탯포인트'] }}</p>
+                            <form method="POST" action="{{ url_for('allocate_stats') }}">
+                                <div class="mb-2">
+                                    <select name="stat_type" class="form-select form-select-sm" required>
+                                        <option value="">스탯 선택</option>
+                                        <option value="힘">힘</option>
+                                        <option value="지능">지능</option>
+                                        <option value="외모">외모</option>
+                                        <option value="체력">체력</option>
+                                        <option value="운">운</option>
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="number" name="points" class="form-control form-control-sm" 
+                                           min="1" max="{{ player['스탯포인트'] }}" required 
+                                           placeholder="분배할 포인트">
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100 btn-sm">
+                                    분배
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                {% endfor %}
-                {% if achievements|length > 3 %}
-                <div class="text-center">
-                    <a href="{{ url_for('achievements') }}" class="btn btn-sm btn-outline-primary">
-                        모든 성취 보기
-                    </a>
+
+                <!-- 통계 탭 -->
+                <div class="tab-pane fade" id="panel-stats-dist" role="tabpanel" aria-labelledby="tab-stats-dist">
+                    <div class="card-body">
+                        <div class="row text-center small">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <h6 class="text-primary mb-1">{{ "%.1f"|format(stats['quiz_accuracy']) }}%</h6>
+                                    <small class="text-muted">퀴즈 정답률</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="text-success mb-1">{{ stats['wealth_rank'] }}</h6>
+                                <small class="text-muted">재산 등급</small>
+                            </div>
+                        </div>
+                        <hr class="my-2">
+                        <div class="row text-center small">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <h6 class="text-info mb-1">{{ stats['days_played'] }}일</h6>
+                                    <small class="text-muted">플레이 일수</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h6 class="text-warning mb-1">{{ achievements|length }}</h6>
+                                <small class="text-muted">달성한 성취</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                {% endif %}
+
+                <!-- 최근 성취 탭 -->
+                <div class="tab-pane fade" id="panel-achievement" role="tabpanel" aria-labelledby="tab-achievement">
+                    <div class="card-body">
+                        {% if achievements %}
+                            {% for achievement in achievements[:5] %}
+                            <div class="d-flex align-items-start mb-2">
+                                <i data-feather="check-circle" class="text-success me-2 flex-shrink-0" size="16" style="margin-top: 2px;"></i>
+                                <small>{{ achievement }}</small>
+                            </div>
+                            {% endfor %}
+                            {% if achievements|length > 5 %}
+                            <div class="text-center mt-2">
+                                <a href="{{ url_for('achievements') }}" class="btn btn-sm btn-outline-primary">
+                                    모든 성취 보기
+                                </a>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                            <p class="text-muted small">달성한 성취가 없습니다.</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -369,6 +390,7 @@ fetch('/api/player_stats')
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                 plugins: {
                     legend: {
                         display: false
