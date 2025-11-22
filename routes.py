@@ -939,11 +939,21 @@ def dungeons():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    dungeons = game_logic.get_dungeons()
+    dungeons_list = game_logic.get_dungeons()
+    
+    # 각 던전에 보상 정보 추가
+    for dungeon in dungeons_list:
+        if dungeon.get('난이도') == '커스텀':
+            # 커스텀 던전은 이미 reward_money가 설정됨
+            dungeon['reward_info'] = f"{dungeon.get('reward_money', 0):,}원"
+        else:
+            # 난이도별 보상 정보 추가
+            reward_info = game_logic.get_dungeon_reward_info(dungeon.get('난이도', '보통'))
+            dungeon['reward_info'] = f"{reward_info['min_money']:,}~{reward_info['max_money']:,}원 + 경험치 {reward_info['min_exp']}~{reward_info['max_exp']}"
     
     return render_template('dungeons.html', 
                          player=player, 
-                         dungeons=dungeons)
+                         dungeons=dungeons_list)
 
 @app.route('/dungeon/<dungeon_id>/preview')
 def dungeon_preview(dungeon_id):

@@ -43,15 +43,11 @@
                                         </small>
                                     </div>
                                     {% endif %}
-                                    {% if dungeon.get('reward_money', 0) > 0 %}
                                     <div class="mb-3">
                                         <small class="text-success">
-                                            <i class="fas fa-gift me-1"></i>클리어 보상: {{ "{:,}".format(dungeon['reward_money']) }}원 + 경험치
+                                            <i class="fas fa-gift me-1"></i>클리어 보상: {{ dungeon.get('reward_info', '경험치') }}
                                         </small>
                                     </div>
-                                    {% else %}
-                                    <div class="mb-3"></div>
-                                    {% endif %}
                                     
                                     {% if player['레벨'] >= dungeon['레벨_제한'] %}
                                         {% if dungeon.get('entry_fee', 0) > 0 and player['돈'] < dungeon['entry_fee'] %}

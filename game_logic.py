@@ -1782,6 +1782,17 @@ def check_dungeon_clear(dungeon_run):
     """던전 클리어 확인"""
     return dungeon_run['cleared_words'] >= dungeon_run['actual_clear_condition']
 
+def get_dungeon_reward_info(difficulty):
+    """난이도별 보상 정보 반환"""
+    reward_table = {
+        '쉬움': {'min_money': 500, 'max_money': 2000, 'min_exp': 100, 'max_exp': 200},
+        '보통': {'min_money': 2000, 'max_money': 5000, 'min_exp': 200, 'max_exp': 400},
+        '어려움': {'min_money': 5000, 'max_money': 15000, 'min_exp': 400, 'max_exp': 800},
+        '매우 어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
+        '매우어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
+    }
+    return reward_table.get(difficulty, reward_table['보통'])
+
 def apply_dungeon_clear_reward(player, dungeon):
     """던전 클리어 보상 적용"""
     if not dungeon:
