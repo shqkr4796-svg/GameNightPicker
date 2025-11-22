@@ -1278,6 +1278,14 @@ def all_monsters():
     # 모든 몬스터 정보 가져오기
     all_monsters_data = game_logic.get_all_monster_images()
     
+    # 플레이어 도감에 있는 몬스터 ID 확인
+    captured_monsters = set(player.get('도감', {}).keys())
+    
+    # 미포획 몬스터는 이미지를 제거 (궁금증 유발)
+    for monster_id, monster in all_monsters_data.items():
+        if monster_id not in captured_monsters:
+            monster['이미지'] = ''  # 미포획 몬스터는 이미지 비우기
+    
     # 필터링
     if filter_rarity != 'all':
         all_monsters_data = {k: v for k, v in all_monsters_data.items() if v.get('등급') == filter_rarity}
