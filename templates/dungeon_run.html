@@ -325,142 +325,100 @@ function submitChoice(choice) {
     });
 }
 
-// 글로벌 오디오 컨텍스트 및 배경음악
-let audioContext = null;
-let backgroundMusicGain = null;
-let backgroundMusicOscillators = [];
+// Tone.js 배경음악 변수
+let bgmSynth = null;
+let bgmBass = null;
+let bgmNow = null;
 
-// 오디오 컨텍스트 초기화
-function initAudioContext() {
-    if (!audioContext) {
-        try {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            console.log('오디오 컨텍스트 초기화 완료');
-        } catch(e) {
-            console.log('오디오 컨텍스트 초기화 실패:', e);
-        }
-    }
-}
-
-// 배경음악 시작 - RPG 브금 스타일
-function startBackgroundMusic() {
-    if (!audioContext) {
-        initAudioContext();
-    }
-    
-    if (!audioContext) {
-        console.log('배경음악 재생 불가 (오디오 미지원)');
-        return;
-    }
-    
+// Tone.js 배경음악 시작 - RPG 게임 브금
+async function startBackgroundMusic() {
     try {
-        // 배경음악 마스터 게인 (볼륨 증가)
-        backgroundMusicGain = audioContext.createGain();
-        backgroundMusicGain.gain.setValueAtTime(0.35, audioContext.currentTime);  // 더 높은 볼륨
-        backgroundMusicGain.connect(audioContext.destination);
+        // Tone 시작
+        await Tone.start();
         
-        const now = audioContext.currentTime;
+        // 마스터 볼륨 설정
+        Tone.Destination.volume.value = -8; // dB
         
-        // === 기본음: 저음 베이스 (80Hz) - 따뜻한 느낌의 sine ===
-        const bass = audioContext.createOscillator();
-        bass.type = 'sine';
-        bass.frequency.setValueAtTime(82, now);
+        console.log('🎵 Tone.js 배경음악 시작');
         
-        const bassGain = audioContext.createGain();
-        bassGain.gain.setValueAtTime(0.25, now);
+        // === 배스 라인 ===
+        bgmBass = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'square' },
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 1 }
+        }).toDestination();
+        bgmBass.volume.value = -15; // 낮은 볼륨
         
-        bass.connect(bassGain);
-        bassGain.connect(backgroundMusicGain);
-        bass.start();
-        backgroundMusicOscillators.push(bass);
+        // 베이스 패턴 (4박자)
+        const bassPattern = ['C1', 'C1', 'G0', 'G0', 'A#0', 'A#0', 'C1', 'C1'];
+        Tone.Loop(() => {
+            bassPattern.forEach((note, index) => {
+                Tone.Transport.schedule((time) => {
+                    bgmBass.triggerAttackRelease(note, '0.5', time);
+                }, `+${index * 0.5}s`);
+            });
+        }, '2m');
         
-        // === 중간음 1: 주 멜로디 (165Hz) - RPG 감성 ===
-        const melody1 = audioContext.createOscillator();
-        melody1.type = 'sine';
-        melody1.frequency.setValueAtTime(165, now);
+        // === 주 멜로디 신스 ===
+        bgmSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.05, decay: 0.1, sustain: 0.3, release: 0.5 }
+        }).toDestination();
+        bgmSynth.volume.value = -6;
         
-        // 부드러운 음정 변화 (8초 사이클)
-        let melodyTime = now;
-        melody1.frequency.setValueAtTime(165, melodyTime);
-        melody1.frequency.linearRampToValueAtTime(175, melodyTime + 2);
-        melody1.frequency.linearRampToValueAtTime(165, melodyTime + 4);
-        melody1.frequency.linearRampToValueAtTime(155, melodyTime + 6);
-        melody1.frequency.linearRampToValueAtTime(165, melodyTime + 8);
+        // RPG 브금 같은 멜로디 (8박자)
+        const melody = ['G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3', 
+                        'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4'];
         
-        const melody1Gain = audioContext.createGain();
-        melody1Gain.gain.setValueAtTime(0.15, now);
+        Tone.Loop(() => {
+            melody.forEach((note, index) => {
+                Tone.Transport.schedule((time) => {
+                    bgmSynth.triggerAttackRelease(note, '0.5', time);
+                }, `+${index * 0.5}s`);
+            });
+        }, '4m');
         
-        melody1.connect(melody1Gain);
-        melody1Gain.connect(backgroundMusicGain);
-        melody1.start();
-        backgroundMusicOscillators.push(melody1);
+        // === 코드 반주 ===
+        const chordSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.1, decay: 0.2, sustain: 0.4, release: 0.8 }
+        }).toDestination();
+        chordSynth.volume.value = -14;
         
-        // === 중간음 2: 화음 (247Hz) - 더 풍부한 음감 ===
-        const melody2 = audioContext.createOscillator();
-        melody2.type = 'sine';
-        melody2.frequency.setValueAtTime(247, now);
+        // 코드 패턴 (G마이너 구성)
+        const chords = [
+            ['G3', 'B3', 'D4'],
+            ['A#3', 'D4', 'F4'],
+            ['F3', 'A3', 'C4'],
+            ['D#3', 'G3', 'B3']
+        ];
         
-        // 약간 다른 패턴으로 변화
-        melody2.frequency.setValueAtTime(247, melodyTime);
-        melody2.frequency.linearRampToValueAtTime(260, melodyTime + 2);
-        melody2.frequency.linearRampToValueAtTime(247, melodyTime + 4);
-        melody2.frequency.linearRampToValueAtTime(233, melodyTime + 6);
-        melody2.frequency.linearRampToValueAtTime(247, melodyTime + 8);
+        let chordIndex = 0;
+        Tone.Loop(() => {
+            const chord = chords[chordIndex % chords.length];
+            Tone.Transport.schedule((time) => {
+                chordSynth.triggerAttackRelease(chord, '1', time);
+            }, '+0s');
+            chordIndex++;
+        }, '1m');
         
-        const melody2Gain = audioContext.createGain();
-        melody2Gain.gain.setValueAtTime(0.12, now);
+        // 트랜스포트 시작
+        if (Tone.Transport.state !== 'running') {
+            Tone.Transport.bpm.value = 90; // 느린 RPG 템포
+            Tone.Transport.start();
+        }
         
-        melody2.connect(melody2Gain);
-        melody2Gain.connect(backgroundMusicGain);
-        melody2.start();
-        backgroundMusicOscillators.push(melody2);
-        
-        // === 고음: 밝은 반주 (392Hz) - 세레니티 ===
-        const harmony = audioContext.createOscillator();
-        harmony.type = 'sine';
-        harmony.frequency.setValueAtTime(392, now);
-        
-        // 펄싱 효과로 더 음악적인 느낌
-        const harmonyGain = audioContext.createGain();
-        harmonyGain.gain.setValueAtTime(0.08, now);
-        harmonyGain.gain.linearRampToValueAtTime(0.12, now + 2);
-        harmonyGain.gain.linearRampToValueAtTime(0.08, now + 4);
-        harmonyGain.gain.linearRampToValueAtTime(0.12, now + 6);
-        harmonyGain.gain.linearRampToValueAtTime(0.08, now + 8);
-        
-        harmony.connect(harmonyGain);
-        harmonyGain.connect(backgroundMusicGain);
-        harmony.start();
-        backgroundMusicOscillators.push(harmony);
-        
-        // === 초고음: 반짝거리는 효과 (523Hz) - 부드러운 액센트 ===
-        const sparkle = audioContext.createOscillator();
-        sparkle.type = 'triangle';
-        sparkle.frequency.setValueAtTime(523, now);
-        
-        const sparkleGain = audioContext.createGain();
-        sparkleGain.gain.setValueAtTime(0.04, now);
-        
-        sparkle.connect(sparkleGain);
-        sparkleGain.connect(backgroundMusicGain);
-        sparkle.start();
-        backgroundMusicOscillators.push(sparkle);
-        
-        console.log('🎵 RPG 배경음악 시작 (볼륨 중상)');
+        console.log('🎵 RPG 배경음악 재생 중 (Tone.js)');
     } catch(e) {
         console.log('배경음악 오류:', e);
     }
 }
 
 // 배경음악 중지
-function stopBackgroundMusic() {
+async function stopBackgroundMusic() {
     try {
-        backgroundMusicOscillators.forEach(osc => {
-            try {
-                osc.stop();
-            } catch(e) {}
-        });
-        backgroundMusicOscillators = [];
+        if (bgmSynth) bgmSynth.dispose();
+        if (bgmBass) bgmBass.dispose();
+        Tone.Transport.stop();
         console.log('🎵 배경음악 종료');
     } catch(e) {
         console.log('배경음악 중지 오류:', e);
