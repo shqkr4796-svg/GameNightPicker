@@ -1365,19 +1365,15 @@ def init_dungeon_run(player, dungeon_id):
     
     # 실제 사용 가능한 단어 수에 맞춰 클리어 조건 조정
     actual_clear_condition = dungeon['clear_condition']
-    # 고유 단어가 부족하면 원본 words 사용 (중복 허용)
-    if len(unique_words) < actual_clear_condition:
-        word_queue = words[:actual_clear_condition]
-        use_duplicate = True  # 중복 허용 모드
-    else:
-        word_queue = unique_words[:actual_clear_condition]  # 고유한 단어만 선택
-        use_duplicate = False  # 중복 제거 모드
+    # unique_words를 반복해서 word_queue 구성 (중복 없음)
+    # 예: unique_words=[A, B, C], clear_condition=10 → [A, B, C, A, B, C, A, B, C, A]
+    cycles_needed = (actual_clear_condition // len(unique_words)) + (1 if actual_clear_condition % len(unique_words) else 0)
+    word_queue = (unique_words * cycles_needed)[:actual_clear_condition]
     
     # 간소화된 던전 실행 상태 (세션 용량 최적화)
     dungeon_run = {
         'dungeon_id': dungeon_id,
-        'word_indices': list(range(len(word_queue))),  # 0, 1, 2, ... 
-        'use_duplicate': use_duplicate,  # 중복 허용 여부
+        'word_indices': list(range(len(word_queue))),  # 0, 1, 2, ...
         'current_word_index': 0,
         'current_word': None,
         'current_options': [],
@@ -1501,12 +1497,10 @@ def next_monster(dungeon_run, dungeon):
                 unique_words.append(word)
                 seen_words.add(word_key)
         
-        # 사이클 재시작 (원래 설정 유지)
+        # 사이클 재시작 - unique_words를 반복 사용
         remaining_clears = dungeon_run['actual_clear_condition'] - dungeon_run['cleared_words']
-        if dungeon_run['use_duplicate'] and len(unique_words) < remaining_clears:
-            word_queue = words[:remaining_clears]
-        else:
-            word_queue = unique_words[:remaining_clears]
+        cycles_needed = (remaining_clears // len(unique_words)) + (1 if remaining_clears % len(unique_words) else 0)
+        word_queue = (unique_words * cycles_needed)[:remaining_clears]
         
         dungeon_run['word_indices'] = list(range(len(word_queue)))
         dungeon_run['current_word_index'] = 0
@@ -1529,8 +1523,11 @@ def next_monster(dungeon_run, dungeon):
             unique_words.append(word)
             seen_words.add(word_key)
     
-    # use_duplicate 플래그에 따라 적절한 배열 선택
-    word_queue = words if dungeon_run.get('use_duplicate', False) else unique_words
+    # unique_words를 반복해서 word_queue 구성
+    actual_clear = dungeon_run['actual_clear_condition']
+    cycles_needed = (actual_clear // len(unique_words)) + (1 if actual_clear % len(unique_words) else 0)
+    word_queue = (unique_words * cycles_needed)[:actual_clear]
+    
     word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
     current_word = word_queue[word_index]
     dungeon_run['current_word'] = current_word
