@@ -2491,9 +2491,9 @@ def merge_monsters(player, monster_ids):
     
     # 등급별 상위 등급 획득 확률
     rarity_upgrade_chance = {
-        '레어': 0.7,      # 레어: 70% 확률로 상위 등급
-        '에픽': 0.6,      # 에픽: 60% 확률로 상위 등급
-        '유니크': 0.4     # 유니크: 40% 확률로 상위 등급
+        '레어': 0.3,      # 레어: 30% 확률로 상위 등급
+        '에픽': 0.2,      # 에픽: 20% 확률로 상위 등급
+        '유니크': 0.1     # 유니크: 10% 확률로 상위 등급
     }
     
     upgrade_chance = rarity_upgrade_chance.get(first_monster_rarity, 0.6)
