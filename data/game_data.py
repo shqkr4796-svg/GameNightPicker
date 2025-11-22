@@ -6,7 +6,7 @@ word_bank = [
 dungeons = [
     {
         'id': 'toeic_beginner',
-        '이름': 'TOEIC 초급 던전',
+        '이름': 'TOEIC 던전',
         '난이도': '쉬움',
         '레벨_제한': 1,
         '설명': '토익 기초 단어로 구성된 초급자를 위한 던전입니다.',
@@ -14,28 +14,6 @@ dungeons = [
         'rarity_distribution': {'레어': 0.6, '에픽': 0.3, '유니크': 0.075, '레전드리': 0.025},
         'clear_condition': 200,  # 200개 몬스터 처치
         'max_health': 5  # 초급자용 기본 체력
-    },
-    {
-        'id': 'toeic_intermediate',
-        '이름': 'TOEIC 중급 던전',
-        '난이도': '보통',
-        '레벨_제한': 5,
-        '설명': '중급 수준의 토익 단어들로 구성된 던전입니다.',
-        'word_source': 'toeic',
-        'rarity_distribution': {'레어': 0.45, '에픽': 0.4, '유니크': 0.125, '레전드리': 0.025},
-        'clear_condition': 300,  # 300개 몬스터 처치
-        'max_health': 4
-    },
-    {
-        'id': 'toeic_advanced',
-        '이름': 'TOEIC 고급 던전',
-        '난이도': '어려움',
-        '레벨_제한': 10,
-        '설명': '고급 토익 단어와 복잡한 표현들로 구성된 던전입니다.',
-        'word_source': 'toeic',
-        'rarity_distribution': {'레어': 0.475, '에픽': 0.3, '유니크': 0.175, '레전드리': 0.05},
-        'clear_condition': 500,  # 500개 몬스터 처치
-        'max_health': 3  # 어려운 만큼 체력 제한
     },
     # 비즈니스 던전
     {
