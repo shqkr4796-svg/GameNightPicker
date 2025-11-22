@@ -349,18 +349,18 @@ async function startBackgroundMusic() {
         }).toDestination();
         bgmMelody.volume.value = -2;
         
-        // 멜로디 패턴 - 20초 (80개 노트, 각 0.25초)
+        // 멜로디 패턴 - 20초 (80개 노트) - 발랄한 C 메이저 스케일
         const melody = [
-            'G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',  // 2초
-            'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4',   // 4초
-            'G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',  // 6초
-            'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4',   // 8초
-            'C4', 'D4', 'C4', 'A#3', 'G3', 'G3', 'F3', 'G3',   // 10초
-            'A#3', 'C4', 'D4', 'C4', 'A#3', 'A#3', 'G3', 'A3', // 12초
-            'G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',  // 14초
-            'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4',   // 16초
-            'C4', 'D4', 'C4', 'A#3', 'G3', 'F3', 'G3', 'A#3',  // 18초
-            'G3', 'G3', 'G3', 'A#3', 'C4', 'C4', 'C4', 'G3'    // 20초
+            'C4', 'E4', 'G4', 'E4', 'C4', 'D4', 'E4', 'F4',    // 2초 - 밝고 발랄한 시작
+            'G4', 'G4', 'A4', 'G4', 'E4', 'F4', 'G4', 'C4',    // 4초 - 상승 멜로디
+            'C4', 'E4', 'G4', 'B4', 'A4', 'G4', 'A4', 'B4',    // 6초 - 다양한 음정
+            'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4',    // 8초 - 하강 스케일
+            'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5',    // 10초 - 상승 스케일
+            'D5', 'C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'C4',    // 12초 - 다시 내려옴
+            'G4', 'A4', 'B4', 'C5', 'B4', 'A4', 'G4', 'F4',    // 14초 - 다양한 점프
+            'E4', 'F4', 'G4', 'E4', 'C4', 'D4', 'E4', 'F4',    // 16초 - 반복되는 패턴
+            'G4', 'B4', 'D5', 'C5', 'B4', 'A4', 'G4', 'E4',    // 18초 - 활기찬 음정
+            'C4', 'C4', 'E4', 'G4', 'C5', 'G4', 'E4', 'C4'     // 20초 - 우아한 마무리
         ];
         
         Tone.Transport.scheduleRepeat((time) => {
@@ -376,12 +376,12 @@ async function startBackgroundMusic() {
         }).toDestination();
         bgmChord.volume.value = -8;
         
-        // 코드 패턴 - 20초 사이클
+        // 코드 패턴 - C 메이저 기반 밝은 코드
         const chords = [
-            ['G3', 'B3', 'D4'],
-            ['A#3', 'D4', 'F4'],
-            ['F3', 'A3', 'C4'],
-            ['D#3', 'G3', 'B3']
+            ['C3', 'E3', 'G3'],      // C 메이저
+            ['F3', 'A3', 'C4'],      // F 메이저
+            ['G3', 'B3', 'D4'],      // G 메이저
+            ['C3', 'E3', 'G3']       // C 메이저 (반복)
         ];
         
         let chordIdx = 0;
@@ -436,6 +436,7 @@ function playMonsterAppearanceSound(rarity) {
         
         const now = audioContext.currentTime;
         const masterGain = audioContext.createGain();
+        masterGain.gain.setValueAtTime(0.5, now);  // 볼륨 50%로 높임
         masterGain.connect(audioContext.destination);
         
         console.log('재생 중:', rarity, '효과음');
