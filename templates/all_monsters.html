@@ -20,25 +20,27 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a href="{{ url_for('all_monsters', rarity='all') }}" class="btn {% if filter_rarity == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                            <i class="fas fa-th me-1"></i>전체 (53)
-                        </a>
-                        <a href="{{ url_for('all_monsters', rarity='레어') }}" class="btn {% if filter_rarity == '레어' %}btn-success{% else %}btn-outline-success{% endif %}">
-                            <i class="fas fa-star me-1"></i>레어 (12)
-                        </a>
-                        <a href="{{ url_for('all_monsters', rarity='에픽') }}" class="btn {% if filter_rarity == '에픽' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                            <i class="fas fa-star me-1"></i>에픽 (12)
-                        </a>
-                        <a href="{{ url_for('all_monsters', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-filter-warning{% endif %}">
-                            <i class="fas fa-star me-1"></i>유니크 (12)
-                        </a>
-                        <a href="{{ url_for('all_monsters', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-filter-danger{% endif %}">
-                            <i class="fas fa-star me-1"></i>레전드리 (14)
-                        </a>
-                        <a href="{{ url_for('all_monsters', rarity='신화급') }}" class="btn {% if filter_rarity == '신화급' %}btn-light{% else %}btn-outline-light{% endif %}" style="border-color: #FFD700; color: #FFD700;">
-                            <i class="fas fa-crown me-1"></i>신화급 (3)
-                        </a>
+                    <div class="filter-buttons-wrapper-all">
+                        <div class="btn-group btn-group" role="group">
+                            <a href="{{ url_for('all_monsters', rarity='all') }}" class="btn {% if filter_rarity == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                <i class="fas fa-th me-1"></i>전체 (53)
+                            </a>
+                            <a href="{{ url_for('all_monsters', rarity='레어') }}" class="btn {% if filter_rarity == '레어' %}btn-success{% else %}btn-outline-success{% endif %}">
+                                <i class="fas fa-star me-1"></i>레어 (12)
+                            </a>
+                            <a href="{{ url_for('all_monsters', rarity='에픽') }}" class="btn {% if filter_rarity == '에픽' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                <i class="fas fa-star me-1"></i>에픽 (12)
+                            </a>
+                            <a href="{{ url_for('all_monsters', rarity='유니크') }}" class="btn {% if filter_rarity == '유니크' %}btn-warning{% else %}btn-filter-warning{% endif %}">
+                                <i class="fas fa-star me-1"></i>유니크 (12)
+                            </a>
+                            <a href="{{ url_for('all_monsters', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-filter-danger{% endif %}">
+                                <i class="fas fa-star me-1"></i>레전드리 (14)
+                            </a>
+                            <a href="{{ url_for('all_monsters', rarity='신화급') }}" class="btn {% if filter_rarity == '신화급' %}btn-light{% else %}btn-outline-light{% endif %}" style="border-color: #FFD700; color: #FFD700;">
+                                <i class="fas fa-crown me-1"></i>신화급 (3)
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -174,6 +176,31 @@
     color: #fff !important;
     border-color: #dc3545;
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.filter-buttons-wrapper-all {
+    display: flex;
+    width: 100%;
+}
+
+.filter-buttons-wrapper-all .btn-group {
+    display: flex;
+    white-space: nowrap;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.filter-buttons-wrapper-all .btn-group .btn {
+    flex-shrink: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .filter-buttons-wrapper-all .btn-group {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 </style>
 {% endblock %}
