@@ -36,8 +36,13 @@
         </div>
     </div>
 
+    <!-- 합성 효과음 -->
+    <audio id="fusion-sound">
+        <source src="{{ url_for('static', filename='sounds/맞춘효과음.mp3') }}" type="audio/mpeg">
+    </audio>
+
     <!-- 등급별 몬스터 선택 -->
-    <form method="POST" action="{{ url_for('perform_fusion') }}">
+    <form method="POST" action="{{ url_for('perform_fusion') }}" id="fusion-form">
         {% for rarity in ['레어', '에픽', '유니크', '레전드리'] %}
             {% if monsters_by_rarity.get(rarity) %}
             <div class="row mb-4">
@@ -160,6 +165,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectionCount = document.getElementById('selection-count');
     const selectionRarity = document.getElementById('selection-rarity');
     const fusionBtn = document.getElementById('fusion-btn');
+    const fusionForm = document.getElementById('fusion-form');
+    const fusionSound = document.getElementById('fusion-sound');
 
     function updateSelection() {
         const selectedCheckboxes = document.querySelectorAll('.rarity-checkbox:checked');
@@ -198,6 +205,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     checkboxes.forEach(cb => {
         cb.addEventListener('change', updateSelection);
+    });
+
+    // 합성 버튼 클릭 시 효과음 재생
+    fusionBtn.addEventListener('click', function(e) {
+        // 효과음 재생
+        fusionSound.currentTime = 0;
+        fusionSound.play().catch(function(error) {
+            console.log('효과음 재생 실패:', error);
+        });
     });
 });
 </script>
