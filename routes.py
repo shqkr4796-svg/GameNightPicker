@@ -696,11 +696,7 @@ def apply_job():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    try:
-        job_id = int(request.form.get('job_id', 0))
-    except (ValueError, TypeError):
-        flash('잘못된 직업 ID입니다.', 'error')
-        return redirect(url_for('job'))
+    job_id = int(request.form.get('job_id', 0))
     
     result = game_logic.apply_for_job(player, job_id)
     session['player_data'] = player
@@ -749,11 +745,7 @@ def buy_property():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    try:
-        property_id = int(request.form.get('property_id', 0))
-    except (ValueError, TypeError):
-        flash('잘못된 부동산 ID입니다.', 'error')
-        return redirect(url_for('real_estate'))
+    property_id = int(request.form.get('property_id', 0))
     
     result = game_logic.buy_property(player, property_id)
     session['player_data'] = player
@@ -802,11 +794,7 @@ def buy_item():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    try:
-        item_id = int(request.form.get('item_id', 0))
-    except (ValueError, TypeError):
-        flash('잘못된 아이템 ID입니다.', 'error')
-        return redirect(url_for('shop'))
+    item_id = int(request.form.get('item_id', 0))
     
     result = game_logic.buy_item(player, item_id)
     session['player_data'] = player
@@ -886,11 +874,7 @@ def allocate_stats():
     
     player = session['player_data']
     stat_type = request.form.get('stat_type')
-    try:
-        points = int(request.form.get('points', 0))
-    except (ValueError, TypeError):
-        flash('잘못된 포인트입니다.', 'error')
-        return redirect(url_for('dashboard'))
+    points = int(request.form.get('points', 0))
     
     result = game_logic.allocate_stat_points(player, stat_type, points)
     session['player_data'] = player
