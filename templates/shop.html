@@ -99,7 +99,7 @@
         {% endif %}
 
         <!-- 일반 인벤토리 -->
-        {% if player.get('인벤토리') and player['인벤토리']|length > 0 %}
+        {% if inventory_with_images and inventory_with_images|length > 0 %}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
@@ -108,15 +108,23 @@
             </div>
             <div class="card-body">
                 <div class="text-center mb-3">
-                    <h3 class="text-info">{{ player['인벤토리']|length }}</h3>
+                    <h3 class="text-info">{{ inventory_with_images|length }}</h3>
                     <small class="text-muted">보유 아이템 수</small>
                 </div>
                 
-                <div class="list-group list-group-flush">
-                    {% for item in player['인벤토리'] %}
-                    <div class="list-group-item d-flex align-items-center px-0">
-                        <i data-feather="check-circle" class="text-success me-2" size="16"></i>
-                        <small>{{ item }}</small>
+                <div class="row">
+                    {% for item in inventory_with_images %}
+                    <div class="col-6 mb-3">
+                        <div class="card h-100 border-success" style="text-align: center;">
+                            {% if item.image %}
+                            <div style="height: 80px; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <img src="{{ item.image }}" alt="{{ item.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain; padding: 8px;">
+                            </div>
+                            {% endif %}
+                            <div class="card-body p-2">
+                                <small class="fw-bold">{{ item.name }}</small>
+                            </div>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>

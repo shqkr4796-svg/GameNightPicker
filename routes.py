@@ -785,7 +785,18 @@ def shop():
     player = session['player_data']
     items = game_logic.get_shop_items()
     
-    return render_template('shop.html', player=player, items=items)
+    # 인벤토리 아이템에 이미지 정보 추가
+    inventory_with_images = []
+    for item_name in player.get('인벤토리', []):
+        for item in items:
+            if item['이름'] == item_name:
+                inventory_with_images.append({
+                    'name': item_name,
+                    'image': item.get('이미지', '')
+                })
+                break
+    
+    return render_template('shop.html', player=player, items=items, inventory_with_images=inventory_with_images)
 
 @app.route('/buy_item', methods=['POST'])
 def buy_item():
