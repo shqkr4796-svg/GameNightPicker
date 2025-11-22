@@ -366,6 +366,96 @@ function playPunchSound() {
     }
 }
 
+// 포획 효과음 (던지기→비행→충격→반짝임→성공음)
+function playCaptureSound() {
+    try {
+        if (!audioContext) {
+            initAudioContext();
+        }
+        
+        if (!audioContext) {
+            return;
+        }
+        
+        const now = audioContext.currentTime;
+        
+        // 단계 1: 던지기 음 (짧고 낮은 음)
+        const throw1 = audioContext.createOscillator();
+        const throwGain = audioContext.createGain();
+        throw1.frequency.setValueAtTime(400, now);
+        throwGain.gain.setValueAtTime(0.25, now);
+        throwGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        throw1.connect(throwGain);
+        throwGain.connect(audioContext.destination);
+        throw1.start(now);
+        throw1.stop(now + 0.08);
+        
+        // 단계 2: 비행음 (상승하는 음 0.15초부터)
+        const fly = audioContext.createOscillator();
+        const flyGain = audioContext.createGain();
+        fly.type = 'sine';
+        fly.frequency.setValueAtTime(600, now + 0.15);
+        fly.frequency.linearRampToValueAtTime(800, now + 0.35);
+        flyGain.gain.setValueAtTime(0.2, now + 0.15);
+        flyGain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        fly.connect(flyGain);
+        flyGain.connect(audioContext.destination);
+        fly.start(now + 0.15);
+        fly.stop(now + 0.35);
+        
+        // 단계 3: 충격음 (0.4초부터, 낮고 단단한 음)
+        const impact = audioContext.createOscillator();
+        const impactGain = audioContext.createGain();
+        impact.type = 'square';
+        impact.frequency.setValueAtTime(300, now + 0.4);
+        impact.frequency.exponentialRampToValueAtTime(150, now + 0.45);
+        impactGain.gain.setValueAtTime(0.35, now + 0.4);
+        impactGain.gain.exponentialRampToValueAtTime(0.01, now + 0.48);
+        impact.connect(impactGain);
+        impactGain.connect(audioContext.destination);
+        impact.start(now + 0.4);
+        impact.stop(now + 0.48);
+        
+        // 단계 4: 반짝임 효과 (0.5초부터, 높은 음)
+        const sparkle = audioContext.createOscillator();
+        const sparkleGain = audioContext.createGain();
+        sparkle.type = 'sine';
+        sparkle.frequency.setValueAtTime(1200, now + 0.5);
+        sparkleGain.gain.setValueAtTime(0.15, now + 0.5);
+        sparkleGain.gain.exponentialRampToValueAtTime(0.01, now + 0.58);
+        sparkle.connect(sparkleGain);
+        sparkleGain.connect(audioContext.destination);
+        sparkle.start(now + 0.5);
+        sparkle.stop(now + 0.58);
+        
+        // 단계 5: 성공음 (0.6초부터, 밝은 음)
+        const success1 = audioContext.createOscillator();
+        const successGain1 = audioContext.createGain();
+        success1.frequency.setValueAtTime(800, now + 0.6);
+        successGain1.gain.setValueAtTime(0.25, now + 0.6);
+        successGain1.gain.exponentialRampToValueAtTime(0.01, now + 0.73);
+        success1.connect(successGain1);
+        successGain1.connect(audioContext.destination);
+        success1.start(now + 0.6);
+        success1.stop(now + 0.73);
+        
+        // 성공음 2 (더 높은 음)
+        const success2 = audioContext.createOscillator();
+        const successGain2 = audioContext.createGain();
+        success2.frequency.setValueAtTime(1000, now + 0.75);
+        successGain2.gain.setValueAtTime(0.2, now + 0.75);
+        successGain2.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
+        success2.connect(successGain2);
+        successGain2.connect(audioContext.destination);
+        success2.start(now + 0.75);
+        success2.stop(now + 0.9);
+        
+        console.log('🎣 포획 효과음 재생');
+    } catch(e) {
+        console.log('포획음 오류:', e.message);
+    }
+}
+
 function submitChoice(choice) {
     const formData = new FormData();
     formData.append('choice', choice);
@@ -389,9 +479,7 @@ function submitChoice(choice) {
         // 포획 여부 확인 및 효과음 재생
         if (data.captured) {
             console.log('🎣 포획 메시지 감지 (AJAX):', data.message.substring(0, 50));
-            if (window.soundManager && window.soundManager.playCapture) {
-                window.soundManager.playCapture();
-            }
+            playCaptureSound();
         } else {
             // 타격음 재생
             playPunchSound();
