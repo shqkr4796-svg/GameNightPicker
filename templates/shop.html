@@ -20,6 +20,11 @@
                     <div class="col-md-6 col-lg-4 mb-3">
                         <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} 
                              border-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %}">
+                            {% if item.get('이미지') %}
+                            <div style="height: 150px; overflow: hidden; background: #f8f9fa;">
+                                <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" class="w-100 h-100" style="object-fit: cover;">
+                            </div>
+                            {% endif %}
                             <div class="card-header p-2">
                                 <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
                                 <span class="badge bg-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %} fs-7">
