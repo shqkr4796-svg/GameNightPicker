@@ -1365,7 +1365,11 @@ def init_dungeon_run(player, dungeon_id):
     
     # 실제 사용 가능한 단어 수에 맞춰 클리어 조건 조정
     actual_clear_condition = dungeon['clear_condition']
-    word_queue = unique_words[:actual_clear_condition]  # 고유한 단어만 선택
+    # 고유 단어가 부족하면 원본 words 사용 (중복 허용)
+    if len(unique_words) < actual_clear_condition:
+        word_queue = words[:actual_clear_condition]
+    else:
+        word_queue = unique_words[:actual_clear_condition]  # 고유한 단어만 선택
     
     # 간소화된 던전 실행 상태 (세션 용량 최적화)
     dungeon_run = {
