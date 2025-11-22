@@ -20,8 +20,8 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <div class="filter-buttons-wrapper-all">
-                        <div class="btn-group btn-group" role="group">
+                    <div class="filter-buttons-wrapper-all" style="display: flex; width: 100%; min-width: 0;">
+                        <div class="btn-group btn-group" role="group" style="display: flex; white-space: nowrap; flex-wrap: nowrap; width: 100%; min-width: 0;">
                             <a href="{{ url_for('all_monsters', rarity='all') }}" class="btn {% if filter_rarity == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                                 <i class="fas fa-th me-1"></i>전체 (53)
                             </a>
@@ -37,7 +37,7 @@
                             <a href="{{ url_for('all_monsters', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-filter-danger{% endif %}">
                                 <i class="fas fa-star me-1"></i>레전드리 (14)
                             </a>
-                            <a href="{{ url_for('all_monsters', rarity='신화급') }}" class="btn btn-mythic {% if filter_rarity == '신화급' %}active{% else %}{% endif %}">
+                            <a href="{{ url_for('all_monsters', rarity='신화급') }}" class="btn btn-mythic {% if filter_rarity == '신화급' %}active{% else %}{% endif %}" style="flex-shrink: 0; padding: 0.5rem 1rem; font-size: 0.95rem; white-space: nowrap; background-color: #fff; color: #17a2b8; border: 2px solid #17a2b8; font-weight: 500;{% if filter_rarity == '신화급' %} background-color: #17a2b8; color: #fff;{% endif %}">
                                 <i class="fas fa-crown me-1"></i>신화급 (3)
                             </a>
                         </div>
