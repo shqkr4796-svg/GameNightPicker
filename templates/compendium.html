@@ -40,7 +40,7 @@
                                 <a href="{{ url_for('compendium', rarity='레전드리') }}" class="btn {% if filter_rarity == '레전드리' %}btn-danger{% else %}btn-filter-danger{% endif %}">
                                     <i class="fas fa-star me-1"></i>레전드리
                                 </a>
-                                <a href="{{ url_for('compendium', rarity='신화급') }}" class="btn {% if filter_rarity == '신화급' %}btn-info{% else %}btn-outline-info{% endif %}">
+                                <a href="{{ url_for('compendium', rarity='신화급') }}" class="btn btn-mythic {% if filter_rarity == '신화급' %}active{% else %}{% endif %}">
                                     <i class="fas fa-crown me-1"></i>신화급
                                 </a>
                             </div>
@@ -219,19 +219,43 @@
 .filter-buttons-wrapper {
     display: flex;
     width: 100%;
+    min-width: 0;
 }
 
 .filter-buttons-wrapper .btn-group {
     display: flex;
     white-space: nowrap;
-    overflow-x: auto;
+    flex-wrap: nowrap;
     width: 100%;
+    min-width: 0;
 }
 
 .filter-buttons-wrapper .btn-group .btn {
     flex-shrink: 0;
     padding: 0.5rem 1rem;
     font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.btn-mythic {
+    background-color: #fff;
+    color: #17a2b8 !important;
+    border: 2px solid #17a2b8;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-mythic:hover {
+    background-color: #17a2b8;
+    color: #fff !important;
+    border-color: #17a2b8;
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.btn-mythic.active {
+    background-color: #17a2b8;
+    color: #fff !important;
+    border-color: #17a2b8;
 }
 
 @media (max-width: 768px) {
