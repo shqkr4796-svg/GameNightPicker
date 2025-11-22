@@ -1144,7 +1144,7 @@ def answer_dungeon():
             if not dungeon_run.get('wrong_questions_mode'):
                 # 커스텀 던전이 아닐 때만 던전클리어횟수 증가
                 dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
-                if dungeon.get('난이도') != '커스텀':
+                if dungeon and dungeon.get('난이도') != '커스텀':
                     player['던전클리어횟수'] = player.get('던전클리어횟수', 0) + 1
                 
                 # 던전 클리어 보상 적용
