@@ -263,6 +263,20 @@
             </div>
         </div>
         {% endif %}
+        
+        <!-- 배경음악 제어 -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-music me-2"></i>배경음악
+                </h6>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="bgm-toggle-btn" onclick="toggleBackgroundMusic()">
+                    <i class="fas fa-volume-up me-1"></i><span id="bgm-status">끄기</span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -387,6 +401,24 @@ function submitChoice(choice) {
 let audioContext = null;
 let bgmOscillators = [];
 let bgmGains = [];
+let bgmIsPlaying = false;
+
+// 배경음악 토글 함수
+function toggleBackgroundMusic() {
+    if (bgmIsPlaying) {
+        stopBackgroundMusic();
+        bgmIsPlaying = false;
+        document.getElementById('bgm-status').textContent = '켜기';
+        document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-success');
+        document.getElementById('bgm-toggle-btn').classList.add('btn-outline-secondary');
+    } else {
+        startBackgroundMusic();
+        bgmIsPlaying = true;
+        document.getElementById('bgm-status').textContent = '끄기';
+        document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-secondary');
+        document.getElementById('bgm-toggle-btn').classList.add('btn-outline-success');
+    }
+}
 
 // 오디오 컨텍스트 초기화
 function initAudioContext() {
@@ -517,6 +549,12 @@ function startBackgroundMusic() {
         
         // 중지할 때 타이머 정리를 위해 저장
         window.bgmLoopTimer = loopTimer;
+        bgmIsPlaying = true;
+        
+        // 버튼 상태 업데이트
+        document.getElementById('bgm-status').textContent = '끄기';
+        document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-secondary');
+        document.getElementById('bgm-toggle-btn').classList.add('btn-outline-success');
         
         console.log('🎵 Web Audio API RPG 배경음악 재생 중');
     } catch(e) {
@@ -539,6 +577,15 @@ function stopBackgroundMusic() {
         });
         bgmOscillators = [];
         bgmGains = [];
+        bgmIsPlaying = false;
+        
+        // 버튼 상태 업데이트
+        const btn = document.getElementById('bgm-toggle-btn');
+        if (btn) {
+            document.getElementById('bgm-status').textContent = '켜기';
+            btn.classList.remove('btn-outline-success');
+            btn.classList.add('btn-outline-secondary');
+        }
         
         console.log('🎵 배경음악 종료');
     } catch(e) {
