@@ -854,7 +854,17 @@ def inventory():
     
     player = session['player_data']
     shop_items = game_logic.get_shop_items()
-    return render_template('inventory.html', player=player, shop_items=shop_items)
+    
+    # 빠른 접근을 위해 아이템 정보를 딕셔너리로 변환
+    weapons_info = {}
+    items_info = {}
+    for item in shop_items:
+        if item['타입'] == '무기':
+            weapons_info[item['이름']] = item
+        elif item.get('타입') == '던전':
+            items_info[item['이름']] = item
+    
+    return render_template('inventory.html', player=player, weapons_info=weapons_info, items_info=items_info)
 
 @app.route('/allocate_stats', methods=['POST'])
 def allocate_stats():
