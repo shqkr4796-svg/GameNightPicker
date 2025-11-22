@@ -1167,10 +1167,7 @@ def answer_dungeon():
     session['player_data'] = player
     game_logic.save_game(player)
     
-    # Flash 메시지 설정
-    flash(result['message'], 'success' if result['correct'] else 'warning')
-    
-    # AJAX 요청인 경우 JSON 반환 (페이지 새로고침 시 flash 메시지 자동 표시)
+    # AJAX 요청인 경우 JSON 반환 (flash 메시지 설정 X)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # 포획 여부 감지
         is_captured = '도감에 등록했습니다' in result['message'] or '도감에 추가했습니다' in result['message']
@@ -1180,6 +1177,8 @@ def answer_dungeon():
             'captured': is_captured
         })
     
+    # Flash 메시지 설정 (AJAX가 아닐 때만)
+    flash(result['message'], 'success' if result['correct'] else 'warning')
     return redirect(url_for('dungeon_run'))
 
 @app.route('/dungeon/leave', methods=['POST'])
