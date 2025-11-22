@@ -377,6 +377,10 @@ function submitChoice(choice) {
     })
     .then(response => response.json())
     .then(data => {
+        // 현재 배경음악 상태를 로컬스토리지에 저장
+        localStorage.setItem('dungeonBgmEnabled', bgmIsPlaying ? 'true' : 'false');
+        console.log('💾 배경음악 상태 저장:', bgmIsPlaying ? '켜짐' : '꺼짐');
+        
         // 타격음 재생
         playPunchSound();
         
