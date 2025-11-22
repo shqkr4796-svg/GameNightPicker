@@ -493,16 +493,16 @@ function submitChoice(choice) {
             playPunchSound();
         }
         
-        // 효과음이 완료될 때까지 약간 대기 후 페이지 이동 (2초 대기로 메시지 확인 가능)
+        // 효과음이 완료될 때까지 약간 대기 후 페이지 이동
         setTimeout(() => {
             if (data.game_over) {
                 window.location.href = '{{ url_for("dungeons") }}';
             } else {
-                // 캐시 버스팅: 현재 URL에 타임스탬프 추가해서 강제 새로고침
+                // 캐시 버스팅: 현재 URL에 타임스탐프 추가해서 강제 새로고침
                 const currentUrl = window.location.pathname + window.location.search;
                 window.location.href = currentUrl + (window.location.search ? '&' : '?') + 't=' + Date.now();
             }
-        }, 2000);  // 2초 대기 (메시지 표시 시간)
+        }, 800);  // 800ms 대기 (빠른 진행)
     })
     .catch(error => {
         console.error('Error:', error);
