@@ -25,7 +25,9 @@ def load_game():
     """게임 불러오기"""
     loaded_data = game_logic.load_game()
     if loaded_data:
+        session.permanent = True
         session['player_data'] = loaded_data
+        print(f"DEBUG: 로드된 도감 몬스터 수: {len(loaded_data.get('도감', {}))}")
         flash('게임을 불러왔습니다!', 'success')
         return redirect(url_for('dashboard'))
     else:
