@@ -58,13 +58,11 @@
                                 {% for weapon_name, count in player['무기_인벤토리'].items() %}
                                     {% if count > 0 %}
                                         {% set weapon_info = none %}
-                                        {% if shop_items %}
-                                            {% for item in shop_items %}
-                                                {% if item['이름'] == weapon_name and item['타입'] == '무기' %}
-                                                    {% set weapon_info = item %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
+                                        {% for item in shop_items %}
+                                            {% if item['이름'] == weapon_name and item['타입'] == '무기' %}
+                                                {% set weapon_info = item %}
+                                            {% endif %}
+                                        {% endfor %}
                                         
                                         <div class="col-md-6 mb-3">
                                             <div class="card bg-secondary">
@@ -130,13 +128,11 @@
                                 {% for item_name, count in player['던전_인벤토리'].items() %}
                                     {% if count > 0 %}
                                         {% set item_info = none %}
-                                        {% if shop_items %}
-                                            {% for item in shop_items %}
-                                                {% if item['이름'] == item_name and item.get('타입') == '던전' %}
-                                                    {% set item_info = item %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
+                                        {% for item in shop_items %}
+                                            {% if item['이름'] == item_name and item.get('타입') == '던전' %}
+                                                {% set item_info = item %}
+                                            {% endif %}
+                                        {% endfor %}
                                         
                                         <div class="col-md-6 mb-3">
                                             <div class="card bg-secondary">
