@@ -1172,9 +1172,12 @@ def answer_dungeon():
     
     # AJAX 요청인 경우 JSON 반환 (페이지 새로고침 시 flash 메시지 자동 표시)
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # 포획 여부 감지
+        is_captured = '도감에 등록했습니다' in result['message'] or '도감에 추가했습니다' in result['message']
         return jsonify({
             'success': result['correct'],
-            'message': result['message']
+            'message': result['message'],
+            'captured': is_captured
         })
     
     return redirect(url_for('dungeon_run'))

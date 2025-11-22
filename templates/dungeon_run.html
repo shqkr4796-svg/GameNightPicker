@@ -386,10 +386,18 @@ function submitChoice(choice) {
         localStorage.setItem('dungeonBgmEnabled', bgmIsPlaying ? 'true' : 'false');
         console.log('💾 배경음악 상태 저장:', bgmIsPlaying ? '켜짐' : '꺼짐');
         
-        // 타격음 재생
-        playPunchSound();
+        // 포획 여부 확인 및 효과음 재생
+        if (data.captured) {
+            console.log('🎣 포획 메시지 감지 (AJAX):', data.message.substring(0, 50));
+            if (window.soundManager && window.soundManager.playCapture) {
+                window.soundManager.playCapture();
+            }
+        } else {
+            // 타격음 재생
+            playPunchSound();
+        }
         
-        // 타격음이 완료될 때까지 약간 대기 후 페이지 이동
+        // 효과음이 완료될 때까지 약간 대기 후 페이지 이동
         setTimeout(() => {
             if (data.game_over) {
                 window.location.href = '{{ url_for("dungeons") }}';
@@ -398,7 +406,7 @@ function submitChoice(choice) {
                 const currentUrl = window.location.pathname + window.location.search;
                 window.location.href = currentUrl + (window.location.search ? '&' : '?') + 't=' + Date.now();
             }
-        }, 200);  // 타격음 재생 시간 확보
+        }, 200);  // 효과음 재생 시간 확보
     })
     .catch(error => {
         console.error('Error:', error);
