@@ -1354,6 +1354,16 @@ def init_dungeon_run(player, dungeon_id):
     # 던전 실행 상태 초기화 - 단어 순서 랜덤화
     random.shuffle(words)  # 단어 순서 랜덤화
     
+    # 중복 제거 (같은 단어가 여러 번 나타나지 않도록)
+    unique_words = []
+    seen_words = set()
+    for word in words:
+        word_key = word['단어']  # 단어를 고유 키로 사용
+        if word_key not in seen_words:
+            unique_words.append(word)
+            seen_words.add(word_key)
+    words = unique_words
+    
     # 실제 사용 가능한 단어 수에 맞춰 클리어 조건 조정
     actual_clear_condition = min(dungeon['clear_condition'], len(words))
     word_queue = words[:actual_clear_condition]  # 실제 사용 가능한 단어만큼 선택
