@@ -184,12 +184,12 @@
                                                              style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" class="mb-2">
                                                     {% endif %}
                                                     <h6 class="card-title mb-1">
-                                                        <span class="badge bg-{{ tier['color'] }}" style="font-size: 0.75rem;">{{ tier['name'] }}</span>
+                                                        <span class="badge bg-{{ tier['color'] }}{% if tier['name'] == '실버' %} text-dark{% endif %}" style="font-size: 0.75rem;">{{ tier['name'] }}</span>
                                                         {% if tier['name'] == stats['tier']['name'] %}
                                                             <span class="badge bg-success ms-1" style="font-size: 0.75rem;">달성</span>
                                                         {% endif %}
                                                     </h6>
-                                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                                    <small class="{% if tier['name'] == '실버' %}text-dark{% else %}text-muted{% endif %}" style="font-size: 0.75rem;">
                                                         던전 {{ tier['conditions']['dungeon'] }}회<br>
                                                         부동산 {{ tier['conditions']['real_estate'] }}개<br>
                                                         레벨 {{ tier['conditions']['level'] }}<br>
