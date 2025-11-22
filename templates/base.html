@@ -74,6 +74,19 @@
             font-weight: 500;
         }
 
+        /* 네비게이션 메뉴 2열 6행 레이아웃 */
+        .navbar-nav {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .nav-item {
+            margin: 0 !important;
+        }
+
         /* 카드 */
         .card {
             background-color: var(--card-bg);
