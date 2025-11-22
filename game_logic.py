@@ -1785,11 +1785,11 @@ def check_dungeon_clear(dungeon_run):
 def get_dungeon_reward_info(difficulty):
     """난이도별 보상 정보 반환"""
     reward_table = {
-        '쉬움': {'min_money': 500, 'max_money': 2000, 'min_exp': 100, 'max_exp': 200},
-        '보통': {'min_money': 2000, 'max_money': 5000, 'min_exp': 200, 'max_exp': 400},
-        '어려움': {'min_money': 5000, 'max_money': 15000, 'min_exp': 400, 'max_exp': 800},
-        '매우 어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
-        '매우어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
+        '쉬움': {'min_money': 5000, 'max_money': 20000, 'min_exp': 1000, 'max_exp': 2000},
+        '보통': {'min_money': 20000, 'max_money': 50000, 'min_exp': 2000, 'max_exp': 4000},
+        '어려움': {'min_money': 50000, 'max_money': 150000, 'min_exp': 4000, 'max_exp': 8000},
+        '매우 어려움': {'min_money': 150000, 'max_money': 400000, 'min_exp': 8000, 'max_exp': 15000},
+        '매우어려움': {'min_money': 150000, 'max_money': 400000, 'min_exp': 8000, 'max_exp': 15000},
     }
     return reward_table.get(difficulty, reward_table['보통'])
 
@@ -1802,11 +1802,11 @@ def apply_dungeon_clear_reward(player, dungeon):
     
     # 난이도별 보상 설정
     reward_table = {
-        '쉬움': {'min_money': 500, 'max_money': 2000, 'min_exp': 100, 'max_exp': 200},
-        '보통': {'min_money': 2000, 'max_money': 5000, 'min_exp': 200, 'max_exp': 400},
-        '어려움': {'min_money': 5000, 'max_money': 15000, 'min_exp': 400, 'max_exp': 800},
-        '매우 어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
-        '매우어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
+        '쉬움': {'min_money': 5000, 'max_money': 20000, 'min_exp': 1000, 'max_exp': 2000},
+        '보통': {'min_money': 20000, 'max_money': 50000, 'min_exp': 2000, 'max_exp': 4000},
+        '어려움': {'min_money': 50000, 'max_money': 150000, 'min_exp': 4000, 'max_exp': 8000},
+        '매우 어려움': {'min_money': 150000, 'max_money': 400000, 'min_exp': 8000, 'max_exp': 15000},
+        '매우어려움': {'min_money': 150000, 'max_money': 400000, 'min_exp': 8000, 'max_exp': 15000},
     }
     
     # 커스텀 던전 보상 (이미 정의되어 있는 경우)
