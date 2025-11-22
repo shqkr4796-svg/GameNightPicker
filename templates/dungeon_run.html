@@ -129,6 +129,8 @@
                         <i class="fas fa-door-open me-1"></i>던전 나가기
                     </button>
                 </form>
+                <!-- 정답/오답 메시지 표시 영역 -->
+                <div id="answer-message" class="mt-3"></div>
             </div>
         </div>
     </div>
@@ -476,6 +478,12 @@ function submitChoice(choice) {
         localStorage.setItem('dungeonBgmEnabled', bgmIsPlaying ? 'true' : 'false');
         console.log('💾 배경음악 상태 저장:', bgmIsPlaying ? '켜짐' : '꺼짐');
         
+        // 정답/오답 메시지 표시
+        const messageDiv = document.getElementById('answer-message');
+        const alertClass = data.success ? 'alert-success' : 'alert-danger';
+        const icon = data.success ? '✅' : '❌';
+        messageDiv.innerHTML = `<div class="alert ${alertClass} mb-0"><strong>${icon} ${data.message}</strong></div>`;
+        
         // 포획 여부 확인 및 효과음 재생
         if (data.captured) {
             console.log('🎣 포획 메시지 감지 (AJAX):', data.message.substring(0, 50));
@@ -485,7 +493,7 @@ function submitChoice(choice) {
             playPunchSound();
         }
         
-        // 효과음이 완료될 때까지 약간 대기 후 페이지 이동
+        // 효과음이 완료될 때까지 약간 대기 후 페이지 이동 (2초 대기로 메시지 확인 가능)
         setTimeout(() => {
             if (data.game_over) {
                 window.location.href = '{{ url_for("dungeons") }}';
@@ -494,7 +502,7 @@ function submitChoice(choice) {
                 const currentUrl = window.location.pathname + window.location.search;
                 window.location.href = currentUrl + (window.location.search ? '&' : '?') + 't=' + Date.now();
             }
-        }, 200);  // 효과음 재생 시간 확보
+        }, 2000);  // 2초 대기 (메시지 표시 시간)
     })
     .catch(error => {
         console.error('Error:', error);
