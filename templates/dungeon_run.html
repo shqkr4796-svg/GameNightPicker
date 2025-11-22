@@ -326,9 +326,9 @@ function submitChoice(choice) {
 }
 
 // Tone.js 배경음악 변수
-let bgmSynth = null;
 let bgmBass = null;
-let bgmNow = null;
+let bgmMelody = null;
+let bgmChord = null;
 
 // Tone.js 배경음악 시작 - RPG 게임 브금
 async function startBackgroundMusic() {
@@ -336,55 +336,52 @@ async function startBackgroundMusic() {
         // Tone 시작
         await Tone.start();
         
-        // 마스터 볼륨 설정
-        Tone.Destination.volume.value = -8; // dB
+        // 마스터 볼륨
+        Tone.Destination.volume.value = -6; // dB (적절한 볼륨)
         
-        console.log('🎵 Tone.js 배경음악 시작');
+        // BPM 설정 (느린 RPG 템포)
+        Tone.Transport.bpm.value = 90;
         
-        // === 배스 라인 ===
-        bgmBass = new Tone.PolySynth(Tone.Synth, {
+        // === 배스 신스 ===
+        bgmBass = new Tone.Synth({
             oscillator: { type: 'square' },
-            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 1 }
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.5 }
         }).toDestination();
-        bgmBass.volume.value = -15; // 낮은 볼륨
+        bgmBass.volume.value = -12;
         
-        // 베이스 패턴 (4박자)
+        // 베이스 패턴
         const bassPattern = ['C1', 'C1', 'G0', 'G0', 'A#0', 'A#0', 'C1', 'C1'];
-        Tone.Loop(() => {
-            bassPattern.forEach((note, index) => {
-                Tone.Transport.schedule((time) => {
-                    bgmBass.triggerAttackRelease(note, '0.5', time);
-                }, `+${index * 0.5}s`);
+        Tone.Transport.scheduleRepeat((time) => {
+            bassPattern.forEach((note, i) => {
+                bgmBass.triggerAttackRelease(note, '0.4', time + i * 0.25);
             });
         }, '2m');
         
-        // === 주 멜로디 신스 ===
-        bgmSynth = new Tone.PolySynth(Tone.Synth, {
+        // === 멜로디 신스 ===
+        bgmMelody = new Tone.Synth({
             oscillator: { type: 'triangle' },
             envelope: { attack: 0.05, decay: 0.1, sustain: 0.3, release: 0.5 }
         }).toDestination();
-        bgmSynth.volume.value = -6;
+        bgmMelody.volume.value = -4;
         
-        // RPG 브금 같은 멜로디 (8박자)
-        const melody = ['G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3', 
+        // 멜로디 패턴 (RPG 브금)
+        const melody = ['G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',
                         'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4'];
         
-        Tone.Loop(() => {
-            melody.forEach((note, index) => {
-                Tone.Transport.schedule((time) => {
-                    bgmSynth.triggerAttackRelease(note, '0.5', time);
-                }, `+${index * 0.5}s`);
+        Tone.Transport.scheduleRepeat((time) => {
+            melody.forEach((note, i) => {
+                bgmMelody.triggerAttackRelease(note, '0.4', time + i * 0.25);
             });
         }, '4m');
         
         // === 코드 반주 ===
-        const chordSynth = new Tone.PolySynth(Tone.Synth, {
+        bgmChord = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: 'sine' },
-            envelope: { attack: 0.1, decay: 0.2, sustain: 0.4, release: 0.8 }
+            envelope: { attack: 0.1, decay: 0.1, sustain: 0.4, release: 0.8 }
         }).toDestination();
-        chordSynth.volume.value = -14;
+        bgmChord.volume.value = -10;
         
-        // 코드 패턴 (G마이너 구성)
+        // 코드 패턴
         const chords = [
             ['G3', 'B3', 'D4'],
             ['A#3', 'D4', 'F4'],
@@ -392,33 +389,42 @@ async function startBackgroundMusic() {
             ['D#3', 'G3', 'B3']
         ];
         
-        let chordIndex = 0;
-        Tone.Loop(() => {
-            const chord = chords[chordIndex % chords.length];
-            Tone.Transport.schedule((time) => {
-                chordSynth.triggerAttackRelease(chord, '1', time);
-            }, '+0s');
-            chordIndex++;
+        let chordIdx = 0;
+        Tone.Transport.scheduleRepeat((time) => {
+            bgmChord.triggerAttackRelease(chords[chordIdx % 4], '0.8', time);
+            chordIdx++;
         }, '1m');
         
         // 트랜스포트 시작
         if (Tone.Transport.state !== 'running') {
-            Tone.Transport.bpm.value = 90; // 느린 RPG 템포
             Tone.Transport.start();
         }
         
-        console.log('🎵 RPG 배경음악 재생 중 (Tone.js)');
+        console.log('🎵 Tone.js RPG 배경음악 재생 중');
     } catch(e) {
         console.log('배경음악 오류:', e);
     }
 }
 
 // 배경음악 중지
-async function stopBackgroundMusic() {
+function stopBackgroundMusic() {
     try {
-        if (bgmSynth) bgmSynth.dispose();
-        if (bgmBass) bgmBass.dispose();
-        Tone.Transport.stop();
+        if (Tone.Transport.state === 'running') {
+            Tone.Transport.cancel();
+            Tone.Transport.stop();
+        }
+        if (bgmBass) {
+            bgmBass.triggerRelease();
+            bgmBass.dispose();
+        }
+        if (bgmMelody) {
+            bgmMelody.triggerRelease();
+            bgmMelody.dispose();
+        }
+        if (bgmChord) {
+            bgmChord.triggerRelease();
+            bgmChord.dispose();
+        }
         console.log('🎵 배경음악 종료');
     } catch(e) {
         console.log('배경음악 중지 오류:', e);
