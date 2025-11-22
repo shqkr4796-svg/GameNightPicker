@@ -114,6 +114,29 @@ class SoundManager {
         setTimeout(() => this.createTone(2000, 0.12), 400); // 반짝4
     }
 
+    // 포획 효과음 (몬스터 포획 시)
+    playCapture() {
+        // 포획 효과음 (몬스터 볼 던지기 + 성공)
+        // 포획 시작음 (낮은 음)
+        this.createTone(440, 0.1, 'sine'); // A4 - 던지기 시작
+        
+        // 비행 효과 (높아지는 음)
+        setTimeout(() => this.createTone(550, 0.08), 100); // C#5
+        setTimeout(() => this.createTone(660, 0.08), 180); // E5
+        
+        // 충격음 (높은 음)
+        setTimeout(() => this.createTone(880, 0.05, 'square'), 250); // A5 - 충격
+        
+        // 흡수 효과 (떨어지는 음 + 반짝임)
+        setTimeout(() => this.createTone(1320, 0.1), 300); // E6 - 반짝1
+        setTimeout(() => this.createTone(1100, 0.08), 380); // C#6 - 반짝2
+        setTimeout(() => this.createTone(1320, 0.08), 450); // E6 - 반짝3
+        
+        // 성공 팡팡 (최종 확인음)
+        setTimeout(() => this.createTone(1000, 0.12, 'triangle'), 550); // G#5 - 성공1
+        setTimeout(() => this.createTone(1200, 0.12, 'triangle'), 680); // B5 - 성공2
+    }
+
     // 이벤트 리스너 설정
     setupSoundEvents() {
         // 모든 버튼에 클릭 사운드 추가
@@ -155,6 +178,8 @@ class SoundManager {
                                 this.playQuizCorrect();
                             } else if (text.includes('레벨업') || text.includes('레벨이')) {
                                 this.playLevelUp();
+                            } else if (text.includes('도감에 등록했습니다') || text.includes('포획')) {
+                                this.playCapture();
                             } else if (text.includes('새로운 몬스터를 도감에 추가')) {
                                 this.playMonsterCollected();
                             } else {
