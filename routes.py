@@ -1100,11 +1100,24 @@ def answer_dungeon():
             wrong_questions = dungeon_run.get('wrong_questions', [])
             if not dungeon_run.get('wrong_questions_mode'):
                 player['던전클리어횟수'] = player.get('던전클리어횟수', 0) + 1
+                
+                # 던전 클리어 보상 적용
+                dungeon = game_logic.get_dungeon_by_id(dungeon_run['dungeon_id'])
+                reward_result = game_logic.apply_dungeon_clear_reward(player, dungeon)
+                
+                if reward_result['success']:
+                    clear_message = f"던전을 클리어했습니다!\n{reward_result['message']}"
+                else:
+                    clear_message = "던전을 클리어했습니다!"
+            else:
+                clear_message = "던전을 클리어했습니다!"
+            
             session.pop('dungeon_run', None)
             session['player_data'] = player
             game_logic.save_game(player)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return jsonify({'success': False, 'message': '던전을 클리어했습니다!', 'game_over': True, 'clear': True})
+                return jsonify({'success': False, 'message': clear_message, 'game_over': True, 'clear': True})
+            flash(clear_message, 'success')
             return redirect(url_for('dungeons'))
     
     # 상태 업데이트

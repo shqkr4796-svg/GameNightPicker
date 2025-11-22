@@ -1782,6 +1782,51 @@ def check_dungeon_clear(dungeon_run):
     """던전 클리어 확인"""
     return dungeon_run['cleared_words'] >= dungeon_run['actual_clear_condition']
 
+def apply_dungeon_clear_reward(player, dungeon):
+    """던전 클리어 보상 적용"""
+    if not dungeon:
+        return {'success': False, 'message': '던전 정보가 없습니다.'}
+    
+    difficulty = dungeon.get('난이도', '보통')
+    
+    # 난이도별 보상 설정
+    reward_table = {
+        '쉬움': {'min_money': 500, 'max_money': 2000, 'min_exp': 100, 'max_exp': 200},
+        '보통': {'min_money': 2000, 'max_money': 5000, 'min_exp': 200, 'max_exp': 400},
+        '어려움': {'min_money': 5000, 'max_money': 15000, 'min_exp': 400, 'max_exp': 800},
+        '매우 어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
+        '매우어려움': {'min_money': 15000, 'max_money': 40000, 'min_exp': 800, 'max_exp': 1500},
+    }
+    
+    # 커스텀 던전 보상 (이미 정의되어 있는 경우)
+    if difficulty == '커스텀' and dungeon.get('reward_money'):
+        reward_money = dungeon.get('reward_money', 0)
+        reward_exp = int(50 * (dungeon.get('reward_exp_multiplier', 1.0)))
+    else:
+        # 난이도별 기본 보상
+        rewards = reward_table.get(difficulty, reward_table['보통'])
+        reward_money = random.randint(rewards['min_money'], rewards['max_money'])
+        reward_exp = random.randint(rewards['min_exp'], rewards['max_exp'])
+    
+    # 보상 지급
+    player['돈'] += reward_money
+    player['경험치'] += reward_exp
+    
+    # 레벨업 확인
+    level_ups = check_level_up(player)
+    
+    message = f"🎁 클리어 보상: {reward_money:,}원 + 경험치 {reward_exp}"
+    if level_ups > 0:
+        message += f" | 레벨업 {level_ups}회! (현재 레벨: {player['레벨']})"
+    
+    return {
+        'success': True,
+        'message': message,
+        'reward_money': reward_money,
+        'reward_exp': reward_exp,
+        'level_ups': level_ups
+    }
+
 def get_safe_percentage(current, maximum):
     """안전한 퍼센트 계산 (division by zero 방지)"""
     if maximum <= 0:
