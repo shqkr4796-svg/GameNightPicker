@@ -2489,8 +2489,17 @@ def merge_monsters(player, monster_ids):
             'is_mythic': True
         }
     
-    # 다른 등급 -> 더 높은 등급으로 60% 확률, 같은 등급으로 40% 확률
-    if random.random() < 0.6 and current_rarity_index < len(rarity_order) - 2:
+    # 등급별 상위 등급 획득 확률
+    rarity_upgrade_chance = {
+        '레어': 0.7,      # 레어: 70% 확률로 상위 등급
+        '에픽': 0.6,      # 에픽: 60% 확률로 상위 등급
+        '유니크': 0.4     # 유니크: 40% 확률로 상위 등급
+    }
+    
+    upgrade_chance = rarity_upgrade_chance.get(first_monster_rarity, 0.6)
+    
+    # 다른 등급 -> 더 높은 등급 또는 같은 등급으로 변환
+    if random.random() < upgrade_chance and current_rarity_index < len(rarity_order) - 2:
         # 더 높은 등급 획득
         next_rarity = rarity_order[current_rarity_index + 1]
         next_rarity_monsters = get_monsters_by_rarity(next_rarity)
