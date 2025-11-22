@@ -356,8 +356,8 @@ async function startBackgroundMusic() {
         
         await Tone.start();
         
-        // 마스터 볼륨
-        Tone.Destination.volume.value = -5; // dB (적절한 볼륨)
+        // 마스터 볼륨 - 더 크게
+        Tone.Destination.volume.value = 2; // dB (큰 볼륨)
         
         // BPM 설정 (느린 RPG 템포)
         Tone.Transport.bpm.value = 90;
@@ -367,7 +367,7 @@ async function startBackgroundMusic() {
             oscillator: { type: 'triangle' },
             envelope: { attack: 0.05, decay: 0.1, sustain: 0.3, release: 0.5 }
         }).toDestination();
-        bgmMelody.volume.value = -2;
+        bgmMelody.volume.value = 2;  // 멜로디 더 크게
         
         // 멜로디 패턴 - 20초 (80개 노트) - 발랄한 C 메이저 스케일
         const melody = [
@@ -394,7 +394,7 @@ async function startBackgroundMusic() {
             oscillator: { type: 'sine' },
             envelope: { attack: 0.1, decay: 0.1, sustain: 0.4, release: 0.8 }
         }).toDestination();
-        bgmChord.volume.value = -8;
+        bgmChord.volume.value = -2;  // 코드도 더 크게
         
         // 코드 패턴 - C 메이저 기반 밝은 코드
         const chords = [
@@ -594,9 +594,6 @@ function playEpic(now, duration, masterGain, volume) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 배경음악 시작
-    startBackgroundMusic();
-    
     // 페이지 떠날 때 음악 중지
     window.addEventListener('beforeunload', stopBackgroundMusic);
     window.addEventListener('pagehide', stopBackgroundMusic);
@@ -617,7 +614,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // 페이지 로드 직후 효과음 재생
         setTimeout(() => {
             playMonsterAppearanceSound(rarity);
+            // 효과음 1초 후 배경음악 시작
+            setTimeout(() => {
+                startBackgroundMusic();
+            }, 1000);
         }, 200);
+    } else {
+        // 몬스터가 없으면 바로 배경음악 시작
+        startBackgroundMusic();
     }
     
     // 선택지 클릭 효과
