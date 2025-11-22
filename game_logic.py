@@ -1521,6 +1521,17 @@ def next_monster(dungeon_run, dungeon):
         category_filter=dungeon.get('category_filter') if dungeon else None,
         difficulty_filter=dungeon.get('difficulty_filter') if dungeon else None
     )
+    
+    # 중복 제거 (init_dungeon_run에서와 동일한 방식)
+    unique_words = []
+    seen_words = set()
+    for word in words:
+        word_key = word['단어']
+        if word_key not in seen_words:
+            unique_words.append(word)
+            seen_words.add(word_key)
+    words = unique_words
+    
     word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
     current_word = words[word_index]
     dungeon_run['current_word'] = current_word
