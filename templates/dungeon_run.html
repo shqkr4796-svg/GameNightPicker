@@ -120,7 +120,7 @@
             <div class="card-footer">
                 <form method="POST" action="{{ url_for('leave_dungeon') }}" class="d-inline">
                     <button type="submit" class="btn btn-danger btn-sm" 
-                            onclick="return confirm('던전을 나가면 모든 진행상황이 초기화됩니다. 정말 나가시겠습니까?')">
+                            onclick="stopBackgroundMusic(); return confirm('던전을 나가면 모든 진행상황이 초기화됩니다. 정말 나가시겠습니까?')">
                         <i class="fas fa-door-open me-1"></i>던전 나가기
                     </button>
                 </form>
@@ -325,8 +325,10 @@ function submitChoice(choice) {
     });
 }
 
-// 글로벌 오디오 컨텍스트
+// 글로벌 오디오 컨텍스트 및 배경음악
 let audioContext = null;
+let backgroundMusicGain = null;
+let backgroundMusicOscillators = [];
 
 // 오디오 컨텍스트 초기화
 function initAudioContext() {
@@ -337,6 +339,88 @@ function initAudioContext() {
         } catch(e) {
             console.log('오디오 컨텍스트 초기화 실패:', e);
         }
+    }
+}
+
+// 배경음악 시작 - 부드러운 로우파이 음악
+function startBackgroundMusic() {
+    if (!audioContext) {
+        initAudioContext();
+    }
+    
+    if (!audioContext) {
+        console.log('배경음악 재생 불가 (오디오 미지원)');
+        return;
+    }
+    
+    try {
+        // 배경음악 마스터 게인
+        backgroundMusicGain = audioContext.createGain();
+        backgroundMusicGain.gain.setValueAtTime(0.15, audioContext.currentTime);  // 낮은 볼륨
+        backgroundMusicGain.connect(audioContext.destination);
+        
+        // 기본음 (저음 - 60Hz)
+        const bassBass = audioContext.createOscillator();
+        bassBass.type = 'sine';
+        bassBass.frequency.setValueAtTime(60, audioContext.currentTime);
+        
+        const bassGain = audioContext.createGain();
+        bassGain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        
+        bassBass.connect(bassGain);
+        bassGain.connect(backgroundMusicGain);
+        bassBass.start();
+        backgroundMusicOscillators.push(bassBass);
+        
+        // 주선율 (중음 - 200Hz 진동)
+        const melody = audioContext.createOscillator();
+        melody.type = 'sine';
+        melody.frequency.setValueAtTime(200, audioContext.currentTime);
+        
+        // 주기적인 진동 패턴
+        const melodyTime = audioContext.currentTime;
+        melody.frequency.sinusoidalRampToValueAtTime(220, melodyTime + 3);
+        melody.frequency.sinusoidalRampToValueAtTime(200, melodyTime + 6);
+        
+        const melodyGain = audioContext.createGain();
+        melodyGain.gain.setValueAtTime(0.2, audioContext.currentTime);
+        
+        melody.connect(melodyGain);
+        melodyGain.connect(backgroundMusicGain);
+        melody.start();
+        backgroundMusicOscillators.push(melody);
+        
+        // 고음 반주 (400Hz)
+        const harmony = audioContext.createOscillator();
+        harmony.type = 'triangle';
+        harmony.frequency.setValueAtTime(400, audioContext.currentTime);
+        
+        const harmonyGain = audioContext.createGain();
+        harmonyGain.gain.setValueAtTime(0.1, audioContext.currentTime);
+        
+        harmony.connect(harmonyGain);
+        harmonyGain.connect(backgroundMusicGain);
+        harmony.start();
+        backgroundMusicOscillators.push(harmony);
+        
+        console.log('🎵 배경음악 시작');
+    } catch(e) {
+        console.log('배경음악 오류:', e);
+    }
+}
+
+// 배경음악 중지
+function stopBackgroundMusic() {
+    try {
+        backgroundMusicOscillators.forEach(osc => {
+            try {
+                osc.stop();
+            } catch(e) {}
+        });
+        backgroundMusicOscillators = [];
+        console.log('🎵 배경음악 종료');
+    } catch(e) {
+        console.log('배경음악 중지 오류:', e);
     }
 }
 
@@ -491,6 +575,9 @@ function playEpic(now, duration, masterGain, volume) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // 배경음악 시작
+    startBackgroundMusic();
+    
     // 몬스터 이미지 그리기 (canvas 있을 때만)
     const canvas = document.getElementById('monster-display');
     if (canvas) {
