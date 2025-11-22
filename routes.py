@@ -971,6 +971,9 @@ def dungeons():
     player = session['player_data']
     dungeons_list = game_logic.get_dungeons()
     
+    # 커스텀 던전을 제일 위에 배치
+    dungeons_list.sort(key=lambda d: d.get('난이도') != '커스텀')
+    
     # 각 던전에 보상 정보 추가
     for dungeon in dungeons_list:
         if dungeon.get('난이도') == '커스텀':
