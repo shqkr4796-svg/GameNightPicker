@@ -21,8 +21,8 @@
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <div class="d-flex gap-2 flex-wrap">
+                    <div class="d-flex justify-content-between align-items-center gap-3">
+                        <div class="filter-buttons-wrapper">
                             <div class="btn-group btn-group-sm" role="group">
                                 <a href="{{ url_for('compendium', rarity='all') }}" class="btn {% if filter_rarity == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
                                     <i class="fas fa-th me-1"></i>전체
@@ -44,7 +44,7 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-shrink-0">
                             <a href="{{ url_for('fusion') }}" class="btn btn-sm btn-outline-warning">
                                 <i class="fas fa-wand-magic-sparkles me-1"></i>몬스터 합성
                             </a>
@@ -212,6 +212,30 @@
     color: #fff !important;
     border-color: #dc3545;
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.filter-buttons-wrapper {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+}
+
+.filter-buttons-wrapper .btn-group {
+    display: flex;
+    white-space: nowrap;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.filter-buttons-wrapper .btn-group .btn {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .filter-buttons-wrapper .btn-group {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 </style>
 {% endblock %}
