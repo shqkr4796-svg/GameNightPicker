@@ -363,7 +363,7 @@ function startBackgroundMusic() {
         
         const now = audioContext.currentTime;
         const masterGain = audioContext.createGain();
-        masterGain.gain.setValueAtTime(0.4, now);  // 전체 볼륨 40%
+        masterGain.gain.setValueAtTime(0.28, now);  // 전체 볼륨 28% (30% 감소)
         masterGain.connect(audioContext.destination);
         
         // 멜로디 주기 (0.25초 * 80 = 20초)
