@@ -360,19 +360,19 @@ function playMonsterAppearanceSound(rarity) {
         
         if (rarity === '레어') {
             // 레어: 부드러운 낮은 음 - 단순함
-            playSimpleBeep(now, 400, 0.5, masterGain, 1.8);
+            playSimpleBeep(now, 400, 0.5, masterGain, 1.2);
         } 
         else if (rarity === '에픽') {
             // 에픽: 상승하는 피치 + 울림
-            playAscendingPitch(now, 500, 750, 0.6, masterGain, 2.4);
+            playAscendingPitch(now, 500, 750, 0.6, masterGain, 1.6);
         } 
         else if (rarity === '유니크') {
             // 유니크: 다중 하모닉 + 펄싱
-            playHarmonic(now, 600, 0.7, masterGain, 3.0);
+            playHarmonic(now, 600, 0.7, masterGain, 2.0);
         } 
         else if (rarity === '레전드리') {
             // 레전드리: 강렬한 시작 + 복합 음색
-            playEpic(now, 0.9, masterGain, 3.0);
+            playEpic(now, 0.9, masterGain, 2.0);
         }
     } catch(e) {
         console.log('효과음 재생 에러:', e);
