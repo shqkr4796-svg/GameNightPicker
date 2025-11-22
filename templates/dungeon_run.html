@@ -407,16 +407,8 @@ let bgmIsPlaying = false;
 function toggleBackgroundMusic() {
     if (bgmIsPlaying) {
         stopBackgroundMusic();
-        bgmIsPlaying = false;
-        document.getElementById('bgm-status').textContent = '켜기';
-        document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-success');
-        document.getElementById('bgm-toggle-btn').classList.add('btn-outline-secondary');
     } else {
         startBackgroundMusic();
-        bgmIsPlaying = true;
-        document.getElementById('bgm-status').textContent = '끄기';
-        document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-secondary');
-        document.getElementById('bgm-toggle-btn').classList.add('btn-outline-success');
     }
 }
 
@@ -551,6 +543,9 @@ function startBackgroundMusic() {
         window.bgmLoopTimer = loopTimer;
         bgmIsPlaying = true;
         
+        // 로컬스토리지에 상태 저장
+        localStorage.setItem('dungeonBgmEnabled', 'true');
+        
         // 버튼 상태 업데이트
         document.getElementById('bgm-status').textContent = '끄기';
         document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-secondary');
@@ -578,6 +573,9 @@ function stopBackgroundMusic() {
         bgmOscillators = [];
         bgmGains = [];
         bgmIsPlaying = false;
+        
+        // 로컬스토리지에 상태 저장
+        localStorage.setItem('dungeonBgmEnabled', 'false');
         
         // 버튼 상태 업데이트
         const btn = document.getElementById('bgm-toggle-btn');
@@ -759,20 +757,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // 로컬스토리지에서 배경음악 설정 읽기 (기본값: true)
+    const bgmEnabled = localStorage.getItem('dungeonBgmEnabled') !== 'false';
+    
     // 몬스터 등장 효과음 재생
     const rarity = '{{ dungeon_run["current_rarity"] }}';
     if (rarity) {
         // 페이지 로드 직후 효과음 재생
         setTimeout(() => {
             playMonsterAppearanceSound(rarity);
-            // 효과음 1초 후 배경음악 시작
+            // 효과음 1초 후 배경음악 시작 (활성화된 경우만)
             setTimeout(() => {
-                startBackgroundMusic();
+                if (bgmEnabled) {
+                    startBackgroundMusic();
+                } else {
+                    bgmIsPlaying = false;
+                    // 버튼 상태만 업데이트
+                    document.getElementById('bgm-status').textContent = '켜기';
+                    document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-success');
+                    document.getElementById('bgm-toggle-btn').classList.add('btn-outline-secondary');
+                }
             }, 1000);
         }, 200);
     } else {
-        // 몬스터가 없으면 바로 배경음악 시작
-        startBackgroundMusic();
+        // 몬스터가 없으면 배경음악 상태에 따라 시작
+        if (bgmEnabled) {
+            startBackgroundMusic();
+        } else {
+            bgmIsPlaying = false;
+            // 버튼 상태만 업데이트
+            document.getElementById('bgm-status').textContent = '켜기';
+            document.getElementById('bgm-toggle-btn').classList.remove('btn-outline-success');
+            document.getElementById('bgm-toggle-btn').classList.add('btn-outline-secondary');
+        }
     }
     
     // 선택지 클릭 효과
