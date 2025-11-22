@@ -57,15 +57,6 @@
                             <div class="row">
                                 {% for weapon_name, count in player['무기_인벤토리'].items() %}
                                     {% if count > 0 %}
-                                        {% set weapon_info = none %}
-                                        {% if shop_items %}
-                                            {% for item in shop_items %}
-                                                {% if item['이름'] == weapon_name and item['타입'] == '무기' %}
-                                                    {% set weapon_info = item %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        
                                         <div class="col-md-6 mb-3">
                                             <div class="card bg-secondary">
                                                 <div class="card-body d-flex" style="gap: 12px;">
@@ -73,13 +64,16 @@
                                                     <div style="flex: 1;">
                                                         <h6 class="card-title text-warning">{{ weapon_name }}</h6>
                                                         <p class="card-text small">
-                                                            {% if weapon_info %}
-                                                                {{ weapon_info['설명'] }}<br>
-                                                                <strong>피해: +{{ weapon_info['효과']['무기 피해'] }}</strong><br>
-                                                                {% if weapon_info.get('레벨_제한') %}
-                                                                    <span class="text-info">필요 레벨: {{ weapon_info['레벨_제한'] }}</span><br>
+                                                            {% for item in shop_items %}
+                                                                {% if item['이름'] == weapon_name and item['타입'] == '무기' %}
+                                                                    {{ item['설명'] }}<br>
+                                                                    <strong>피해: +{{ item['효과']['무기 피해'] }}</strong><br>
+                                                                    {% if item.get('레벨_제한') %}
+                                                                        <span class="text-info">필요 레벨: {{ item['레벨_제한'] }}</span><br>
+                                                                    {% endif %}
+                                                                    {% break %}
                                                                 {% endif %}
-                                                            {% endif %}
+                                                            {% endfor %}
                                                             <span class="text-muted">보유: {{ count }}개</span>
                                                         </p>
                                                         
@@ -100,11 +94,13 @@
                                                     </div>
                                                     
                                                     <!-- 오른쪽: 이미지 -->
-                                                    {% if weapon_info and weapon_info.get('이미지') %}
-                                                    <div style="width: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
-                                                        <img src="{{ weapon_info['이미지'] }}" alt="{{ weapon_name }}" style="max-height: 80px; max-width: 100%; object-fit: contain; padding: 8px;">
-                                                    </div>
-                                                    {% endif %}
+                                                    {% for item in shop_items %}
+                                                        {% if item['이름'] == weapon_name and item['타입'] == '무기' and item.get('이미지') %}
+                                                        <div style="width: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                            <img src="{{ item['이미지'] }}" alt="{{ weapon_name }}" style="max-height: 80px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </div>
                                             </div>
                                         </div>
@@ -129,15 +125,6 @@
                             <div class="row">
                                 {% for item_name, count in player['던전_인벤토리'].items() %}
                                     {% if count > 0 %}
-                                        {% set item_info = none %}
-                                        {% if shop_items %}
-                                            {% for item in shop_items %}
-                                                {% if item['이름'] == item_name and item.get('타입') == '던전' %}
-                                                    {% set item_info = item %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        
                                         <div class="col-md-6 mb-3">
                                             <div class="card bg-secondary">
                                                 <div class="card-body d-flex" style="gap: 12px;">
@@ -145,28 +132,37 @@
                                                     <div style="flex: 1;">
                                                         <h6 class="card-title text-info">{{ item_name }}</h6>
                                                         <p class="card-text small">
-                                                            {% if item_info %}
-                                                                {{ item_info['설명'] }}<br>
-                                                            {% else %}
-                                                                던전 아이템<br>
-                                                            {% endif %}
+                                                            {% for item in shop_items %}
+                                                                {% if item['이름'] == item_name and item.get('타입') == '던전' %}
+                                                                    {{ item['설명'] }}<br>
+                                                                    {% break %}
+                                                                {% else %}
+                                                                    {% if loop.last %}
+                                                                        던전 아이템<br>
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endfor %}
                                                             <span class="text-muted">보유: {{ count }}개</span>
                                                         </p>
-                                                        {% if item_info and item_info.get('효과') %}
-                                                            <p class="card-text small text-success">
-                                                                {% for effect, value in item_info['효과'].items() %}
-                                                                    {{ effect }}: +{{ value }}{% if not loop.last %}, {% endif %}
-                                                                {% endfor %}
-                                                            </p>
-                                                        {% endif %}
+                                                        {% for item in shop_items %}
+                                                            {% if item['이름'] == item_name and item.get('타입') == '던전' and item.get('효과') %}
+                                                                <p class="card-text small text-success">
+                                                                    {% for effect, value in item['효과'].items() %}
+                                                                        {{ effect }}: +{{ value }}{% if not loop.last %}, {% endif %}
+                                                                    {% endfor %}
+                                                                </p>
+                                                            {% endif %}
+                                                        {% endfor %}
                                                     </div>
                                                     
                                                     <!-- 오른쪽: 이미지 -->
-                                                    {% if item_info and item_info.get('이미지') %}
-                                                    <div style="width: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
-                                                        <img src="{{ item_info['이미지'] }}" alt="{{ item_name }}" style="max-height: 80px; max-width: 100%; object-fit: contain; padding: 8px;">
-                                                    </div>
-                                                    {% endif %}
+                                                    {% for item in shop_items %}
+                                                        {% if item['이름'] == item_name and item.get('타입') == '던전' and item.get('이미지') %}
+                                                        <div style="width: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                            <img src="{{ item['이미지'] }}" alt="{{ item_name }}" style="max-height: 80px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                                        </div>
+                                                        {% endif %}
+                                                    {% endfor %}
                                                 </div>
                                             </div>
                                         </div>
