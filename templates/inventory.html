@@ -66,34 +66,44 @@
                                             {% endfor %}
                                         {% endif %}
                                         
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-6 mb-3">
                                             <div class="card bg-secondary">
-                                                <div class="card-body">
-                                                    <h6 class="card-title text-warning">{{ weapon_name }}</h6>
-                                                    <p class="card-text small">
-                                                        {% if weapon_info %}
-                                                            {{ weapon_info['설명'] }}<br>
-                                                            <strong>피해: +{{ weapon_info['효과']['무기 피해'] }}</strong><br>
-                                                            {% if weapon_info.get('레벨_제한') %}
-                                                                <span class="text-info">필요 레벨: {{ weapon_info['레벨_제한'] }}</span><br>
+                                                <div class="card-body d-flex" style="gap: 12px;">
+                                                    <!-- 왼쪽: 정보 -->
+                                                    <div style="flex: 1;">
+                                                        <h6 class="card-title text-warning">{{ weapon_name }}</h6>
+                                                        <p class="card-text small">
+                                                            {% if weapon_info %}
+                                                                {{ weapon_info['설명'] }}<br>
+                                                                <strong>피해: +{{ weapon_info['효과']['무기 피해'] }}</strong><br>
+                                                                {% if weapon_info.get('레벨_제한') %}
+                                                                    <span class="text-info">필요 레벨: {{ weapon_info['레벨_제한'] }}</span><br>
+                                                                {% endif %}
                                                             {% endif %}
+                                                            <span class="text-muted">보유: {{ count }}개</span>
+                                                        </p>
+                                                        
+                                                        {% if player.get('장착된_무기') != weapon_name %}
+                                                            <form method="post" action="{{ url_for('equip_weapon') }}" style="display: inline;">
+                                                                <input type="hidden" name="weapon_name" value="{{ weapon_name }}">
+                                                                <button type="submit" class="btn btn-warning btn-sm">
+                                                                    <i data-feather="check" size="16" class="me-1"></i>장착
+                                                                </button>
+                                                            </form>
+                                                        {% else %}
+                                                            <form method="post" action="{{ url_for('unequip_weapon') }}" style="display: inline;">
+                                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                                    <i data-feather="x" size="16" class="me-1"></i>해제
+                                                                </button>
+                                                            </form>
                                                         {% endif %}
-                                                        <span class="text-muted">보유: {{ count }}개</span>
-                                                    </p>
+                                                    </div>
                                                     
-                                                    {% if player.get('장착된_무기') != weapon_name %}
-                                                        <form method="post" action="{{ url_for('equip_weapon') }}" style="display: inline;">
-                                                            <input type="hidden" name="weapon_name" value="{{ weapon_name }}">
-                                                            <button type="submit" class="btn btn-warning btn-sm">
-                                                                <i data-feather="check" size="16" class="me-1"></i>장착
-                                                            </button>
-                                                        </form>
-                                                    {% else %}
-                                                        <form method="post" action="{{ url_for('unequip_weapon') }}" style="display: inline;">
-                                                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                                <i data-feather="x" size="16" class="me-1"></i>해제
-                                                            </button>
-                                                        </form>
+                                                    <!-- 오른쪽: 이미지 -->
+                                                    {% if weapon_info and weapon_info.get('이미지') %}
+                                                    <div style="width: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                        <img src="{{ weapon_info['이미지'] }}" alt="{{ weapon_name }}" style="max-height: 80px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                                    </div>
                                                     {% endif %}
                                                 </div>
                                             </div>
@@ -128,24 +138,34 @@
                                             {% endfor %}
                                         {% endif %}
                                         
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-6 mb-3">
                                             <div class="card bg-secondary">
-                                                <div class="card-body">
-                                                    <h6 class="card-title text-info">{{ item_name }}</h6>
-                                                    <p class="card-text small">
-                                                        {% if item_info %}
-                                                            {{ item_info['설명'] }}<br>
-                                                        {% else %}
-                                                            던전 아이템<br>
-                                                        {% endif %}
-                                                        <span class="text-muted">보유: {{ count }}개</span>
-                                                    </p>
-                                                    {% if item_info and item_info.get('효과') %}
-                                                        <p class="card-text small text-success">
-                                                            {% for effect, value in item_info['효과'].items() %}
-                                                                {{ effect }}: +{{ value }}{% if not loop.last %}, {% endif %}
-                                                            {% endfor %}
+                                                <div class="card-body d-flex" style="gap: 12px;">
+                                                    <!-- 왼쪽: 정보 -->
+                                                    <div style="flex: 1;">
+                                                        <h6 class="card-title text-info">{{ item_name }}</h6>
+                                                        <p class="card-text small">
+                                                            {% if item_info %}
+                                                                {{ item_info['설명'] }}<br>
+                                                            {% else %}
+                                                                던전 아이템<br>
+                                                            {% endif %}
+                                                            <span class="text-muted">보유: {{ count }}개</span>
                                                         </p>
+                                                        {% if item_info and item_info.get('효과') %}
+                                                            <p class="card-text small text-success">
+                                                                {% for effect, value in item_info['효과'].items() %}
+                                                                    {{ effect }}: +{{ value }}{% if not loop.last %}, {% endif %}
+                                                                {% endfor %}
+                                                            </p>
+                                                        {% endif %}
+                                                    </div>
+                                                    
+                                                    <!-- 오른쪽: 이미지 -->
+                                                    {% if item_info and item_info.get('이미지') %}
+                                                    <div style="width: 80px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                        <img src="{{ item_info['이미지'] }}" alt="{{ item_name }}" style="max-height: 80px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                                    </div>
                                                     {% endif %}
                                                 </div>
                                             </div>
