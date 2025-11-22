@@ -1024,8 +1024,14 @@ def check_random_event(player):
         # 이벤트 효과 적용
         for effect, value in event['효과'].items():
             if effect in player:
-                player[effect] += value
-                player[effect] = max(0, player[effect])  # 음수 방지
+                try:
+                    # 숫자 값만 더함 (문자열 등은 무시)
+                    if isinstance(player[effect], (int, float)) and isinstance(value, (int, float)):
+                        player[effect] += value
+                        player[effect] = max(0, player[effect])  # 음수 방지
+                except (TypeError, ValueError):
+                    # 타입 변환 오류 무시
+                    pass
         
         # 이벤트 기록
         save_event(event['이름'])
@@ -1297,7 +1303,16 @@ def load_words_by_source(word_source, category_filter=None, difficulty_filter=No
             return words
     except Exception as e:
         print(f"{word_source} 단어 로드 실패: {e}, 토익 단어로 대체")
-        return load_toeic_words()
+        try:
+            return load_toeic_words()
+        except Exception as fallback_error:
+            print(f"토익 단어 로드 실패: {fallback_error}, 기본 단어로 대체")
+            # 최소 단어 반환 (app 크래시 방지)
+            return [
+                {'단어': 'default', '뜻': '기본값', '예문': '기본 단어입니다.'},
+                {'단어': 'word', '뜻': '단어', '예문': '기본 단어입니다.'},
+                {'단어': 'learn', '뜻': '배우다', '예문': '기본 단어입니다.'}
+            ]
 
 def get_dungeons():
     """던전 목록 가져오기"""
