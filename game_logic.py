@@ -2352,3 +2352,105 @@ def evaluate_conversation_response(user_response, target_expression, context_sen
             'success': False,
             'error': str(e)
         }
+
+def merge_monsters(player, monster_ids):
+    """몬스터 합성 함수 - 같은 등급 3마리를 더 높은 등급 또는 신화급 몬스터로 변환"""
+    from data.monsters import get_monster_by_id, get_monsters_by_rarity
+    
+    if not player.get('도감') or len(monster_ids) != 3:
+        return {'success': False, 'message': '유효하지 않은 선택입니다.'}
+    
+    # 선택한 몬스터들이 도감에 있는지 확인
+    for monster_id in monster_ids:
+        if monster_id not in player['도감']:
+            return {'success': False, 'message': '선택한 몬스터가 도감에 없습니다.'}
+    
+    # 첫 번째 몬스터로 등급 확인
+    first_monster_rarity = player['도감'][monster_ids[0]].get('등급')
+    
+    # 모든 몬스터가 같은 등급인지 확인
+    for monster_id in monster_ids[1:]:
+        if player['도감'][monster_id].get('등급') != first_monster_rarity:
+            return {'success': False, 'message': '같은 등급의 몬스터 3마리를 선택해주세요.'}
+    
+    # 도감에서 3마리 제거
+    for monster_id in monster_ids:
+        del player['도감'][monster_id]
+    
+    # 합성 결과 결정
+    rarity_order = ['레어', '에픽', '유니크', '레전드리', '신화급']
+    current_rarity_index = rarity_order.index(first_monster_rarity)
+    
+    # 레전드리 3마리 합성 -> 신화급 확률적 획득
+    if first_monster_rarity == '레전드리':
+        # 신화급 3마리 중 랜덤 선택
+        mythic_monsters = ['신화급_1', '신화급_2', '신화급_3']
+        result_monster_id = random.choice(mythic_monsters)
+        result_monster_data = get_monster_by_id(result_monster_id)
+        
+        if not result_monster_data:
+            return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
+        
+        result_monster = {
+            '이름': result_monster_data['이름'],
+            '등급': '신화급',
+            '이미지': result_monster_data.get('이미지', ''),
+            '최초처치일': datetime.now().isoformat(),
+            '처치수': 0,
+            '포획됨': True,
+            '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
+            '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
+        }
+        
+        player['도감'][result_monster_id] = result_monster
+        return {
+            'success': True,
+            'message': f"축하합니다! 신화급 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
+            'result_monster_id': result_monster_id,
+            'result_monster_name': result_monster_data['이름'],
+            'is_mythic': True
+        }
+    
+    # 다른 등급 -> 더 높은 등급으로 60% 확률, 같은 등급으로 40% 확률
+    if random.random() < 0.6 and current_rarity_index < len(rarity_order) - 2:
+        # 더 높은 등급 획득
+        next_rarity = rarity_order[current_rarity_index + 1]
+        next_rarity_monsters = get_monsters_by_rarity(next_rarity)
+    else:
+        # 같은 등급 획득
+        next_rarity = first_monster_rarity
+        next_rarity_monsters = get_monsters_by_rarity(next_rarity)
+    
+    # 랜덤 몬스터 선택
+    if not next_rarity_monsters:
+        next_rarity_monsters = get_monsters_by_rarity(first_monster_rarity)
+    
+    if not next_rarity_monsters:
+        return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
+    
+    result_monster_id = random.choice(next_rarity_monsters)
+    result_monster_data = get_monster_by_id(result_monster_id)
+    
+    if not result_monster_data:
+        return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
+    
+    result_monster = {
+        '이름': result_monster_data['이름'],
+        '등급': next_rarity,
+        '이미지': result_monster_data.get('이미지', ''),
+        '최초처치일': datetime.now().isoformat(),
+        '처치수': 0,
+        '포획됨': True,
+        '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
+        '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
+    }
+    
+    player['도감'][result_monster_id] = result_monster
+    
+    return {
+        'success': True,
+        'message': f"합성 성공! {next_rarity} 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
+        'result_monster_id': result_monster_id,
+        'result_monster_name': result_monster_data['이름'],
+        'is_mythic': False
+    }

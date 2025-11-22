@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}몬스터 합성{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- 타이틀 섹션 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-wand-magic-sparkles me-2"></i>몬스터 합성</h2>
+                <a href="{{ url_for('compendium') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>도감으로 돌아가기
+                </a>
+            </div>
+            <small class="text-muted">같은 등급의 몬스터 3마리를 선택하여 더 강한 몬스터로 합성할 수 있습니다!</small>
+        </div>
+    </div>
+
+    {% if player.get('도감') %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0 text-dark"><i class="fas fa-info-circle me-2"></i>합성 규칙</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>같은 등급 3마리</strong>를 선택해야 합성 가능합니다</li>
+                        <li>합성 시 60% 확률로 <strong>더 높은 등급</strong> 몬스터, 40% 확률로 <strong>같은 등급</strong> 몬스터 획득</li>
+                        <li><strong>레전드리 3마리</strong> 합성 시 <strong>신화급</strong> 몬스터를 획득할 수 있습니다 (포획 불가능한 특별한 몬스터!)</li>
+                        <li>합성한 몬스터는 기존 3마리를 대신하여 도감에 추가됩니다</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 등급별 몬스터 선택 -->
+    <form method="POST" action="{{ url_for('perform_fusion') }}">
+        {% for rarity in ['레어', '에픽', '유니크', '레전드리'] %}
+            {% if monsters_by_rarity.get(rarity) %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-{% if rarity == '레어' %}success{% elif rarity == '에픽' %}primary{% elif rarity == '유니크' %}warning{% else %}danger{% endif %} shadow-sm">
+                        <div class="card-header bg-{% if rarity == '레어' %}success{% elif rarity == '에픽' %}primary{% elif rarity == '유니크' %}warning{% else %}danger{% endif %}">
+                            <h5 class="mb-0 text-white"><i class="fas fa-star me-2"></i>{{ rarity }} ({{ monsters_by_rarity[rarity]|length }}마리)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                {% for monster in monsters_by_rarity[rarity] %}
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card h-100 monster-selection-card">
+                                        <div class="card-body text-center">
+                                            {% if compendium[monster.id].get('이미지') %}
+                                            <img src="{{ compendium[monster.id]['이미지'] }}" alt="{{ monster.name }}" 
+                                                 style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 15px;">
+                                            {% else %}
+                                            <div style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; font-size: 3rem; color: #ccc;">
+                                                <i class="fas fa-dragon"></i>
+                                            </div>
+                                            {% endif %}
+                                            
+                                            <h6 class="mb-3">{{ monster.name }}</h6>
+                                            <div class="mb-3">
+                                                <small class="text-muted d-block">공격력: {{ compendium[monster.id].get('공격력', 0) }}</small>
+                                                <small class="text-muted d-block">체력: {{ compendium[monster.id].get('체력', 0) }}</small>
+                                            </div>
+                                            
+                                            <div class="form-check">
+                                                <input class="form-check-input rarity-checkbox" type="checkbox" 
+                                                       name="selected_monsters" value="{{ monster.id }}" 
+                                                       data-rarity="{{ rarity }}"
+                                                       id="monster_{{ monster.id }}">
+                                                <label class="form-check-label" for="monster_{{ monster.id }}">
+                                                    선택
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+        <!-- 선택 상태 및 합성 버튼 -->
+        <div class="row sticky-bottom bg-light border-top p-3">
+            <div class="col-12 text-center">
+                <div class="mb-3">
+                    <span class="badge bg-info" id="selection-count">선택: 0/3</span>
+                    <span class="badge bg-warning" id="selection-rarity" style="display:none;"></span>
+                </div>
+                <button type="submit" class="btn btn-warning btn-lg" id="fusion-btn" disabled>
+                    <i class="fas fa-wand-magic-sparkles me-2"></i>몬스터 합성
+                </button>
+            </div>
+        </div>
+    </form>
+
+    {% else %}
+    <!-- 빈 도감 메시지 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-book-open text-muted mb-3" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">도감이 비어있습니다</h4>
+                    <p class="text-muted mb-4">던전에서 몬스터를 처치하여 도감을 채워보세요!</p>
+                    <a href="{{ url_for('dungeons') }}" class="btn btn-primary">
+                        <i class="fas fa-dungeon me-1"></i>던전으로 가기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.monster-selection-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.monster-selection-card:hover {
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.monster-selection-card .form-check-input:checked ~ .form-check-label {
+    color: #0d6efd;
+}
+
+.monster-selection-card .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.rarity-checkbox:checked {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+}
+
+.sticky-bottom {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.rarity-checkbox');
+    const selectionCount = document.getElementById('selection-count');
+    const selectionRarity = document.getElementById('selection-rarity');
+    const fusionBtn = document.getElementById('fusion-btn');
+
+    function updateSelection() {
+        const selectedCheckboxes = document.querySelectorAll('.rarity-checkbox:checked');
+        const count = selectedCheckboxes.length;
+        
+        selectionCount.textContent = `선택: ${count}/3`;
+        
+        if (count > 0) {
+            const rarities = new Set();
+            selectedCheckboxes.forEach(cb => {
+                rarities.add(cb.dataset.rarity);
+            });
+            
+            if (rarities.size === 1) {
+                const rarity = Array.from(rarities)[0];
+                selectionRarity.textContent = `등급: ${rarity}`;
+                selectionRarity.style.display = 'inline-block';
+                
+                if (count === 3) {
+                    fusionBtn.disabled = false;
+                } else {
+                    fusionBtn.disabled = true;
+                }
+            } else {
+                selectionRarity.textContent = '등급이 다릅니다!';
+                selectionRarity.style.display = 'inline-block';
+                selectionRarity.classList.add('bg-danger');
+                selectionRarity.classList.remove('bg-warning');
+                fusionBtn.disabled = true;
+            }
+        } else {
+            selectionRarity.style.display = 'none';
+            fusionBtn.disabled = true;
+        }
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateSelection);
+    });
+});
+</script>
+{% endblock %}

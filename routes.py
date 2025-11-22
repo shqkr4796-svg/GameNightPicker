@@ -1249,6 +1249,49 @@ def delete_monster(monster_id):
     
     return redirect(url_for('compendium'))
 
+@app.route('/fusion')
+def fusion():
+    """몬스터 합성 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    compendium = player.get('도감', {})
+    
+    # 등급별로 몬스터 분류
+    monsters_by_rarity = {}
+    for monster_id, monster in compendium.items():
+        rarity = monster.get('등급', '레어')
+        if rarity not in monsters_by_rarity:
+            monsters_by_rarity[rarity] = []
+        monsters_by_rarity[rarity].append({'id': monster_id, 'name': monster['이름']})
+    
+    return render_template('fusion.html', 
+                         player=player,
+                         compendium=compendium,
+                         monsters_by_rarity=monsters_by_rarity)
+
+@app.route('/perform_fusion', methods=['POST'])
+def perform_fusion():
+    """몬스터 합성 실행"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    monster_ids = request.form.getlist('selected_monsters')
+    
+    result = game_logic.merge_monsters(player, monster_ids)
+    
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('fusion'))
+
 @app.route('/dungeon/use_item', methods=['POST'])
 def use_dungeon_item():
     """던전 아이템 사용"""
