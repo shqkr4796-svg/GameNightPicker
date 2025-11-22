@@ -198,38 +198,40 @@ function startShopBackgroundMusic() {
         masterGain.gain.setValueAtTime(0.28, now);
         masterGain.connect(shopAudioContext.destination);
         
-        // 상점용 부드러운 멜로디
+        // 상점용 발랄하고 상큼한 멜로디 - 밝고 빠른 느낌
         const melodyFreqs = [
-            261.63, 261.63, 329.63, 392.00,
-            392.00, 392.00, 329.63, 261.63,
-            293.66, 293.66, 349.23, 440.00,
-            440.00, 440.00, 349.23, 293.66,
-            329.63, 329.63, 392.00, 523.25,
-            523.25, 523.25, 392.00, 329.63,
-            261.63, 261.63, 329.63, 392.00,
-            392.00, 329.63, 293.66, 261.63
+            // 첫번째 라인 - G 메이저, 밝고 활발함
+            392.00, 523.25, 587.33, 523.25,  // G5, C6, D6, C6
+            392.00, 523.25, 659.25, 587.33,  // G5, C6, E6, D6
+            523.25, 587.33, 659.25, 783.99,  // C6, D6, E6, G6
+            659.25, 587.33, 523.25, 392.00,  // E6, D6, C6, G5
+            // 두번째 라인 - 밝은 아르페지오
+            587.33, 659.25, 783.99, 659.25,  // D6, E6, G6, E6
+            523.25, 587.33, 659.25, 523.25,  // C6, D6, E6, C6
+            392.00, 523.25, 587.33, 659.25,  // G5, C6, D6, E6
+            523.25, 392.00, 659.25, 523.25   // C6, G5, E6, C6
         ];
         
         const chordFreqs = [
-            [261.63, 329.63, 392.00],
-            [293.66, 349.23, 440.00]
+            [392.00, 523.25, 659.25],   // G 메이저 (G, C, E)
+            [523.25, 659.25, 783.99]    // C 메이저 (C, E, G)
         ];
         
-        const loopDuration = 16;
+        const loopDuration = 12;
         
         function playMelody(loopStartTime) {
             melodyFreqs.forEach((freq, i) => {
-                const noteStart = loopStartTime + i * 0.5;
-                const noteDuration = 0.45;
+                const noteStart = loopStartTime + i * 0.25;  // 더 빠른 속도 (0.25초)
+                const noteDuration = 0.22;
                 
                 const osc = shopAudioContext.createOscillator();
                 const gain = shopAudioContext.createGain();
                 
-                osc.type = 'sine';
+                osc.type = 'triangle';  // 밝은 삼각파 음색
                 osc.frequency.setValueAtTime(freq, noteStart);
                 
                 gain.gain.setValueAtTime(0, noteStart);
-                gain.gain.linearRampToValueAtTime(0.2, noteStart + 0.1);
+                gain.gain.linearRampToValueAtTime(0.25, noteStart + 0.05);
                 gain.gain.exponentialRampToValueAtTime(0.01, noteStart + noteDuration);
                 
                 osc.connect(gain);
@@ -245,8 +247,8 @@ function startShopBackgroundMusic() {
         
         function playChords(loopStartTime) {
             chordFreqs.forEach((freqs, chordIdx) => {
-                const chordStart = loopStartTime + chordIdx * 4;
-                const chordDuration = 3.8;
+                const chordStart = loopStartTime + chordIdx * 3;
+                const chordDuration = 2.8;
                 
                 freqs.forEach(freq => {
                     const osc = shopAudioContext.createOscillator();
@@ -256,7 +258,7 @@ function startShopBackgroundMusic() {
                     osc.frequency.setValueAtTime(freq, chordStart);
                     
                     gain.gain.setValueAtTime(0, chordStart);
-                    gain.gain.linearRampToValueAtTime(0.12, chordStart + 0.2);
+                    gain.gain.linearRampToValueAtTime(0.1, chordStart + 0.15);
                     gain.gain.exponentialRampToValueAtTime(0.01, chordStart + chordDuration);
                     
                     osc.connect(gain);
