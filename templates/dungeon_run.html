@@ -94,7 +94,7 @@
                         {% if dungeon_run.get('hint_used') %}
                             <!-- 힌트 사용 시 2지선다 -->
                             {% for i in range(2) %}
-                            <div class="col-md-6 mb-3">
+                            <div class="col-6 mb-3">
                                 <button type="button" class="btn btn-outline-success w-100 h-100 choice-btn" 
                                         onclick="submitChoice({{ dungeon_run['current_options'].index(dungeon_run['hint_options'][i]) }})"
                                         style="min-height: 60px; font-size: 1.1em;">
@@ -108,9 +108,9 @@
                                 </div>
                             </div>
                         {% else %}
-                            <!-- 일반 4지선다 -->
+                            <!-- 일반 4지선다 (2열 2행) -->
                             {% for i in range(4) %}
-                            <div class="col-md-6 mb-3">
+                            <div class="col-6 mb-3">
                                 <button type="button" class="btn btn-outline-primary w-100 h-100 choice-btn" 
                                         onclick="submitChoice({{ i }})"
                                         style="min-height: 60px; font-size: 1.1em;">
