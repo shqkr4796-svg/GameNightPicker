@@ -1024,8 +1024,13 @@ def check_random_event(player):
         # 이벤트 효과 적용
         for effect, value in event['효과'].items():
             if effect in player:
-                player[effect] += value
-                player[effect] = max(0, player[effect])  # 음수 방지
+                try:
+                    # 숫자 타입만 더함
+                    if isinstance(player[effect], (int, float)) and isinstance(value, (int, float)):
+                        player[effect] += value
+                        player[effect] = max(0, player[effect])  # 음수 방지
+                except (TypeError, ValueError):
+                    pass  # 타입 오류 무시
         
         # 이벤트 기록
         save_event(event['이름'])
