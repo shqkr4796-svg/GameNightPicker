@@ -294,6 +294,59 @@
 </style>
 
 <script>
+// 포켓몬 스타일 타격음 효과
+function playPunchSound() {
+    try {
+        if (!audioContext) {
+            initAudioContext();
+        }
+        
+        if (!audioContext) {
+            return;
+        }
+        
+        const now = audioContext.currentTime;
+        
+        // 타격음 1: 주 타격 (높은음 → 낮은음 스윕)
+        const osc1 = audioContext.createOscillator();
+        const gain1 = audioContext.createGain();
+        
+        osc1.type = 'square';  // 사각파로 뭉뚝한 타격감
+        osc1.frequency.setValueAtTime(800, now);  // 높은음에서 시작
+        osc1.frequency.exponentialRampToValueAtTime(300, now + 0.08);  // 낮은음으로 빠르게 떨어짐
+        
+        gain1.gain.setValueAtTime(0.4, now);  // 즉시 최대 볼륨
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);  // 빠르게 소멸
+        
+        osc1.connect(gain1);
+        gain1.connect(audioContext.destination);
+        
+        osc1.start(now);
+        osc1.stop(now + 0.15);
+        
+        // 타격음 2: 보조음 (더 깊은 톤)
+        const osc2 = audioContext.createOscillator();
+        const gain2 = audioContext.createGain();
+        
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(400, now);  // 약간 낮은음에서 시작
+        osc2.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+        
+        gain2.gain.setValueAtTime(0.2, now);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+        
+        osc2.connect(gain2);
+        gain2.connect(audioContext.destination);
+        
+        osc2.start(now);
+        osc2.stop(now + 0.12);
+        
+        console.log('💥 타격음 재생');
+    } catch(e) {
+        console.log('타격음 오류:', e.message);
+    }
+}
+
 function submitChoice(choice) {
     const formData = new FormData();
     formData.append('choice', choice);
@@ -310,13 +363,18 @@ function submitChoice(choice) {
     })
     .then(response => response.json())
     .then(data => {
-        // 지연 없이 즉시 페이지 이동
-        if (data.game_over) {
-            window.location.href = '{{ url_for("dungeons") }}';
-        } else {
-            // location.reload() 대신 현재 URL로 직접 이동 (캐시 무시)
-            window.location.href = window.location.href;
-        }
+        // 타격음 재생
+        playPunchSound();
+        
+        // 타격음이 완료될 때까지 약간 대기 후 페이지 이동
+        setTimeout(() => {
+            if (data.game_over) {
+                window.location.href = '{{ url_for("dungeons") }}';
+            } else {
+                // location.reload() 대신 현재 URL로 직접 이동 (캐시 무시)
+                window.location.href = window.location.href;
+            }
+        }, 200);  // 타격음 재생 시간 확보
     })
     .catch(error => {
         console.error('Error:', error);
