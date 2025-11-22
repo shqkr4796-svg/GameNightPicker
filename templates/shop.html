@@ -21,8 +21,8 @@
                         <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} 
                              border-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %}">
                             {% if item.get('이미지') %}
-                            <div style="height: 150px; overflow: hidden; background: #f8f9fa;">
-                                <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" class="w-100 h-100" style="object-fit: cover;">
+                            <div style="height: 80px; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" style="max-height: 70px; max-width: 70px; object-fit: contain;">
                             </div>
                             {% endif %}
                             <div class="card-header p-2">
