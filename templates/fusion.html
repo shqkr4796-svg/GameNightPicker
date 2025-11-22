@@ -127,6 +127,8 @@
         </div>
     </div>
     {% endif %}
+    <!-- 합성 결과 상태 플래그 -->
+    <div id="fusion-status" data-upgraded="{{ fusion_upgraded|lower }}" data-mythic="{{ fusion_mythic|lower }}" style="display:none;"></div>
 </div>
 
 <style>
@@ -250,6 +252,85 @@ document.addEventListener('DOMContentLoaded', function() {
     fusionBtn.addEventListener('click', function(e) {
         playSuctionSound();
     });
+
+    // 웅장한 팬파레 음성 생성 (더 높은 등급 또는 신화급 획득 시)
+    function playVictorySound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            
+            // 팬파레 길이: 2초
+            const duration = 2.0;
+            
+            // 메인 팬파레 음 (상승하는 톤)
+            const mainOsc = audioContext.createOscillator();
+            mainOsc.type = 'sine';
+            // 음정: 440Hz(A4) -> 880Hz(A5) -> 1320Hz(E6)
+            mainOsc.frequency.setValueAtTime(440, now);
+            mainOsc.frequency.exponentialRampToValueAtTime(880, now + 0.6);
+            mainOsc.frequency.exponentialRampToValueAtTime(1320, now + 1.2);
+            mainOsc.frequency.exponentialRampToValueAtTime(880, now + 1.8);
+            
+            const mainGain = audioContext.createGain();
+            mainGain.gain.setValueAtTime(0, now);
+            mainGain.gain.linearRampToValueAtTime(0.5, now + 0.1);  // 페이드인
+            mainGain.gain.exponentialRampToValueAtTime(0.01, now + duration);  // 페이드아웃
+            
+            mainOsc.connect(mainGain);
+            mainGain.connect(audioContext.destination);
+            mainOsc.start(now);
+            mainOsc.stop(now + duration);
+            
+            // 승리 음성 - 더 높은 음 (timpani 드럼 효과)
+            const highOsc = audioContext.createOscillator();
+            highOsc.type = 'square';
+            highOsc.frequency.setValueAtTime(1760, now + 0.3);  // A6
+            highOsc.frequency.exponentialRampToValueAtTime(1320, now + 0.5);
+            
+            const highGain = audioContext.createGain();
+            highGain.gain.setValueAtTime(0, now + 0.3);
+            highGain.gain.linearRampToValueAtTime(0.3, now + 0.35);
+            highGain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+            
+            highOsc.connect(highGain);
+            highGain.connect(audioContext.destination);
+            highOsc.start(now + 0.3);
+            highOsc.stop(now + 0.8);
+            
+            // 베이스 드럼 음성
+            const bassOsc = audioContext.createOscillator();
+            bassOsc.type = 'sine';
+            bassOsc.frequency.setValueAtTime(220, now + 0.6);  // A3
+            bassOsc.frequency.exponentialRampToValueAtTime(88, now + 1.0);
+            
+            const bassGain = audioContext.createGain();
+            bassGain.gain.setValueAtTime(0, now + 0.6);
+            bassGain.gain.linearRampToValueAtTime(0.4, now + 0.65);
+            bassGain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+            
+            bassOsc.connect(bassGain);
+            bassGain.connect(audioContext.destination);
+            bassOsc.start(now + 0.6);
+            bassOsc.stop(now + 1.2);
+            
+        } catch (e) {
+            console.log('승리 음성 생성 실패:', e);
+        }
+    }
+
+    // 페이지 로드 시 합성 결과 확인
+    const fusionStatus = document.getElementById('fusion-status');
+    if (fusionStatus) {
+        const upgraded = fusionStatus.getAttribute('data-upgraded') === 'true';
+        const mythic = fusionStatus.getAttribute('data-mythic') === 'true';
+        
+        if (upgraded || mythic) {
+            // 페이지 로드 후 약간 지연해서 음성 재생
+            setTimeout(function() {
+                playVictorySound();
+            }, 800);
+        }
+    }
 });
 </script>
 {% endblock %}

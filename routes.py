@@ -1334,10 +1334,16 @@ def fusion():
             monsters_by_rarity[rarity] = []
         monsters_by_rarity[rarity].append({'id': monster_id, 'name': monster['이름']})
     
+    # 합성 결과 플래그 확인
+    fusion_upgraded = session.pop('fusion_upgraded', False)
+    fusion_mythic = session.pop('fusion_mythic', False)
+    
     return render_template('fusion.html', 
                          player=player,
                          compendium=compendium,
-                         monsters_by_rarity=monsters_by_rarity)
+                         monsters_by_rarity=monsters_by_rarity,
+                         fusion_upgraded=fusion_upgraded,
+                         fusion_mythic=fusion_mythic)
 
 @app.route('/perform_fusion', methods=['POST'])
 def perform_fusion():
@@ -1355,6 +1361,9 @@ def perform_fusion():
     
     if result['success']:
         flash(result['message'], 'success')
+        # 업그레이드 여부를 세션에 저장
+        session['fusion_upgraded'] = result.get('is_upgraded', False)
+        session['fusion_mythic'] = result.get('is_mythic', False)
     else:
         flash(result['message'], 'error')
     

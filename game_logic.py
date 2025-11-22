@@ -2532,8 +2532,10 @@ def merge_monsters(player, monster_ids):
     upgrade_chance = rarity_upgrade_chance.get(first_monster_rarity, 0.6)
     
     # 다른 등급 -> 더 높은 등급 또는 같은 등급으로 변환
+    is_upgraded = False
     if random.random() < upgrade_chance and current_rarity_index < len(rarity_order) - 2:
         # 더 높은 등급 획득
+        is_upgraded = True
         next_rarity = rarity_order[current_rarity_index + 1]
         next_rarity_monsters = get_monsters_by_rarity(next_rarity)
     else:
@@ -2572,5 +2574,6 @@ def merge_monsters(player, monster_ids):
         'message': f"합성 성공! {next_rarity} 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
         'result_monster_id': result_monster_id,
         'result_monster_name': result_monster_data['이름'],
-        'is_mythic': False
+        'is_mythic': False,
+        'is_upgraded': is_upgraded
     }

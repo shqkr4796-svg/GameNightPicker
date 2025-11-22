@@ -34,12 +34,12 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 39725
-externalPort = 3001
-
-[[ports]]
 localPort = 42685
 externalPort = 3000
+
+[[ports]]
+localPort = 43829
+externalPort = 3001
 
 [agent]
 integrations = ["styling_replit:1.0.0", "python_openai_ai_integrations:1.0.0"]
