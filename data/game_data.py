@@ -153,7 +153,7 @@ monster_rarities = {
     '레어': {'required_correct': 3, 'capture_rate': 0.5, 'color': '#00ff00'},
     '에픽': {'required_correct': 10, 'capture_rate': 0.1, 'color': '#9932cc'},
     '유니크': {'required_correct': 50, 'capture_rate': 0.05, 'color': '#ff8c00'},
-    '레전드리': {'required_correct': 200, 'capture_rate': 0.01, 'color': '#ffd700'}
+    '레전드리': {'required_correct': 200, 'capture_rate': 0.03, 'color': '#ffd700'}
 }
 
 # 확장된 부동산 목록 (기존 + 추가)
