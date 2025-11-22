@@ -1368,14 +1368,16 @@ def init_dungeon_run(player, dungeon_id):
     # 고유 단어가 부족하면 원본 words 사용 (중복 허용)
     if len(unique_words) < actual_clear_condition:
         word_queue = words[:actual_clear_condition]
+        use_duplicate = True  # 중복 허용 모드
     else:
         word_queue = unique_words[:actual_clear_condition]  # 고유한 단어만 선택
+        use_duplicate = False  # 중복 제거 모드
     
     # 간소화된 던전 실행 상태 (세션 용량 최적화)
     dungeon_run = {
         'dungeon_id': dungeon_id,
-        'word_indices': list(range(len(word_queue))),  # 0, 1, 2, ... (unique_words 기준 인덱스)
-        'original_word_queue': word_queue.copy(),  # 원본 word_queue 저장 (사이클 반복 시 사용)
+        'word_indices': list(range(len(word_queue))),  # 0, 1, 2, ... 
+        'use_duplicate': use_duplicate,  # 중복 허용 여부
         'current_word_index': 0,
         'current_word': None,
         'current_options': [],
@@ -1481,15 +1483,56 @@ def next_monster(dungeon_run, dungeon):
         if dungeon_run['cleared_words'] >= dungeon_run['actual_clear_condition']:
             return {'success': False, 'message': '던전을 완료했습니다!'}
         
-        # 문제가 다 떨어졌지만 클리어해야 할 몬스터가 남은 경우, 원본 word_queue로 사이클 재시작
-        dungeon_run['word_indices'] = list(range(len(dungeon_run['original_word_queue'])))
+        # 문제가 다 떨어졌지만 클리어해야 할 몬스터가 남은 경우, 사이클 재시작
+        dungeon = get_dungeon_by_id(dungeon_run['dungeon_id'])
+        words = load_words_by_source(
+            dungeon_run.get('word_source', 'toeic'),
+            category_filter=dungeon.get('category_filter') if dungeon else None,
+            difficulty_filter=dungeon.get('difficulty_filter') if dungeon else None
+        )
+        random.shuffle(words)
+        
+        # 중복 제거
+        unique_words = []
+        seen_words = set()
+        for word in words:
+            word_key = word['단어']
+            if word_key not in seen_words:
+                unique_words.append(word)
+                seen_words.add(word_key)
+        
+        # 사이클 재시작 (원래 설정 유지)
+        remaining_clears = dungeon_run['actual_clear_condition'] - dungeon_run['cleared_words']
+        if dungeon_run['use_duplicate'] and len(unique_words) < remaining_clears:
+            word_queue = words[:remaining_clears]
+        else:
+            word_queue = unique_words[:remaining_clears]
+        
+        dungeon_run['word_indices'] = list(range(len(word_queue)))
         dungeon_run['current_word_index'] = 0
         dungeon_run['flash_message'] = '모든 문제를 풀었습니다! 새로운 사이클을 시작합니다.'
     
-    # 현재 단어 설정 (original_word_queue에서 직접 가져오기)
+    # 현재 단어 설정
     dungeon = get_dungeon_by_id(dungeon_run['dungeon_id']) if 'dungeon_id' in dungeon_run else None
+    words = load_words_by_source(
+        dungeon_run.get('word_source', 'toeic'),
+        category_filter=dungeon.get('category_filter') if dungeon else None,
+        difficulty_filter=dungeon.get('difficulty_filter') if dungeon else None
+    )
+    
+    # 중복 제거
+    unique_words = []
+    seen_words = set()
+    for word in words:
+        word_key = word['단어']
+        if word_key not in seen_words:
+            unique_words.append(word)
+            seen_words.add(word_key)
+    
+    # use_duplicate 플래그에 따라 적절한 배열 선택
+    word_queue = words if dungeon_run.get('use_duplicate', False) else unique_words
     word_index = dungeon_run['word_indices'][dungeon_run['current_word_index']]
-    current_word = dungeon_run['original_word_queue'][word_index]
+    current_word = word_queue[word_index]
     dungeon_run['current_word'] = current_word
     
     # 몬스터 등급 결정 (확률 기반)
