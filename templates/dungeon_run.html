@@ -761,8 +761,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 로컬스토리지에서 배경음악 설정 읽기 (기본값: true)
-    const bgmEnabled = localStorage.getItem('dungeonBgmEnabled') !== 'false';
+    // 로컬스토리지에서 배경음악 설정 읽기
+    const storedValue = localStorage.getItem('dungeonBgmEnabled');
+    const bgmEnabled = storedValue === null ? true : storedValue !== 'false';
+    console.log('📋 localStorage 값:', storedValue, '→ bgmEnabled:', bgmEnabled);
     
     // 몬스터 등장 효과음 재생
     const rarity = '{{ dungeon_run["current_rarity"] }}';
@@ -772,9 +774,12 @@ document.addEventListener('DOMContentLoaded', function() {
             playMonsterAppearanceSound(rarity);
             // 효과음 1초 후 배경음악 시작 (활성화된 경우만)
             setTimeout(() => {
+                console.log('🎵 배경음악 시작 판단. bgmEnabled:', bgmEnabled);
                 if (bgmEnabled) {
+                    console.log('✅ 배경음악 시작');
                     startBackgroundMusic();
                 } else {
+                    console.log('❌ 배경음악 건너뜀 - 꺼짐 상태 유지');
                     bgmIsPlaying = false;
                     // 버튼 상태만 업데이트
                     document.getElementById('bgm-status').textContent = '켜기';
@@ -785,9 +790,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 200);
     } else {
         // 몬스터가 없으면 배경음악 상태에 따라 시작
+        console.log('🎵 몬스터 없음. bgmEnabled:', bgmEnabled);
         if (bgmEnabled) {
+            console.log('✅ 배경음악 시작');
             startBackgroundMusic();
         } else {
+            console.log('❌ 배경음악 건너뜀 - 꺼짐 상태 유지');
             bgmIsPlaying = false;
             // 버튼 상태만 업데이트
             document.getElementById('bgm-status').textContent = '켜기';
