@@ -342,46 +342,41 @@ async function startBackgroundMusic() {
         // BPM 설정 (느린 RPG 템포)
         Tone.Transport.bpm.value = 90;
         
-        // === 배스 신스 ===
-        bgmBass = new Tone.Synth({
-            oscillator: { type: 'square' },
-            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.5 }
-        }).toDestination();
-        bgmBass.volume.value = -12;
-        
-        // 베이스 패턴
-        const bassPattern = ['C1', 'C1', 'G0', 'G0', 'A#0', 'A#0', 'C1', 'C1'];
-        Tone.Transport.scheduleRepeat((time) => {
-            bassPattern.forEach((note, i) => {
-                bgmBass.triggerAttackRelease(note, '0.4', time + i * 0.25);
-            });
-        }, '2m');
-        
-        // === 멜로디 신스 ===
+        // === 멜로디 신스 (베이스 제거) ===
         bgmMelody = new Tone.Synth({
             oscillator: { type: 'triangle' },
             envelope: { attack: 0.05, decay: 0.1, sustain: 0.3, release: 0.5 }
         }).toDestination();
-        bgmMelody.volume.value = -4;
+        bgmMelody.volume.value = -2;
         
-        // 멜로디 패턴 (RPG 브금)
-        const melody = ['G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',
-                        'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4'];
+        // 멜로디 패턴 - 20초 (80개 노트, 각 0.25초)
+        const melody = [
+            'G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',  // 2초
+            'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4',   // 4초
+            'G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',  // 6초
+            'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4',   // 8초
+            'C4', 'D4', 'C4', 'A#3', 'G3', 'G3', 'F3', 'G3',   // 10초
+            'A#3', 'C4', 'D4', 'C4', 'A#3', 'A#3', 'G3', 'A3', // 12초
+            'G3', 'G3', 'A#3', 'C4', 'D4', 'D4', 'C4', 'A#3',  // 14초
+            'G3', 'A3', 'G3', 'F3', 'G3', 'G3', 'A#3', 'C4',   // 16초
+            'C4', 'D4', 'C4', 'A#3', 'G3', 'F3', 'G3', 'A#3',  // 18초
+            'G3', 'G3', 'G3', 'A#3', 'C4', 'C4', 'C4', 'G3'    // 20초
+        ];
         
         Tone.Transport.scheduleRepeat((time) => {
             melody.forEach((note, i) => {
                 bgmMelody.triggerAttackRelease(note, '0.4', time + i * 0.25);
             });
-        }, '4m');
+        }, '20s');
         
         // === 코드 반주 ===
         bgmChord = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: 'sine' },
             envelope: { attack: 0.1, decay: 0.1, sustain: 0.4, release: 0.8 }
         }).toDestination();
-        bgmChord.volume.value = -10;
+        bgmChord.volume.value = -8;
         
-        // 코드 패턴
+        // 코드 패턴 - 20초 사이클
         const chords = [
             ['G3', 'B3', 'D4'],
             ['A#3', 'D4', 'F4'],
@@ -391,9 +386,9 @@ async function startBackgroundMusic() {
         
         let chordIdx = 0;
         Tone.Transport.scheduleRepeat((time) => {
-            bgmChord.triggerAttackRelease(chords[chordIdx % 4], '0.8', time);
+            bgmChord.triggerAttackRelease(chords[chordIdx % 4], '2.5', time);
             chordIdx++;
-        }, '1m');
+        }, '10s');
         
         // 트랜스포트 시작
         if (Tone.Transport.state !== 'running') {
@@ -412,10 +407,6 @@ function stopBackgroundMusic() {
         if (Tone.Transport.state === 'running') {
             Tone.Transport.cancel();
             Tone.Transport.stop();
-        }
-        if (bgmBass) {
-            bgmBass.triggerRelease();
-            bgmBass.dispose();
         }
         if (bgmMelody) {
             bgmMelody.triggerRelease();
