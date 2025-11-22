@@ -562,8 +562,8 @@ function startBackgroundMusic() {
     }
 }
 
-// 배경음악 중지
-function stopBackgroundMusic() {
+// 배경음악 중지 (플래그로 페이지 언로드 판별)
+function stopBackgroundMusic(isPageUnload = false) {
     try {
         // 루프 타이머 정리
         if (window.bgmLoopTimer) {
@@ -579,18 +579,20 @@ function stopBackgroundMusic() {
         bgmGains = [];
         bgmIsPlaying = false;
         
-        // 로컬스토리지에 상태 저장
-        localStorage.setItem('dungeonBgmEnabled', 'false');
+        // 페이지 언로드가 아닐 때만 localStorage 업데이트
+        if (!isPageUnload) {
+            localStorage.setItem('dungeonBgmEnabled', 'false');
+        }
         
-        // 버튼 상태 업데이트
+        // 버튼 상태 업데이트 (페이지 언로드 시 버튼이 없을 수도 있음)
         const btn = document.getElementById('bgm-toggle-btn');
-        if (btn) {
+        if (btn && !isPageUnload) {
             document.getElementById('bgm-status').textContent = '켜기';
             btn.classList.remove('btn-outline-success');
             btn.classList.add('btn-outline-secondary');
         }
         
-        console.log('🎵 배경음악 종료');
+        console.log('🎵 배경음악 종료' + (isPageUnload ? ' (페이지 언로드)' : ''));
     } catch(e) {
         console.log('배경음악 중지 오류:', e.message || e);
     }
@@ -748,9 +750,9 @@ function playEpic(now, duration, masterGain, volume) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 페이지 떠날 때 음악 중지
-    window.addEventListener('beforeunload', stopBackgroundMusic);
-    window.addEventListener('pagehide', stopBackgroundMusic);
+    // 페이지 떠날 때 음악 중지 (localStorage 업데이트 하지 않음)
+    window.addEventListener('beforeunload', () => stopBackgroundMusic(true));
+    window.addEventListener('pagehide', () => stopBackgroundMusic(true));
     
     // 몬스터 이미지 그리기 (canvas 있을 때만)
     const canvas = document.getElementById('monster-display');
