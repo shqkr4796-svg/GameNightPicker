@@ -325,19 +325,39 @@ function submitChoice(choice) {
     });
 }
 
+// 오디오 컨텍스트 전역 변수
+let audioContext = null;
+
 // Tone.js 배경음악 변수
 let bgmBass = null;
 let bgmMelody = null;
 let bgmChord = null;
 
+// 오디오 컨텍스트 초기화
+function initAudioContext() {
+    if (!audioContext) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+            audioContext = new AudioContext();
+            console.log('오디오 컨텍스트 초기화 완료');
+        }
+    }
+    return audioContext;
+}
+
 // Tone.js 배경음악 시작 - RPG 게임 브금
 async function startBackgroundMusic() {
     try {
         // Tone 시작
+        if (!Tone.Destination.maxChannels) {
+            console.log('Tone.js 로딩 중...');
+            return;
+        }
+        
         await Tone.start();
         
         // 마스터 볼륨
-        Tone.Destination.volume.value = -6; // dB (적절한 볼륨)
+        Tone.Destination.volume.value = -5; // dB (적절한 볼륨)
         
         // BPM 설정 (느린 RPG 템포)
         Tone.Transport.bpm.value = 90;
@@ -397,28 +417,28 @@ async function startBackgroundMusic() {
         
         console.log('🎵 Tone.js RPG 배경음악 재생 중');
     } catch(e) {
-        console.log('배경음악 오류:', e);
+        console.log('배경음악 오류:', e.message || e);
     }
 }
 
 // 배경음악 중지
 function stopBackgroundMusic() {
     try {
-        if (Tone.Transport.state === 'running') {
+        if (Tone.Transport && Tone.Transport.state === 'running') {
             Tone.Transport.cancel();
             Tone.Transport.stop();
         }
         if (bgmMelody) {
-            bgmMelody.triggerRelease();
-            bgmMelody.dispose();
+            try { bgmMelody.triggerRelease(); } catch(e) {}
+            try { bgmMelody.dispose(); } catch(e) {}
         }
         if (bgmChord) {
-            bgmChord.triggerRelease();
-            bgmChord.dispose();
+            try { bgmChord.triggerRelease(); } catch(e) {}
+            try { bgmChord.dispose(); } catch(e) {}
         }
         console.log('🎵 배경음악 종료');
     } catch(e) {
-        console.log('배경음악 중지 오류:', e);
+        console.log('배경음악 중지 오류:', e.message || e);
     }
 }
 
@@ -458,7 +478,7 @@ function playMonsterAppearanceSound(rarity) {
             playEpic(now, 0.9, masterGain, 2.0);
         }
     } catch(e) {
-        console.log('효과음 재생 에러:', e);
+        console.log('효과음 재생 에러:', e.message || e);
     }
 }
 
@@ -576,6 +596,10 @@ function playEpic(now, duration, masterGain, volume) {
 document.addEventListener('DOMContentLoaded', function() {
     // 배경음악 시작
     startBackgroundMusic();
+    
+    // 페이지 떠날 때 음악 중지
+    window.addEventListener('beforeunload', stopBackgroundMusic);
+    window.addEventListener('pagehide', stopBackgroundMusic);
     
     // 몬스터 이미지 그리기 (canvas 있을 때만)
     const canvas = document.getElementById('monster-display');
