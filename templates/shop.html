@@ -7,65 +7,328 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <i data-feather="shopping-cart" class="me-2"></i>상점 아이템
-                </h5>
+                <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-all" data-bs-toggle="tab" data-bs-target="#panel-all" 
+                                type="button" role="tab" aria-controls="panel-all" aria-selected="true">
+                            전체
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-weapon" data-bs-toggle="tab" data-bs-target="#panel-weapon" 
+                                type="button" role="tab" aria-controls="panel-weapon" aria-selected="false">
+                            던전 무기
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-dungeon" data-bs-toggle="tab" data-bs-target="#panel-dungeon" 
+                                type="button" role="tab" aria-controls="panel-dungeon" aria-selected="false">
+                            던전 아이템
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-stat" data-bs-toggle="tab" data-bs-target="#panel-stat" 
+                                type="button" role="tab" aria-controls="panel-stat" aria-selected="false">
+                            스탯 증가
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-other" data-bs-toggle="tab" data-bs-target="#panel-other" 
+                                type="button" role="tab" aria-controls="panel-other" aria-selected="false">
+                            기타
+                        </button>
+                    </li>
+                </ul>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    {% for item in items %}
-                    {% set can_afford = player['돈'] >= item['가격'] %}
-                    {% set level_ok = not item.get('레벨_제한') or player['레벨'] >= item.get('레벨_제한', 0) %}
-                    {% set can_buy = can_afford and level_ok %}
-                    <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} 
-                             border-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %}">
-                            <div class="card-header p-2">
-                                <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
-                                <span class="badge bg-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %} fs-7">
-                                    {% if item.get('타입') == '무기' %}던전 무기{% elif item.get('타입') == '던전' %}던전 전용{% elif item.get('타입') == '스탯' %}스탯 증가{% else %}일반{% endif %}
-                                </span>
-                            </div>
-                            <div class="card-body d-flex" style="gap: 12px;">
-                                <!-- 왼쪽: 정보 -->
-                                <div style="flex: 1;">
-                                    <p class="text-muted small">{{ item['설명'] }}</p>
-                                    
-                                    <!-- 아이템 효과 -->
-                                    <div class="mb-3">
-                                        <small class="text-info">효과:</small><br>
-                                        {% for effect, value in item['효과'].items() %}
-                                            <small class="badge bg-{% if item.get('타입') == '던전' %}warning{% else %}secondary{% endif %} me-1">
-                                                {{ effect }} {% if value > 0 %}+{% endif %}{{ value }}
-                                            </small>
-                                        {% endfor %}
-                                        {% if item.get('레벨_제한') %}
-                                            <br><small class="text-warning">필요 레벨: {{ item['레벨_제한'] }}</small>
+
+            <div class="tab-content">
+                <!-- 전체 탭 -->
+                <div class="tab-pane fade show active" id="panel-all" role="tabpanel" aria-labelledby="tab-all">
+                    <div class="card-body">
+                        <div class="row">
+                            {% for item in items %}
+                            {% set can_afford = player['돈'] >= item['가격'] %}
+                            {% set level_ok = not item.get('레벨_제한') or player['레벨'] >= item.get('레벨_제한', 0) %}
+                            {% set can_buy = can_afford and level_ok %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} 
+                                     border-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %}">
+                                    <div class="card-header p-2">
+                                        <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
+                                        <span class="badge bg-{% if item.get('타입') == '무기' %}danger{% elif item.get('타입') == '던전' %}warning{% elif item.get('타입') == '스탯' %}info{% else %}secondary{% endif %} fs-7">
+                                            {% if item.get('타입') == '무기' %}던전 무기{% elif item.get('타입') == '던전' %}던전 전용{% elif item.get('타입') == '스탯' %}스탯 증가{% else %}일반{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="card-body d-flex" style="gap: 12px;">
+                                        <!-- 왼쪽: 정보 -->
+                                        <div style="flex: 1;">
+                                            <p class="text-muted small">{{ item['설명'] }}</p>
+                                            
+                                            <!-- 아이템 효과 -->
+                                            <div class="mb-3">
+                                                <small class="text-info">효과:</small><br>
+                                                {% for effect, value in item['효과'].items() %}
+                                                    <small class="badge bg-{% if item.get('타입') == '던전' %}warning{% else %}secondary{% endif %} me-1">
+                                                        {{ effect }} {% if value > 0 %}+{% endif %}{{ value }}
+                                                    </small>
+                                                {% endfor %}
+                                                {% if item.get('레벨_제한') %}
+                                                    <br><small class="text-warning">필요 레벨: {{ item['레벨_제한'] }}</small>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
+                                                <form method="POST" action="{{ url_for('buy_item') }}">
+                                                    <input type="hidden" name="item_id" value="{{ loop.index0 }}">
+                                                    <button type="submit" class="btn btn-sm {% if can_buy %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                                            {% if not can_buy %}disabled{% endif %}>
+                                                        {% if not level_ok %}레벨부족{% elif not can_afford %}자금부족{% else %}구매{% endif %}
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 오른쪽: 이미지 -->
+                                        {% if item.get('이미지') %}
+                                        <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                            <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" style="max-height: 100px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                        </div>
                                         {% endif %}
                                     </div>
-                                    
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
-                                        <form method="POST" action="{{ url_for('buy_item') }}">
-                                            <input type="hidden" name="item_id" value="{{ loop.index0 }}">
-                                            <button type="submit" class="btn btn-sm {% if can_buy %}btn-success{% else %}btn-outline-secondary{% endif %}"
-                                                    {% if not can_buy %}disabled{% endif %}>
-                                                {% if not level_ok %}레벨부족{% elif not can_afford %}자금부족{% else %}구매{% endif %}
-                                            </button>
-                                        </form>
-                                    </div>
                                 </div>
-                                
-                                <!-- 오른쪽: 이미지 -->
-                                {% if item.get('이미지') %}
-                                <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
-                                    <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" style="max-height: 100px; max-width: 100%; object-fit: contain; padding: 8px;">
-                                </div>
-                                {% endif %}
                             </div>
+                            {% endfor %}
                         </div>
                     </div>
-                    {% endfor %}
+                </div>
+
+                <!-- 던전 무기 탭 -->
+                <div class="tab-pane fade" id="panel-weapon" role="tabpanel" aria-labelledby="tab-weapon">
+                    <div class="card-body">
+                        <div class="row">
+                            {% set weapon_items = items|selectattr('타입', 'equalto', '무기')|list %}
+                            {% if weapon_items|length > 0 %}
+                                {% for item in weapon_items %}
+                                {% set can_afford = player['돈'] >= item['가격'] %}
+                                {% set level_ok = not item.get('레벨_제한') or player['레벨'] >= item.get('레벨_제한', 0) %}
+                                {% set can_buy = can_afford and level_ok %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} border-danger">
+                                        <div class="card-header p-2">
+                                            <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
+                                            <span class="badge bg-danger fs-7">던전 무기</span>
+                                        </div>
+                                        <div class="card-body d-flex" style="gap: 12px;">
+                                            <div style="flex: 1;">
+                                                <p class="text-muted small">{{ item['설명'] }}</p>
+                                                <div class="mb-3">
+                                                    <small class="text-info">효과:</small><br>
+                                                    {% for effect, value in item['효과'].items() %}
+                                                        <small class="badge bg-secondary me-1">{{ effect }} {% if value > 0 %}+{% endif %}{{ value }}</small>
+                                                    {% endfor %}
+                                                    {% if item.get('레벨_제한') %}
+                                                        <br><small class="text-warning">필요 레벨: {{ item['레벨_제한'] }}</small>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
+                                                    <form method="POST" action="{{ url_for('buy_item') }}">
+                                                        <input type="hidden" name="item_id" value="{{ items.index(item) }}">
+                                                        <button type="submit" class="btn btn-sm {% if can_buy %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                                                {% if not can_buy %}disabled{% endif %}>
+                                                            {% if not level_ok %}레벨부족{% elif not can_afford %}자금부족{% else %}구매{% endif %}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            {% if item.get('이미지') %}
+                                            <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" style="max-height: 100px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="col-12">
+                                <p class="text-muted text-center">던전 무기가 없습니다.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 던전 아이템 탭 -->
+                <div class="tab-pane fade" id="panel-dungeon" role="tabpanel" aria-labelledby="tab-dungeon">
+                    <div class="card-body">
+                        <div class="row">
+                            {% set dungeon_items = items|selectattr('타입', 'equalto', '던전')|list %}
+                            {% if dungeon_items|length > 0 %}
+                                {% for item in dungeon_items %}
+                                {% set can_afford = player['돈'] >= item['가격'] %}
+                                {% set level_ok = not item.get('레벨_제한') or player['레벨'] >= item.get('레벨_제한', 0) %}
+                                {% set can_buy = can_afford and level_ok %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} border-warning">
+                                        <div class="card-header p-2">
+                                            <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
+                                            <span class="badge bg-warning fs-7">던전 전용</span>
+                                        </div>
+                                        <div class="card-body d-flex" style="gap: 12px;">
+                                            <div style="flex: 1;">
+                                                <p class="text-muted small">{{ item['설명'] }}</p>
+                                                <div class="mb-3">
+                                                    <small class="text-info">효과:</small><br>
+                                                    {% for effect, value in item['효과'].items() %}
+                                                        <small class="badge bg-warning me-1">{{ effect }} {% if value > 0 %}+{% endif %}{{ value }}</small>
+                                                    {% endfor %}
+                                                    {% if item.get('레벨_제한') %}
+                                                        <br><small class="text-warning">필요 레벨: {{ item['레벨_제한'] }}</small>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
+                                                    <form method="POST" action="{{ url_for('buy_item') }}">
+                                                        <input type="hidden" name="item_id" value="{{ items.index(item) }}">
+                                                        <button type="submit" class="btn btn-sm {% if can_buy %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                                                {% if not can_buy %}disabled{% endif %}>
+                                                            {% if not level_ok %}레벨부족{% elif not can_afford %}자금부족{% else %}구매{% endif %}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            {% if item.get('이미지') %}
+                                            <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" style="max-height: 100px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="col-12">
+                                <p class="text-muted text-center">던전 아이템이 없습니다.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 스탯 증가 탭 -->
+                <div class="tab-pane fade" id="panel-stat" role="tabpanel" aria-labelledby="tab-stat">
+                    <div class="card-body">
+                        <div class="row">
+                            {% set stat_items = items|selectattr('타입', 'equalto', '스탯')|list %}
+                            {% if stat_items|length > 0 %}
+                                {% for item in stat_items %}
+                                {% set can_afford = player['돈'] >= item['가격'] %}
+                                {% set level_ok = not item.get('레벨_제한') or player['레벨'] >= item.get('레벨_제한', 0) %}
+                                {% set can_buy = can_afford and level_ok %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} border-info">
+                                        <div class="card-header p-2">
+                                            <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
+                                            <span class="badge bg-info fs-7">스탯 증가</span>
+                                        </div>
+                                        <div class="card-body d-flex" style="gap: 12px;">
+                                            <div style="flex: 1;">
+                                                <p class="text-muted small">{{ item['설명'] }}</p>
+                                                <div class="mb-3">
+                                                    <small class="text-info">효과:</small><br>
+                                                    {% for effect, value in item['효과'].items() %}
+                                                        <small class="badge bg-secondary me-1">{{ effect }} {% if value > 0 %}+{% endif %}{{ value }}</small>
+                                                    {% endfor %}
+                                                    {% if item.get('레벨_제한') %}
+                                                        <br><small class="text-warning">필요 레벨: {{ item['레벨_제한'] }}</small>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
+                                                    <form method="POST" action="{{ url_for('buy_item') }}">
+                                                        <input type="hidden" name="item_id" value="{{ items.index(item) }}">
+                                                        <button type="submit" class="btn btn-sm {% if can_buy %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                                                {% if not can_buy %}disabled{% endif %}>
+                                                            {% if not level_ok %}레벨부족{% elif not can_afford %}자금부족{% else %}구매{% endif %}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            {% if item.get('이미지') %}
+                                            <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" style="max-height: 100px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="col-12">
+                                <p class="text-muted text-center">스탯 증가 아이템이 없습니다.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 기타 탭 -->
+                <div class="tab-pane fade" id="panel-other" role="tabpanel" aria-labelledby="tab-other">
+                    <div class="card-body">
+                        <div class="row">
+                            {% set other_items = items|rejectattr('타입', 'in', ['무기', '던전', '스탯'])|list %}
+                            {% if other_items|length > 0 %}
+                                {% for item in other_items %}
+                                {% set can_afford = player['돈'] >= item['가격'] %}
+                                {% set level_ok = not item.get('레벨_제한') or player['레벨'] >= item.get('레벨_제한', 0) %}
+                                {% set can_buy = can_afford and level_ok %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100 {% if not can_buy %}opacity-50{% endif %} border-secondary">
+                                        <div class="card-header p-2">
+                                            <h6 class="card-title mb-0">{{ item['이름'] }}</h6>
+                                            <span class="badge bg-secondary fs-7">일반</span>
+                                        </div>
+                                        <div class="card-body d-flex" style="gap: 12px;">
+                                            <div style="flex: 1;">
+                                                <p class="text-muted small">{{ item['설명'] }}</p>
+                                                <div class="mb-3">
+                                                    <small class="text-info">효과:</small><br>
+                                                    {% for effect, value in item['효과'].items() %}
+                                                        <small class="badge bg-secondary me-1">{{ effect }} {% if value > 0 %}+{% endif %}{{ value }}</small>
+                                                    {% endfor %}
+                                                    {% if item.get('레벨_제한') %}
+                                                        <br><small class="text-warning">필요 레벨: {{ item['레벨_제한'] }}</small>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <strong class="text-primary">{{ "{:,}".format(item['가격']) }}원</strong>
+                                                    <form method="POST" action="{{ url_for('buy_item') }}">
+                                                        <input type="hidden" name="item_id" value="{{ items.index(item) }}">
+                                                        <button type="submit" class="btn btn-sm {% if can_buy %}btn-success{% else %}btn-outline-secondary{% endif %}"
+                                                                {% if not can_buy %}disabled{% endif %}>
+                                                            {% if not level_ok %}레벨부족{% elif not can_afford %}자금부족{% else %}구매{% endif %}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            {% if item.get('이미지') %}
+                                            <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 4px;">
+                                                <img src="{{ item['이미지'] }}" alt="{{ item['이름'] }}" style="max-height: 100px; max-width: 100%; object-fit: contain; padding: 8px;">
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="col-12">
+                                <p class="text-muted text-center">기타 아이템이 없습니다.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,6 +418,13 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* 활성 탭의 글씨 색상 */
+    .nav-link.active {
+        color: #212529 !important;
+    }
+</style>
 
 <script>
 // 상점 배경음악 전역 변수
