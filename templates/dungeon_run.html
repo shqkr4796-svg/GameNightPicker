@@ -389,8 +389,9 @@ function submitChoice(choice) {
             if (data.game_over) {
                 window.location.href = '{{ url_for("dungeons") }}';
             } else {
-                // location.reload() 대신 현재 URL로 직접 이동 (캐시 무시)
-                window.location.href = window.location.href;
+                // 캐시 버스팅: 현재 URL에 타임스탬프 추가해서 강제 새로고침
+                const currentUrl = window.location.pathname + window.location.search;
+                window.location.href = currentUrl + (window.location.search ? '&' : '?') + 't=' + Date.now();
             }
         }, 200);  // 타격음 재생 시간 확보
     })
