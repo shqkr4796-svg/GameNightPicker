@@ -155,4 +155,165 @@
         </div>
     </div>
 </div>
+
+<script>
+// 상점 배경음악 (부드럽고 따뜻한 느낌)
+let shopAudioContext = null;
+let shopBgmOscillators = [];
+let shopBgmGains = [];
+
+function initShopAudioContext() {
+    if (!shopAudioContext) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+            shopAudioContext = new AudioContext();
+            console.log('🎵 상점 오디오 컨텍스트 초기화');
+        }
+    }
+    return shopAudioContext;
+}
+
+function startShopBackgroundMusic() {
+    try {
+        if (!shopAudioContext) {
+            initShopAudioContext();
+        }
+        
+        if (!shopAudioContext) {
+            console.log('오디오 지원 안됨');
+            return;
+        }
+        
+        // 기존 oscillators 정리
+        shopBgmOscillators.forEach(osc => {
+            try { osc.stop(); } catch(e) {}
+        });
+        shopBgmOscillators = [];
+        shopBgmGains = [];
+        
+        const now = shopAudioContext.currentTime;
+        const masterGain = shopAudioContext.createGain();
+        masterGain.gain.setValueAtTime(0.28, now);  // 볼륨 28%
+        masterGain.connect(shopAudioContext.destination);
+        
+        // 상점용 부드러운 멜로디 - 더 느린 속도 (0.5초 * 32 = 16초)
+        const melodyFreqs = [
+            261.63, 261.63, 329.63, 392.00,  // C4, E4, G4
+            392.00, 392.00, 329.63, 261.63,  // 하강
+            293.66, 293.66, 349.23, 440.00,  // D4, F4, A4
+            440.00, 440.00, 349.23, 293.66,  // 하강
+            329.63, 329.63, 392.00, 523.25,  // E4, G4, C5
+            523.25, 523.25, 392.00, 329.63,  // 하강
+            261.63, 261.63, 329.63, 392.00,  // 반복
+            392.00, 329.63, 293.66, 261.63   // 마무리
+        ];
+        
+        // 상점용 따뜻한 코드
+        const chordFreqs = [
+            [261.63, 329.63, 392.00],   // C 메이저
+            [293.66, 349.23, 440.00]    // D 마이너
+        ];
+        
+        const loopDuration = 16;
+        
+        function playMelody(loopStartTime) {
+            melodyFreqs.forEach((freq, i) => {
+                const noteStart = loopStartTime + i * 0.5;
+                const noteDuration = 0.45;
+                
+                const osc = shopAudioContext.createOscillator();
+                const gain = shopAudioContext.createGain();
+                
+                osc.type = 'sine';  // 부드러운 사인파
+                osc.frequency.setValueAtTime(freq, noteStart);
+                
+                gain.gain.setValueAtTime(0, noteStart);
+                gain.gain.linearRampToValueAtTime(0.2, noteStart + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, noteStart + noteDuration);
+                
+                osc.connect(gain);
+                gain.connect(masterGain);
+                
+                osc.start(noteStart);
+                osc.stop(noteStart + noteDuration + 0.1);
+                
+                shopBgmOscillators.push(osc);
+                shopBgmGains.push(gain);
+            });
+        }
+        
+        function playChords(loopStartTime) {
+            chordFreqs.forEach((freqs, chordIdx) => {
+                const chordStart = loopStartTime + chordIdx * 4;
+                const chordDuration = 3.8;
+                
+                freqs.forEach(freq => {
+                    const osc = shopAudioContext.createOscillator();
+                    const gain = shopAudioContext.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, chordStart);
+                    
+                    gain.gain.setValueAtTime(0, chordStart);
+                    gain.gain.linearRampToValueAtTime(0.12, chordStart + 0.2);
+                    gain.gain.exponentialRampToValueAtTime(0.01, chordStart + chordDuration);
+                    
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    
+                    osc.start(chordStart);
+                    osc.stop(chordStart + chordDuration + 0.1);
+                    
+                    shopBgmOscillators.push(osc);
+                    shopBgmGains.push(gain);
+                });
+            });
+        }
+        
+        playMelody(now);
+        playChords(now);
+        
+        const loopTimer = setInterval(() => {
+            if (shopAudioContext.state === 'running') {
+                playMelody(shopAudioContext.currentTime);
+                playChords(shopAudioContext.currentTime);
+            }
+        }, loopDuration * 1000);
+        
+        window.shopBgmLoopTimer = loopTimer;
+        
+        console.log('🎵 상점 배경음악 재생 중');
+    } catch(e) {
+        console.log('상점 배경음악 오류:', e.message || e);
+    }
+}
+
+function stopShopBackgroundMusic() {
+    try {
+        if (window.shopBgmLoopTimer) {
+            clearInterval(window.shopBgmLoopTimer);
+            window.shopBgmLoopTimer = null;
+        }
+        
+        shopBgmOscillators.forEach(osc => {
+            try { osc.stop(); } catch(e) {}
+        });
+        shopBgmOscillators = [];
+        shopBgmGains = [];
+        
+        console.log('🎵 상점 배경음악 종료');
+    } catch(e) {
+        console.log('상점 배경음악 중지 오류:', e.message || e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 상점 배경음악 시작
+    startShopBackgroundMusic();
+    
+    // 페이지 떠날 때 음악 중지
+    window.addEventListener('beforeunload', stopShopBackgroundMusic);
+    window.addEventListener('pagehide', stopShopBackgroundMusic);
+});
+</script>
 {% endblock %}
