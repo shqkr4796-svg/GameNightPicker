@@ -5,162 +5,159 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/adventure.css') }}">
 
-<div class="adventure-container">
-    <!-- 헤더 -->
-    <div class="adventure-header" style="background-image: url('{{ url_for('static', filename='images/fantasy_rpg_adventure_header.png') }}');">
-        <div class="header-overlay">
-            <h1>⚔️ 모험 시스템 ⚔️</h1>
-            <div class="header-stats">
-                <div class="stat-box">
-                    <span class="stat-label">현재 스테이지</span>
-                    <span class="stat-value">{{ player.get('모험_현재스테이지', 1) }} / 200</span>
+<div class="adventure-wrapper">
+    <!-- 상단 헤더 -->
+    <div class="adventure-header">
+        <div class="header-content">
+            <h1>⚔️ 모험 시스템</h1>
+            <div class="header-info">
+                <div class="info-item">
+                    <span class="info-label">현재 스테이지</span>
+                    <span class="info-number">{{ player.get('모험_현재스테이지', 1) }}</span>
                 </div>
-                <div class="stat-box">
-                    <span class="stat-label">최고 기록</span>
-                    <span class="stat-value">{{ cleared_stage }}</span>
+                <div class="info-item">
+                    <span class="info-label">최고 기록</span>
+                    <span class="info-number">{{ cleared_stage }}</span>
                 </div>
-                <div class="stat-box">
-                    <span class="stat-label">보유 기술</span>
-                    <span class="stat-value">{{ player.get('모험_기술', [])|length }} / 4</span>
+                <div class="info-item">
+                    <span class="info-label">보유 기술</span>
+                    <span class="info-number">{{ player.get('모험_기술', [])|length }}/4</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 메인 콘텐츠 -->
-    <div class="adventure-content">
-        <div class="content-wrapper">
-            <!-- 왼쪽: 스테이지 선택 -->
-            <div class="stage-section">
-                <h2 class="section-title">📍 스테이지 선택</h2>
-                <div class="stages-grid">
-                    {% for stage in stages %}
-                    {% set is_unlocked = stage.stage_id <= cleared_stage + 1 %}
-                    <div class="stage-card-wrapper {% if is_unlocked %}unlocked{% else %}locked{% endif %}"
-                         onclick="{% if is_unlocked %}selectStage({{ stage.stage_id }}, '{{ stage.이름 }}', {{ stage.enemy_hp_multiplier }}, {{ stage.enemy_attack_multiplier }}, {{ stage.skill_reward_rate }}, '{{ stage.난이도 }}'){% endif %}">
-                        <div class="stage-card" style="background-image: url('{{ url_for('static', filename='images/fantasy_rpg_stage_card_-_golden.png') }}');">
-                            <div class="stage-number">{{ stage.stage_id }}</div>
-                            {% if stage.stage_id <= cleared_stage %}
-                            <div class="stage-cleared">✓</div>
-                            {% endif %}
+    <!-- 메인 컨텐츠 -->
+    <div class="adventure-main">
+        <!-- 좌측: 스테이지 목록 -->
+        <div class="stage-list-section">
+            <h2 class="section-title">📍 스테이지 선택</h2>
+            <div class="stages-grid">
+                {% for stage in stages %}
+                {% set is_unlocked = stage.stage_id <= cleared_stage + 1 %}
+                <div class="stage-item {% if not is_unlocked %}disabled{% endif %}" 
+                     data-stage="{{ stage.stage_id }}"
+                     onclick="{% if is_unlocked %}selectStage({{ stage.stage_id }}, '{{ stage.이름 }}', {{ stage.enemy_hp_multiplier }}, {{ stage.enemy_attack_multiplier }}, {{ stage.skill_reward_rate }}, '{{ stage.난이도 }}'){% endif %}">
+                    
+                    <div class="stage-icon">
+                        <img src="{{ url_for('static', filename='images/fantasy_golden_stage_icon_transparent.png') }}" alt="stage">
+                        <span class="stage-num">{{ stage.stage_id }}</span>
+                        {% if stage.stage_id <= cleared_stage %}
+                        <div class="stage-check">✓</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 우측: 스테이지 상세 정보 + 몬스터 선택 -->
+        <div class="detail-panel">
+            <!-- 스테이지 정보 -->
+            <div id="stageInfo" class="stage-info-box hidden">
+                <h3 id="stageTitleInfo"></h3>
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span class="label">난이도</span>
+                        <span id="stageDiffInfo" class="value difficulty-badge"></span>
+                    </div>
+                    <div class="info-box">
+                        <span class="label">적 체력</span>
+                        <span id="stageHpInfo" class="value">x1.0</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="label">적 공격</span>
+                        <span id="stageAtkInfo" class="value">x1.0</span>
+                    </div>
+                    <div class="info-box">
+                        <span class="label">기술 드롭</span>
+                        <span id="stageDropInfo" class="value">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 몬스터 선택 -->
+            {% if available_monsters %}
+            <div class="monster-select-section">
+                <h3>🐉 파티 리더 선택</h3>
+                <div class="monster-grid">
+                    {% for monster in available_monsters %}
+                    <div class="monster-card" onclick="selectMonster('{{ monster.id }}', this)" data-monster="{{ monster.id }}">
+                        <div class="monster-frame" style="background-image: url('{{ url_for('static', filename='images/monster_card_frame_transparent.png') }}');">
+                            <div class="monster-image">
+                                <img src="{{ monster.image }}" alt="{{ monster.name }}">
+                            </div>
+                            <div class="monster-details">
+                                <div class="mon-name">{{ monster.name }}</div>
+                                <div class="mon-rarity" style="background: 
+                                    {% if monster.rarity == '레어' %}#4169E1
+                                    {% elif monster.rarity == '에픽' %}#9932CC
+                                    {% elif monster.rarity == '유니크' %}#FFD700
+                                    {% else %}#FF1493{% endif %}">
+                                    {{ monster.rarity }}
+                                </div>
+                                <div class="mon-stats">
+                                    <span>⚔️ {{ monster.attack }}</span>
+                                    <span>❤️ {{ monster.hp }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stage-label">{{ stage.이름 }}</div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
 
-            <!-- 오른쪽: 상세 정보 + 몬스터 선택 -->
-            <div class="detail-section" style="background-image: url('{{ url_for('static', filename='images/fantasy_rpg_panel_background.png') }}');">
-                <div class="panel-content">
-                    <!-- 스테이지 상세 정보 -->
-                    <div id="stageDetailBox" class="stage-detail-box hidden">
-                        <h3 id="stageName"></h3>
-                        <div class="stage-info-row">
-                            <span class="info-label">난이도:</span>
-                            <span id="stageDiff" class="difficulty-tag"></span>
-                        </div>
-                        <div class="stage-info-row">
-                            <span class="info-label">적 체력:</span>
-                            <span id="stageHp" class="info-value">x1.0</span>
-                        </div>
-                        <div class="stage-info-row">
-                            <span class="info-label">적 공격:</span>
-                            <span id="stageAtk" class="info-value">x1.0</span>
-                        </div>
-                        <div class="stage-info-row">
-                            <span class="info-label">기술 드롭:</span>
-                            <span id="stageReward" class="info-value">0%</span>
-                        </div>
-                    </div>
-
-                    <!-- 몬스터 선택 -->
-                    {% if available_monsters %}
-                    <div class="monster-select-box">
-                        <h3>🐉 파티 리더 선택</h3>
-                        <div class="monsters-container">
-                            {% for monster in available_monsters %}
-                            <div class="monster-card-item" 
-                                 onclick="selectMonster('{{ monster.id }}', this)"
-                                 style="background-image: url('{{ url_for('static', filename='images/fantasy_monster_card_background.png') }}');">
-                                <div class="monster-card-inner">
-                                    <div class="monster-pic">
-                                        <img src="{{ monster.image }}" alt="{{ monster.name }}">
-                                    </div>
-                                    <div class="monster-info">
-                                        <div class="monster-name">{{ monster.name }}</div>
-                                        <div class="monster-rarity" style="background: 
-                                            {% if monster.rarity == '레어' %}#4169E1
-                                            {% elif monster.rarity == '에픽' %}#9932CC
-                                            {% elif monster.rarity == '유니크' %}#FFD700
-                                            {% else %}#FF1493{% endif %}">
-                                            {{ monster.rarity }}
-                                        </div>
-                                        <div class="monster-stat">⚔️ {{ monster.attack }}</div>
-                                        <div class="monster-stat">❤️ {{ monster.hp }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- 도전 버튼 -->
-                    <button id="challengeBtn" class="btn-challenge" disabled onclick="startChallenge()">
-                        🎮 도전하기
-                    </button>
-                </div>
-            </div>
+            <!-- 도전 버튼 -->
+            <button id="challengeBtn" class="btn-challenge" disabled onclick="startChallenge()">
+                🎮 도전하기
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-let selectedStageData = null;
+let selectedStage = null;
 let selectedMonster = null;
 
 function selectStage(id, name, hp, atk, reward, difficulty) {
-    selectedStageData = { id, name, hp, atk, reward, difficulty };
+    selectedStage = { id, name, hp, atk, reward, difficulty };
     
-    document.querySelectorAll('.stage-card-wrapper').forEach(c => c.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    document.querySelectorAll('.stage-item').forEach(s => s.classList.remove('active'));
+    document.querySelector(`[data-stage="${id}"]`).classList.add('active');
     
-    document.getElementById('stageName').textContent = name;
-    document.getElementById('stageDiff').textContent = difficulty;
-    document.getElementById('stageDiff').style.backgroundColor = getDifficultyColor(difficulty);
-    document.getElementById('stageHp').textContent = 'x' + hp.toFixed(1);
-    document.getElementById('stageAtk').textContent = 'x' + atk.toFixed(1);
-    document.getElementById('stageReward').textContent = Math.round(reward * 100) + '%';
-    document.getElementById('stageDetailBox').classList.remove('hidden');
+    document.getElementById('stageTitleInfo').textContent = name;
+    document.getElementById('stageDiffInfo').textContent = difficulty;
+    document.getElementById('stageDiffInfo').style.backgroundColor = getDifficultyColor(difficulty);
+    document.getElementById('stageHpInfo').textContent = 'x' + hp.toFixed(1);
+    document.getElementById('stageAtkInfo').textContent = 'x' + atk.toFixed(1);
+    document.getElementById('stageDropInfo').textContent = Math.round(reward * 100) + '%';
+    document.getElementById('stageInfo').classList.remove('hidden');
     
-    updateChallengeButton();
+    updateBtn();
 }
 
-function selectMonster(monsterId, element) {
-    selectedMonster = monsterId;
-    document.querySelectorAll('.monster-card-item').forEach(m => m.classList.remove('selected'));
+function selectMonster(id, element) {
+    selectedMonster = id;
+    document.querySelectorAll('.monster-card').forEach(m => m.classList.remove('selected'));
     element.classList.add('selected');
-    updateChallengeButton();
+    updateBtn();
 }
 
-function updateChallengeButton() {
-    document.getElementById('challengeBtn').disabled = !selectedStageData || !selectedMonster;
+function updateBtn() {
+    document.getElementById('challengeBtn').disabled = !selectedStage || !selectedMonster;
 }
 
 function startChallenge() {
-    if (selectedStageData && selectedMonster) {
-        window.location.href = `/adventure_battle/${selectedStageData.id}/${selectedMonster}`;
+    if (selectedStage && selectedMonster) {
+        window.location.href = `/adventure_battle/${selectedStage.id}/${selectedMonster}`;
     }
 }
 
 function getDifficultyColor(difficulty) {
     const colors = {
-        '쉬움': '#4CAF50',
-        '보통': '#FFC107',
-        '어려움': '#FF9800',
-        '매우 어려움': '#F44336',
-        '극악': '#9C27B0'
+        '쉬움': '#4CAF50', '보통': '#FFC107', '어려움': '#FF9800',
+        '매우 어려움': '#F44336', '극악': '#9C27B0'
     };
     return colors[difficulty] || '#999';
 }
