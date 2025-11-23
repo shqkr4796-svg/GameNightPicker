@@ -7,6 +7,13 @@
 <div class="pokemon-battle-container">
     <!-- 상단: 상대 몬스터 (오른쪽) -->
     <div class="battle-arena">
+        <!-- 적의 대화 카드 (오른쪽 상단) -->
+        <div class="enemy-dialogue-card">
+            <div class="dialogue-content">
+                <p id="enemy-dialogue-text">{{ battle_state.enemy_dialogue }}</p>
+            </div>
+        </div>
+
         <div class="enemy-position">
             <div class="enemy-card">
                 <div class="enemy-header">
@@ -29,12 +36,11 @@
                     <div class="hp-bar">
                         <div class="hp-fill enemy-hp" style="width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100)|int }}%"></div>
                     </div>
-                    <div class="hp-text">{{ battle_state.enemy_monster.current_hp }}/{{ battle_state.enemy_monster.max_hp }}</div>
+                    <div class="hp-text"><span id="enemy-hp">{{ battle_state.enemy_monster.current_hp }}</span>/{{ battle_state.enemy_monster.max_hp }}</div>
                 </div>
                 <div class="enemy-image-container">
                     <img src="{{ battle_state.enemy_monster.image }}" alt="{{ battle_state.enemy_monster.name }}" class="enemy-monster-image">
                 </div>
-                <div class="speech-bubble enemy-dialogue">{{ battle_state.enemy_dialogue }}</div>
             </div>
         </div>
 
@@ -44,28 +50,22 @@
                 <div class="stage-progress">스테이지: {{ battle_state.stage_id }} / 8</div>
                 <div class="stage-name-small">{{ battle_state.stage_name }}</div>
             </div>
-            <div class="log-container">
+            <div class="log-container" id="battle-log">
                 {% for log in battle_state.log %}
                 <p class="log-entry">{{ log }}</p>
                 {% endfor %}
             </div>
             <div class="turn-indicator">
-                <span class="turn-label">턴: {{ battle_state.turn }}</span>
-                {% if not battle_state.player_turn %}
-                <span class="enemy-turn-badge">적의 턴...</span>
-                {% else %}
-                <span class="player-turn-badge">나의 턴!</span>
-                {% endif %}
+                <span class="turn-label">턴: <span id="turn-count">{{ battle_state.turn }}</span></span>
+                <span id="turn-badge" class="{% if battle_state.player_turn %}player-turn-badge{% else %}enemy-turn-badge{% endif %}">
+                    {% if battle_state.player_turn %}나의 턴!{% else %}적의 턴...{% endif %}
+                </span>
             </div>
         </div>
 
         <!-- 하단: 내 몬스터 (왼쪽) -->
         <div class="player-position">
             <div class="player-card">
-                <div class="speech-bubble player-dialogue">{{ battle_state.player_dialogue }}</div>
-                <div class="player-image-container">
-                    <img src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" class="player-monster-image">
-                </div>
                 <div class="player-header">
                     <div class="monster-name-tag">
                         <span class="name">{{ battle_state.player_monster.name }}</span>
@@ -86,34 +86,28 @@
                     <div class="hp-bar">
                         <div class="hp-fill player-hp" style="width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100)|int }}%"></div>
                     </div>
-                    <div class="hp-text">{{ battle_state.player_monster.current_hp }}/{{ battle_state.player_monster.max_hp }}</div>
+                    <div class="hp-text"><span id="player-hp">{{ battle_state.player_monster.current_hp }}</span>/{{ battle_state.player_monster.max_hp }}</div>
                 </div>
+                <div class="player-image-container">
+                    <img src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" class="player-monster-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- 내 대화 카드 (왼쪽 하단) -->
+        <div class="player-dialogue-card">
+            <div class="dialogue-content">
+                <p id="player-dialogue-text">{{ battle_state.player_dialogue }}</p>
             </div>
         </div>
     </div>
 
-    <!-- 게임 오버 모달 -->
-    {% if battle_state.game_over %}
-    <div class="game-over-modal">
-        <div class="game-over-content">
-            <div class="game-over-badge {% if battle_state.winner == 'player' %}victory{% else %}defeat{% endif %}">
-                {% if battle_state.winner == 'player' %}
-                🎉 승리!
-                {% else %}
-                💀 패배
-                {% endif %}
-            </div>
-            <p class="game-over-message">{{ battle_state.player_dialogue if battle_state.winner == 'player' else battle_state.enemy_dialogue }}</p>
-            <a href="{{ url_for('adventure') }}" class="btn-return">모험으로 돌아가기</a>
-        </div>
-    </div>
-    {% else %}
     <!-- 기술 선택 영역 -->
-    <div class="skill-selection-area">
+    <div class="skill-selection-area" id="skill-selection">
         <h6 class="skill-title">🎮 기술 선택</h6>
         <div class="skills-grid">
             {% for skill in battle_state.player_skills %}
-            <button class="skill-button {% if not battle_state.player_turn %}disabled{% endif %}" 
+            <button class="skill-button" 
                     onclick="useSkill('{{ skill }}')"
                     {% if not battle_state.player_turn %}disabled{% endif %}>
                 <div class="skill-emoji">
@@ -143,11 +137,20 @@
             </form>
         </div>
     </div>
-    {% endif %}
+</div>
+
+<!-- 게임 오버 모달 -->
+<div class="game-over-modal hidden" id="game-over-modal">
+    <div class="game-over-content">
+        <div class="game-over-badge" id="game-over-badge"></div>
+        <p class="game-over-message" id="game-over-message"></p>
+        <a href="{{ url_for('adventure') }}" class="btn-return">모험으로 돌아가기</a>
+    </div>
 </div>
 
 <script>
-const battleState = {{ battle_state|tojson }};
+const initialBattleState = {{ battle_state|tojson }};
+let battleState = JSON.parse(JSON.stringify(initialBattleState));
 
 // 페이지 로드 시 적의 턴이면 자동 공격
 document.addEventListener('DOMContentLoaded', function() {
@@ -159,23 +162,125 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function useSkill(skillName) {
+    const buttons = document.querySelectorAll('.skill-button');
+    buttons.forEach(btn => btn.disabled = true);
+    
     fetch('{{ url_for("adventure_use_skill", skill_name="") }}' + skillName, {
         method: 'POST'
-    }).then(response => {
-        if (response.ok) {
-            window.location.reload();
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateBattleUI(data.battle_state);
+            
+            if (data.game_over) {
+                if (data.winner === 'player') {
+                    showGameOver('victory', '🎉 승리!', data.battle_state.player_dialogue);
+                } else {
+                    showGameOver('defeat', '💀 패배', data.battle_state.enemy_dialogue);
+                }
+            } else {
+                // 적의 턴으로 진행
+                setTimeout(() => {
+                    executeEnemyTurn();
+                }, 1500);
+            }
+        } else {
+            alert(data.message);
+            buttons.forEach(btn => btn.disabled = false);
         }
-    }).catch(error => console.error('Error:', error));
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        buttons.forEach(btn => btn.disabled = false);
+    });
 }
 
 function executeEnemyTurn() {
     fetch('{{ url_for("adventure_enemy_turn") }}', {
         method: 'POST'
-    }).then(response => {
-        if (response.ok) {
-            window.location.reload();
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateBattleUI(data.battle_state);
+            
+            if (data.game_over) {
+                if (data.winner === 'player') {
+                    showGameOver('victory', '🎉 승리!', data.battle_state.player_dialogue);
+                } else {
+                    showGameOver('defeat', '💀 패배', data.battle_state.enemy_dialogue);
+                }
+            } else {
+                // 플레이어 턴이므로 버튼 활성화
+                enableSkillButtons();
+            }
         }
-    }).catch(error => console.error('Error:', error));
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateBattleUI(newBattleState) {
+    battleState = newBattleState;
+    
+    // HP 업데이트
+    document.getElementById('player-hp').textContent = battleState.player_monster.current_hp;
+    document.getElementById('enemy-hp').textContent = battleState.enemy_monster.current_hp;
+    
+    // HP 바 업데이트
+    const playerHpPercent = (battleState.player_monster.current_hp / battleState.player_monster.max_hp * 100);
+    const enemyHpPercent = (battleState.enemy_monster.current_hp / battleState.enemy_monster.max_hp * 100);
+    
+    document.querySelector('.hp-fill.player-hp').style.width = playerHpPercent + '%';
+    document.querySelector('.hp-fill.enemy-hp').style.width = enemyHpPercent + '%';
+    
+    // 턴 정보 업데이트
+    document.getElementById('turn-count').textContent = battleState.turn;
+    const turnBadge = document.getElementById('turn-badge');
+    if (battleState.player_turn) {
+        turnBadge.textContent = '나의 턴!';
+        turnBadge.className = 'player-turn-badge';
+    } else {
+        turnBadge.textContent = '적의 턴...';
+        turnBadge.className = 'enemy-turn-badge';
+    }
+    
+    // 로그 업데이트
+    const logContainer = document.getElementById('battle-log');
+    logContainer.innerHTML = '';
+    battleState.log.forEach(logEntry => {
+        const p = document.createElement('p');
+        p.className = 'log-entry';
+        p.textContent = logEntry;
+        logContainer.appendChild(p);
+    });
+    logContainer.scrollTop = logContainer.scrollHeight;
+    
+    // 대사 업데이트
+    document.getElementById('player-dialogue-text').textContent = battleState.player_dialogue;
+    document.getElementById('enemy-dialogue-text').textContent = battleState.enemy_dialogue;
+}
+
+function enableSkillButtons() {
+    const buttons = document.querySelectorAll('.skill-button');
+    buttons.forEach(btn => {
+        const skillCount = document.querySelectorAll('.skill-button:not(.skill-button-empty)').length;
+        if (btn.textContent.trim()) {
+            btn.disabled = false;
+        }
+    });
+}
+
+function showGameOver(type, title, message) {
+    const modal = document.getElementById('game-over-modal');
+    const badge = document.getElementById('game-over-badge');
+    const messageEl = document.getElementById('game-over-message');
+    
+    badge.className = 'game-over-badge ' + type;
+    badge.textContent = title;
+    messageEl.textContent = message;
+    
+    modal.classList.remove('hidden');
 }
 </script>
 {% endblock %}

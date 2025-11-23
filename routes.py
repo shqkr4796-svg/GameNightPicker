@@ -1573,9 +1573,10 @@ def adventure_battle(stage_id, selected_monster_id):
 
 @app.route('/adventure_use_skill/<skill_name>', methods=['POST'])
 def adventure_use_skill(skill_name):
-    """모험 전투에서 기술 사용"""
+    """모험 전투에서 기술 사용 (AJAX)"""
+    import json
     if 'player_data' not in session or 'adventure_battle_state' not in session:
-        return redirect(url_for('adventure'))
+        return jsonify({'success': False, 'message': '세션 오류'}), 401
     
     player = session['player_data']
     battle_state = session['adventure_battle_state']
@@ -1589,38 +1590,37 @@ def adventure_use_skill(skill_name):
         session.modified = True
         
         # 전투 종료 확인
+        game_over = False
+        winner = None
         if battle_state['game_over']:
-            # 전투 완료 처리
-            reward_result = game_logic.complete_adventure_battle(player, battle_state)
-            session['player_data'] = player
-            session.modified = True
-            game_logic.save_game(player)
+            game_over = True
+            winner = battle_state['winner']
             
-            if reward_result['success']:
-                rewards = reward_result['rewards']
-                reward_msg = f"전투 승리! 경험치 {rewards['exp']} 획득, 돈 {rewards['money']} 획득"
-                if rewards['skills']:
-                    reward_msg += f", 기술 카드 획득: {', '.join(rewards['skills'])}"
-                flash(reward_msg, 'success')
-            else:
-                flash('전투에 패배했습니다.', 'error')
+            # 전투 완료 처리
+            if winner == 'player':
+                reward_result = game_logic.complete_adventure_battle(player, battle_state)
+                session['player_data'] = player
+                session.modified = True
+                game_logic.save_game(player)
             
             session.pop('adventure_battle_state', None)
             session.modified = True
-            return redirect(url_for('adventure'))
+        
+        return jsonify({
+            'success': True,
+            'battle_state': battle_state,
+            'game_over': game_over,
+            'winner': winner
+        })
     else:
-        flash(result['message'], 'error')
-    
-    session['adventure_battle_state'] = battle_state
-    session.modified = True
-    
-    return redirect(url_for('adventure_battle', stage_id=battle_state['stage_id'], selected_monster_id=list(player['도감'].keys())[0]))
+        return jsonify({'success': False, 'message': result['message']}), 400
 
 @app.route('/adventure_enemy_turn', methods=['POST'])
 def adventure_enemy_turn():
-    """적의 턴 자동 실행"""
+    """적의 턴 자동 실행 (AJAX)"""
+    import json
     if 'player_data' not in session or 'adventure_battle_state' not in session:
-        return redirect(url_for('adventure'))
+        return jsonify({'success': False, 'message': '세션 오류'}), 401
     
     battle_state = session['adventure_battle_state']
     result = game_logic.execute_enemy_turn(battle_state)
@@ -1630,27 +1630,22 @@ def adventure_enemy_turn():
         session['adventure_battle_state'] = battle_state
         session.modified = True
         
-        # 전투 종료 확인
+        game_over = False
+        winner = None
         if battle_state['game_over']:
-            player = session['player_data']
-            reward_result = game_logic.complete_adventure_battle(player, battle_state)
-            session['player_data'] = player
+            game_over = True
+            winner = battle_state['winner']
+            session.pop('adventure_battle_state', None)
             session.modified = True
-            game_logic.save_game(player)
-            
-            if reward_result['success']:
-                rewards = reward_result['rewards']
-                reward_msg = f"전투 승리! 경험치 {rewards['exp']} 획득, 돈 {rewards['money']} 획득"
-                if rewards['skills']:
-                    reward_msg += f", 기술 카드 획득: {', '.join(rewards['skills'])}"
-                flash(reward_msg, 'success')
-            else:
-                flash('전투에 패배했습니다.', 'error')
-    
-    session['adventure_battle_state'] = battle_state
-    session.modified = True
-    
-    return ('', 204)
+        
+        return jsonify({
+            'success': True,
+            'battle_state': battle_state,
+            'game_over': game_over,
+            'winner': winner
+        })
+    else:
+        return jsonify({'success': False, 'message': 'Error'}), 400
 
 @app.route('/adventure_escape', methods=['POST'])
 def adventure_escape():
