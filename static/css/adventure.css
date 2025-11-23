@@ -6,561 +6,421 @@
     box-sizing: border-box;
 }
 
-.adventure-container {
+.adventure-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #1f3a5c 0%, #2d5a80 100%);
+    background: linear-gradient(180deg, #f5f7fa 0%, #e8eef5 100%);
     font-family: 'Fredoka', sans-serif;
     display: flex;
     flex-direction: column;
-    color: #2c3e2b;
+    color: #2c3e50;
 }
 
-/* ========== 헤더 ========== */
-.adventure-header {
-    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-}
-
-.adventure-header h1 {
-    font-size: 2rem;
-    color: white;
-    font-weight: 700;
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.quick-stats {
-    display: flex;
-    gap: 12px;
-}
-
-.quick-stat {
+/* 상단 */
+.adventure-top {
     background: white;
-    padding: 8px 14px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-bottom: 2px solid #e0e0e0;
 }
 
-.quick-stat span:first-child {
-    font-size: 0.65rem;
-    color: #666;
+.adventure-top h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin: 0 0 16px 0;
+    font-weight: 700;
+}
+
+.progress-bar {
+    height: 32px;
+    background: #e0e0e0;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    max-width: 400px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* 스테이지 카드 */
+.stages-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.stage-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.stage-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.stage-card.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.stage-card:not(.disabled):hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.stage-card.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.card-content {
+    position: relative;
+}
+
+.stage-num-large {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #667eea;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.stage-card h3 {
+    font-size: 1.1rem;
+    margin: 8px 0;
+    color: #2c3e50;
+    min-height: 2.2em;
+}
+
+.difficulty {
+    font-size: 0.9rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.quick-stat .num {
-    font-size: 1.3rem;
-    color: #ff6b35;
-    font-weight: 700;
-}
-
-/* ========== 메인 바디 ========== */
-.adventure-body {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 20px;
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
-}
-
-/* ========== 좌측: 스테이지 ========== */
-.stage-column {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.stage-column h2 {
-    color: white;
-    font-size: 1.3rem;
-    margin: 0;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.stage-map {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    max-height: 600px;
-    overflow-y: auto;
-}
-
-.stage-map::-webkit-scrollbar {
-    width: 6px;
-}
-
-.stage-map::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-}
-
-.stage-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    transition: all 0.2s ease;
-}
-
-.stage-btn.locked {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.stage-btn:not(.locked):hover {
-    transform: scale(1.1);
-}
-
-.stage-btn.active .stage-circle {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-    transform: scale(1.15);
-}
-
-.stage-circle {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #ffeb3b, #ffc107);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
-    transition: all 0.2s ease;
-    border: 3px solid rgba(255, 255, 255, 0.8);
-}
-
-.stage-number {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #333;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
-}
-
-.cleared {
+.cleared-badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    width: 28px;
-    height: 28px;
-    background: linear-gradient(135deg, #66bb6a, #43a047);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 8px;
+    right: 8px;
+    background: #4CAF50;
     color: white;
-    font-weight: 700;
-    font-size: 0.9rem;
-    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
-}
-
-/* ========== 우측: 상세 ========== */
-.detail-column {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    background: rgba(255, 255, 255, 0.95);
+    padding: 4px 10px;
     border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-/* 스테이지 정보 */
-.stage-panel {
-    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
-    border: 2px solid #81c784;
-    border-radius: 10px;
-    padding: 14px;
-}
-
-.stage-panel.hidden {
-    display: none;
-}
-
-.stage-panel h3 {
-    color: #2e7d32;
-    font-size: 1.1rem;
-    margin: 0 0 10px 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.stage-details {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.detail-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 8px;
-    background: white;
-    border-radius: 6px;
-    border: 1px solid rgba(129, 199, 132, 0.3);
-}
-
-.detail-row .label {
     font-size: 0.75rem;
-    color: #558b2f;
     font-weight: 700;
-    text-transform: uppercase;
 }
 
-.detail-row .value {
-    font-size: 0.9rem;
-    color: #f57f17;
+/* 액션 섹션 */
+.action-section {
+    background: white;
+    border-top: 2px solid #e0e0e0;
+    padding: 24px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.current-selection {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f5f7fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.current-selection h2 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    margin: 0 0 10px 0;
+}
+
+.stage-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.stat span {
     font-weight: 700;
+    color: #667eea;
 }
 
 /* 몬스터 선택 */
-.monster-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 200px;
+.monster-picker {
+    margin-bottom: 20px;
 }
 
-.monster-section h3 {
-    color: #1f3a5c;
-    font-size: 1.1rem;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.monster-picker h2 {
+    font-size: 1.3rem;
+    color: #2c3e50;
+    margin: 0 0 16px 0;
 }
 
-.monster-list {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow-y: auto;
-    padding-right: 4px;
+.monster-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    max-width: 1000px;
 }
 
-.monster-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.monster-list::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ff6b35, #f7931e);
+.mon-option {
+    background: white;
+    border: 2px solid #e0e0e0;
     border-radius: 10px;
-}
-
-.monster-option {
+    padding: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    border-radius: 10px;
-    border: 2px solid #ddd;
-    padding: 8px;
-}
-
-.monster-option:hover {
-    border-color: #ff6b35;
-    background: rgba(255, 107, 53, 0.05);
-}
-
-.monster-option.selected {
-    border-color: #ff6b35;
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1));
-    box-shadow: 0 0 12px rgba(255, 107, 53, 0.3);
-}
-
-.monster-card-visual {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.monster-pic {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.monster-info-overlay {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: 8px;
+}
+
+.mon-option:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.mon-option.active {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.mon-option img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
 }
 
 .mon-name {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    color: #1f3a5c;
+    color: #2c3e50;
+    text-align: center;
     text-transform: uppercase;
+    line-height: 1.2;
 }
 
 .mon-rarity {
     display: inline-block;
-    width: fit-content;
     padding: 3px 8px;
     border-radius: 6px;
     color: white;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
 }
 
-.mon-stats {
-    display: flex;
-    gap: 8px;
-    font-size: 0.75rem;
-    color: #666;
-    font-weight: 600;
-}
-
 /* 도전 버튼 */
-.challenge-btn {
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+.start-btn {
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 700;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.challenge-btn:hover:not(:disabled) {
+.start-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(255, 107, 53, 0.5);
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
 }
 
-.challenge-btn:disabled {
+.start-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-/* ========== 반응형 ========== */
-@media (max-width: 1024px) {
-    .adventure-body {
-        grid-template-columns: 260px 1fr;
-        gap: 16px;
+/* 반응형 */
+@media (max-width: 768px) {
+    .adventure-top {
         padding: 16px;
     }
 
-    .stage-circle {
-        width: 60px;
-        height: 60px;
+    .adventure-top h1 {
+        font-size: 1.8rem;
     }
 
-    .stage-number {
-        font-size: 1.3rem;
+    .stages-container {
+        padding: 12px;
     }
 
-    .adventure-header {
-        flex-direction: column;
+    .stage-cards {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+    }
+
+    .stage-card {
+        padding: 16px;
+    }
+
+    .stage-num-large {
+        font-size: 2.5rem;
+    }
+
+    .stage-card h3 {
+        font-size: 0.95rem;
+    }
+
+    .action-section {
+        padding: 16px;
+    }
+
+    .current-selection {
+        margin-bottom: 16px;
+        padding: 12px;
+    }
+
+    .current-selection h2 {
+        font-size: 1.1rem;
+    }
+
+    .stage-stats {
+        gap: 12px;
+    }
+
+    .monster-picker h2 {
+        font-size: 1.1rem;
+    }
+
+    .monster-options {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 10px;
     }
 
-    .adventure-header h1 {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .adventure-body {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        padding: 12px;
+    .mon-option {
+        padding: 10px;
     }
 
-    .adventure-header {
-        padding: 12px;
-        gap: 8px;
-    }
-
-    .adventure-header h1 {
-        font-size: 1.3rem;
-    }
-
-    .quick-stats {
-        gap: 6px;
-    }
-
-    .quick-stat {
-        padding: 6px 10px;
-    }
-
-    .quick-stat span:first-child {
-        font-size: 0.6rem;
-    }
-
-    .quick-stat .num {
-        font-size: 1rem;
-    }
-
-    .stage-column h2 {
-        font-size: 1.1rem;
-    }
-
-    .stage-map {
-        grid-template-columns: repeat(5, 1fr);
-        max-height: 300px;
-    }
-
-    .stage-circle {
-        width: 55px;
-        height: 55px;
-    }
-
-    .stage-number {
-        font-size: 1.1rem;
-    }
-
-    .detail-column {
-        padding: 16px;
-        gap: 14px;
-    }
-
-    .monster-option {
-        padding: 6px;
-    }
-
-    .monster-pic {
-        width: 50px;
-        height: 50px;
+    .mon-option img {
+        width: 60px;
+        height: 60px;
     }
 
     .mon-name {
         font-size: 0.75rem;
     }
 
-    .mon-stats {
-        font-size: 0.7rem;
-    }
-
-    .challenge-btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
+    .start-btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .adventure-body {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 8px;
+    .adventure-top {
+        padding: 12px;
     }
 
-    .adventure-header {
+    .adventure-top h1 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    .progress-bar {
+        max-width: 100%;
+    }
+
+    .stages-container {
         padding: 10px;
-        gap: 6px;
     }
 
-    .adventure-header h1 {
-        font-size: 1.1rem;
+    .stage-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
 
-    .quick-stats {
-        gap: 4px;
-        font-size: 0.8rem;
+    .stage-card {
+        padding: 12px;
     }
 
-    .quick-stat {
-        padding: 4px 8px;
+    .stage-num-large {
+        font-size: 2rem;
     }
 
-    .quick-stat span:first-child {
-        font-size: 0.55rem;
+    .stage-card h3 {
+        font-size: 0.85rem;
     }
 
-    .quick-stat .num {
-        font-size: 0.9rem;
+    .action-section {
+        padding: 12px;
     }
 
-    .stage-column h2 {
+    .current-selection {
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+
+    .current-selection h2 {
         font-size: 1rem;
     }
 
-    .stage-map {
-        grid-template-columns: repeat(4, 1fr);
+    .stage-stats {
+        font-size: 0.85rem;
         gap: 8px;
-        padding: 8px;
-        max-height: 250px;
     }
 
-    .stage-circle {
+    .monster-picker h2 {
+        font-size: 1rem;
+    }
+
+    .monster-options {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 8px;
+    }
+
+    .mon-option {
+        padding: 8px;
+    }
+
+    .mon-option img {
         width: 50px;
         height: 50px;
-    }
-
-    .stage-number {
-        font-size: 1rem;
-    }
-
-    .detail-column {
-        padding: 12px;
-        gap: 12px;
-    }
-
-    .stage-panel h3 {
-        font-size: 0.95rem;
-    }
-
-    .detail-row {
-        padding: 5px 6px;
-        font-size: 0.8rem;
-    }
-
-    .detail-row .label {
-        font-size: 0.65rem;
-    }
-
-    .monster-section h3 {
-        font-size: 0.95rem;
-    }
-
-    .monster-list {
-        gap: 8px;
-    }
-
-    .monster-option {
-        padding: 6px;
-    }
-
-    .monster-pic {
-        width: 45px;
-        height: 45px;
     }
 
     .mon-name {
         font-size: 0.7rem;
     }
 
-    .mon-stats {
-        font-size: 0.65rem;
-    }
-
-    .challenge-btn {
-        padding: 8px 12px;
-        font-size: 0.8rem;
+    .start-btn {
+        width: 100%;
+        padding: 10px 16px;
+        font-size: 0.95rem;
     }
 }
