@@ -6,156 +6,156 @@
     box-sizing: border-box;
 }
 
-.adventure-wrapper {
+.adventure-container {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+    background: linear-gradient(135deg, #1f3a5c 0%, #2d5a80 100%);
     font-family: 'Fredoka', sans-serif;
     display: flex;
     flex-direction: column;
-    color: #e0e0e0;
+    color: #2c3e2b;
 }
 
 /* ========== 헤더 ========== */
 .adventure-header {
-    background: linear-gradient(180deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 140, 0, 0.05) 100%);
-    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
     padding: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-.header-content {
-    max-width: 1600px;
-    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 }
 
 .adventure-header h1 {
     font-size: 2rem;
-    color: #ffd700;
-    margin: 0 0 16px 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-    letter-spacing: 1px;
+    color: white;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.header-info {
+.quick-stats {
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    gap: 12px;
 }
 
-.info-item {
+.quick-stat {
+    background: white;
+    padding: 8px 14px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.info-label {
-    font-size: 0.7rem;
-    color: #b0b0b0;
+.quick-stat span:first-child {
+    font-size: 0.65rem;
+    color: #666;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
-.info-number {
-    font-size: 1.5rem;
-    color: #ffd700;
+.quick-stat .num {
+    font-size: 1.3rem;
+    color: #ff6b35;
     font-weight: 700;
 }
 
-/* ========== 메인 ========== */
-.adventure-main {
+/* ========== 메인 바디 ========== */
+.adventure-body {
     flex: 1;
     display: grid;
-    grid-template-columns: 350px 1fr;
+    grid-template-columns: 320px 1fr;
     gap: 20px;
     padding: 20px;
-    max-width: 1600px;
+    max-width: 1400px;
     margin: 0 auto;
     width: 100%;
-    overflow-y: auto;
 }
 
-/* ========== 스테이지 목록 ========== */
-.stage-list-section {
+/* ========== 좌측: 스테이지 ========== */
+.stage-column {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    height: fit-content;
 }
 
-.section-title {
-    font-size: 1.2rem;
-    color: #ffd700;
+.stage-column h2 {
+    color: white;
+    font-size: 1.3rem;
     margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.stages-grid {
+.stage-map {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    padding: 12px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    border: 1px solid rgba(255, 215, 0, 0.2);
+    padding: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
     max-height: 600px;
     overflow-y: auto;
 }
 
-.stages-grid::-webkit-scrollbar {
+.stage-map::-webkit-scrollbar {
     width: 6px;
 }
 
-.stages-grid::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ffd700, #ffaa00);
+.stage-map::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 10px;
 }
 
-.stage-item {
+.stage-btn {
+    background: none;
+    border: none;
     cursor: pointer;
+    padding: 0;
     transition: all 0.2s ease;
-    position: relative;
 }
 
-.stage-item.disabled {
+.stage-btn.locked {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-.stage-item:not(.disabled):hover {
-    transform: scale(1.08);
-}
-
-.stage-item.active .stage-icon {
-    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
+.stage-btn:not(.locked):hover {
     transform: scale(1.1);
 }
 
-.stage-icon {
-    position: relative;
-    width: 80px;
-    height: 80px;
+.stage-btn.active .stage-circle {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    transform: scale(1.15);
+}
+
+.stage-circle {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #ffeb3b, #ffc107);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
     transition: all 0.2s ease;
+    border: 3px solid rgba(255, 255, 255, 0.8);
 }
 
-.stage-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.stage-num {
-    position: absolute;
-    font-size: 1.3rem;
+.stage-number {
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
 }
 
-.stage-check {
+.cleared {
     position: absolute;
     top: -8px;
     right: -8px;
@@ -168,81 +168,72 @@
     justify-content: center;
     color: white;
     font-weight: 700;
-    font-size: 1rem;
-    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.6);
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
 }
 
-/* ========== 디테일 패널 ========== */
-.detail-panel {
+/* ========== 우측: 상세 ========== */
+.detail-column {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
-    border: 1px solid rgba(255, 215, 0, 0.2);
     padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 /* 스테이지 정보 */
-.stage-info-box {
-    background: rgba(255, 215, 0, 0.05);
-    border: 1px solid rgba(255, 215, 0, 0.2);
+.stage-panel {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border: 2px solid #81c784;
     border-radius: 10px;
-    padding: 12px;
+    padding: 14px;
 }
 
-.stage-info-box.hidden {
+.stage-panel.hidden {
     display: none;
 }
 
-.stage-info-box h3 {
-    color: #ffd700;
+.stage-panel h3 {
+    color: #2e7d32;
     font-size: 1.1rem;
     margin: 0 0 10px 0;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.stage-details {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
 }
 
-.info-box {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 8px;
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background: white;
     border-radius: 6px;
-    border: 1px solid rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(129, 199, 132, 0.3);
 }
 
-.info-box .label {
-    display: block;
-    font-size: 0.65rem;
-    color: #b0b0b0;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-}
-
-.info-box .value {
-    display: block;
-    font-size: 0.95rem;
-    color: #ffd700;
-    font-weight: 700;
-}
-
-.difficulty-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 6px;
-    color: white;
-    font-size: 0.7rem;
+.detail-row .label {
+    font-size: 0.75rem;
+    color: #558b2f;
     font-weight: 700;
     text-transform: uppercase;
+}
+
+.detail-row .value {
+    font-size: 0.9rem;
+    color: #f57f17;
+    font-weight: 700;
 }
 
 /* 몬스터 선택 */
-.monster-select-section {
+.monster-section {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -250,86 +241,75 @@
     min-height: 200px;
 }
 
-.monster-select-section h3 {
-    color: #ffd700;
+.monster-section h3 {
+    color: #1f3a5c;
     font-size: 1.1rem;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.monster-grid {
+.monster-list {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     overflow-y: auto;
     padding-right: 4px;
 }
 
-.monster-grid::-webkit-scrollbar {
-    width: 4px;
+.monster-list::-webkit-scrollbar {
+    width: 6px;
 }
 
-.monster-grid::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ffd700, #ffaa00);
+.monster-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff6b35, #f7931e);
     border-radius: 10px;
 }
 
-.monster-card {
+.monster-option {
     cursor: pointer;
     transition: all 0.2s ease;
-}
-
-.monster-card:hover {
-    transform: translateX(4px);
-}
-
-.monster-card.selected .monster-frame {
-    box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
-}
-
-.monster-frame {
-    background-size: cover;
-    background-position: center;
     border-radius: 10px;
-    padding: 12px;
+    border: 2px solid #ddd;
+    padding: 8px;
+}
+
+.monster-option:hover {
+    border-color: #ff6b35;
+    background: rgba(255, 107, 53, 0.05);
+}
+
+.monster-option.selected {
+    border-color: #ff6b35;
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1));
+    box-shadow: 0 0 12px rgba(255, 107, 53, 0.3);
+}
+
+.monster-card-visual {
     display: flex;
     gap: 10px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    transition: all 0.2s ease;
+    align-items: center;
 }
 
-.monster-image {
+.monster-pic {
     width: 60px;
     height: 60px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-}
-
-.monster-image img {
-    max-width: 90%;
-    max-height: 90%;
     object-fit: contain;
+    flex-shrink: 0;
 }
 
-.monster-details {
+.monster-info-overlay {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 4px;
 }
 
 .mon-name {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: #ffd700;
+    color: #1f3a5c;
     text-transform: uppercase;
 }
 
@@ -347,15 +327,16 @@
 .mon-stats {
     display: flex;
     gap: 8px;
-    font-size: 0.7rem;
-    color: #b0b0b0;
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 600;
 }
 
 /* 도전 버튼 */
-.btn-challenge {
+.challenge-btn {
     padding: 12px 20px;
-    background: linear-gradient(135deg, #ffd700, #ffaa00);
-    color: #0f1419;
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    color: white;
     border: none;
     border-radius: 8px;
     font-weight: 700;
@@ -364,93 +345,106 @@
     letter-spacing: 1px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
-.btn-challenge:hover:not(:disabled) {
-    box-shadow: 0 6px 18px rgba(255, 215, 0, 0.6);
+.challenge-btn:hover:not(:disabled) {
     transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255, 107, 53, 0.5);
 }
 
-.btn-challenge:disabled {
+.challenge-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 /* ========== 반응형 ========== */
-@media (max-width: 1200px) {
-    .adventure-main {
-        grid-template-columns: 280px 1fr;
+@media (max-width: 1024px) {
+    .adventure-body {
+        grid-template-columns: 260px 1fr;
         gap: 16px;
+        padding: 16px;
     }
 
-    .stages-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .stage-circle {
+        width: 60px;
+        height: 60px;
+    }
+
+    .stage-number {
+        font-size: 1.3rem;
+    }
+
+    .adventure-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .adventure-header h1 {
+        font-size: 1.5rem;
     }
 }
 
 @media (max-width: 768px) {
-    .adventure-main {
+    .adventure-body {
         grid-template-columns: 1fr;
+        gap: 12px;
         padding: 12px;
     }
 
     .adventure-header {
         padding: 12px;
+        gap: 8px;
     }
 
     .adventure-header h1 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
+        font-size: 1.3rem;
     }
 
-    .header-info {
-        gap: 10px;
+    .quick-stats {
+        gap: 6px;
     }
 
-    .info-number {
-        font-size: 1.2rem;
+    .quick-stat {
+        padding: 6px 10px;
     }
 
-    .stages-grid {
-        grid-template-columns: repeat(4, 1fr);
-        max-height: 300px;
+    .quick-stat span:first-child {
+        font-size: 0.6rem;
     }
 
-    .stage-icon {
-        width: 70px;
-        height: 70px;
+    .quick-stat .num {
+        font-size: 1rem;
     }
 
-    .stage-num {
+    .stage-column h2 {
         font-size: 1.1rem;
     }
 
-    .detail-panel {
+    .stage-map {
+        grid-template-columns: repeat(5, 1fr);
+        max-height: 300px;
+    }
+
+    .stage-circle {
+        width: 55px;
+        height: 55px;
+    }
+
+    .stage-number {
+        font-size: 1.1rem;
+    }
+
+    .detail-column {
         padding: 16px;
+        gap: 14px;
     }
 
-    .stage-info-box h3 {
-        font-size: 1rem;
+    .monster-option {
+        padding: 6px;
     }
 
-    .info-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .monster-select-section h3 {
-        font-size: 1rem;
-    }
-
-    .monster-grid {
-        max-height: 400px;
-    }
-
-    .monster-frame {
-        padding: 10px;
-    }
-
-    .monster-image {
+    .monster-pic {
         width: 50px;
         height: 50px;
     }
@@ -460,101 +454,99 @@
     }
 
     .mon-stats {
-        font-size: 0.65rem;
+        font-size: 0.7rem;
     }
 
-    .btn-challenge {
+    .challenge-btn {
         padding: 10px 16px;
         font-size: 0.9rem;
     }
 }
 
 @media (max-width: 480px) {
-    .adventure-main {
+    .adventure-body {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 10px;
         padding: 8px;
     }
 
     .adventure-header {
         padding: 10px;
+        gap: 6px;
     }
 
     .adventure-header h1 {
-        font-size: 1.2rem;
-        margin-bottom: 8px;
+        font-size: 1.1rem;
     }
 
-    .header-info {
-        gap: 6px;
-        font-size: 0.85rem;
+    .quick-stats {
+        gap: 4px;
+        font-size: 0.8rem;
     }
 
-    .info-label {
-        font-size: 0.6rem;
+    .quick-stat {
+        padding: 4px 8px;
     }
 
-    .info-number {
+    .quick-stat span:first-child {
+        font-size: 0.55rem;
+    }
+
+    .quick-stat .num {
+        font-size: 0.9rem;
+    }
+
+    .stage-column h2 {
         font-size: 1rem;
     }
 
-    .section-title {
-        font-size: 1rem;
-    }
-
-    .stages-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        max-height: 250px;
+    .stage-map {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
         padding: 8px;
+        max-height: 250px;
     }
 
-    .stage-icon {
-        width: 60px;
-        height: 60px;
+    .stage-circle {
+        width: 50px;
+        height: 50px;
     }
 
-    .stage-num {
+    .stage-number {
         font-size: 1rem;
     }
 
-    .detail-panel {
+    .detail-column {
         padding: 12px;
         gap: 12px;
     }
 
-    .stage-info-box {
-        padding: 10px;
-    }
-
-    .stage-info-box h3 {
-        font-size: 0.9rem;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-    }
-
-    .info-box {
-        padding: 6px;
-    }
-
-    .monster-select-section h3 {
+    .stage-panel h3 {
         font-size: 0.95rem;
     }
 
-    .monster-grid {
-        gap: 6px;
-        max-height: 350px;
+    .detail-row {
+        padding: 5px 6px;
+        font-size: 0.8rem;
     }
 
-    .monster-frame {
-        padding: 8px;
+    .detail-row .label {
+        font-size: 0.65rem;
+    }
+
+    .monster-section h3 {
+        font-size: 0.95rem;
+    }
+
+    .monster-list {
         gap: 8px;
     }
 
-    .monster-image {
+    .monster-option {
+        padding: 6px;
+    }
+
+    .monster-pic {
         width: 45px;
         height: 45px;
     }
@@ -563,17 +555,11 @@
         font-size: 0.7rem;
     }
 
-    .mon-rarity {
-        font-size: 0.55rem;
-        padding: 2px 6px;
-    }
-
     .mon-stats {
-        font-size: 0.6rem;
-        gap: 6px;
+        font-size: 0.65rem;
     }
 
-    .btn-challenge {
+    .challenge-btn {
         padding: 8px 12px;
         font-size: 0.8rem;
     }
