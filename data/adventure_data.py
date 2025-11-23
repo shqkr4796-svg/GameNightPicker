@@ -85,81 +85,65 @@ SKILLS = {
     },
 }
 
-# 스테이지별 적 몬스터 설정
-ADVENTURE_STAGES = [
-    {
-        'stage_id': 1,
-        '이름': 'Stage 1: 숲의 입구',
-        '난이도': '쉬움',
-        'enemy_hp_multiplier': 1.0,
-        'enemy_attack_multiplier': 1.0,
-        'enemy_rarity': ['레어'],
-        'skill_reward_rate': 0.02,  # 2% 확률
-    },
-    {
-        'stage_id': 2,
-        '이름': 'Stage 2: 어두운 숲',
-        '난이도': '쉬움',
-        'enemy_hp_multiplier': 1.2,
-        'enemy_attack_multiplier': 1.1,
-        'enemy_rarity': ['레어'],
-        'skill_reward_rate': 0.03,
-    },
-    {
-        'stage_id': 3,
-        '이름': 'Stage 3: 폐허된 성',
-        '난이도': '보통',
-        'enemy_hp_multiplier': 1.4,
-        'enemy_attack_multiplier': 1.2,
-        'enemy_rarity': ['레어', '에픽'],
-        'skill_reward_rate': 0.04,
-    },
-    {
-        'stage_id': 4,
-        '이름': 'Stage 4: 마법의 타워',
-        '난이도': '보통',
-        'enemy_hp_multiplier': 1.6,
-        'enemy_attack_multiplier': 1.3,
-        'enemy_rarity': ['레어', '에픽'],
-        'skill_reward_rate': 0.05,
-    },
-    {
-        'stage_id': 5,
-        '이름': 'Stage 5: 용암 동굴',
-        '난이도': '어려움',
-        'enemy_hp_multiplier': 1.8,
-        'enemy_attack_multiplier': 1.4,
-        'enemy_rarity': ['에픽', '유니크'],
-        'skill_reward_rate': 0.06,
-    },
-    {
-        'stage_id': 6,
-        '이름': 'Stage 6: 무한의 깊이',
-        '난이도': '어려움',
-        'enemy_hp_multiplier': 2.0,
-        'enemy_attack_multiplier': 1.5,
-        'enemy_rarity': ['에픽', '유니크'],
-        'skill_reward_rate': 0.08,
-    },
-    {
-        'stage_id': 7,
-        '이름': 'Stage 7: 신비한 섬',
-        '난이도': '매우 어려움',
-        'enemy_hp_multiplier': 2.3,
-        'enemy_attack_multiplier': 1.6,
-        'enemy_rarity': ['유니크', '레전드리'],
-        'skill_reward_rate': 0.10,
-    },
-    {
-        'stage_id': 8,
-        '이름': 'Stage 8: 최강자의 성',
-        '난이도': '최악',
-        'enemy_hp_multiplier': 2.6,
-        'enemy_attack_multiplier': 1.8,
-        'enemy_rarity': ['유니크', '레전드리'],
-        'skill_reward_rate': 0.12,
-    },
-]
+# 스테이지 생성 함수
+def generate_adventure_stages():
+    """50개의 스테이지를 동적으로 생성"""
+    stages = []
+    
+    for stage_id in range(1, 51):
+        # 난이도 결정 (단계적으로 상승)
+        if stage_id <= 5:
+            difficulty = '쉬움'
+            enemy_count = 1
+            hp_mult = 1.0 + (stage_id - 1) * 0.2
+            atk_mult = 1.0 + (stage_id - 1) * 0.1
+            rarities = ['레어']
+            skill_reward = 0.02 + (stage_id - 1) * 0.01
+        elif stage_id <= 10:
+            difficulty = '보통'
+            enemy_count = 1 + (stage_id - 5) // 3  # 1~2마리
+            hp_mult = 2.0 + (stage_id - 6) * 0.2
+            atk_mult = 1.5 + (stage_id - 6) * 0.1
+            rarities = ['레어', '에픽']
+            skill_reward = 0.07 + (stage_id - 6) * 0.01
+        elif stage_id <= 20:
+            difficulty = '어려움'
+            enemy_count = 2 + (stage_id - 11) // 4  # 2~4마리
+            hp_mult = 2.8 + (stage_id - 11) * 0.15
+            atk_mult = 2.0 + (stage_id - 11) * 0.08
+            rarities = ['에픽', '유니크']
+            skill_reward = 0.08 + (stage_id - 11) * 0.005
+        elif stage_id <= 35:
+            difficulty = '매우 어려움'
+            enemy_count = 3 + (stage_id - 21) // 5  # 3~5마리
+            hp_mult = 4.0 + (stage_id - 21) * 0.12
+            atk_mult = 2.8 + (stage_id - 21) * 0.07
+            rarities = ['유니크', '레전드리']
+            skill_reward = 0.09 + (stage_id - 21) * 0.003
+        else:
+            difficulty = '극악'
+            enemy_count = 4 + (stage_id - 36) // 4  # 4~7마리
+            hp_mult = 5.5 + (stage_id - 36) * 0.1
+            atk_mult = 3.5 + (stage_id - 36) * 0.06
+            rarities = ['레전드리']
+            skill_reward = 0.12 + (stage_id - 36) * 0.002
+        
+        stage = {
+            'stage_id': stage_id,
+            '이름': f'Stage {stage_id}',
+            '난이도': difficulty,
+            'enemy_hp_multiplier': hp_mult,
+            'enemy_attack_multiplier': atk_mult,
+            'enemy_rarity': rarities,
+            'skill_reward_rate': min(0.15, skill_reward),  # 최대 15%
+            'enemy_count': enemy_count,  # 난이도별 몬스터 개수
+        }
+        stages.append(stage)
+    
+    return stages
+
+# 스테이지 데이터 생성
+ADVENTURE_STAGES = generate_adventure_stages()
 
 # 적 몬스터 대사 (자연스러운 영어)
 ENEMY_DIALOGUES = {
@@ -236,13 +220,15 @@ REWARD_ITEMS = {
 }
 
 # 스테이지별 기술 카드 드롭 풀
-SKILL_DROP_POOLS = {
-    1: {'에픽': ['스매시'], '유니크': [], '레전드리': []},
-    2: {'에픽': ['스매시', '검은빛'], '유니크': [], '레전드리': []},
-    3: {'에픽': ['스매시', '검은빛'], '유니크': ['스핀어택', '불의폭발', '빙결의칼'], '레전드리': []},
-    4: {'에픽': ['스매시', '검은빛'], '유니크': ['스핀어택', '불의폭발', '빙결의칼'], '레전드리': []},
-    5: {'에픽': ['스매시', '검은빛'], '유니크': ['스핀어택', '불의폭발', '빙결의칼'], '레전드리': ['궁극베기', '번개참격']},
-    6: {'에픽': ['스매시', '검은빛'], '유니크': ['스핀어택', '불의폭발', '빙결의칼'], '레전드리': ['궁극베기', '번개참격', '중력파동']},
-    7: {'에픽': ['스매시', '검은빛'], '유니크': ['스핀어택', '불의폭발', '빙결의칼'], '레전드리': ['궁극베기', '번개참격', '중력파동']},
-    8: {'에픽': ['스매시', '검은빛'], '유니크': ['스핀어택', '불의폭발', '빙결의칼'], '레전드리': ['궁극베기', '번개참격', '중력파동']},
-}
+def generate_skill_drop_pools():
+    """스테이지별 기술 드롭 풀 생성"""
+    pools = {}
+    for stage_id in range(1, 51):
+        pools[stage_id] = {
+            '에픽': ['스매시', '검은빛'],
+            '유니크': ['스핀어택', '불의폭발', '빙결의칼'],
+            '레전드리': ['궁극베기', '번개참격', '중력파동']
+        }
+    return pools
+
+SKILL_DROP_POOLS = generate_skill_drop_pools()
