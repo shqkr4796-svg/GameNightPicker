@@ -133,6 +133,8 @@
 <script>
 // 글로벌 음성 캐시
 let cachedVoice = null;
+let currentPlayingButton = null;  // 현재 재생 중인 버튼 추적
+let originalHTML = null;  // 원본 HTML 저장
 
 // 음성 로드 및 캐싱 - 여자 미국 현지인 음성
 function initializeVoices() {
@@ -188,7 +190,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function playAudio(text, button) {
     if ('speechSynthesis' in window) {
-        // 기존 발화 중지
+        // 이전 발화 중인 버튼 상태 즉시 복원
+        if (currentPlayingButton && currentPlayingButton !== button) {
+            currentPlayingButton.disabled = false;
+            currentPlayingButton.innerHTML = originalHTML;
+        }
+        
+        // 모든 발화 중지
         window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
@@ -204,13 +212,31 @@ function playAudio(text, button) {
         
         // 버튼 상태 표시
         if (button) {
+            // 현재 재생 버튼 추적
+            currentPlayingButton = button;
+            originalHTML = button.innerHTML;
+            
             button.disabled = true;
-            const originalHTML = button.innerHTML;
             button.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 0.75rem; margin-right: 0.3rem;"></i>재생 중...';
             
             utterance.onend = function() {
-                button.disabled = false;
-                button.innerHTML = originalHTML;
+                // 현재 버튼이 여전히 같은지 확인 (다른 버튼이 재생되지 않았는지)
+                if (currentPlayingButton === button) {
+                    button.disabled = false;
+                    button.innerHTML = originalHTML;
+                    currentPlayingButton = null;
+                    originalHTML = null;
+                }
+            };
+            
+            utterance.onerror = function() {
+                // 에러 발생 시도 상태 복원
+                if (currentPlayingButton === button) {
+                    button.disabled = false;
+                    button.innerHTML = originalHTML;
+                    currentPlayingButton = null;
+                    originalHTML = null;
+                }
             };
         }
         
