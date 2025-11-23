@@ -5,15 +5,16 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pokemon_battle.css') }}">
 <div class="pokemon-battle-container">
-    <!-- 상단: 상대 몬스터 (오른쪽) -->
+    <!-- 상단: 적 몬스터 (오른쪽), 적 대사 (왼쪽) -->
     <div class="battle-arena">
-        <!-- 적의 대화 카드 (오른쪽 상단) -->
+        <!-- 적 대사 카드 (왼쪽) -->
         <div class="enemy-dialogue-card">
             <div class="dialogue-content">
                 <p id="enemy-dialogue-text">{{ battle_state.enemy_dialogue }}</p>
             </div>
         </div>
 
+        <!-- 적 몬스터 (오른쪽) -->
         <div class="enemy-position">
             <div class="enemy-card">
                 <div class="enemy-header">
@@ -63,7 +64,7 @@
             </div>
         </div>
 
-        <!-- 하단: 내 몬스터 (왼쪽) -->
+        <!-- 내 몬스터 (왼쪽) -->
         <div class="player-position">
             <div class="player-card">
                 <div class="player-header">
@@ -94,7 +95,7 @@
             </div>
         </div>
 
-        <!-- 내 대화 카드 (왼쪽 하단) -->
+        <!-- 내 대사 카드 (오른쪽) -->
         <div class="player-dialogue-card">
             <div class="dialogue-content">
                 <p id="player-dialogue-text">{{ battle_state.player_dialogue }}</p>
@@ -108,6 +109,7 @@
         <div class="skills-grid">
             {% for skill in battle_state.player_skills %}
             <button class="skill-button" 
+                    data-skill="{{ skill }}"
                     onclick="useSkill('{{ skill }}')"
                     {% if not battle_state.player_turn %}disabled{% endif %}>
                 <div class="skill-emoji">
@@ -179,20 +181,23 @@ function useSkill(skillName) {
                 } else {
                     showGameOver('defeat', '💀 패배', data.battle_state.enemy_dialogue);
                 }
-            } else {
+            } else if (!data.battle_state.player_turn) {
                 // 적의 턴으로 진행
                 setTimeout(() => {
                     executeEnemyTurn();
                 }, 1500);
+            } else {
+                // 플레이어 턴이므로 버튼 활성화
+                enableSkillButtons();
             }
         } else {
             alert(data.message);
-            buttons.forEach(btn => btn.disabled = false);
+            enableSkillButtons();
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        buttons.forEach(btn => btn.disabled = false);
+        enableSkillButtons();
     });
 }
 
@@ -217,7 +222,10 @@ function executeEnemyTurn() {
             }
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        enableSkillButtons();
+    });
 }
 
 function updateBattleUI(newBattleState) {
@@ -262,12 +270,9 @@ function updateBattleUI(newBattleState) {
 }
 
 function enableSkillButtons() {
-    const buttons = document.querySelectorAll('.skill-button');
+    const buttons = document.querySelectorAll('.skill-button[data-skill]');
     buttons.forEach(btn => {
-        const skillCount = document.querySelectorAll('.skill-button:not(.skill-button-empty)').length;
-        if (btn.textContent.trim()) {
-            btn.disabled = false;
-        }
+        btn.disabled = false;
     });
 }
 
