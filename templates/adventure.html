@@ -49,7 +49,8 @@
                          data-reward="{{ "%.0f"|format(stage.skill_reward_rate * 100) }}">
                         
                         <div class="stage-flag {% if is_unlocked %}unlocked{% else %}locked{% endif %}" 
-                             onclick="{% if is_unlocked %}showStageInfo({{ stage.stage_id }}){% endif %}">
+                             onclick="{% if is_unlocked %}showStageInfo({{ stage.stage_id }}){% endif %}"
+                             style="background-image: url('{{ url_for('static', filename='images/stage_flags.png') }}'); background-position: {{ (stage.stage_id - 1) * 12.5 }}% center;">
                             <span class="flag-text">{{ stage.stage_id }}</span>
                             {% if stage.stage_id <= cleared_stage %}
                             <span class="flag-badge">✓</span>

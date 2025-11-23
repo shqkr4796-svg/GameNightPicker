@@ -1568,7 +1568,8 @@ def adventure_battle(stage_id, selected_monster_id):
     
     return render_template('adventure_battle.html',
                          battle_state=battle_state,
-                         player=player)
+                         player=player,
+                         game_logic=game_logic)
 
 @app.route('/adventure_use_skill/<skill_name>', methods=['POST'])
 def adventure_use_skill(skill_name):
