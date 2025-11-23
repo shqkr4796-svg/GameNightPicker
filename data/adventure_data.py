@@ -87,46 +87,46 @@ SKILLS = {
 
 # 스테이지 생성 함수
 def generate_adventure_stages():
-    """50개의 스테이지를 동적으로 생성"""
+    """200개의 스테이지를 동적으로 생성"""
     stages = []
     
-    for stage_id in range(1, 51):
-        # 난이도 결정 (단계적으로 상승)
-        if stage_id <= 5:
+    for stage_id in range(1, 201):
+        # 난이도 결정 (200개 스테이지에 맞게 단계적으로 상승)
+        if stage_id <= 40:
             difficulty = '쉬움'
             enemy_count = 1
-            hp_mult = 1.0 + (stage_id - 1) * 0.2
-            atk_mult = 1.0 + (stage_id - 1) * 0.1
+            hp_mult = 1.0 + (stage_id - 1) * 0.05
+            atk_mult = 1.0 + (stage_id - 1) * 0.02
             rarities = ['레어']
-            skill_reward = 0.02 + (stage_id - 1) * 0.01
-        elif stage_id <= 10:
+            skill_reward = 0.02 + (stage_id - 1) * 0.002
+        elif stage_id <= 80:
             difficulty = '보통'
-            enemy_count = 1 + (stage_id - 5) // 3  # 1~2마리
-            hp_mult = 2.0 + (stage_id - 6) * 0.2
-            atk_mult = 1.5 + (stage_id - 6) * 0.1
+            enemy_count = 1 + (stage_id - 40) // 15  # 1~3마리
+            hp_mult = 3.0 + (stage_id - 40) * 0.08
+            atk_mult = 1.8 + (stage_id - 40) * 0.03
             rarities = ['레어', '에픽']
-            skill_reward = 0.07 + (stage_id - 6) * 0.01
-        elif stage_id <= 20:
+            skill_reward = 0.05 + (stage_id - 40) * 0.002
+        elif stage_id <= 120:
             difficulty = '어려움'
-            enemy_count = 2 + (stage_id - 11) // 4  # 2~4마리
-            hp_mult = 2.8 + (stage_id - 11) * 0.15
-            atk_mult = 2.0 + (stage_id - 11) * 0.08
+            enemy_count = 2 + (stage_id - 80) // 15  # 2~4마리
+            hp_mult = 9.4 + (stage_id - 80) * 0.08
+            atk_mult = 3.0 + (stage_id - 80) * 0.03
             rarities = ['에픽', '유니크']
-            skill_reward = 0.08 + (stage_id - 11) * 0.005
-        elif stage_id <= 35:
+            skill_reward = 0.07 + (stage_id - 80) * 0.001
+        elif stage_id <= 160:
             difficulty = '매우 어려움'
-            enemy_count = 3 + (stage_id - 21) // 5  # 3~5마리
-            hp_mult = 4.0 + (stage_id - 21) * 0.12
-            atk_mult = 2.8 + (stage_id - 21) * 0.07
+            enemy_count = 3 + (stage_id - 120) // 15  # 3~5마리
+            hp_mult = 12.2 + (stage_id - 120) * 0.08
+            atk_mult = 4.2 + (stage_id - 120) * 0.02
             rarities = ['유니크', '레전드리']
-            skill_reward = 0.09 + (stage_id - 21) * 0.003
+            skill_reward = 0.09 + (stage_id - 120) * 0.0005
         else:
             difficulty = '극악'
-            enemy_count = 4 + (stage_id - 36) // 4  # 4~7마리
-            hp_mult = 5.5 + (stage_id - 36) * 0.1
-            atk_mult = 3.5 + (stage_id - 36) * 0.06
+            enemy_count = 4 + (stage_id - 160) // 10  # 4~8마리
+            hp_mult = 15.4 + (stage_id - 160) * 0.08
+            atk_mult = 5.2 + (stage_id - 160) * 0.02
             rarities = ['레전드리']
-            skill_reward = 0.12 + (stage_id - 36) * 0.002
+            skill_reward = 0.12 + (stage_id - 160) * 0.0002
         
         stage = {
             'stage_id': stage_id,
@@ -223,7 +223,7 @@ REWARD_ITEMS = {
 def generate_skill_drop_pools():
     """스테이지별 기술 드롭 풀 생성"""
     pools = {}
-    for stage_id in range(1, 51):
+    for stage_id in range(1, 201):
         pools[stage_id] = {
             '에픽': ['스매시', '검은빛'],
             '유니크': ['스핀어택', '불의폭발', '빙결의칼'],
