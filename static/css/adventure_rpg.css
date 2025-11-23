@@ -1,35 +1,29 @@
-/* Cute RPG Adventure Styles */
+/* Pokemon Style RPG Adventure */
 
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap');
 
 .adventure-rpg-container {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: #f5f5f5;
+    background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 100%);
     font-family: 'Fredoka', sans-serif;
 }
 
-/* 헤더 */
+/* ========== 헤더 ========== */
 .adventure-header {
-    background-size: cover;
-    background-position: center;
-    padding: 30px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    padding: 20px;
     position: relative;
-    border-bottom: 6px solid #FF69B4;
-    box-shadow: 0 8px 30px rgba(255, 105, 180, 0.3);
-    min-height: 150px;
+    border: 5px solid #FF6B6B;
+    border-radius: 15px;
+    margin: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    min-height: auto;
 }
 
 .adventure-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.15);
-    pointer-events: none;
+    display: none;
 }
 
 .header-content {
@@ -38,16 +32,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
+    gap: 20px;
+    flex-wrap: wrap;
+    max-width: 100%;
+    margin: 0;
 }
 
 .adventure-title {
     font-family: 'Fredoka', sans-serif;
-    font-size: 3.5rem;
+    font-size: 2rem;
     color: #FF1493;
-    text-shadow: 4px 4px 0 rgba(255, 182, 193, 0.8), -2px -2px 0 rgba(255, 192, 203, 0.6);
+    text-shadow: 3px 3px 0 #FFFFFF, -2px -2px 0 #FFD700;
     margin: 0;
     letter-spacing: 2px;
     font-weight: 700;
@@ -55,57 +50,52 @@
 
 .header-stats {
     display: flex;
-    gap: 30px;
+    gap: 10px;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 .stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 12px 20px;
-    border-radius: 15px;
-    border: 3px solid #FF69B4;
-    min-width: 100px;
-    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+    background: linear-gradient(135deg, #FFFFFF 0%, #F5F5DC 100%);
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 3px solid #FF6B6B;
+    min-width: 80px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .stat-label {
-    font-size: 0.8rem;
-    color: #FF1493;
+    font-size: 0.7rem;
+    color: #333;
     font-weight: 700;
-    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
 .stat-value {
-    font-size: 1.8rem;
+    font-size: 1.3rem;
     color: #FF1493;
     font-weight: 700;
-    margin-top: 5px;
-    text-shadow: 1px 1px 2px rgba(255, 192, 203, 0.5);
+    margin-top: 3px;
 }
 
-/* 메인 콘텐츠 */
+/* ========== 메인 콘텐츠 ========== */
 .adventure-content {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-/* 맵 배경 */
+/* ========== 맵 배경 ========== */
 .adventure-map {
     flex: 1;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
+    background: url('{{ url_for("static", filename="images/pokemon_style_adventure_field_background.png") }}') center/cover no-repeat;
     position: relative;
     overflow: auto;
-    border: 6px solid #FFB6C1;
-    border-top: none;
+    border: none;
+    min-height: 300px;
 }
 
 .map-overlay {
@@ -113,7 +103,7 @@
     width: 100%;
     height: 100%;
     background: transparent;
-    padding: 40px;
+    padding: 20px;
 }
 
 .stages-container {
@@ -124,165 +114,159 @@
     align-items: flex-start;
     justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 30px 40px;
-    padding: 40px;
+    gap: 20px;
+    padding: 20px;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
 }
 
-/* 스테이지 노드 */
+/* ========== 스테이지 노드 ========== */
 .stage-node-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .stage-node-wrapper:hover .stage-flag {
-    transform: scale(1.1) rotate(-3deg);
-    box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
+    transform: scale(1.15);
+    box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
 }
 
 .stage-flag {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
-    border: 3px solid #FFFFFF;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    border: 4px solid #FF6B6B;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: 0 6px 15px rgba(255, 105, 180, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .stage-flag.unlocked {
-    background: linear-gradient(135deg, #FFD700 0%, #FFF44F 100%);
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
     cursor: pointer;
 }
 
 .stage-flag.locked {
-    background: linear-gradient(135deg, #DDD 0%, #EEE 100%);
+    background: linear-gradient(135deg, #CCCCCC 0%, #AAAAAA 100%);
     cursor: not-allowed;
-    opacity: 0.5;
-    box-shadow: 0 4px 10px rgba(100, 100, 100, 0.15);
+    opacity: 0.6;
 }
 
 .flag-text {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    color: #FF1493;
+    color: #333;
 }
 
 .stage-flag.unlocked .flag-text {
     color: #333;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .stage-flag.locked .flag-text {
-    color: #999;
+    color: #888;
 }
 
 .flag-badge {
     position: absolute;
-    top: -3px;
-    right: -3px;
-    background: linear-gradient(135deg, #22c55e, #16a34a);
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #22C55E, #16A34A);
     color: white;
-    width: 22px;
-    height: 22px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
-    border: 1.5px solid white;
-    box-shadow: 0 2px 6px rgba(34, 197, 94, 0.4);
+    font-size: 1.1rem;
+    border: 2px solid white;
+    box-shadow: 0 3px 8px rgba(34, 197, 94, 0.5);
 }
 
 .stage-name {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 600;
-    color: #FF1493;
+    color: #333;
     text-align: center;
-    text-shadow: 0.5px 0.5px 1px rgba(255, 192, 203, 0.5);
-    min-width: 60px;
-    max-width: 70px;
+    max-width: 60px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* 하단 패널 */
+/* ========== 하단 패널 ========== */
 .adventure-bottom-panel {
-    background: #ffffff;
-    border-top: 6px solid #FF69B4;
-    padding: 30px;
-    max-height: 300px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 220, 0.95) 100%);
+    border-top: 6px solid #FF6B6B;
+    padding: 20px;
+    max-height: 280px;
     overflow-y: auto;
     box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .monster-selection-panel {
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
 }
 
 .panel-title {
     font-family: 'Fredoka', sans-serif;
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     color: #FF1493;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 0 rgba(255, 192, 203, 0.6);
-    border-bottom: 3px dashed #FF69B4;
-    padding-bottom: 10px;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 0 rgba(255, 182, 193, 0.6);
+    border-bottom: 3px dashed #FF6B6B;
+    padding-bottom: 8px;
     font-weight: 700;
 }
 
 .monsters-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 10px;
 }
 
 .monster-card {
-    background: linear-gradient(135deg, #FFF0F5 0%, #FFE5F0 100%);
-    border: 4px solid #FFB6C1;
-    border-radius: 20px;
-    padding: 12px;
-    text-align: center;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F5F5DC 100%);
+    border: 3px solid #FF6B6B;
+    border-radius: 12px;
+    padding: 10px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.2);
+    transition: all 0.2s ease;
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 110px;
 }
 
 .monster-card:hover {
-    transform: translateY(-12px) scale(1.05);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(255, 107, 107, 0.3);
     border-color: #FF1493;
-    box-shadow: 0 12px 35px rgba(255, 105, 180, 0.4);
-}
-
-.monster-card.selected {
-    background: linear-gradient(135deg, #FFD700, #FFF44F);
-    border-color: #FF1493;
-    box-shadow: 0 0 40px rgba(255, 105, 180, 0.6);
-    transform: scale(1.08);
 }
 
 .monster-image {
     width: 100%;
-    height: 100px;
-    background: rgba(255, 182, 193, 0.3);
-    border-radius: 15px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 10px;
-    border: 3px solid #FFB6C1;
+    margin-bottom: 8px;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .monster-image img {
@@ -294,56 +278,52 @@
 .monster-info {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .monster-name {
+    font-size: 0.75rem;
     font-weight: 700;
-    color: #FF1493;
-    font-size: 0.95rem;
-    text-shadow: 1px 1px 2px rgba(255, 192, 203, 0.5);
-}
-
-.monster-card.selected .monster-name {
     color: #333;
-    text-shadow: none;
+    word-break: break-word;
 }
 
 .monster-stats-row {
     display: flex;
-    gap: 8px;
     justify-content: center;
-    font-size: 0.8rem;
-    color: #999;
+    gap: 6px;
+    font-size: 0.65rem;
+}
+
+.stat {
+    background: #FFE5E5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #FF6B6B;
+    color: #333;
     font-weight: 600;
 }
 
-.monster-card.selected .monster-stats-row {
-    color: #333;
-}
-
 .monster-rarity {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 10px;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+    border-radius: 6px;
     color: white !important;
     font-weight: 700;
-    text-transform: uppercase;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 
-/* 모달 */
+/* ========== 모달 ========== */
 .stage-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    z-index: 1000;
 }
 
 .stage-modal.hidden {
@@ -357,402 +337,319 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
 }
 
 .modal-content {
     position: relative;
-    z-index: 1;
-    background: linear-gradient(135deg, #FFF0F5 0%, #FFE5F0 100%);
-    border: 5px solid #FF69B4;
-    border-radius: 25px;
-    max-width: 500px;
-    width: 100%;
-    box-shadow: 0 20px 60px rgba(255, 105, 180, 0.4);
-    overflow: hidden;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5F5DC 100%);
+    border: 6px solid #FF6B6B;
+    border-radius: 20px;
+    padding: 25px;
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .modal-close {
     position: absolute;
-    top: 15px;
+    top: 10px;
     right: 15px;
-    background: linear-gradient(135deg, #FF1493, #FF69B4);
+    background: #FF6B6B;
     border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
     border-radius: 50%;
-    font-size: 1.8rem;
+    width: 35px;
+    height: 35px;
+    font-size: 1.5rem;
     cursor: pointer;
-    z-index: 2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.2s ease;
-    font-weight: bold;
-    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
 }
 
 .modal-close:hover {
-    transform: rotate(90deg) scale(1.15);
-    background: linear-gradient(135deg, #FF69B4, #FFB6C1);
+    background: #FF1493;
+    transform: scale(1.1);
 }
 
 .modal-header {
-    background: linear-gradient(135deg, #FFD700, #FFF44F);
-    padding: 25px;
-    border-bottom: 4px solid #FF69B4;
+    margin-bottom: 15px;
+    border-bottom: 3px dashed #FF6B6B;
+    padding-bottom: 10px;
 }
 
 .modal-header h2 {
+    margin: 0;
     color: #FF1493;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 2rem;
-    margin: 0 0 10px 0;
-    text-shadow: 2px 2px 0 rgba(255, 192, 203, 0.5);
-    font-weight: 700;
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 0 rgba(255, 182, 193, 0.5);
 }
 
 .difficulty-badge {
     display: inline-block;
-    padding: 6px 15px;
-    background: linear-gradient(135deg, #FF69B4, #FF1493);
-    color: white;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    padding: 5px 12px;
+    border-radius: 8px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    color: white;
+    font-size: 0.8rem;
+    margin-top: 8px;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .modal-body {
-    padding: 25px;
+    margin-bottom: 15px;
 }
 
 .stage-details {
-    background: rgba(255, 182, 193, 0.3);
-    padding: 15px;
-    border-radius: 15px;
-    border: 3px dashed #FFB6C1;
-    margin-bottom: 20px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 15px;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 2px solid rgba(255, 105, 180, 0.2);
+    padding: 6px 0;
     color: #333;
-}
-
-.detail-row:last-child {
-    border-bottom: none;
+    font-size: 0.9rem;
 }
 
 .detail-row .label {
     font-weight: 700;
-    color: #FF1493;
-    font-size: 1.05rem;
 }
 
 .detail-row .value {
     color: #FF1493;
-    font-size: 1.3rem;
     font-weight: 700;
-    text-shadow: 1px 1px 2px rgba(255, 192, 203, 0.4);
 }
 
 .monster-selection {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .selection-prompt {
-    color: #FF1493;
-    font-size: 0.95rem;
-    text-align: center;
-    margin-bottom: 15px;
+    color: #333;
+    font-size: 0.9rem;
     font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .selected-info {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 182, 193, 0.2));
-    border: 3px dashed #FFD700;
-    border-radius: 15px;
-    padding: 15px;
+    background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F5 100%);
+    border: 3px solid #FF6B6B;
+    border-radius: 10px;
+    padding: 12px;
 }
 
 .selected-monster {
     display: flex;
-    gap: 15px;
     align-items: center;
+    gap: 12px;
 }
 
 .selected-monster img {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 182, 193, 0.3);
-    border-radius: 15px;
-    padding: 5px;
-    border: 3px solid #FF69B4;
+    width: 60px;
+    height: 60px;
     object-fit: contain;
 }
 
 .selected-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.selected-stats div:first-child {
-    color: #FF1493;
-    font-weight: 700;
-    font-size: 1.1rem;
-    text-shadow: 1px 1px 2px rgba(255, 192, 203, 0.5);
-}
-
-.selected-stats div:last-child {
-    color: #FF1493;
-    font-size: 0.9rem;
-    font-weight: 600;
+    flex: 1;
 }
 
 .modal-footer {
-    padding: 20px 25px;
     display: flex;
-    gap: 12px;
-    border-top: 4px solid #FFB6C1;
-    background: rgba(255, 182, 193, 0.15);
-}
-
-.btn-cancel,
-.btn-challenge {
-    flex: 1;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 15px;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    gap: 10px;
+    justify-content: center;
 }
 
 .btn-cancel {
-    background: linear-gradient(135deg, #DDD, #EEE);
-    color: #666;
-    border: 2px solid #BBB;
+    background: linear-gradient(135deg, #999999, #777777);
+    border: 3px solid #555;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
 .btn-cancel:hover {
-    background: linear-gradient(135deg, #CCC, #DDD);
     transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-challenge {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    border: 3px solid #0D7C3A;
     color: white;
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-    border: 2px solid #16a34a;
+    padding: 12px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
-.btn-challenge:hover:not(:disabled) {
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    transform: scale(1.08);
-    box-shadow: 0 10px 30px rgba(34, 197, 94, 0.6);
+.btn-challenge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3);
 }
 
-.btn-challenge:disabled {
-    background: linear-gradient(135deg, #DDD, #EEE);
-    color: #999;
-    cursor: not-allowed;
-    opacity: 0.6;
-    border-color: #BBB;
-}
-
-/* 반응형 */
+/* ========== 모바일 최적화 ========== */
 @media (max-width: 768px) {
-    .adventure-rpg-container {
-        background: #f5f5f5;
+    .adventure-title {
+        font-size: 1.5rem;
     }
 
+    .header-stats {
+        gap: 5px;
+    }
+
+    .stat-item {
+        min-width: 70px;
+        padding: 6px 10px;
+    }
+
+    .stat-value {
+        font-size: 1rem;
+    }
+
+    .adventure-map {
+        min-height: 250px;
+    }
+
+    .stages-container {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .stage-flag {
+        width: 48px;
+        height: 48px;
+    }
+
+    .flag-text {
+        font-size: 1.1rem;
+    }
+
+    .stage-name {
+        font-size: 0.55rem;
+    }
+
+    .adventure-bottom-panel {
+        max-height: 250px;
+        padding: 15px;
+    }
+
+    .panel-title {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .monsters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+        gap: 10px;
+    }
+
+    .monster-card {
+        min-width: 95px;
+        padding: 8px;
+    }
+
+    .monster-image {
+        height: 70px;
+    }
+
+    .modal-content {
+        padding: 20px;
+        max-width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
     .adventure-header {
         padding: 15px;
-        min-height: auto;
+        margin: 10px;
     }
 
     .adventure-title {
-        font-size: 1.8rem;
-        letter-spacing: 1px;
+        font-size: 1.3rem;
     }
 
     .header-content {
         flex-direction: column;
         gap: 10px;
-        align-items: center;
     }
 
     .header-stats {
-        width: 100%;
-        gap: 10px;
+        gap: 5px;
         justify-content: center;
     }
 
     .stat-item {
-        min-width: 70px;
-        padding: 8px 12px;
-    }
-
-    .stat-label {
-        font-size: 0.7rem;
-    }
-
-    .stat-value {
-        font-size: 1.2rem;
-    }
-
-    /* 맵 */
-    .adventure-map {
-        background-size: cover;
-        background-position: center;
-        min-height: 300px;
-    }
-
-    .map-overlay {
-        padding: 20px;
-    }
-
-    .stages-container {
-        flex-direction: column;
-        gap: 15px;
-        padding: 20px;
-    }
-
-    .stage-node-wrapper {
-        gap: 8px;
-    }
-
-    .stage-flag {
-        width: 80px;
-        height: 80px;
-    }
-
-    .flag-text {
-        font-size: 1.8rem;
-    }
-
-    .flag-badge {
-        width: 28px;
-        height: 28px;
-        font-size: 1.1rem;
-    }
-
-    .stage-name {
-        font-size: 0.85rem;
-        min-width: 80px;
-    }
-
-    /* 하단 패널 */
-    .adventure-bottom-panel {
-        padding: 15px;
-        max-height: 250px;
-    }
-
-    .panel-title {
-        font-size: 1.3rem;
-        margin-bottom: 15px;
-    }
-
-    .monsters-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 10px;
-    }
-
-    .monster-card {
-        padding: 8px;
-        border-radius: 15px;
-    }
-
-    .monster-image {
-        height: 80px;
-        margin-bottom: 8px;
-    }
-
-    .monster-name {
-        font-size: 0.85rem;
-    }
-
-    .monster-stats-row {
-        font-size: 0.7rem;
-    }
-
-    /* 모달 */
-    .modal-content {
-        max-width: 95vw;
-        border-radius: 20px;
-    }
-
-    .modal-header h2 {
-        font-size: 1.5rem;
-    }
-
-    .modal-body {
-        padding: 15px;
-    }
-
-    .stage-details {
-        padding: 12px;
-    }
-
-    .detail-row {
-        padding: 8px 0;
-    }
-
-    .detail-row .label {
-        font-size: 0.9rem;
-    }
-
-    .detail-row .value {
-        font-size: 1.1rem;
-    }
-
-    .selected-monster {
-        gap: 10px;
-    }
-
-    .selected-monster img {
-        width: 70px;
-        height: 70px;
-    }
-
-    .selected-stats div:first-child {
-        font-size: 1rem;
-    }
-
-    .selected-stats div:last-child {
+        min-width: 65px;
+        padding: 5px 10px;
         font-size: 0.8rem;
     }
 
-    .btn-cancel,
-    .btn-challenge {
-        padding: 10px 15px;
-        font-size: 0.9rem;
+    .adventure-map {
+        min-height: 200px;
     }
-}
 
-/* 스크롤바 스타일 */
-.adventure-bottom-panel::-webkit-scrollbar {
-    width: 10px;
-}
+    .stages-container {
+        padding: 10px;
+        gap: 10px;
+    }
 
-.adventure-bottom-panel::-webkit-scrollbar-track {
-    background: rgba(255, 182, 193, 0.2);
-}
+    .stage-flag {
+        width: 45px;
+        height: 45px;
+    }
 
-.adventure-bottom-panel::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #FF69B4, #FF1493);
-    border-radius: 5px;
-}
+    .flag-text {
+        font-size: 1rem;
+    }
 
-.adventure-bottom-panel::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #FF1493, #FF0080);
+    .adventure-bottom-panel {
+        max-height: 220px;
+        padding: 12px;
+    }
+
+    .panel-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .monsters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+        gap: 8px;
+    }
+
+    .monster-card {
+        min-width: 85px;
+        padding: 6px;
+    }
+
+    .monster-image {
+        height: 60px;
+    }
+
+    .modal-content {
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
 }
