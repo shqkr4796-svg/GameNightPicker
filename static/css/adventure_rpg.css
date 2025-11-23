@@ -122,10 +122,13 @@
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
     gap: 30px;
     padding: 40px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
 }
 
 /* 스테이지 노드 */
