@@ -564,31 +564,171 @@
 
 /* 반응형 */
 @media (max-width: 768px) {
+    .adventure-rpg-container {
+        background: #f5f5f5;
+    }
+
+    .adventure-header {
+        padding: 15px;
+        min-height: auto;
+    }
+
     .adventure-title {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
     }
 
     .header-content {
         flex-direction: column;
-        gap: 20px;
+        gap: 10px;
+        align-items: center;
     }
 
     .header-stats {
         width: 100%;
+        gap: 10px;
         justify-content: center;
+    }
+
+    .stat-item {
+        min-width: 70px;
+        padding: 8px 12px;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+    }
+
+    /* 맵 */
+    .adventure-map {
+        background-size: cover;
+        background-position: center;
+        min-height: 300px;
+    }
+
+    .map-overlay {
+        padding: 20px;
     }
 
     .stages-container {
         flex-direction: column;
-        gap: 20px;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .stage-node-wrapper {
+        gap: 8px;
+    }
+
+    .stage-flag {
+        width: 80px;
+        height: 80px;
+    }
+
+    .flag-text {
+        font-size: 1.8rem;
+    }
+
+    .flag-badge {
+        width: 28px;
+        height: 28px;
+        font-size: 1.1rem;
+    }
+
+    .stage-name {
+        font-size: 0.85rem;
+        min-width: 80px;
+    }
+
+    /* 하단 패널 */
+    .adventure-bottom-panel {
+        padding: 15px;
+        max-height: 250px;
+    }
+
+    .panel-title {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
     }
 
     .monsters-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
     }
 
+    .monster-card {
+        padding: 8px;
+        border-radius: 15px;
+    }
+
+    .monster-image {
+        height: 80px;
+        margin-bottom: 8px;
+    }
+
+    .monster-name {
+        font-size: 0.85rem;
+    }
+
+    .monster-stats-row {
+        font-size: 0.7rem;
+    }
+
+    /* 모달 */
     .modal-content {
-        max-width: 90vw;
+        max-width: 95vw;
+        border-radius: 20px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+
+    .stage-details {
+        padding: 12px;
+    }
+
+    .detail-row {
+        padding: 8px 0;
+    }
+
+    .detail-row .label {
+        font-size: 0.9rem;
+    }
+
+    .detail-row .value {
+        font-size: 1.1rem;
+    }
+
+    .selected-monster {
+        gap: 10px;
+    }
+
+    .selected-monster img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .selected-stats div:first-child {
+        font-size: 1rem;
+    }
+
+    .selected-stats div:last-child {
+        font-size: 0.8rem;
+    }
+
+    .btn-cancel,
+    .btn-challenge {
+        padding: 10px 15px;
+        font-size: 0.9rem;
     }
 }
 
