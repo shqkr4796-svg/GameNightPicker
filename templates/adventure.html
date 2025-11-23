@@ -48,23 +48,15 @@
                          data-attack="{{ stage.enemy_attack_multiplier }}"
                          data-reward="{{ "%.0f"|format(stage.skill_reward_rate * 100) }}">
                         
-                        <div class="stage-flag {% if is_unlocked %}unlocked{% else %}locked{% endif %}">
+                        <div class="stage-flag {% if is_unlocked %}unlocked{% else %}locked{% endif %}" 
+                             onclick="{% if is_unlocked %}showStageInfo({{ stage.stage_id }}){% endif %}">
+                            <span class="flag-text">{{ stage.stage_id }}</span>
                             {% if stage.stage_id <= cleared_stage %}
-                            <div class="flag-cleared">✓</div>
-                            {% else %}
-                            <div class="flag-number">{{ stage.stage_id }}</div>
+                            <span class="flag-badge">✓</span>
                             {% endif %}
                         </div>
                         
-                        {% if is_unlocked %}
-                        <button class="stage-btn" onclick="showStageInfo({{ stage.stage_id }})">
-                            {{ stage.이름 }}
-                        </button>
-                        {% else %}
-                        <div class="stage-btn locked">
-                            미개방
-                        </div>
-                        {% endif %}
+                        <div class="stage-name">{{ stage.이름 }}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -223,7 +215,13 @@ function challengeStage() {
         return;
     }
     
-    window.location.href = `/adventure_battle/${currentStageId}/${selectedMonster}`;
+    // 모달 닫기
+    closeStageInfo();
+    
+    // 약간의 지연 후 이동 (부드러운 전환)
+    setTimeout(() => {
+        window.location.href = `/adventure_battle/${currentStageId}/${selectedMonster}`;
+    }, 300);
 }
 
 function closeStageInfo() {
