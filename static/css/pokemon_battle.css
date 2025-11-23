@@ -6,429 +6,294 @@
     box-sizing: border-box;
 }
 
-.pokemon-battle-container {
+.battle-screen {
     min-height: 100vh;
     background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
     font-family: 'Fredoka', sans-serif;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    padding: 16px;
     color: #2c3e2b;
-    position: relative;
+    overflow-y: auto;
 }
 
-/* ========== 전투 영역 ========== */
-.battle-arena {
+/* ========== 헤더 ========== */
+.battle-header {
+    background: linear-gradient(135deg, #558b2f 0%, #7cb342 100%);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-bottom: 3px solid #33691e;
+}
+
+.header-left {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+}
+
+.stage-label {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stage-name {
+    color: #ffeb3b;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.header-right {
+    color: white;
+    font-size: 0.9rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.turn-info strong {
+    color: #ffeb3b;
+    font-weight: 700;
+}
+
+/* ========== 전투 필드 ========== */
+.battle-field {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 12px;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 16px;
     padding: 16px;
-    min-height: calc(100vh - 280px);
-    position: relative;
-    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
 }
 
-/* 적 그룹: 대사 + 몬스터 */
-.enemy-group {
-    grid-column: 1 / 3;
-    grid-row: 1;
+/* 적 영역 */
+.enemy-area {
     display: flex;
     gap: 12px;
-    align-items: flex-start;
+    align-items: center;
 }
 
-.enemy-dialogue-card {
+.monster-image-area {
     flex: 1;
-    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
-                linear-gradient(135deg, rgba(255, 249, 230, 0.9) 0%, rgba(255, 243, 205, 0.9) 100%);
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 140px;
+    min-height: 150px;
+}
+
+.monster-img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.monster-panel {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #81c784;
 }
 
-.dialogue-content {
-    text-align: center;
-    font-style: italic;
-    color: #2c3e2b;
-    font-size: 0.85rem;
-    line-height: 1.3;
-    font-weight: 500;
+.panel-header {
+    margin-bottom: 10px;
 }
 
-.dialogue-content p {
-    margin: 0;
-}
-
-/* 적 몬스터 */
-.enemy-position {
-    flex: 1;
+.mon-info {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 8px;
-}
-
-.enemy-card {
-    background: url('{{ url_for("static", filename="images/monster_card_panel_background.png") }}') center/cover,
-                linear-gradient(135deg, rgba(255, 249, 230, 0.9) 0%, rgba(255, 243, 205, 0.9) 100%);
-    border-radius: 12px;
-    padding: 12px;
-    width: 100%;
-    max-width: 280px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    border: none;
-    display: flex;
-    flex-direction: column;
-}
-
-.enemy-header,
-.player-header {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 8px;
-}
-
-.monster-name-tag {
-    display: flex;
-    align-items: center;
     gap: 8px;
+    align-items: center;
+    margin-bottom: 6px;
 }
 
-.monster-name-tag .name {
-    font-weight: 700;
-    color: #f57f17;
+.mon-name {
     font-size: 1rem;
+    font-weight: 700;
+    color: #558b2f;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.rarity-badge {
-    font-size: 0.65rem;
+.mon-rarity {
+    display: inline-block;
     padding: 3px 8px;
     border-radius: 6px;
     color: white;
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
-.stats-row {
+.hp-display {
     display: flex;
     gap: 8px;
-    font-size: 0.8rem;
-}
-
-.stat-item {
-    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
-                linear-gradient(135deg, #fff9e6, #fff3cd);
-    padding: 3px 6px;
-    border-radius: 4px;
-    border: none;
-    font-weight: 600;
-    color: #f57f17;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.hp-bar-container {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.7rem;
-    margin-bottom: 8px;
+    font-size: 0.85rem;
 }
 
 .hp-label {
+    color: #558b2f;
     font-weight: 700;
+}
+
+.hp-value {
     color: #f57f17;
-    min-width: 28px;
-    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.hp-bar-wrapper {
+    background: #e0e0e0;
+    border-radius: 4px;
+    height: 24px;
+    overflow: hidden;
+    border: 1px solid #bdbdbd;
 }
 
 .hp-bar {
-    flex: 1;
-    height: 16px;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    border: none;
-    overflow: hidden;
-    min-width: 70px;
-}
-
-.hp-fill {
     height: 100%;
+    background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
     transition: width 0.3s ease;
+    width: 100%;
 }
 
-.hp-fill.enemy-hp {
-    background: linear-gradient(90deg, #ef5350, #e53935);
-}
-
-.hp-fill.player-hp {
-    background: linear-gradient(90deg, #66bb6a, #43a047);
-}
-
-.hp-text {
-    font-weight: 600;
-    color: #2c3e2b;
-    font-size: 0.65rem;
-    min-width: 45px;
-    text-align: right;
-}
-
-.enemy-image-container,
-.player-image-container {
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-.enemy-monster-image,
-.player-monster-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-/* ========== 중앙: 턴 정보 ========== */
-.battle-log-section {
-    grid-column: 3;
-    grid-row: 1 / 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+/* 전투 로그 영역 */
+.battle-log-area {
+    background: white;
+    border-radius: 8px;
     padding: 12px;
-    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
-                linear-gradient(135deg, rgba(255, 249, 230, 0.85) 0%, rgba(255, 243, 205, 0.85) 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #81c784;
+}
+
+.log-box {
+    height: 140px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.log-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.log-box::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #558b2f, #7cb342);
     border-radius: 10px;
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    gap: 8px;
-}
-
-.progress-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    text-align: center;
-}
-
-.stage-progress {
-    font-size: 0.75rem;
-    color: #558b2f;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.stage-name-small {
-    font-size: 0.7rem;
-    color: #f57f17;
-    font-weight: 600;
-}
-
-.turn-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.turn-label {
-    font-size: 0.75rem;
-    color: #558b2f;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.player-turn-badge,
-.enemy-turn-badge {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.player-turn-badge {
-    background: linear-gradient(135deg, #66bb6a, #43a047);
-    color: white;
-}
-
-.enemy-turn-badge {
-    background: linear-gradient(135deg, #ef5350, #e53935);
-    color: white;
-}
-
-.log-container {
-    display: none;
 }
 
 .log-entry {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
+    color: #2c3e2b;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    padding: 4px;
 }
 
-/* 내 그룹: 몬스터 + 대사 */
-.player-group {
-    grid-column: 1 / 3;
-    grid-row: 3;
+/* 플레이어 영역 */
+.player-area {
     display: flex;
     gap: 12px;
-    align-items: flex-end;
-}
-
-/* 내 몬스터 */
-.player-position {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    padding: 8px;
-}
-
-.player-card {
-    background: url('{{ url_for("static", filename="images/monster_card_panel_background.png") }}') center/cover,
-                linear-gradient(135deg, rgba(255, 249, 230, 0.9) 0%, rgba(255, 243, 205, 0.9) 100%);
-    border-radius: 12px;
-    padding: 12px;
-    width: 100%;
-    max-width: 280px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    border: none;
-    display: flex;
-    flex-direction: column;
-}
-
-/* 내 대사 카드 */
-.player-dialogue-card {
-    flex: 1;
-    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
-                linear-gradient(135deg, rgba(255, 249, 230, 0.9) 0%, rgba(255, 243, 205, 0.9) 100%);
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
     align-items: center;
-    justify-content: center;
-    min-height: 140px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-direction: row-reverse;
 }
 
-/* ========== 기술 선택 영역 ========== */
-.skill-selection-area {
-    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
-                linear-gradient(135deg, rgba(255, 249, 230, 0.95) 0%, rgba(248, 247, 239, 0.95) 100%);
-    border: none;
-    border-radius: 12px;
-    padding: 14px;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-    margin-top: auto;
+/* ========== 액션 영역 ========== */
+.action-area {
+    background: white;
+    border-top: 3px solid #81c784;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
 }
 
-.skill-title {
-    font-size: 1rem;
+.skills-section {
+    flex: 1;
+}
+
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 700;
     color: #558b2f;
     margin-bottom: 10px;
     text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 1px;
-    border: none;
+    letter-spacing: 0.5px;
 }
 
 .skills-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 10px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
 }
 
-.skill-button {
-    background: url('{{ url_for("static", filename="images/skill_card_background.png") }}') center/cover,
-                linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-    border: none;
-    border-radius: 10px;
+.skill-btn {
+    background: linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
+    border: 2px solid #f9a825;
+    border-radius: 6px;
     padding: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(249, 168, 37, 0.3);
 }
 
-.skill-button:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(249, 168, 37, 0.3);
+.skill-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(249, 168, 37, 0.5);
 }
 
-.skill-button:disabled {
+.skill-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.skill-emoji {
-    font-size: 1.4rem;
+.skill-btn.empty {
+    background: transparent;
+    border: 2px dashed #ddd;
+    cursor: default;
+}
+
+.skill-icon {
+    font-size: 1.5rem;
 }
 
 .skill-name {
     font-size: 0.75rem;
-    color: #558b2f;
-    text-align: center;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.skill-effect {
-    font-size: 0.6rem;
-    color: #f57f17;
-    text-align: center;
-    font-weight: 500;
-    line-height: 1.1;
-}
-
-.skill-button-empty {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-}
-
-.btn-escape {
-    background: linear-gradient(135deg, #ef5350, #e53935);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    cursor: pointer;
     font-weight: 700;
-    font-size: 0.8rem;
+    color: #f57f17;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
+    text-align: center;
+    line-height: 1;
 }
 
-.btn-escape:hover {
-    box-shadow: 0 4px 12px rgba(239, 83, 80, 0.4);
+.escape-section {
+    display: flex;
+}
+
+.escape-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #e57373 0%, #ef5350 100%);
+    color: white;
+    border: 2px solid #d32f2f;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+}
+
+.escape-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(231, 76, 60, 0.5);
 }
 
 /* ========== 게임 오버 모달 ========== */
@@ -438,307 +303,231 @@
     left: 0;
     right: 0;
     bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
-    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
 }
 
 .game-over-modal.hidden {
     display: none;
 }
 
-.game-over-content {
-    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
-                linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-    border: none;
-    border-radius: 16px;
-    padding: 24px;
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
     text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    max-width: 90%;
-    width: 400px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
 }
 
-.game-over-badge {
+.modal-badge {
     font-size: 3rem;
-    margin-bottom: 12px;
-}
-
-.game-over-message {
-    font-size: 1.2rem;
-    color: #558b2f;
     margin-bottom: 16px;
-    font-weight: 700;
 }
 
-.btn-return {
+.modal-message {
+    font-size: 1.2rem;
+    color: #2c3e2b;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.modal-btn {
     display: inline-block;
-    background: linear-gradient(135deg, #f9a825, #fb8c00);
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #558b2f 0%, #7cb342 100%);
     color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 24px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
     text-decoration: none;
+    border-radius: 6px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.btn-return:hover {
-    box-shadow: 0 6px 18px rgba(249, 168, 37, 0.4);
+.modal-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* ========== 모바일 반응형 ========== */
-@media (max-width: 1024px) {
-    .battle-arena {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        gap: 10px;
-    }
-
-    .enemy-group {
-        grid-column: 1;
-        grid-row: auto;
-        flex-direction: column;
-    }
-
-    .battle-log-section {
-        grid-column: 1;
-        grid-row: auto;
-    }
-
-    .player-group {
-        grid-column: 1;
-        grid-row: auto;
-        flex-direction: column;
-    }
-}
-
+/* ========== 반응형 ========== */
 @media (max-width: 768px) {
-    .pokemon-battle-container {
+    .battle-field {
+        gap: 12px;
         padding: 12px;
     }
 
-    .battle-arena {
-        gap: 8px;
-        padding: 8px;
-        min-height: auto;
+    .monster-image-area {
+        min-height: 120px;
     }
 
-    .enemy-group,
-    .player-group {
-        flex-direction: column;
-        gap: 8px;
+    .monster-img {
+        max-height: 150px;
     }
 
-    .enemy-dialogue-card,
-    .player-dialogue-card {
-        min-height: 100px;
+    .monster-panel {
         padding: 10px;
     }
 
-    .enemy-card,
-    .player-card {
+    .battle-log-area {
         padding: 10px;
-        max-width: 100%;
     }
 
-    .enemy-image-container,
-    .player-image-container {
+    .log-box {
         height: 100px;
     }
 
-    .monster-name-tag .name {
-        font-size: 0.9rem;
-    }
-
-    .hp-bar-container {
-        gap: 4px;
-    }
-
-    .skill-selection-area {
+    .action-area {
+        grid-template-columns: 1fr;
+        gap: 12px;
         padding: 12px;
     }
 
-    .skill-title {
-        font-size: 0.9rem;
-        margin-bottom: 8px;
-    }
-
     .skills-grid {
-        gap: 8px;
-        margin-bottom: 8px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
     }
 
-    .skill-button {
+    .skill-btn {
         padding: 8px;
     }
 
-    .skill-emoji {
-        font-size: 1.2rem;
+    .skill-icon {
+        font-size: 1.3rem;
     }
 
     .skill-name {
         font-size: 0.7rem;
     }
 
-    .skill-effect {
-        font-size: 0.55rem;
+    .escape-section {
+        width: 100%;
+    }
+
+    .escape-btn {
+        width: 100%;
     }
 }
 
 @media (max-width: 480px) {
-    .pokemon-battle-container {
-        padding: 8px;
+    .battle-header {
+        padding: 10px 12px;
     }
 
-    .battle-arena {
+    .header-left {
         gap: 6px;
-        padding: 6px;
+        flex-direction: column;
     }
 
-    .enemy-dialogue-card,
-    .player-dialogue-card {
-        min-height: 80px;
-        padding: 8px;
+    .stage-label,
+    .stage-name {
         font-size: 0.8rem;
     }
 
-    .enemy-card,
-    .player-card {
-        padding: 8px;
-    }
-
-    .monster-name-tag .name {
+    .header-right {
         font-size: 0.8rem;
     }
 
-    .rarity-badge {
-        font-size: 0.6rem;
-        padding: 2px 6px;
-    }
-
-    .stats-row {
-        gap: 4px;
-        font-size: 0.7rem;
-    }
-
-    .stat-item {
-        padding: 2px 4px;
-        font-size: 0.65rem;
-    }
-
-    .hp-bar-container {
-        font-size: 0.65rem;
-        gap: 3px;
-    }
-
-    .hp-bar {
-        min-width: 50px;
-        height: 14px;
-    }
-
-    .hp-label {
-        min-width: 24px;
-        font-size: 0.65rem;
-    }
-
-    .hp-text {
-        font-size: 0.6rem;
-        min-width: 40px;
-    }
-
-    .enemy-image-container,
-    .player-image-container {
-        height: 80px;
-    }
-
-    .battle-log-section {
-        padding: 6px 8px;
-        gap: 4px;
-    }
-
-    .stage-progress {
-        font-size: 0.7rem;
-    }
-
-    .stage-name-small {
-        font-size: 0.65rem;
-    }
-
-    .turn-label {
-        font-size: 0.7rem;
-    }
-
-    .player-turn-badge,
-    .enemy-turn-badge {
-        font-size: 0.7rem;
-        padding: 3px 6px;
-    }
-
-    .skill-selection-area {
+    .battle-field {
+        gap: 10px;
         padding: 10px;
     }
 
-    .skill-title {
-        font-size: 0.85rem;
-        margin-bottom: 6px;
+    .enemy-area,
+    .player-area {
+        gap: 8px;
     }
 
-    .skills-grid {
-        gap: 6px;
-        margin-bottom: 6px;
+    .monster-image-area {
+        min-height: 100px;
     }
 
-    .skill-button {
-        padding: 6px;
-        gap: 2px;
+    .monster-img {
+        max-height: 120px;
     }
 
-    .skill-emoji {
-        font-size: 1rem;
+    .monster-panel {
+        padding: 8px;
+        border-width: 1px;
     }
 
-    .skill-name {
-        font-size: 0.65rem;
+    .mon-name {
+        font-size: 0.9rem;
     }
 
-    .skill-effect {
-        font-size: 0.5rem;
-    }
-
-    .action-buttons {
-        gap: 6px;
-    }
-
-    .btn-escape {
-        padding: 6px 12px;
+    .hp-display {
         font-size: 0.75rem;
+        gap: 4px;
     }
 
-    .game-over-content {
-        padding: 16px;
-        width: 95%;
+    .hp-bar-wrapper {
+        height: 20px;
     }
 
-    .game-over-badge {
-        font-size: 2.5rem;
+    .battle-log-area {
+        padding: 8px;
+        border-width: 1px;
+    }
+
+    .log-box {
+        height: 80px;
+        font-size: 0.8rem;
+    }
+
+    .log-entry {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+    }
+
+    .action-area {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .section-title {
+        font-size: 0.8rem;
         margin-bottom: 8px;
     }
 
-    .game-over-message {
-        font-size: 1rem;
-        margin-bottom: 12px;
+    .skills-grid {
+        gap: 4px;
     }
 
-    .btn-return {
-        padding: 8px 16px;
+    .skill-btn {
+        padding: 6px;
+        gap: 4px;
+    }
+
+    .skill-icon {
+        font-size: 1.1rem;
+    }
+
+    .skill-name {
+        font-size: 0.6rem;
+    }
+
+    .escape-btn {
+        padding: 8px 12px;
         font-size: 0.8rem;
+    }
+
+    .modal-content {
+        padding: 24px;
+        max-width: 90%;
+    }
+
+    .modal-badge {
+        font-size: 2.5rem;
+    }
+
+    .modal-message {
+        font-size: 1rem;
+    }
+
+    .modal-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
     }
 }

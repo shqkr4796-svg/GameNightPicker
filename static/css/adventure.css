@@ -6,421 +6,444 @@
     box-sizing: border-box;
 }
 
-.adventure-page {
+.adventure-container {
     min-height: 100vh;
-    background: linear-gradient(180deg, #f5f7fa 0%, #e8eef5 100%);
+    background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
     font-family: 'Fredoka', sans-serif;
     display: flex;
     flex-direction: column;
-    color: #2c3e50;
+    color: #2c3e2b;
 }
 
-/* 상단 */
-.adventure-top {
-    background: white;
-    padding: 24px 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.adventure-top h1 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin: 0 0 16px 0;
-    font-weight: 700;
-}
-
-.progress-bar {
-    height: 32px;
-    background: #e0e0e0;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    max-width: 400px;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    transition: width 0.3s ease;
-}
-
-.progress-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #2c3e50;
-    font-weight: 700;
-    font-size: 0.9rem;
-}
-
-/* 스테이지 카드 */
-.stages-container {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-}
-
-.stage-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+/* ========== 상단 조작 바 ========== */
+.action-bar {
+    background: linear-gradient(135deg, #558b2f 0%, #7cb342 100%);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
     gap: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-bottom: 3px solid #33691e;
 }
 
-.stage-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
+.challenge-button {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #f9a825 0%, #fb8c00 100%);
+    color: white;
+    border: 2px solid #e65100;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 2px solid #e0e0e0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.stage-card.disabled {
+.challenge-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.challenge-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.status-info {
+    margin-left: auto;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.status-info strong {
+    color: #ffeb3b;
+    font-weight: 700;
+}
+
+/* ========== 메인 게임 영역 ========== */
+.game-area {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    align-items: start;
+}
+
+.panel-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #558b2f;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* ========== 스테이지 선택 ========== */
+.stage-selector {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.stage-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.stage-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #f9a825, #fb8c00);
+    border-radius: 10px;
+}
+
+.stage-tile {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
+    border: 2px solid #f9a825;
+    border-radius: 6px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f57f17;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(249, 168, 37, 0.3);
+}
+
+.stage-tile:hover:not(.locked) {
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(249, 168, 37, 0.5);
+}
+
+.stage-tile.selected {
+    box-shadow: 0 0 12px rgba(249, 168, 37, 0.8);
+    transform: scale(1.1);
+}
+
+.stage-tile.locked {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-.stage-card:not(.disabled):hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    border-color: #667eea;
+.cleared {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #66bb6a;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.stage-card.active {
-    border-color: #667eea;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+/* ========== 스테이지 정보 ========== */
+.stage-info-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.card-content {
-    position: relative;
+.info-box {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border: 2px solid #81c784;
+    border-radius: 6px;
+    padding: 12px;
 }
 
-.stage-num-large {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #667eea;
-    line-height: 1;
-    margin-bottom: 8px;
+.info-header {
+    margin-bottom: 10px;
 }
 
-.stage-card h3 {
+.info-title {
     font-size: 1.1rem;
-    margin: 8px 0;
-    color: #2c3e50;
-    min-height: 2.2em;
-}
-
-.difficulty {
-    font-size: 0.9rem;
     font-weight: 700;
+    color: #2e7d32;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.cleared-badge {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: #4CAF50;
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+.info-difficulty {
+    font-size: 0.85rem;
     font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 4px;
 }
 
-/* 액션 섹션 */
-.action-section {
-    background: white;
-    border-top: 2px solid #e0e0e0;
-    padding: 24px;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.current-selection {
-    margin-bottom: 20px;
-    padding: 16px;
-    background: #f5f7fa;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
-}
-
-.current-selection h2 {
-    color: #2c3e50;
-    font-size: 1.3rem;
-    margin: 0 0 10px 0;
-}
-
-.stage-stats {
+.info-stats {
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.stat {
-    font-size: 0.95rem;
-    color: #555;
-}
-
-.stat span {
-    font-weight: 700;
-    color: #667eea;
-}
-
-/* 몬스터 선택 */
-.monster-picker {
-    margin-bottom: 20px;
-}
-
-.monster-picker h2 {
-    font-size: 1.3rem;
-    color: #2c3e50;
-    margin: 0 0 16px 0;
-}
-
-.monster-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-    max-width: 1000px;
-}
-
-.mon-option {
+.info-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px;
     background: white;
-    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.info-stat .label {
+    color: #558b2f;
+    font-weight: 700;
+}
+
+.info-stat .value {
+    color: #f57f17;
+    font-weight: 700;
+}
+
+/* ========== 몬스터 선택 ========== */
+.monster-selector {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.monster-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.monster-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.monster-grid::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #f9a825, #fb8c00);
     border-radius: 10px;
-    padding: 12px;
+}
+
+.monster-tile {
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border: 2px solid #ffd700;
+    border-radius: 6px;
+    padding: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     gap: 8px;
+    align-items: center;
+    text-align: left;
 }
 
-.mon-option:hover {
-    border-color: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+.monster-tile:hover {
+    border-color: #f9a825;
+    box-shadow: 0 2px 8px rgba(249, 168, 37, 0.3);
 }
 
-.mon-option.active {
-    border-color: #667eea;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+.monster-tile.selected {
+    box-shadow: 0 0 12px rgba(249, 168, 37, 0.6);
+    background: linear-gradient(135deg, #ffeb99 0%, #ffe082 100%);
 }
 
-.mon-option img {
-    width: 70px;
-    height: 70px;
+.monster-thumb {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(249, 168, 37, 0.1);
+    border-radius: 4px;
+}
+
+.monster-thumb img {
+    max-width: 90%;
+    max-height: 90%;
     object-fit: contain;
+}
+
+.monster-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 .mon-name {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #2c3e50;
-    text-align: center;
+    color: #558b2f;
     text-transform: uppercase;
-    line-height: 1.2;
 }
 
 .mon-rarity {
     display: inline-block;
-    padding: 3px 8px;
-    border-radius: 6px;
+    width: fit-content;
+    padding: 2px 6px;
+    border-radius: 4px;
     color: white;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
     text-transform: uppercase;
 }
 
-/* 도전 버튼 */
-.start-btn {
-    padding: 14px 40px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+/* ========== 반응형 ========== */
+@media (max-width: 1200px) {
+    .game-area {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stage-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .stage-info-panel {
+        grid-column: 1 / -1;
+    }
 }
 
-.start-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4);
-}
-
-.start-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* 반응형 */
 @media (max-width: 768px) {
-    .adventure-top {
-        padding: 16px;
-    }
-
-    .adventure-top h1 {
-        font-size: 1.8rem;
-    }
-
-    .stages-container {
-        padding: 12px;
-    }
-
-    .stage-cards {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 12px;
-    }
-
-    .stage-card {
-        padding: 16px;
-    }
-
-    .stage-num-large {
-        font-size: 2.5rem;
-    }
-
-    .stage-card h3 {
-        font-size: 0.95rem;
-    }
-
-    .action-section {
-        padding: 16px;
-    }
-
-    .current-selection {
-        margin-bottom: 16px;
-        padding: 12px;
-    }
-
-    .current-selection h2 {
-        font-size: 1.1rem;
-    }
-
-    .stage-stats {
-        gap: 12px;
-    }
-
-    .monster-picker h2 {
-        font-size: 1.1rem;
-    }
-
-    .monster-options {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    .action-bar {
+        padding: 10px 12px;
         gap: 10px;
     }
 
-    .mon-option {
-        padding: 10px;
+    .challenge-button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
     }
 
-    .mon-option img {
-        width: 60px;
-        height: 60px;
+    .status-info {
+        font-size: 0.8rem;
+    }
+
+    .game-area {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .stage-grid {
+        grid-template-columns: repeat(5, 1fr);
+        max-height: 250px;
+    }
+
+    .stage-tile {
+        font-size: 1rem;
+    }
+
+    .monster-grid {
+        max-height: 300px;
+    }
+
+    .monster-tile {
+        padding: 6px;
+        gap: 6px;
+    }
+
+    .monster-thumb {
+        width: 45px;
+        height: 45px;
     }
 
     .mon-name {
         font-size: 0.75rem;
     }
 
-    .start-btn {
-        width: 100%;
-        padding: 12px 20px;
+    .panel-title {
         font-size: 1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .adventure-top {
-        padding: 12px;
-    }
-
-    .adventure-top h1 {
-        font-size: 1.5rem;
-        margin-bottom: 12px;
-    }
-
-    .progress-bar {
-        max-width: 100%;
-    }
-
-    .stages-container {
-        padding: 10px;
-    }
-
-    .stage-cards {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .stage-card {
-        padding: 12px;
-    }
-
-    .stage-num-large {
-        font-size: 2rem;
-    }
-
-    .stage-card h3 {
-        font-size: 0.85rem;
-    }
-
-    .action-section {
-        padding: 12px;
-    }
-
-    .current-selection {
-        padding: 10px;
-        margin-bottom: 12px;
-    }
-
-    .current-selection h2 {
-        font-size: 1rem;
-    }
-
-    .stage-stats {
-        font-size: 0.85rem;
+    .action-bar {
+        flex-direction: column;
+        padding: 8px;
         gap: 8px;
     }
 
-    .monster-picker h2 {
-        font-size: 1rem;
+    .challenge-button {
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 0.85rem;
     }
 
-    .monster-options {
-        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    .status-info {
+        margin-left: 0;
+        font-size: 0.75rem;
+    }
+
+    .game-area {
+        grid-template-columns: 1fr;
         gap: 8px;
-    }
-
-    .mon-option {
         padding: 8px;
     }
 
-    .mon-option img {
-        width: 50px;
-        height: 50px;
+    .stage-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        max-height: 200px;
+    }
+
+    .stage-tile {
+        font-size: 0.9rem;
+    }
+
+    .stage-selector,
+    .monster-selector,
+    .stage-info-panel {
+        padding: 10px;
+    }
+
+    .monster-grid {
+        gap: 6px;
+        max-height: 250px;
+    }
+
+    .monster-tile {
+        padding: 5px;
+        gap: 5px;
+    }
+
+    .monster-thumb {
+        width: 40px;
+        height: 40px;
     }
 
     .mon-name {
         font-size: 0.7rem;
     }
 
-    .start-btn {
-        width: 100%;
-        padding: 10px 16px;
+    .info-stat {
+        padding: 4px;
+        font-size: 0.8rem;
+    }
+
+    .panel-title {
         font-size: 0.95rem;
+        margin-bottom: 8px;
     }
 }
