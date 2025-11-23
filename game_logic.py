@@ -5,6 +5,7 @@ import hashlib
 from datetime import datetime
 from data.game_data import *
 from data.monsters import get_monster_by_id, get_monsters_by_rarity
+from data.skills import SKILL_INFO
 
 SAVE_FILE = 'savegame.json'
 EVENTS_FILE = 'events.json'
