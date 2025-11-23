@@ -1,0 +1,708 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.pokemon-battle-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFC0CB 0%, #FFB6C1 50%, #DDA0DD 100%);
+    background-attachment: fixed;
+    font-family: 'Fredoka', sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+/* ========== 전투 영역 ========== */
+.battle-arena {
+    flex: 1;
+    display: grid;
+    grid-template-rows: 1fr 80px 1fr;
+    gap: 10px;
+    padding: 15px;
+    min-height: calc(100vh - 400px);
+}
+
+/* ========== 상대 몬스터 (오른쪽 상단) ========== */
+.enemy-position {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 10px;
+}
+
+.enemy-card {
+    background: white;
+    border-radius: 15px;
+    padding: 12px;
+    max-width: 90%;
+    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.3);
+    border: 3px solid #FFB6C1;
+}
+
+.enemy-info-top {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.monster-name-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.monster-name-tag .name {
+    font-weight: 700;
+    color: #333;
+    font-size: 1rem;
+}
+
+.rarity-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 8px;
+    color: white !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.hp-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+}
+
+.hp-label {
+    font-weight: 700;
+    color: #FF1493;
+    min-width: 25px;
+}
+
+.hp-bar {
+    flex: 1;
+    height: 16px;
+    background: #ddd;
+    border-radius: 8px;
+    border: 2px solid #999;
+    overflow: hidden;
+    min-width: 60px;
+}
+
+.hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ff8787);
+    transition: width 0.3s ease;
+}
+
+.hp-fill.enemy-hp {
+    background: linear-gradient(90deg, #ff6b6b, #ff8787);
+}
+
+.hp-fill.player-hp {
+    background: linear-gradient(90deg, #51cf66, #69db7c);
+}
+
+.hp-text {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.7rem;
+    min-width: 40px;
+    text-align: right;
+}
+
+.enemy-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    margin: 8px 0;
+    background: rgba(255, 182, 193, 0.2);
+    border-radius: 10px;
+    border: 2px solid #FFB6C1;
+}
+
+.enemy-monster-image,
+.player-monster-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.speech-bubble {
+    background: #FFE5F0;
+    border: 2px solid #FF69B4;
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #333;
+    text-align: center;
+    font-style: italic;
+    position: relative;
+    margin: 8px 0;
+    word-wrap: break-word;
+}
+
+.enemy-dialogue::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 10px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 2px solid transparent;
+    border-top: 10px solid #FF69B4;
+}
+
+.player-dialogue::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border-left: 2px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 10px solid #FF69B4;
+}
+
+/* ========== 중앙 전투 로그 ========== */
+.battle-log-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    border: 2px solid #FFB6C1;
+}
+
+.log-container {
+    flex: 1;
+    max-height: 80px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    color: #333;
+    padding: 6px;
+}
+
+.log-entry {
+    margin: 2px 0;
+    padding: 2px;
+    line-height: 1.2;
+}
+
+.turn-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+    font-weight: 700;
+    color: #FF1493;
+}
+
+.turn-label {
+    font-size: 0.9rem;
+}
+
+.enemy-turn-badge {
+    font-size: 0.7rem;
+    background: #FFD700;
+    color: #333;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+/* ========== 내 몬스터 (왼쪽 하단) ========== */
+.player-position {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+    padding: 10px;
+}
+
+.player-card {
+    background: white;
+    border-radius: 15px;
+    padding: 12px;
+    max-width: 90%;
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+    border: 3px solid #51cf66;
+}
+
+.player-info-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.player-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    margin: 8px 0;
+    background: rgba(81, 207, 102, 0.1);
+    border-radius: 10px;
+    border: 2px solid #51cf66;
+}
+
+/* ========== 기술 선택 영역 ========== */
+.skill-selection-area {
+    background: white;
+    border-top: 4px solid #FF69B4;
+    border-radius: 20px 20px 0 0;
+    padding: 15px;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.skill-title {
+    color: #FF1493;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* 2x2 그리드 레이아웃 */
+.skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.skill-button {
+    background: linear-gradient(135deg, #FFF0F5, #FFE5F0);
+    border: 3px solid #FFB6C1;
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    min-height: 90px;
+    justify-content: center;
+}
+
+.skill-button:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+    border-color: #FF1493;
+    background: linear-gradient(135deg, #FFD700, #FFF44F);
+}
+
+.skill-button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.skill-button.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f0f0f0;
+    border-color: #ddd;
+}
+
+.skill-emoji {
+    font-size: 1.8rem;
+}
+
+.skill-name {
+    color: #333;
+    font-size: 0.85rem;
+    text-align: center;
+    line-height: 1.2;
+    word-wrap: break-word;
+}
+
+.skill-button-empty {
+    background: transparent;
+    border: none;
+    min-height: 90px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-escape {
+    flex: 1;
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    border: 3px solid #FF6500;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+.btn-escape:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 165, 0, 0.4);
+}
+
+/* ========== 게임 오버 모달 ========== */
+.game-over-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.game-over-content {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    max-width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border: 4px solid #FF69B4;
+}
+
+.game-over-badge {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    padding: 15px;
+    border-radius: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.game-over-badge.victory {
+    background: linear-gradient(135deg, #51cf66, #69db7c);
+    color: white;
+}
+
+.game-over-badge.defeat {
+    background: linear-gradient(135deg, #ff6b6b, #ff8787);
+    color: white;
+}
+
+.game-over-message {
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.btn-return {
+    display: inline-block;
+    background: linear-gradient(135deg, #4169E1, #1E90FF);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    border: 3px solid #0047AB;
+}
+
+.btn-return:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(65, 105, 225, 0.4);
+}
+
+/* ========== 모바일 최적화 (768px 이하) ========== */
+@media (max-width: 768px) {
+    .pokemon-battle-container {
+        min-height: 100vh;
+        padding-bottom: 10px;
+    }
+
+    .battle-arena {
+        gap: 8px;
+        padding: 10px;
+        grid-template-rows: auto 60px auto;
+        min-height: calc(100vh - 350px);
+    }
+
+    /* 상대 몬스터 */
+    .enemy-position {
+        padding: 5px;
+    }
+
+    .enemy-card {
+        padding: 10px;
+        border-radius: 12px;
+        max-width: 95%;
+    }
+
+    .monster-name-tag .name {
+        font-size: 0.9rem;
+    }
+
+    .enemy-image-container,
+    .player-image-container {
+        height: 70px;
+    }
+
+    .enemy-monster-image,
+    .player-monster-image {
+        max-width: 85%;
+        max-height: 85%;
+    }
+
+    .speech-bubble {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        margin: 6px 0;
+    }
+
+    /* 전투 로그 */
+    .log-container {
+        font-size: 0.7rem;
+        max-height: 60px;
+    }
+
+    .turn-label {
+        font-size: 0.8rem;
+    }
+
+    .enemy-turn-badge {
+        font-size: 0.65rem;
+    }
+
+    /* 내 몬스터 */
+    .player-position {
+        padding: 5px;
+    }
+
+    .player-card {
+        padding: 10px;
+        border-radius: 12px;
+        max-width: 95%;
+    }
+
+    /* 기술 선택 */
+    .skill-selection-area {
+        border-radius: 15px 15px 0 0;
+        padding: 12px;
+    }
+
+    .skill-title {
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .skills-grid {
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .skill-button {
+        padding: 8px;
+        min-height: 85px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        gap: 4px;
+    }
+
+    .skill-emoji {
+        font-size: 1.5rem;
+    }
+
+    .skill-name {
+        font-size: 0.75rem;
+    }
+
+    .skill-button-empty {
+        min-height: 85px;
+    }
+
+    .btn-escape {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    /* 게임 오버 */
+    .game-over-content {
+        padding: 20px;
+        max-width: 95%;
+    }
+
+    .game-over-badge {
+        font-size: 2rem;
+        margin-bottom: 12px;
+        padding: 12px;
+    }
+
+    .game-over-message {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .btn-return {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ========== 매우 작은 화면 (480px 이하) ========== */
+@media (max-width: 480px) {
+    .pokemon-battle-container {
+        min-height: 100vh;
+    }
+
+    .battle-arena {
+        gap: 6px;
+        padding: 8px;
+        min-height: calc(100vh - 320px);
+    }
+
+    .enemy-card,
+    .player-card {
+        padding: 8px;
+        border-radius: 10px;
+    }
+
+    .monster-name-tag .name {
+        font-size: 0.8rem;
+    }
+
+    .rarity-badge {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+
+    .hp-bar-container {
+        font-size: 0.65rem;
+        gap: 4px;
+    }
+
+    .hp-bar {
+        height: 14px;
+        border-width: 1px;
+        min-width: 50px;
+    }
+
+    .enemy-image-container,
+    .player-image-container {
+        height: 60px;
+        margin: 6px 0;
+    }
+
+    .speech-bubble {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+        margin: 5px 0;
+    }
+
+    .battle-log-section {
+        padding: 0 8px;
+    }
+
+    .log-container {
+        font-size: 0.65rem;
+        max-height: 50px;
+        padding: 4px;
+    }
+
+    .turn-label {
+        font-size: 0.75rem;
+    }
+
+    .skill-selection-area {
+        padding: 10px;
+    }
+
+    .skill-title {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+
+    .skills-grid {
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .skill-button {
+        padding: 6px;
+        min-height: 80px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+    }
+
+    .skill-emoji {
+        font-size: 1.3rem;
+    }
+
+    .skill-name {
+        font-size: 0.7rem;
+    }
+
+    .skill-button-empty {
+        min-height: 80px;
+    }
+
+    .btn-escape {
+        padding: 8px;
+        font-size: 0.85rem;
+        border-width: 2px;
+    }
+
+    .game-over-content {
+        padding: 15px;
+    }
+
+    .game-over-badge {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .game-over-message {
+        font-size: 0.8rem;
+    }
+
+    .btn-return {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+        border-width: 2px;
+    }
+}
+
+/* ========== 로그 스크롤바 ========== */
+.log-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.log-container::-webkit-scrollbar-track {
+    background: rgba(255, 182, 193, 0.1);
+    border-radius: 3px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #FF69B4, #FFB6C1);
+    border-radius: 3px;
+}
+
+.log-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #FF1493, #FF69B4);
+}
