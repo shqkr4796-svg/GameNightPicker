@@ -221,7 +221,7 @@ function challengeStage() {
     
     // 약간의 지연 후 이동 (부드러운 전환)
     setTimeout(() => {
-        const url = `/adventure_battle/${currentStageId}/${encodeURIComponent(selectedMonster)}`;
+        const url = `/adventure_battle/${currentStageId}/${selectedMonster}`;
         console.log('Navigating to:', url);
         window.location.href = url;
     }, 300);
