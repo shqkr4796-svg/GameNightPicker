@@ -1,0 +1,200 @@
+/* Adventure Battle Styles */
+
+.adventure-battle-container {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    min-height: 600px;
+}
+
+.battle-header {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.battle-arena {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    min-height: 350px;
+    align-items: center;
+}
+
+/* 적 몬스터 영역 */
+.enemy-section {
+    text-align: center;
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.enemy-container {
+    position: relative;
+    display: inline-block;
+}
+
+.enemy-image {
+    max-width: 250px;
+    max-height: 250px;
+    filter: drop-shadow(0 0 20px rgba(255, 100, 100, 0.5));
+}
+
+.enemy-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+/* 플레이어 몬스터 영역 */
+.player-section {
+    text-align: center;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.player-container {
+    position: relative;
+    display: inline-block;
+}
+
+.player-image {
+    max-width: 250px;
+    max-height: 250px;
+    filter: drop-shadow(0 0 20px rgba(100, 200, 255, 0.5));
+}
+
+.player-info {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+/* 말풍선 스타일 */
+.speech-bubble {
+    background: white;
+    color: #333;
+    padding: 12px 15px;
+    border-radius: 15px;
+    margin: 10px 0;
+    font-size: 0.9rem;
+    position: relative;
+    max-width: 220px;
+    margin-left: auto;
+    margin-right: auto;
+    font-style: italic;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+}
+
+.enemy-speech {
+    margin-top: -80px;
+}
+
+.player-speech {
+    margin-top: -80px;
+}
+
+/* HP 바 */
+.hp-bar {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    height: 24px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.hp-fill {
+    background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
+    height: 100%;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: white;
+    font-weight: bold;
+}
+
+.player-hp {
+    background: linear-gradient(90deg, #4ecdc4, #44a596);
+}
+
+/* 기술 카드 */
+.skill-card {
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    padding: 15px !important;
+    border-radius: 10px !important;
+    transition: all 0.3s ease !important;
+    font-weight: bold !important;
+}
+
+.skill-card:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.skill-card:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .battle-arena {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .enemy-section,
+    .player-section {
+        grid-column: 1;
+    }
+
+    .player-section {
+        grid-row: 2;
+    }
+
+    .enemy-image,
+    .player-image {
+        max-width: 180px;
+        max-height: 180px;
+    }
+}
+
+/* 애니메이션 */
+@keyframes attackAnimation {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-20px); }
+}
+
+@keyframes damageFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.attack-animation {
+    animation: attackAnimation 0.5s ease;
+}
+
+.damage-animation {
+    animation: damageFlash 0.3s ease;
+}

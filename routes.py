@@ -1527,3 +1527,103 @@ def skip_question():
     game_logic.save_game(player)
     
     return redirect(url_for('dungeon_run'))
+
+# ===== 모험 시스템 라우트 =====
+
+@app.route('/adventure')
+def adventure():
+    """모험 메인 화면"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    available_monsters = game_logic.get_available_monsters(player)
+    stages = game_logic.get_adventure_stages()
+    cleared_stage = player.get('모험_클리어스테이지', 0)
+    
+    return render_template('adventure.html',
+                         available_monsters=available_monsters,
+                         stages=stages,
+                         cleared_stage=cleared_stage,
+                         player=player)
+
+@app.route('/adventure_battle/<int:stage_id>/<selected_monster_id>', methods=['GET', 'POST'])
+def adventure_battle(stage_id, selected_monster_id):
+    """모험 전투 화면"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    
+    # 전투 상태가 없으면 초기화
+    if 'adventure_battle_state' not in session:
+        result = game_logic.start_adventure_battle(player, stage_id, selected_monster_id)
+        if not result['success']:
+            flash(result['message'], 'error')
+            return redirect(url_for('adventure'))
+        session['adventure_battle_state'] = result['battle_state']
+        session.modified = True
+    
+    battle_state = session['adventure_battle_state']
+    
+    return render_template('adventure_battle.html',
+                         battle_state=battle_state,
+                         player=player)
+
+@app.route('/adventure_use_skill/<skill_name>', methods=['POST'])
+def adventure_use_skill(skill_name):
+    """모험 전투에서 기술 사용"""
+    if 'player_data' not in session or 'adventure_battle_state' not in session:
+        return redirect(url_for('adventure'))
+    
+    player = session['player_data']
+    battle_state = session['adventure_battle_state']
+    
+    # 기술 실행
+    result = game_logic.execute_skill(battle_state, skill_name)
+    
+    if result['success']:
+        battle_state = result['battle_state']
+        session['adventure_battle_state'] = battle_state
+        session.modified = True
+        
+        # 전투 종료 확인
+        if battle_state['game_over']:
+            # 전투 완료 처리
+            reward_result = game_logic.complete_adventure_battle(player, battle_state)
+            session['player_data'] = player
+            session.modified = True
+            game_logic.save_game(player)
+            
+            if reward_result['success']:
+                rewards = reward_result['rewards']
+                reward_msg = f"전투 승리! 경험치 {rewards['exp']} 획득, 돈 {rewards['money']} 획득"
+                if rewards['skills']:
+                    reward_msg += f", 기술 카드 획득: {', '.join(rewards['skills'])}"
+                flash(reward_msg, 'success')
+            else:
+                flash('전투에 패배했습니다.', 'error')
+            
+            session.pop('adventure_battle_state', None)
+            session.modified = True
+            return redirect(url_for('adventure'))
+    else:
+        flash(result['message'], 'error')
+    
+    session['adventure_battle_state'] = battle_state
+    session.modified = True
+    
+    return redirect(url_for('adventure_battle', stage_id=battle_state['stage_id'], selected_monster_id=list(player['도감'].keys())[0]))
+
+@app.route('/adventure_escape', methods=['POST'])
+def adventure_escape():
+    """모험에서 도망치기"""
+    if 'adventure_battle_state' not in session:
+        return redirect(url_for('adventure'))
+    
+    session.pop('adventure_battle_state', None)
+    session.modified = True
+    
+    flash('전투에서 도망쳤습니다.', 'warning')
+    return redirect(url_for('adventure'))
+

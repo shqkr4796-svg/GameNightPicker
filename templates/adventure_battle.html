@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}전투 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/adventure.css') }}">
+<div class="adventure-battle-container">
+    <!-- 전투 정보 헤더 -->
+    <div class="battle-header mb-3">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <h5>{{ battle_state.stage_name }}</h5>
+            </div>
+            <div class="col-md-4">
+                <h5>턴: {{ battle_state.turn }}</h5>
+            </div>
+            <div class="col-md-4">
+                <h5 class="badge bg-secondary">{{ battle_state.difficulty }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- 전투 화면 -->
+    <div class="battle-arena mb-4">
+        <!-- 적 몬스터 (오른쪽 상단) -->
+        <div class="enemy-section">
+            <div class="enemy-container">
+                <img src="{{ battle_state.enemy_monster.image }}" alt="{{ battle_state.enemy_monster.name }}" 
+                     class="enemy-image">
+                <div class="speech-bubble enemy-speech">
+                    {{ battle_state.enemy_dialogue }}
+                </div>
+            </div>
+            <div class="enemy-info mt-2">
+                <h6>{{ battle_state.enemy_monster.name }} 
+                    <span class="badge" style="background-color: 
+                        {% if battle_state.enemy_monster.rarity == '레어' %}#4169E1
+                        {% elif battle_state.enemy_monster.rarity == '에픽' %}#9932CC
+                        {% elif battle_state.enemy_monster.rarity == '유니크' %}#FFD700
+                        {% else %}#FF1493{% endif %}">
+                        {{ battle_state.enemy_monster.rarity }}
+                    </span>
+                </h6>
+                <div class="hp-bar">
+                    <div class="hp-fill" style="width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100)|int }}%"></div>
+                </div>
+                <p class="text-center" style="font-size: 0.85rem;">
+                    {{ battle_state.enemy_monster.current_hp }} / {{ battle_state.enemy_monster.max_hp }}
+                </p>
+            </div>
+        </div>
+
+        <!-- 플레이어 몬스터 (왼쪽 아래) -->
+        <div class="player-section">
+            <div class="player-container">
+                <img src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" 
+                     class="player-image">
+                <div class="speech-bubble player-speech">
+                    {{ battle_state.player_dialogue }}
+                </div>
+            </div>
+            <div class="player-info mt-2">
+                <h6>{{ battle_state.player_monster.name }}
+                    <span class="badge" style="background-color: 
+                        {% if battle_state.player_monster.rarity == '레어' %}#4169E1
+                        {% elif battle_state.player_monster.rarity == '에픽' %}#9932CC
+                        {% elif battle_state.player_monster.rarity == '유니크' %}#FFD700
+                        {% else %}#FF1493{% endif %}">
+                        {{ battle_state.player_monster.rarity }}
+                    </span>
+                </h6>
+                <div class="hp-bar">
+                    <div class="hp-fill player-hp" style="width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100)|int }}%"></div>
+                </div>
+                <p class="text-center" style="font-size: 0.85rem;">
+                    {{ battle_state.player_monster.current_hp }} / {{ battle_state.player_monster.max_hp }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 전투 로그 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h6 class="mb-0">⚔️ 전투 로그</h6>
+        </div>
+        <div class="card-body" style="height: 150px; overflow-y: auto; background-color: #f8f9fa; font-size: 0.85rem;">
+            {% for log in battle_state.log %}
+            <p class="mb-1">{{ log }}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 게임 오버 화면 -->
+    {% if battle_state.game_over %}
+    <div class="alert {% if battle_state.winner == 'player' %}alert-success{% else %}alert-danger{% endif %} text-center">
+        <h4>
+            {% if battle_state.winner == 'player' %}
+            🎉 승리!
+            {% else %}
+            💀 패배
+            {% endif %}
+        </h4>
+        <p class="mb-0">{{ battle_state.player_dialogue if battle_state.winner == 'player' else battle_state.enemy_dialogue }}</p>
+    </div>
+    <div class="d-grid gap-2">
+        <a href="{{ url_for('adventure') }}" class="btn btn-primary btn-lg">모험으로 돌아가기</a>
+    </div>
+    {% else %}
+    <!-- 기술 카드 선택 -->
+    <div class="card">
+        <div class="card-header">
+            <h6 class="mb-0">🎮 기술 선택 {% if not battle_state.player_turn %}<span class="badge bg-warning">적의 턴...</span>{% endif %}</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for skill in battle_state.player_skills %}
+                {% set skill_info = game_logic.SKILL_INFO.get(skill, {}) if skill else {} %}
+                <div class="col-lg-6 mb-3">
+                    <button class="skill-card btn w-100 
+                        {% if skill == '박치기' %}btn-primary{% elif skill == '스매시' or skill == '검은빛' %}btn-secondary{% elif skill == '스핀어택' or skill == '불의폭발' or skill == '빙결의칼' %}btn-warning{% else %}btn-danger{% endif %}"
+                        {% if not battle_state.player_turn %}disabled{% endif %}
+                        onclick="useSkill('{{ skill }}')">
+                        <div style="font-size: 1.2rem; margin-bottom: 8px;">
+                            {% if skill == '박치기' %}⚔️
+                            {% elif skill == '스매시' %}💥
+                            {% elif skill == '검은빛' %}🌑
+                            {% elif skill == '스핀어택' %}🌪️
+                            {% elif skill == '불의폭발' %}🔥
+                            {% elif skill == '빙결의칼' %}❄️
+                            {% elif skill == '번개참격' %}⚡
+                            {% elif skill == '궁극베기' %}⚡
+                            {% elif skill == '중력파동' %}🌀
+                            {% endif %}
+                        </div>
+                        <div style="font-weight: bold;">{{ skill }}</div>
+                        <small style="display: block; margin-top: 4px;">배수 1.0배</small>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="d-grid gap-2 mt-3">
+                <form method="POST" action="{{ url_for('adventure_escape') }}" class="d-inline">
+                    <button type="submit" class="btn btn-warning w-100">도망치기</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+const battleState = {{ battle_state|tojson }};
+
+function useSkill(skillName) {
+    // AJAX로 기술 사용 요청
+    fetch('{{ url_for("adventure_use_skill", skill_name="") }}' + skillName, {
+        method: 'POST'
+    }).then(response => {
+        if (response.ok) {
+            window.location.reload();
+        }
+    }).catch(error => console.error('Error:', error));
+}
+
+// 기술 정보 표시 (hover)
+document.querySelectorAll('.skill-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        const skillName = this.textContent.trim().split('\n')[1];
+        console.log('Skill:', skillName);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}모험 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 offset-lg-1">
+        <!-- 헤더 -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-map me-2"></i>모험 시스템
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>🎮 모험에 나서세요!</strong><br>
+                    도감에 있는 몬스터 중 대표 몬스터 1마리를 선택하여 스테이지에 도전하세요.<br>
+                    전투에서 승리하면 새로운 기술 카드와 아이템을 얻을 수 있습니다!
+                </div>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">현재 스테이지</h6>
+                        <h3 class="text-success">Stage {{ player.get('모험_현재스테이지', 1) }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">클리어 스테이지</h6>
+                        <h3 class="text-info">Stage {{ cleared_stage }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted mb-2">보유 기술</h6>
+                        <h3 class="text-warning">{{ player.get('모험_기술', [])|length }}/4</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 대표 몬스터 선택 -->
+        {% if available_monsters %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📌 대표 몬스터 선택</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for monster in available_monsters %}
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card h-100 text-center">
+                            <div class="card-body">
+                                <img src="{{ monster.image }}" alt="{{ monster.name }}" 
+                                     style="width: 100%; height: 150px; object-fit: contain; margin-bottom: 10px;">
+                                <h6>{{ monster.name }}</h6>
+                                <p style="font-size: 0.85rem; margin-bottom: 8px;">
+                                    <span class="badge" style="background-color: 
+                                        {% if monster.rarity == '레어' %}#4169E1
+                                        {% elif monster.rarity == '에픽' %}#9932CC
+                                        {% elif monster.rarity == '유니크' %}#FFD700
+                                        {% else %}#FF1493{% endif %}">
+                                        {{ monster.rarity }}
+                                    </span>
+                                </p>
+                                <p style="font-size: 0.85rem; margin: 5px 0;">
+                                    ⚔️ {{ monster.attack }} | ❤️ {{ monster.hp }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 스테이지 선택 -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🗺️ 스테이지 선택</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for stage in stages %}
+                    {% set is_unlocked = stage.stage_id <= cleared_stage + 1 %}
+                    <div class="col-lg-6 mb-3">
+                        <div class="card {% if not is_unlocked %}opacity-50{% endif %}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">{{ stage.이름 }}</h6>
+                                    <span class="badge bg-secondary">{{ stage.난이도 }}</span>
+                                </div>
+                                <p style="font-size: 0.85rem; margin: 5px 0;">
+                                    📊 체력: x{{ stage.enemy_hp_multiplier }} | 공격력: x{{ stage.enemy_attack_multiplier }}
+                                </p>
+                                <p style="font-size: 0.85rem; margin: 5px 0;">
+                                    🎁 기술 드롭율: {{ "%.1f"|format(stage.skill_reward_rate * 100) }}%
+                                </p>
+                                {% if is_unlocked %}
+                                <button class="btn btn-primary btn-sm w-100 mt-2" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#selectMonsterModal{{ stage.stage_id }}">
+                                    도전하기
+                                </button>
+                                
+                                <!-- 몬스터 선택 모달 -->
+                                <div class="modal fade" id="selectMonsterModal{{ stage.stage_id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">{{ stage.이름 }} - 대표 몬스터 선택</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="list-group">
+                                                    {% for monster in available_monsters %}
+                                                    <a href="{{ url_for('adventure_battle', stage_id=stage.stage_id, selected_monster_id=monster.id) }}" 
+                                                       class="list-group-item list-group-item-action">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <strong>{{ monster.name }}</strong>
+                                                                <span class="badge" style="background-color: 
+                                                                    {% if monster.rarity == '레어' %}#4169E1
+                                                                    {% elif monster.rarity == '에픽' %}#9932CC
+                                                                    {% elif monster.rarity == '유니크' %}#FFD700
+                                                                    {% else %}#FF1493{% endif %}">
+                                                                    {{ monster.rarity }}
+                                                                </span>
+                                                            </div>
+                                                            <small>⚔️ {{ monster.attack }} | ❤️ {{ monster.hp }}</small>
+                                                        </div>
+                                                    </a>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <button class="btn btn-secondary btn-sm w-100 mt-2" disabled>
+                                    미개방
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <strong>⚠️ 도감이 비어있습니다!</strong><br>
+            먼저 던전에 가서 몬스터를 포획해주세요.
+        </div>
+        <a href="{{ url_for('dungeons') }}" class="btn btn-primary">던전으로 이동</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

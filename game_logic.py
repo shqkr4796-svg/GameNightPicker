@@ -29,7 +29,12 @@ def create_new_player():
         '던전_인벤토리': {},  # 던전 아이템 인벤토리
         '일일표현_완료': False,  # 오늘 일일 표현 완료 여부
         '일일표현_마지막날짜': 0,  # 마지막 완료한 날짜
-        '일일표현_진도': 0  # 오늘의 표현 진도 (0-5)
+        '일일표현_진도': 0,  # 오늘의 표현 진도 (0-5)
+        '모험_현재스테이지': 1,  # 현재 스테이지
+        '모험_클리어스테이지': 0,  # 클리어한 최대 스테이지
+        '모험_기술': ['박치기'],  # 보유한 기술 목록
+        '모험_대표몬스터': None,  # 대표 몬스터 ID
+        '모험_아이템': {},  # 모험 아이템 인벤토리
     }
 
 def save_game(player_data):
@@ -84,6 +89,18 @@ def load_game():
                     player['일일표현_마지막날짜'] = 0
                 if '일일표현_진도' not in player:
                     player['일일표현_진도'] = 0
+                
+                # 모험 시스템 필드 추가 (기존 플레이어 호환성)
+                if '모험_현재스테이지' not in player:
+                    player['모험_현재스테이지'] = 1
+                if '모험_클리어스테이지' not in player:
+                    player['모험_클리어스테이지'] = 0
+                if '모험_기술' not in player:
+                    player['모험_기술'] = ['박치기']
+                if '모험_대표몬스터' not in player:
+                    player['모험_대표몬스터'] = None
+                if '모험_아이템' not in player:
+                    player['모험_아이템'] = {}
                 
                 return player
     except Exception as e:
@@ -2577,3 +2594,225 @@ def merge_monsters(player, monster_ids):
         'is_mythic': False,
         'is_upgraded': is_upgraded
     }
+
+# ===== 모험 시스템 함수들 =====
+
+def get_adventure_stages():
+    """모험 스테이지 목록 반환"""
+    from data.adventure_data import ADVENTURE_STAGES
+    return ADVENTURE_STAGES
+
+def get_available_monsters(player):
+    """플레이어가 보유한 도감 몬스터 반환"""
+    from data.monsters import get_monster_by_id
+    available = []
+    
+    for monster_id, monster_data in player['도감'].items():
+        monster_info = get_monster_by_id(monster_id)
+        if monster_info and monster_data.get('포획됨'):
+            available.append({
+                'id': monster_id,
+                'name': monster_data['이름'],
+                'rarity': monster_data['등급'],
+                'attack': monster_data.get('공격력', 0),
+                'hp': monster_data.get('체력', 0),
+                'image': monster_data.get('이미지', '')
+            })
+    
+    return available
+
+def start_adventure_battle(player, stage_id, selected_monster_id):
+    """모험 전투 시작"""
+    from data.adventure_data import ADVENTURE_STAGES, ENEMY_DIALOGUES, PLAYER_DIALOGUES
+    from data.monsters import get_monster_by_id, get_monsters_by_rarity
+    from data.skills import SKILL_INFO
+    import random
+    
+    # 스테이지 정보 가져오기
+    stage = next((s for s in ADVENTURE_STAGES if s['stage_id'] == stage_id), None)
+    if not stage:
+        return {'success': False, 'message': '존재하지 않는 스테이지입니다.'}
+    
+    # 플레이어 몬스터 확인
+    if selected_monster_id not in player['도감']:
+        return {'success': False, 'message': '해당 몬스터를 보유하고 있지 않습니다.'}
+    
+    player_monster = player['도감'][selected_monster_id]
+    player_monster_info = get_monster_by_id(selected_monster_id)
+    
+    if not player_monster_info:
+        return {'success': False, 'message': '플레이어 몬스터 정보를 찾을 수 없습니다.'}
+    
+    # 적 몬스터 생성
+    rarity_list = stage['enemy_rarity']
+    enemy_rarity = random.choice(rarity_list)
+    enemy_monsters = get_monsters_by_rarity(enemy_rarity)
+    
+    if not enemy_monsters:
+        return {'success': False, 'message': '적 몬스터를 생성할 수 없습니다.'}
+    
+    enemy_monster_id = random.choice(enemy_monsters)
+    enemy_monster_info = get_monster_by_id(enemy_monster_id)
+    
+    if not enemy_monster_info:
+        return {'success': False, 'message': '적 몬스터 정보를 찾을 수 없습니다.'}
+    
+    # 적 몬스터 스탯 계산
+    enemy_attack = int(random.randint(enemy_monster_info['공격력'][0], enemy_monster_info['공격력'][1]) * stage['enemy_attack_multiplier'])
+    enemy_hp = int(random.randint(enemy_monster_info['체력'][0], enemy_monster_info['체력'][1]) * stage['enemy_hp_multiplier'])
+    
+    # 난이도에 따른 대사 레벨 결정
+    difficulty_level = {
+        '쉬움': 'level_1',
+        '보통': 'level_2',
+        '어려움': 'level_3',
+        '매우 어려움': 'level_4',
+        '최악': 'level_4'
+    }
+    dialogue_level = difficulty_level.get(stage['난이도'], 'level_1')
+    
+    battle_state = {
+        'stage_id': stage_id,
+        'stage_name': stage['이름'],
+        'difficulty': stage['난이도'],
+        'player_monster': {
+            'id': selected_monster_id,
+            'name': player_monster['이름'],
+            'rarity': player_monster['등급'],
+            'attack': player_monster.get('공격력', 0),
+            'max_hp': player_monster.get('체력', 0),
+            'current_hp': player_monster.get('체력', 0),
+            'image': player_monster.get('이미지', '')
+        },
+        'enemy_monster': {
+            'id': enemy_monster_id,
+            'name': enemy_monster_info['이름'],
+            'rarity': enemy_rarity,
+            'attack': enemy_attack,
+            'max_hp': enemy_hp,
+            'current_hp': enemy_hp,
+            'image': enemy_monster_info.get('이미지', '')
+        },
+        'turn': 0,
+        'player_dialogue': random.choice(PLAYER_DIALOGUES.get(dialogue_level, PLAYER_DIALOGUES['level_1'])),
+        'enemy_dialogue': random.choice(ENEMY_DIALOGUES.get(dialogue_level, ENEMY_DIALOGUES['level_1'])),
+        'log': [],
+        'player_skills': player.get('모험_기술', ['박치기']),
+        'game_over': False,
+        'winner': None
+    }
+    
+    # 선공 결정 (공격력이 높은 쪽이 먼저)
+    if player_monster['공격력'] >= enemy_attack:
+        battle_state['player_turn'] = True
+        battle_state['log'].append(f"플레이어 몬스터가 높은 공격력으로 선공합니다!")
+    else:
+        battle_state['player_turn'] = False
+        battle_state['log'].append(f"적 몬스터가 높은 공격력으로 선공합니다!")
+    
+    return {'success': True, 'battle_state': battle_state}
+
+def execute_skill(battle_state, skill_name):
+    """기술 실행"""
+    from data.skills import SKILL_INFO
+    import random
+    
+    if skill_name not in SKILL_INFO:
+        return {'success': False, 'message': '존재하지 않는 기술입니다.'}
+    
+    skill = SKILL_INFO[skill_name]
+    
+    if battle_state['game_over']:
+        return {'success': False, 'message': '전투가 이미 끝났습니다.'}
+    
+    if not battle_state['player_turn']:
+        return {'success': False, 'message': '지금은 플레이어 차례가 아닙니다.'}
+    
+    # 플레이어 공격
+    player_monster = battle_state['player_monster']
+    damage = int(player_monster['attack'] * skill['multiplier'])
+    battle_state['enemy_monster']['current_hp'] -= damage
+    battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지")
+    
+    # 적 체력 확인
+    if battle_state['enemy_monster']['current_hp'] <= 0:
+        battle_state['enemy_monster']['current_hp'] = 0
+        battle_state['game_over'] = True
+        battle_state['winner'] = 'player'
+        battle_state['log'].append(f"플레이어가 승리했습니다!")
+        return {'success': True, 'battle_state': battle_state}
+    
+    # 적 차례
+    battle_state['player_turn'] = False
+    battle_state['log'].append(f"\n적 [{battle_state['enemy_monster']['name']}] 차례...")
+    
+    # 적의 기본 공격
+    enemy_damage = battle_state['enemy_monster']['attack']
+    battle_state['player_monster']['current_hp'] -= enemy_damage
+    battle_state['log'].append(f"적의 공격! {enemy_damage} 데미지")
+    
+    # 플레이어 체력 확인
+    if battle_state['player_monster']['current_hp'] <= 0:
+        battle_state['player_monster']['current_hp'] = 0
+        battle_state['game_over'] = True
+        battle_state['winner'] = 'enemy'
+        battle_state['log'].append(f"패배했습니다...")
+        return {'success': True, 'battle_state': battle_state}
+    
+    # 플레이어 차례로 돌아감
+    battle_state['player_turn'] = True
+    battle_state['turn'] += 1
+    
+    return {'success': True, 'battle_state': battle_state}
+
+def complete_adventure_battle(player, battle_state):
+    """모험 전투 완료 처리"""
+    from data.adventure_data import SKILL_DROP_POOLS, REWARD_ITEMS, SKILLS
+    import random
+    
+    if battle_state['winner'] != 'player':
+        return {'success': False, 'message': '전투에 패배했습니다.', 'rewards': {}}
+    
+    stage_id = battle_state['stage_id']
+    stage_config = next((s for s in get_adventure_stages() if s['stage_id'] == stage_id), None)
+    
+    if not stage_config:
+        return {'success': False, 'message': '스테이지 정보를 찾을 수 없습니다.', 'rewards': {}}
+    
+    rewards = {
+        'exp': 50 * stage_id,
+        'money': 100 * stage_id,
+        'skills': [],
+        'items': []
+    }
+    
+    # 기술 카드 드롭
+    if random.random() < stage_config.get('skill_reward_rate', 0.02):
+        skill_pools = SKILL_DROP_POOLS.get(stage_id, {})
+        all_skills = []
+        for rarity, skills in skill_pools.items():
+            all_skills.extend(skills)
+        
+        if all_skills:
+            new_skill = random.choice(all_skills)
+            if new_skill not in player.get('모험_기술', ['박치기']):
+                if len(player.get('모험_기술', [])) < 4:
+                    player['모험_기술'].append(new_skill)
+                    rewards['skills'].append(new_skill)
+    
+    # 아이템 드롭
+    if random.random() < 0.3:
+        item_name = random.choice(list(REWARD_ITEMS.keys()))
+        item_count = player['모험_아이템'].get(item_name, 0)
+        player['모험_아이템'][item_name] = item_count + 1
+        rewards['items'].append(item_name)
+    
+    # 경험치와 돈 지급
+    player['경험치'] += rewards['exp']
+    player['돈'] += rewards['money']
+    
+    # 스테이지 클리어 업데이트
+    if stage_id > player.get('모험_클리어스테이지', 0):
+        player['모험_클리어스테이지'] = stage_id
+    
+    return {'success': True, 'rewards': rewards}
