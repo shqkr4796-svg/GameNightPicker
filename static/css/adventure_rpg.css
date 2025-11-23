@@ -120,16 +120,13 @@
     position: relative;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 15px;
     padding: 20px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    min-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-content: start;
 }
 
 /* 스테이지 노드 */
@@ -140,8 +137,6 @@
     gap: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
-    flex-shrink: 0;
-    min-width: 70px;
 }
 
 .stage-node-wrapper:hover .stage-flag {
