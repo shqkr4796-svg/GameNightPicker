@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="monster-selection">
-                    <p class="selection-prompt">파티 리더를 선택하고 도전하세요!</p>
+                    <p class="selection-prompt">💰 <span id="progressStatus">파티 리더를 선택하세요</span></p>
                     <div class="selected-info" id="selectedMonsterInfo" style="display: none;">
                         <div class="selected-monster">
                             <img id="selectedMonsterImage" src="" alt="">
@@ -244,3 +244,22 @@ document.addEventListener('click', function(e) {
 });
 </script>
 {% endblock %}
+
+<script>
+function updateMonsterSelection() {
+    const selectedMonster = document.querySelector('.monster-card.selected');
+    const statusEl = document.getElementById('progressStatus');
+    if (selectedMonster) {
+        const monsterName = selectedMonster.querySelector('.monster-name').textContent;
+        statusEl.textContent = `✓ ${monsterName} 선택됨`;
+    } else {
+        statusEl.textContent = '파티 리더를 선택하세요';
+    }
+}
+
+const originalSelectMonster = window.selectMonster;
+window.selectMonster = function(monsterId) {
+    originalSelectMonster(monsterId);
+    updateMonsterSelection();
+};
+</script>

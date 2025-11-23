@@ -5,42 +5,45 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pokemon_battle.css') }}">
 <div class="pokemon-battle-container">
-    <!-- 상단: 적 몬스터 (오른쪽), 적 대사 (왼쪽) -->
+    <!-- 상단: 적 몬스터 + 대사 -->
     <div class="battle-arena">
-        <!-- 적 대사 카드 (왼쪽) -->
-        <div class="enemy-dialogue-card">
-            <div class="dialogue-content">
-                <p id="enemy-dialogue-text">{{ battle_state.enemy_dialogue }}</p>
+        <!-- 적 몬스터 그룹 (왼쪽: 대사, 오른쪽: 몬스터) -->
+        <div class="enemy-group">
+            <!-- 적 대사 카드 -->
+            <div class="enemy-dialogue-card">
+                <div class="dialogue-content">
+                    <p id="enemy-dialogue-text">{{ battle_state.enemy_dialogue }}</p>
+                </div>
             </div>
-        </div>
 
-        <!-- 적 몬스터 (오른쪽) -->
-        <div class="enemy-position">
-            <div class="enemy-card">
-                <div class="enemy-header">
-                    <div class="monster-name-tag">
-                        <span class="name">{{ battle_state.enemy_monster.name }}</span>
-                        <span class="rarity-badge" style="background-color: 
-                            {% if battle_state.enemy_monster.rarity == '레어' %}#4169E1
-                            {% elif battle_state.enemy_monster.rarity == '에픽' %}#9932CC
-                            {% elif battle_state.enemy_monster.rarity == '유니크' %}#FFD700
-                            {% else %}#FF1493{% endif %}">
-                            {{ battle_state.enemy_monster.rarity }}
-                        </span>
+            <!-- 적 몬스터 -->
+            <div class="enemy-position">
+                <div class="enemy-card">
+                    <div class="enemy-header">
+                        <div class="monster-name-tag">
+                            <span class="name">{{ battle_state.enemy_monster.name }}</span>
+                            <span class="rarity-badge" style="background-color: 
+                                {% if battle_state.enemy_monster.rarity == '레어' %}#4169E1
+                                {% elif battle_state.enemy_monster.rarity == '에픽' %}#9932CC
+                                {% elif battle_state.enemy_monster.rarity == '유니크' %}#FFD700
+                                {% else %}#FF1493{% endif %}">
+                                {{ battle_state.enemy_monster.rarity }}
+                            </span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stat-item">⚔️ {{ battle_state.enemy_monster.attack }}</span>
+                        </div>
                     </div>
-                    <div class="stats-row">
-                        <span class="stat-item">⚔️ {{ battle_state.enemy_monster.attack }}</span>
+                    <div class="hp-bar-container">
+                        <div class="hp-label">HP</div>
+                        <div class="hp-bar">
+                            <div class="hp-fill enemy-hp" style="width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100)|int }}%"></div>
+                        </div>
+                        <div class="hp-text"><span id="enemy-hp">{{ battle_state.enemy_monster.current_hp }}</span>/{{ battle_state.enemy_monster.max_hp }}</div>
                     </div>
-                </div>
-                <div class="hp-bar-container">
-                    <div class="hp-label">HP</div>
-                    <div class="hp-bar">
-                        <div class="hp-fill enemy-hp" style="width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100)|int }}%"></div>
+                    <div class="enemy-image-container">
+                        <img src="{{ battle_state.enemy_monster.image }}" alt="{{ battle_state.enemy_monster.name }}" class="enemy-monster-image">
                     </div>
-                    <div class="hp-text"><span id="enemy-hp">{{ battle_state.enemy_monster.current_hp }}</span>/{{ battle_state.enemy_monster.max_hp }}</div>
-                </div>
-                <div class="enemy-image-container">
-                    <img src="{{ battle_state.enemy_monster.image }}" alt="{{ battle_state.enemy_monster.name }}" class="enemy-monster-image">
                 </div>
             </div>
         </div>
@@ -64,41 +67,44 @@
             </div>
         </div>
 
-        <!-- 내 몬스터 (왼쪽) -->
-        <div class="player-position">
-            <div class="player-card">
-                <div class="player-header">
-                    <div class="monster-name-tag">
-                        <span class="name">{{ battle_state.player_monster.name }}</span>
-                        <span class="rarity-badge" style="background-color: 
-                            {% if battle_state.player_monster.rarity == '레어' %}#4169E1
-                            {% elif battle_state.player_monster.rarity == '에픽' %}#9932CC
-                            {% elif battle_state.player_monster.rarity == '유니크' %}#FFD700
-                            {% else %}#FF1493{% endif %}">
-                            {{ battle_state.player_monster.rarity }}
-                        </span>
+        <!-- 내 몬스터 그룹 (왼쪽: 몬스터, 오른쪽: 대사) -->
+        <div class="player-group">
+            <!-- 내 몬스터 -->
+            <div class="player-position">
+                <div class="player-card">
+                    <div class="player-header">
+                        <div class="monster-name-tag">
+                            <span class="name">{{ battle_state.player_monster.name }}</span>
+                            <span class="rarity-badge" style="background-color: 
+                                {% if battle_state.player_monster.rarity == '레어' %}#4169E1
+                                {% elif battle_state.player_monster.rarity == '에픽' %}#9932CC
+                                {% elif battle_state.player_monster.rarity == '유니크' %}#FFD700
+                                {% else %}#FF1493{% endif %}">
+                                {{ battle_state.player_monster.rarity }}
+                            </span>
+                        </div>
+                        <div class="stats-row">
+                            <span class="stat-item">⚔️ {{ battle_state.player_monster.attack }}</span>
+                        </div>
                     </div>
-                    <div class="stats-row">
-                        <span class="stat-item">⚔️ {{ battle_state.player_monster.attack }}</span>
+                    <div class="hp-bar-container">
+                        <div class="hp-label">HP</div>
+                        <div class="hp-bar">
+                            <div class="hp-fill player-hp" style="width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100)|int }}%"></div>
+                        </div>
+                        <div class="hp-text"><span id="player-hp">{{ battle_state.player_monster.current_hp }}</span>/{{ battle_state.player_monster.max_hp }}</div>
                     </div>
-                </div>
-                <div class="hp-bar-container">
-                    <div class="hp-label">HP</div>
-                    <div class="hp-bar">
-                        <div class="hp-fill player-hp" style="width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100)|int }}%"></div>
+                    <div class="player-image-container">
+                        <img src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" class="player-monster-image">
                     </div>
-                    <div class="hp-text"><span id="player-hp">{{ battle_state.player_monster.current_hp }}</span>/{{ battle_state.player_monster.max_hp }}</div>
-                </div>
-                <div class="player-image-container">
-                    <img src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" class="player-monster-image">
                 </div>
             </div>
-        </div>
 
-        <!-- 내 대사 카드 (오른쪽) -->
-        <div class="player-dialogue-card">
-            <div class="dialogue-content">
-                <p id="player-dialogue-text">{{ battle_state.player_dialogue }}</p>
+            <!-- 내 대사 카드 -->
+            <div class="player-dialogue-card">
+                <div class="dialogue-content">
+                    <p id="player-dialogue-text">{{ battle_state.player_dialogue }}</p>
+                </div>
             </div>
         </div>
     </div>
