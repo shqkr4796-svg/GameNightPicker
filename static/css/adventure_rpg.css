@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700&display=swap');
 
 * {
     margin: 0;
@@ -10,20 +10,18 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1728 100%);
-    font-family: 'Rajdhani', sans-serif;
-    color: #e0e0e0;
+    background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
+    font-family: 'Fredoka', sans-serif;
+    color: #2c3e2b;
     overflow-x: hidden;
 }
 
 /* ========== 헤더 ========== */
 .adventure-header {
-    background: linear-gradient(135deg, rgba(10, 14, 39, 0.8) 0%, rgba(26, 31, 58, 0.9) 100%);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
     padding: 24px 40px;
-    border-bottom: 2px solid #00d4ff;
-    border-bottom-width: 3px;
-    box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15);
+    border-bottom: 4px solid #558b2f;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     position: relative;
 }
 
@@ -33,9 +31,9 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #00d4ff, transparent);
-    opacity: 0.6;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    opacity: 0.8;
 }
 
 .header-content {
@@ -52,18 +50,14 @@
 }
 
 .adventure-title {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2.5rem;
-    font-weight: 900;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 4px;
-    background: linear-gradient(90deg, #00d4ff 0%, #00ff88 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    letter-spacing: 3px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     margin: 0;
-    filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.3));
 }
 
 .header-stats {
@@ -77,29 +71,26 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(20, 25, 45, 0.7);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
     padding: 12px 20px;
-    border: 2px solid #00d4ff;
-    border-radius: 0;
-    clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
-    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2), inset 0 0 10px rgba(0, 212, 255, 0.1);
+    border-radius: 12px;
+    border: 3px solid #f9a825;
+    box-shadow: 0 4px 15px rgba(249, 168, 37, 0.3);
 }
 
 .stat-label {
     font-size: 0.75rem;
-    color: #00ff88;
+    color: #558b2f;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
 .stat-value {
     font-size: 1.8rem;
-    color: #00d4ff;
+    color: #f9a825;
     font-weight: 700;
     margin-top: 4px;
-    font-family: 'Orbitron', sans-serif;
 }
 
 /* ========== 메인 콘텐츠 ========== */
@@ -112,30 +103,12 @@
 /* ========== 맵 배경 ========== */
 .adventure-map {
     flex: 1;
-    background: linear-gradient(180deg, #1a1f3a 0%, #0f1728 100%);
+    background: linear-gradient(180deg, #a5d6a7 0%, #81c784 100%);
     position: relative;
-    overflow: auto;
+    overflow: hidden;
     border: none;
-    min-height: 300px;
-}
-
-.adventure-map::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        repeating-linear-gradient(
-            0deg,
-            rgba(0, 212, 255, 0.03) 0px,
-            rgba(0, 212, 255, 0.03) 1px,
-            transparent 1px,
-            transparent 2px
-        );
-    pointer-events: none;
-    z-index: 1;
+    min-height: 350px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .map-overlay {
@@ -143,21 +116,38 @@
     width: 100%;
     height: 100%;
     background: transparent;
-    padding: 40px;
+    padding: 30px 20px;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
 }
 
 .stages-container {
     position: relative;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 70px);
-    grid-template-rows: repeat(auto-fill, 70px);
-    gap: 24px;
-    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
-    padding-bottom: 20px;
+    padding: 10px 0;
+}
+
+.stages-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.stages-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.stages-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #f9a825, #fb8c00);
+    border-radius: 10px;
 }
 
 /* ========== 스테이지 노드 ========== */
@@ -167,47 +157,49 @@
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    min-width: 90px;
 }
 
 .stage-node-wrapper:hover .stage-flag {
-    transform: scale(1.15) rotateZ(5deg);
-    box-shadow: 0 0 40px rgba(0, 255, 136, 0.6), 0 0 80px rgba(0, 212, 255, 0.4);
-    border-color: #00ff88;
+    transform: scale(1.15) rotateZ(-5deg);
+    box-shadow: 0 8px 25px rgba(249, 168, 37, 0.5);
 }
 
 .stage-flag {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, rgba(20, 25, 45, 0.8) 0%, rgba(30, 40, 70, 0.8) 100%);
-    border: 2px solid #00d4ff;
+    width: 75px;
+    height: 75px;
+    background: linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
+    border: 4px solid #f9a825;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), inset 0 0 15px rgba(0, 212, 255, 0.1);
+    box-shadow: 0 6px 20px rgba(249, 168, 37, 0.4);
     transition: all 0.3s ease;
-    font-family: 'Orbitron', sans-serif;
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    font-family: 'Fredoka', sans-serif;
 }
 
 .stage-flag.unlocked {
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 255, 136, 0.1) 100%);
-    border-color: #00d4ff;
+    background: linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
+    border-color: #f9a825;
+    cursor: pointer;
 }
 
 .stage-flag.locked {
-    background: linear-gradient(135deg, rgba(50, 50, 50, 0.5) 0%, rgba(40, 40, 40, 0.5) 100%);
-    border-color: #444;
+    background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
+    border-color: #757575;
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .flag-text {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #00d4ff;
-    text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+    color: #f57f17;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
 }
 
 .stage-flag.locked .flag-text {
@@ -217,45 +209,42 @@
 
 .flag-badge {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    background: linear-gradient(135deg, #00ff88, #00d4ff);
-    color: #0a0e27;
-    width: 30px;
-    height: 30px;
-    border-radius: 0;
+    top: -12px;
+    right: -12px;
+    background: linear-gradient(135deg, #66bb6a, #43a047);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    border: 2px solid #00ff88;
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.5);
 }
 
 .stage-name {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    color: #00d4ff;
+    color: #558b2f;
     text-align: center;
-    max-width: 70px;
+    max-width: 90px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 1px;
 }
 
 /* ========== 하단 패널 ========== */
 .adventure-bottom-panel {
-    background: linear-gradient(180deg, rgba(20, 25, 45, 0.9) 0%, rgba(15, 23, 40, 0.9) 100%);
-    backdrop-filter: blur(10px);
-    border-top: 3px solid #00d4ff;
-    border-bottom: 3px solid #00ff88;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 247, 239, 0.95) 100%);
+    border-top: 5px solid #558b2f;
+    border-bottom: 5px solid #f9a825;
     padding: 24px;
     max-height: 300px;
     overflow-y: auto;
-    box-shadow: 0 -8px 30px rgba(0, 212, 255, 0.15);
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .monster-selection-panel {
@@ -264,15 +253,15 @@
 }
 
 .panel-title {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Fredoka', sans-serif;
     font-size: 1.3rem;
-    color: #00ff88;
+    color: #558b2f;
     margin-bottom: 16px;
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+    text-shadow: 1px 1px 2px rgba(249, 168, 37, 0.3);
     letter-spacing: 2px;
     text-transform: uppercase;
     font-weight: 700;
-    border-bottom: 2px solid #00d4ff;
+    border-bottom: 3px solid #f9a825;
     padding-bottom: 12px;
 }
 
@@ -285,22 +274,22 @@
 }
 
 .monster-card {
-    background: linear-gradient(135deg, rgba(20, 25, 45, 0.8) 0%, rgba(30, 40, 70, 0.8) 100%);
-    border: 2px solid #00d4ff;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border: 3px solid #f9a825;
+    border-radius: 15px;
     padding: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
     flex-shrink: 0;
     min-width: 120px;
-    clip-path: polygon(5% 0%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0% 95%, 0% 5%);
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2), inset 0 0 10px rgba(0, 212, 255, 0.05);
+    box-shadow: 0 4px 15px rgba(249, 168, 37, 0.2);
 }
 
 .monster-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 0 40px rgba(0, 255, 136, 0.5), inset 0 0 15px rgba(0, 255, 136, 0.1);
-    border-color: #00ff88;
+    box-shadow: 0 8px 25px rgba(249, 168, 37, 0.4);
+    border-color: #f57f17;
 }
 
 .monster-image {
@@ -310,8 +299,9 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 10px;
-    background: rgba(0, 212, 255, 0.05);
-    border-bottom: 1px solid #00d4ff;
+    background: linear-gradient(135deg, rgba(249, 168, 37, 0.1), rgba(165, 214, 167, 0.1));
+    border-bottom: 2px solid #f9a825;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -330,7 +320,7 @@
 .monster-name {
     font-size: 0.8rem;
     font-weight: 700;
-    color: #00d4ff;
+    color: #558b2f;
     word-break: break-word;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -344,24 +334,22 @@
 }
 
 .stat {
-    background: rgba(0, 212, 255, 0.15);
+    background: linear-gradient(135deg, #fff9e6, #fff3cd);
     padding: 3px 6px;
-    border-radius: 0;
-    border: 1px solid #00d4ff;
-    color: #00d4ff;
+    border-radius: 6px;
+    border: 2px solid #f9a825;
+    color: #f57f17;
     font-weight: 600;
-    clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
 }
 
 .monster-rarity {
     font-size: 0.7rem;
     padding: 4px 8px;
-    border-radius: 0;
-    color: #0a0e27;
+    border-radius: 8px;
+    color: white;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+    letter-spacing: 0.5px;
 }
 
 /* ========== 모달 ========== */
@@ -387,77 +375,73 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.5);
     cursor: pointer;
 }
 
 .modal-content {
     position: relative;
-    background: linear-gradient(135deg, rgba(20, 25, 45, 0.95) 0%, rgba(15, 23, 40, 0.95) 100%);
-    border: 3px solid #00d4ff;
-    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 10px, 100% 100%, 0 100%, 10px calc(100% - 10px), 0 10px);
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border: 5px solid #f9a825;
+    border-radius: 20px;
     padding: 30px;
     max-width: 500px;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 0 50px rgba(0, 212, 255, 0.3), inset 0 0 20px rgba(0, 212, 255, 0.1);
+    box-shadow: 0 8px 40px rgba(249, 168, 37, 0.3);
 }
 
 .modal-close {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: linear-gradient(135deg, #00d4ff, #00ff88);
-    border: 2px solid #00ff88;
-    border-radius: 0;
+    background: linear-gradient(135deg, #f9a825, #fb8c00);
+    border: 3px solid #f57f17;
+    border-radius: 50%;
     width: 40px;
     height: 40px;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #0a0e27;
+    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
     font-weight: 700;
-    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
 }
 
 .modal-close:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+    box-shadow: 0 0 20px rgba(249, 168, 37, 0.6);
 }
 
 .modal-header {
     margin-bottom: 20px;
-    border-bottom: 2px solid #00d4ff;
+    border-bottom: 3px solid #f9a825;
     padding-bottom: 12px;
 }
 
 .modal-header h2 {
     margin: 0;
-    color: #00ff88;
+    color: #558b2f;
     font-size: 1.6rem;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Fredoka', sans-serif;
     font-weight: 700;
-    text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
 }
 
 .difficulty-badge {
     display: inline-block;
     padding: 6px 12px;
-    border-radius: 0;
-    color: #0a0e27;
+    border-radius: 8px;
+    color: white;
     font-size: 0.8rem;
     margin-top: 8px;
-    text-shadow: none;
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 1px;
-    clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+    border: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 .modal-body {
@@ -465,34 +449,32 @@
 }
 
 .stage-details {
-    background: rgba(0, 212, 255, 0.1);
-    border: 2px solid #00d4ff;
-    border-radius: 0;
+    background: linear-gradient(135deg, rgba(165, 214, 167, 0.2), rgba(249, 168, 37, 0.1));
+    border: 3px solid #f9a825;
+    border-radius: 12px;
     padding: 16px;
     margin-bottom: 20px;
-    clip-path: polygon(5% 0%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0% 95%, 0% 5%);
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
     padding: 8px 0;
-    color: #e0e0e0;
+    color: #2c3e2b;
     font-size: 0.9rem;
-    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+    border-bottom: 1px solid rgba(249, 168, 37, 0.2);
 }
 
 .detail-row .label {
     font-weight: 700;
-    color: #00d4ff;
+    color: #558b2f;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .detail-row .value {
-    color: #00ff88;
+    color: #f57f17;
     font-weight: 700;
-    font-family: 'Orbitron', sans-serif;
 }
 
 .monster-selection {
@@ -500,7 +482,7 @@
 }
 
 .selection-prompt {
-    color: #00d4ff;
+    color: #558b2f;
     font-size: 0.9rem;
     font-weight: 600;
     text-align: center;
@@ -510,11 +492,10 @@
 }
 
 .selected-info {
-    background: rgba(0, 255, 136, 0.1);
-    border: 2px solid #00ff88;
-    border-radius: 0;
+    background: linear-gradient(135deg, rgba(165, 214, 167, 0.15), rgba(165, 214, 167, 0.1));
+    border: 3px solid #66bb6a;
+    border-radius: 12px;
     padding: 12px;
-    clip-path: polygon(5% 0%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0% 95%, 0% 5%);
 }
 
 .selected-monster {
@@ -527,7 +508,7 @@
     width: 70px;
     height: 70px;
     object-fit: contain;
-    filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.3));
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
 }
 
 .selected-stats {
@@ -541,45 +522,44 @@
 }
 
 .btn-cancel {
-    background: linear-gradient(135deg, rgba(100, 100, 100, 0.6) 0%, rgba(80, 80, 80, 0.6) 100%);
-    border: 2px solid #666;
-    color: #e0e0e0;
+    background: linear-gradient(135deg, #ccc, #aaa);
+    border: 3px solid #888;
+    color: #333;
     padding: 12px 28px;
-    border-radius: 0;
+    border-radius: 10px;
     cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Fredoka', sans-serif;
     font-weight: 700;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.2s ease;
-    clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
 }
 
 .btn-cancel:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(100, 100, 100, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-challenge {
-    background: linear-gradient(135deg, #00d4ff, #00ff88);
-    border: 2px solid #00ff88;
-    color: #0a0e27;
+    background: linear-gradient(135deg, #81c784, #66bb6a);
+    border: 3px solid #558b2f;
+    color: white;
     padding: 12px 28px;
-    border-radius: 0;
+    border-radius: 10px;
     cursor: pointer;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Fredoka', sans-serif;
     font-weight: 700;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.2s ease;
-    clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
+    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
 }
 
 .btn-challenge:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+    box-shadow: 0 6px 20px rgba(102, 187, 106, 0.5);
 }
 
 /* ========== 모바일 최적화 ========== */
@@ -589,8 +569,7 @@
     }
 
     .adventure-title {
-        font-size: 1.8rem;
-        letter-spacing: 2px;
+        font-size: 1.6rem;
     }
 
     .header-stats {
@@ -607,25 +586,24 @@
     }
 
     .adventure-map {
-        min-height: 200px;
+        min-height: 250px;
     }
 
     .map-overlay {
-        padding: 20px;
-    }
-
-    .stages-container {
-        grid-template-columns: repeat(auto-fill, 60px);
-        gap: 16px;
+        padding: 20px 15px;
     }
 
     .stage-flag {
-        width: 55px;
-        height: 55px;
+        width: 65px;
+        height: 65px;
     }
 
     .flag-text {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
+    }
+
+    .stage-name {
+        font-size: 0.65rem;
     }
 
     .adventure-bottom-panel {
@@ -659,7 +637,6 @@
 
     .adventure-title {
         font-size: 1.4rem;
-        letter-spacing: 1px;
     }
 
     .header-content {
@@ -678,21 +655,24 @@
     }
 
     .adventure-map {
-        min-height: 150px;
+        min-height: 200px;
     }
 
     .map-overlay {
-        padding: 12px;
+        padding: 15px 10px;
     }
 
     .stages-container {
-        grid-template-columns: repeat(auto-fill, 50px);
-        gap: 12px;
+        gap: 15px;
     }
 
     .stage-flag {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
+    }
+
+    .flag-text {
+        font-size: 1.2rem;
     }
 
     .adventure-bottom-panel {
