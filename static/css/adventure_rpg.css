@@ -1,0 +1,606 @@
+/* RPG Adventure Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Josefin+Sans:wght@400;700&display=swap');
+
+.adventure-rpg-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+/* 헤더 */
+.adventure-header {
+    background-size: cover;
+    background-position: center;
+    padding: 30px;
+    position: relative;
+    border-bottom: 4px solid #ffd700;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    min-height: 150px;
+}
+
+.adventure-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.adventure-title {
+    font-family: 'Pirata One', cursive;
+    font-size: 3.5rem;
+    color: #ffd700;
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8), 2px 2px 0 #ff6b6b;
+    margin: 0;
+    letter-spacing: 3px;
+}
+
+.header-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 2px solid #ffd700;
+    min-width: 100px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #ffd700;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    color: #fff;
+    font-weight: 700;
+    margin-top: 5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* 메인 콘텐츠 */
+.adventure-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 맵 배경 */
+.adventure-map {
+    flex: 1;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+    overflow: auto;
+    border: 4px solid #8b7355;
+    border-top: none;
+}
+
+.map-overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 40px;
+}
+
+.stages-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding: 40px;
+}
+
+/* 스테이지 노드 */
+.stage-node-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stage-node-wrapper:hover .stage-flag {
+    transform: scale(1.1) rotateZ(-5deg);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+}
+
+.stage-flag {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.stage-flag::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent);
+    pointer-events: none;
+}
+
+.stage-flag.cleared {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border-color: #ffd700;
+}
+
+.stage-flag.locked {
+    background: linear-gradient(135deg, #999 0%, #666 100%);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.flag-cleared {
+    font-size: 3rem;
+    color: #ffd700;
+}
+
+.flag-number {
+    font-size: 2.5rem;
+    font-family: 'Pirata One', cursive;
+}
+
+/* 스테이지 버튼 */
+.stage-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border: 3px solid #ff6b6b;
+    border-radius: 8px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    min-width: 150px;
+    text-align: center;
+}
+
+.stage-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.stage-btn:active {
+    transform: scale(0.95);
+}
+
+.stage-btn.locked {
+    background: linear-gradient(135deg, #999, #666);
+    border-color: #444;
+    color: #ddd;
+    cursor: not-allowed;
+}
+
+/* 하단 패널 */
+.adventure-bottom-panel {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-top: 4px solid #ffd700;
+    padding: 30px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.monster-selection-panel {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.panel-title {
+    font-family: 'Pirata One', cursive;
+    font-size: 1.8rem;
+    color: #ffd700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid #ff6b6b;
+    padding-bottom: 10px;
+}
+
+.monsters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.monster-card {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1f1f30 100%);
+    border: 3px solid #8b7355;
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.monster-card:hover {
+    transform: translateY(-8px);
+    border-color: #ffd700;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.monster-card.selected {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border-color: #ff6b6b;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+}
+
+.monster-image {
+    width: 100%;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    border: 2px solid #8b7355;
+}
+
+.monster-image img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.monster-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.monster-name {
+    font-weight: 700;
+    color: #ffd700;
+    font-size: 0.95rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.monster-card.selected .monster-name {
+    color: #333;
+}
+
+.monster-stats-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.monster-card.selected .monster-stats-row {
+    color: #333;
+}
+
+.monster-rarity {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white !important;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* 모달 */
+.stage-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.stage-modal.hidden {
+    display: none;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 4px solid #ffd700;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    transform: rotate(90deg) scale(1.1);
+    background: #ff4757;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #2a2a3e 0%, #1f1f30 100%);
+    padding: 25px;
+    border-bottom: 3px solid #ffd700;
+}
+
+.modal-header h2 {
+    color: #ffd700;
+    font-family: 'Pirata One', cursive;
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.difficulty-badge {
+    display: inline-block;
+    padding: 6px 15px;
+    background: linear-gradient(135deg, #ff6b6b, #ff4757);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.stage-details {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #8b7355;
+    margin-bottom: 20px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ddd;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row .label {
+    font-weight: 700;
+    color: #ffd700;
+}
+
+.detail-row .value {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.monster-selection {
+    margin-top: 20px;
+}
+
+.selection-prompt {
+    color: #aaa;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.selected-info {
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.selected-monster {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.selected-monster img {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 5px;
+    border: 2px solid #ffd700;
+    object-fit: contain;
+}
+
+.selected-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.selected-stats div:first-child {
+    color: #ffd700;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.selected-stats div:last-child {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    display: flex;
+    gap: 12px;
+    border-top: 3px solid #8b7355;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.btn-cancel,
+.btn-challenge {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-cancel {
+    background: #666;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background: #777;
+    transform: scale(1.05);
+}
+
+.btn-challenge {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.btn-challenge:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
+}
+
+.btn-challenge:disabled {
+    background: #666;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .adventure-title {
+        font-size: 2.5rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .header-stats {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stages-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .monsters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .modal-content {
+        max-width: 90vw;
+    }
+}
+
+/* 스크롤바 스타일 */
+.adventure-bottom-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.adventure-bottom-panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.adventure-bottom-panel::-webkit-scrollbar-thumb {
+    background: #ffd700;
+    border-radius: 4px;
+}
+
+.adventure-bottom-panel::-webkit-scrollbar-thumb:hover {
+    background: #ffed4e;
+}
