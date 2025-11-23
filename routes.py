@@ -1616,6 +1616,42 @@ def adventure_use_skill(skill_name):
     
     return redirect(url_for('adventure_battle', stage_id=battle_state['stage_id'], selected_monster_id=list(player['도감'].keys())[0]))
 
+@app.route('/adventure_enemy_turn', methods=['POST'])
+def adventure_enemy_turn():
+    """적의 턴 자동 실행"""
+    if 'player_data' not in session or 'adventure_battle_state' not in session:
+        return redirect(url_for('adventure'))
+    
+    battle_state = session['adventure_battle_state']
+    result = game_logic.execute_enemy_turn(battle_state)
+    
+    if result['success']:
+        battle_state = result['battle_state']
+        session['adventure_battle_state'] = battle_state
+        session.modified = True
+        
+        # 전투 종료 확인
+        if battle_state['game_over']:
+            player = session['player_data']
+            reward_result = game_logic.complete_adventure_battle(player, battle_state)
+            session['player_data'] = player
+            session.modified = True
+            game_logic.save_game(player)
+            
+            if reward_result['success']:
+                rewards = reward_result['rewards']
+                reward_msg = f"전투 승리! 경험치 {rewards['exp']} 획득, 돈 {rewards['money']} 획득"
+                if rewards['skills']:
+                    reward_msg += f", 기술 카드 획득: {', '.join(rewards['skills'])}"
+                flash(reward_msg, 'success')
+            else:
+                flash('전투에 패배했습니다.', 'error')
+    
+    session['adventure_battle_state'] = battle_state
+    session.modified = True
+    
+    return ('', 204)
+
 @app.route('/adventure_escape', methods=['POST'])
 def adventure_escape():
     """모험에서 도망치기"""

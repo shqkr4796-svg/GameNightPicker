@@ -21,7 +21,7 @@
 .battle-arena {
     flex: 1;
     display: grid;
-    grid-template-rows: 1fr 80px 1fr;
+    grid-template-rows: 1fr 100px 1fr;
     gap: 10px;
     padding: 15px;
     min-height: calc(100vh - 400px);
@@ -42,12 +42,15 @@
     max-width: 90%;
     box-shadow: 0 6px 20px rgba(255, 105, 180, 0.3);
     border: 3px solid #FFB6C1;
-}
-
-.enemy-info-top {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+}
+
+.enemy-header,
+.player-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     margin-bottom: 8px;
 }
 
@@ -71,6 +74,21 @@
     font-weight: 700;
     text-transform: uppercase;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.stats-row {
+    display: flex;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+.stat-item {
+    background: #FFF0F5;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #FFB6C1;
+    font-weight: 600;
+    color: #333;
 }
 
 .hp-bar-container {
@@ -141,37 +159,25 @@
     border: 2px solid #FF69B4;
     border-radius: 12px;
     padding: 8px 12px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #333;
     text-align: center;
     font-style: italic;
-    position: relative;
-    margin: 8px 0;
     word-wrap: break-word;
+    line-height: 1.2;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.enemy-dialogue::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 10px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 2px solid transparent;
-    border-top: 10px solid #FF69B4;
+.enemy-dialogue {
+    order: -1;
+    margin-bottom: 8px;
 }
 
-.player-dialogue::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    width: 0;
-    height: 0;
-    border-left: 2px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 10px solid #FF69B4;
+.player-dialogue {
+    margin-bottom: 8px;
 }
 
 /* ========== 중앙 전투 로그 ========== */
@@ -179,17 +185,42 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
-    background: rgba(255, 255, 255, 0.7);
+    padding: 8px 15px;
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 10px;
     border: 2px solid #FFB6C1;
+    gap: 10px;
+}
+
+.progress-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 90px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #FF1493;
+}
+
+.stage-progress {
+    background: #FFE5F0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #FFB6C1;
+    text-align: center;
+}
+
+.stage-name-small {
+    text-align: center;
+    color: #333;
+    font-size: 0.75rem;
 }
 
 .log-container {
     flex: 1;
-    max-height: 80px;
+    max-height: 100px;
     overflow-y: auto;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: #333;
     padding: 6px;
 }
@@ -205,21 +236,35 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    min-width: 80px;
+    min-width: 75px;
     font-weight: 700;
     color: #FF1493;
+    font-size: 0.85rem;
 }
 
 .turn-label {
-    font-size: 0.9rem;
+    background: #FFE5F0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #FFB6C1;
 }
 
 .enemy-turn-badge {
-    font-size: 0.7rem;
     background: #FFD700;
     color: #333;
-    padding: 2px 6px;
-    border-radius: 8px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.player-turn-badge {
+    background: #51cf66;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
 }
 
 /* ========== 내 몬스터 (왼쪽 하단) ========== */
@@ -237,13 +282,8 @@
     max-width: 90%;
     box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
     border: 3px solid #51cf66;
-}
-
-.player-info-bottom {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 8px;
 }
 
 .player-image-container {
@@ -439,7 +479,7 @@
     .battle-arena {
         gap: 8px;
         padding: 10px;
-        grid-template-rows: auto 60px auto;
+        grid-template-rows: auto 85px auto;
         min-height: calc(100vh - 350px);
     }
 
@@ -458,6 +498,11 @@
         font-size: 0.9rem;
     }
 
+    .stat-item {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+
     .enemy-image-container,
     .player-image-container {
         height: 70px;
@@ -472,21 +517,50 @@
     .speech-bubble {
         font-size: 0.75rem;
         padding: 6px 10px;
-        margin: 6px 0;
+        margin: 0;
+        min-height: 32px;
     }
 
     /* 전투 로그 */
+    .battle-log-section {
+        padding: 6px 10px;
+        gap: 8px;
+    }
+
+    .progress-info {
+        min-width: 75px;
+        font-size: 0.7rem;
+    }
+
+    .stage-progress {
+        padding: 3px 6px;
+        font-size: 0.65rem;
+    }
+
+    .stage-name-small {
+        font-size: 0.65rem;
+    }
+
     .log-container {
         font-size: 0.7rem;
-        max-height: 60px;
+        max-height: 85px;
+        padding: 4px;
+    }
+
+    .turn-indicator {
+        min-width: 65px;
+        font-size: 0.75rem;
     }
 
     .turn-label {
-        font-size: 0.8rem;
+        font-size: 0.65rem;
+        padding: 3px 6px;
     }
 
-    .enemy-turn-badge {
-        font-size: 0.65rem;
+    .enemy-turn-badge,
+    .player-turn-badge {
+        font-size: 0.6rem;
+        padding: 2px 5px;
     }
 
     /* 내 몬스터 */
@@ -573,6 +647,7 @@
     .battle-arena {
         gap: 6px;
         padding: 8px;
+        grid-template-rows: auto 80px auto;
         min-height: calc(100vh - 320px);
     }
 
@@ -582,6 +657,12 @@
         border-radius: 10px;
     }
 
+    .enemy-header,
+    .player-header {
+        gap: 5px;
+        margin-bottom: 6px;
+    }
+
     .monster-name-tag .name {
         font-size: 0.8rem;
     }
@@ -589,6 +670,11 @@
     .rarity-badge {
         font-size: 0.6rem;
         padding: 2px 6px;
+    }
+
+    .stat-item {
+        font-size: 0.65rem;
+        padding: 2px 5px;
     }
 
     .hp-bar-container {
@@ -611,21 +697,54 @@
     .speech-bubble {
         font-size: 0.7rem;
         padding: 5px 8px;
-        margin: 5px 0;
+        margin: 0;
+        min-height: 28px;
     }
 
     .battle-log-section {
-        padding: 0 8px;
+        padding: 5px 8px;
+        gap: 6px;
+    }
+
+    .progress-info {
+        min-width: 65px;
+        font-size: 0.65rem;
+    }
+
+    .stage-progress {
+        padding: 2px 5px;
+        font-size: 0.6rem;
+    }
+
+    .stage-name-small {
+        font-size: 0.6rem;
     }
 
     .log-container {
         font-size: 0.65rem;
-        max-height: 50px;
+        max-height: 80px;
         padding: 4px;
     }
 
+    .log-entry {
+        margin: 1px 0;
+    }
+
+    .turn-indicator {
+        min-width: 60px;
+        font-size: 0.7rem;
+        gap: 3px;
+    }
+
     .turn-label {
-        font-size: 0.75rem;
+        font-size: 0.6rem;
+        padding: 2px 5px;
+    }
+
+    .enemy-turn-badge,
+    .player-turn-badge {
+        font-size: 0.55rem;
+        padding: 2px 4px;
     }
 
     .skill-selection-area {
@@ -690,17 +809,17 @@
 
 /* ========== 로그 스크롤바 ========== */
 .log-container::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .log-container::-webkit-scrollbar-track {
     background: rgba(255, 182, 193, 0.1);
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .log-container::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #FF69B4, #FFB6C1);
-    border-radius: 3px;
+    border-radius: 2px;
 }
 
 .log-container::-webkit-scrollbar-thumb:hover {

@@ -2713,6 +2713,32 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
     
     return {'success': True, 'battle_state': battle_state}
 
+def execute_enemy_turn(battle_state):
+    """적의 턴 자동 실행"""
+    import random
+    
+    if battle_state['game_over'] or battle_state['player_turn']:
+        return {'success': False, 'battle_state': battle_state}
+    
+    # 적의 기본 공격
+    enemy_damage = battle_state['enemy_monster']['attack']
+    battle_state['player_monster']['current_hp'] -= enemy_damage
+    battle_state['log'].append(f"적의 공격! {enemy_damage} 데미지")
+    
+    # 플레이어 체력 확인
+    if battle_state['player_monster']['current_hp'] <= 0:
+        battle_state['player_monster']['current_hp'] = 0
+        battle_state['game_over'] = True
+        battle_state['winner'] = 'enemy'
+        battle_state['log'].append(f"패배했습니다...")
+        return {'success': True, 'battle_state': battle_state}
+    
+    # 플레이어 차례로 돌아감
+    battle_state['player_turn'] = True
+    battle_state['turn'] += 1
+    
+    return {'success': True, 'battle_state': battle_state}
+
 def execute_skill(battle_state, skill_name):
     """기술 실행"""
     from data.skills import SKILL_INFO

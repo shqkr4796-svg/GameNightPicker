@@ -5,11 +5,11 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pokemon_battle.css') }}">
 <div class="pokemon-battle-container">
-    <!-- 상단: 상대 몬스터 -->
+    <!-- 상단: 상대 몬스터 (오른쪽) -->
     <div class="battle-arena">
         <div class="enemy-position">
             <div class="enemy-card">
-                <div class="enemy-info-top">
+                <div class="enemy-header">
                     <div class="monster-name-tag">
                         <span class="name">{{ battle_state.enemy_monster.name }}</span>
                         <span class="rarity-badge" style="background-color: 
@@ -20,13 +20,16 @@
                             {{ battle_state.enemy_monster.rarity }}
                         </span>
                     </div>
-                    <div class="hp-bar-container">
-                        <div class="hp-label">HP</div>
-                        <div class="hp-bar">
-                            <div class="hp-fill enemy-hp" style="width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100)|int }}%"></div>
-                        </div>
-                        <div class="hp-text">{{ battle_state.enemy_monster.current_hp }}/{{ battle_state.enemy_monster.max_hp }}</div>
+                    <div class="stats-row">
+                        <span class="stat-item">⚔️ {{ battle_state.enemy_monster.attack }}</span>
                     </div>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-label">HP</div>
+                    <div class="hp-bar">
+                        <div class="hp-fill enemy-hp" style="width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100)|int }}%"></div>
+                    </div>
+                    <div class="hp-text">{{ battle_state.enemy_monster.current_hp }}/{{ battle_state.enemy_monster.max_hp }}</div>
                 </div>
                 <div class="enemy-image-container">
                     <img src="{{ battle_state.enemy_monster.image }}" alt="{{ battle_state.enemy_monster.name }}" class="enemy-monster-image">
@@ -35,8 +38,12 @@
             </div>
         </div>
 
-        <!-- 중앙: 전투 로그 -->
+        <!-- 중앙: 전투 정보 및 로그 -->
         <div class="battle-log-section">
+            <div class="progress-info">
+                <div class="stage-progress">스테이지: {{ battle_state.stage_id }} / 8</div>
+                <div class="stage-name-small">{{ battle_state.stage_name }}</div>
+            </div>
             <div class="log-container">
                 {% for log in battle_state.log %}
                 <p class="log-entry">{{ log }}</p>
@@ -46,18 +53,20 @@
                 <span class="turn-label">턴: {{ battle_state.turn }}</span>
                 {% if not battle_state.player_turn %}
                 <span class="enemy-turn-badge">적의 턴...</span>
+                {% else %}
+                <span class="player-turn-badge">나의 턴!</span>
                 {% endif %}
             </div>
         </div>
 
-        <!-- 하단: 내 몬스터 -->
+        <!-- 하단: 내 몬스터 (왼쪽) -->
         <div class="player-position">
             <div class="player-card">
                 <div class="speech-bubble player-dialogue">{{ battle_state.player_dialogue }}</div>
                 <div class="player-image-container">
                     <img src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" class="player-monster-image">
                 </div>
-                <div class="player-info-bottom">
+                <div class="player-header">
                     <div class="monster-name-tag">
                         <span class="name">{{ battle_state.player_monster.name }}</span>
                         <span class="rarity-badge" style="background-color: 
@@ -68,13 +77,16 @@
                             {{ battle_state.player_monster.rarity }}
                         </span>
                     </div>
-                    <div class="hp-bar-container">
-                        <div class="hp-label">HP</div>
-                        <div class="hp-bar">
-                            <div class="hp-fill player-hp" style="width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100)|int }}%"></div>
-                        </div>
-                        <div class="hp-text">{{ battle_state.player_monster.current_hp }}/{{ battle_state.player_monster.max_hp }}</div>
+                    <div class="stats-row">
+                        <span class="stat-item">⚔️ {{ battle_state.player_monster.attack }}</span>
                     </div>
+                </div>
+                <div class="hp-bar-container">
+                    <div class="hp-label">HP</div>
+                    <div class="hp-bar">
+                        <div class="hp-fill player-hp" style="width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100)|int }}%"></div>
+                    </div>
+                    <div class="hp-text">{{ battle_state.player_monster.current_hp }}/{{ battle_state.player_monster.max_hp }}</div>
                 </div>
             </div>
         </div>
@@ -137,8 +149,27 @@
 <script>
 const battleState = {{ battle_state|tojson }};
 
+// 페이지 로드 시 적의 턴이면 자동 공격
+document.addEventListener('DOMContentLoaded', function() {
+    if (!battleState.game_over && !battleState.player_turn) {
+        setTimeout(() => {
+            executeEnemyTurn();
+        }, 1500);
+    }
+});
+
 function useSkill(skillName) {
     fetch('{{ url_for("adventure_use_skill", skill_name="") }}' + skillName, {
+        method: 'POST'
+    }).then(response => {
+        if (response.ok) {
+            window.location.reload();
+        }
+    }).catch(error => console.error('Error:', error));
+}
+
+function executeEnemyTurn() {
+    fetch('{{ url_for("adventure_enemy_turn") }}', {
         method: 'POST'
     }).then(response => {
         if (response.ok) {
