@@ -1547,26 +1547,40 @@ def adventure():
                          cleared_stage=cleared_stage,
                          player=player)
 
-@app.route('/adventure_battle/<int:stage_id>/<selected_monster_id>', methods=['GET', 'POST'])
-def adventure_battle(stage_id, selected_monster_id):
-    """모험 전투 화면"""
+@app.route('/adventure_start_battle', methods=['POST'])
+def adventure_start_battle():
+    """모험 전투 시작"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
+    stage_id = request.form.get('stage_id', type=int)
+    selected_monster_id = request.form.get('monster_id')
+    
+    if not stage_id or not selected_monster_id:
+        flash('스테이지와 몬스터를 선택해주세요.', 'error')
+        return redirect(url_for('adventure'))
+    
     player = session['player_data']
+    result = game_logic.start_adventure_battle(player, stage_id, selected_monster_id)
     
-    # 전투 상태가 없으면 초기화
-    if 'adventure_battle_state' not in session:
-        result = game_logic.start_adventure_battle(player, stage_id, selected_monster_id)
-        if not result['success']:
-            flash(result['message'], 'error')
-            return redirect(url_for('adventure'))
-        session['adventure_battle_state'] = result['battle_state']
-        session.modified = True
+    if not result['success']:
+        flash(result['message'], 'error')
+        return redirect(url_for('adventure'))
     
+    session['adventure_battle_state'] = result['battle_state']
+    session.modified = True
+    
+    return redirect(url_for('adventure_battle'))
+
+@app.route('/adventure_battle')
+def adventure_battle():
+    """모험 전투 화면"""
+    if 'player_data' not in session or 'adventure_battle_state' not in session:
+        return redirect(url_for('adventure'))
+    
+    player = session['player_data']
     battle_state = session['adventure_battle_state']
     
-    # 기술 효과 정보 생성
     from data.adventure_data import SKILLS
     skill_effects = {}
     skill_descriptions = {}

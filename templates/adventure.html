@@ -121,7 +121,24 @@ function updateBtn() {
 
 function startBattle() {
     if (selectedStageId && selectedMonsterId) {
-        window.location.href = `/adventure_battle/${selectedStageId}/${encodeURIComponent(selectedMonsterId)}`;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("adventure_start_battle") }}';
+        
+        const stageInput = document.createElement('input');
+        stageInput.name = 'stage_id';
+        stageInput.value = selectedStageId;
+        stageInput.type = 'hidden';
+        
+        const monsterInput = document.createElement('input');
+        monsterInput.name = 'monster_id';
+        monsterInput.value = selectedMonsterId;
+        monsterInput.type = 'hidden';
+        
+        form.appendChild(stageInput);
+        form.appendChild(monsterInput);
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 
