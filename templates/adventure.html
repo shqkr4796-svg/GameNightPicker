@@ -216,13 +216,15 @@ function challengeStage() {
         return;
     }
     
+    // URL을 먼저 만들기 (currentStageId 사용하기 전에)
+    const url = `/adventure_battle/${currentStageId}/${selectedMonster}`;
+    console.log('Navigating to:', url);
+    
     // 모달 닫기
     closeStageInfo();
     
     // 약간의 지연 후 이동 (부드러운 전환)
     setTimeout(() => {
-        const url = `/adventure_battle/${currentStageId}/${selectedMonster}`;
-        console.log('Navigating to:', url);
         window.location.href = url;
     }, 300);
 }
