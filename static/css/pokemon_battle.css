@@ -418,6 +418,15 @@
     letter-spacing: 0.5px;
 }
 
+.skill-effect {
+    font-size: 0.65rem;
+    color: #f57f17;
+    text-align: center;
+    font-weight: 500;
+    margin-top: 4px;
+    line-height: 1.2;
+}
+
 .skill-button-empty {
     background: transparent;
     border: none;

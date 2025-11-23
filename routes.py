@@ -1566,10 +1566,20 @@ def adventure_battle(stage_id, selected_monster_id):
     
     battle_state = session['adventure_battle_state']
     
+    # 기술 효과 정보 생성
+    from data.adventure_data import SKILLS
+    skill_effects = {}
+    skill_descriptions = {}
+    for skill_name, skill_info in SKILLS.items():
+        skill_effects[skill_name] = skill_info.get('효과', '').split('x')[-1].strip() if 'x' in skill_info.get('효과', '') else skill_info.get('효과', '')
+        skill_descriptions[skill_name] = skill_info.get('효과', '')
+    
     return render_template('adventure_battle.html',
                          battle_state=battle_state,
                          player=player,
-                         game_logic=game_logic)
+                         game_logic=game_logic,
+                         skill_effects=skill_effects,
+                         skill_descriptions=skill_descriptions)
 
 @app.route('/adventure_use_skill/<skill_name>', methods=['POST'])
 def adventure_use_skill(skill_name):

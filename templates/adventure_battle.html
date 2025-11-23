@@ -111,7 +111,8 @@
             <button class="skill-button" 
                     data-skill="{{ skill }}"
                     onclick="useSkill('{{ skill }}')"
-                    {% if not battle_state.player_turn %}disabled{% endif %}>
+                    {% if not battle_state.player_turn %}disabled{% endif %}
+                    title="{{ skill_descriptions.get(skill, '기술 설명 없음') }}">
                 <div class="skill-emoji">
                     {% if skill == '박치기' %}⚔️
                     {% elif skill == '스매시' %}💥
@@ -125,6 +126,7 @@
                     {% else %}💫{% endif %}
                 </div>
                 <div class="skill-name">{{ skill }}</div>
+                <div class="skill-effect">{{ skill_effects.get(skill, '') }}</div>
             </button>
             {% endfor %}
             <!-- 빈 칸 (2x2 그리드 유지) -->
