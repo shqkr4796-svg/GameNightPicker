@@ -1,4 +1,4 @@
-/* Adventure Battle Styles */
+/* Adventure Battle Styles - Pokemon Style */
 
 .adventure-battle-container {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -6,6 +6,7 @@
     border-radius: 10px;
     color: white;
     min-height: 600px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
 .battle-header {

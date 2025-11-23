@@ -1,0 +1,391 @@
+/* Adventure Map Styles - Pokemon Go Style */
+
+.adventure-container {
+    background: linear-gradient(135deg, #87ceeb 0%, #e0f6ff 100%);
+    min-height: calc(100vh - 200px);
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 상단 정보 바 */
+.adventure-top-bar {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.info-section {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.info-item {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.info-item i {
+    color: #ffd700;
+    font-size: 1.1rem;
+}
+
+/* 몬스터 선택기 */
+.monster-selector {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+}
+
+.monster-selector .form-select {
+    border: 2px solid #4169E1;
+    font-weight: 500;
+    color: #333;
+}
+
+.monster-selector .form-select:focus {
+    border-color: #FF1493;
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
+}
+
+/* 맵 영역 */
+.adventure-map-wrapper {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+    min-height: 400px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.adventure-map {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.map-background {
+    position: relative;
+    width: 100%;
+    min-height: 500px;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(52, 211, 153, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    padding: 50px 0;
+}
+
+/* 경로선 */
+.path-line {
+    position: absolute;
+    width: 100%;
+}
+
+/* 스테이지 노드 */
+.stage-node {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stage-node:hover:not([data-unlocked="false"]) .stage-badge {
+    transform: scale(1.15);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+}
+
+.stage-badge {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border: 4px solid #ff6b6b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: bold;
+    color: #333;
+    font-size: 1.8rem;
+}
+
+.stage-badge::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent);
+    pointer-events: none;
+}
+
+.stage-badge.locked {
+    background: linear-gradient(135deg, #999, #ccc);
+    border-color: #666;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.stage-number {
+    position: relative;
+    z-index: 2;
+}
+
+/* 스테이지 토oltip */
+.stage-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 12px 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+    min-width: 200px;
+    z-index: 100;
+    border: 2px solid #ffd700;
+}
+
+.stage-node:hover .stage-tooltip {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tooltip-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.tooltip-difficulty {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.tooltip-stats {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.tooltip-reward {
+    font-size: 0.85rem;
+    color: #0ea5e9;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.challenge-btn {
+    white-space: normal;
+    height: auto;
+    padding: 6px 10px !important;
+}
+
+/* 범례 */
+.adventure-legend {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #333;
+}
+
+.legend-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border: 2px solid #15803d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.legend-badge.current {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border-color: #ff6b6b;
+    color: #333;
+}
+
+.legend-badge.locked {
+    background: linear-gradient(135deg, #999, #ccc);
+    border-color: #666;
+    opacity: 0.6;
+}
+
+/* 정보 패널 */
+.adventure-info-panel {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.panel-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #ffd700;
+    padding-bottom: 10px;
+}
+
+.monster-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.monster-info-card {
+    background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.monster-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    border-color: #4169E1;
+}
+
+.monster-info-card.selected {
+    background: linear-gradient(135deg, #4169E1, #3a5bcb);
+    border-color: #FF1493;
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+}
+
+.monster-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: white;
+    padding: 5px;
+}
+
+.monster-info-card.selected .monster-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+}
+
+.monster-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.monster-info-card.selected .monster-name {
+    color: white;
+}
+
+.monster-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #666;
+    justify-content: center;
+}
+
+.monster-info-card.selected .monster-stats {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.monster-rarity {
+    font-size: 0.75rem !important;
+    padding: 3px 8px !important;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .adventure-top-bar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .info-section {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .monster-selector {
+        max-width: 100%;
+    }
+
+    .adventure-legend {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .monster-info-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    .map-background {
+        min-height: 600px;
+    }
+}
+
+/* 애니메이션 */
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 15px rgba(255, 215, 0, 0);
+    }
+}
+
+.stage-badge {
+    animation: pulse 2s infinite;
+}
