@@ -19,9 +19,9 @@
 /* ========== 헤더 ========== */
 .adventure-header {
     background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
-    padding: 24px 40px;
-    border-bottom: 4px solid #558b2f;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    padding: 16px 20px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     position: relative;
 }
 
@@ -42,19 +42,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 40px;
+    gap: 12px;
     flex-wrap: wrap;
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
     width: 100%;
 }
 
 .adventure-title {
     font-family: 'Fredoka', sans-serif;
-    font-size: 2.2rem;
+    font-size: 1.4rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: #fff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     margin: 0;
@@ -62,7 +62,7 @@
 
 .header-stats {
     display: flex;
-    gap: 20px;
+    gap: 8px;
     flex-wrap: wrap;
     justify-content: flex-end;
 }
@@ -71,15 +71,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-    padding: 12px 20px;
-    border-radius: 12px;
-    border: 3px solid #f9a825;
-    box-shadow: 0 4px 15px rgba(249, 168, 37, 0.3);
+    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover;
+    background-color: #fff9e6;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .stat-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: #558b2f;
     font-weight: 700;
     letter-spacing: 1px;
@@ -87,10 +88,10 @@
 }
 
 .stat-value {
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     color: #f9a825;
     font-weight: 700;
-    margin-top: 4px;
+    margin-top: 2px;
 }
 
 /* ========== 메인 콘텐츠 ========== */
@@ -107,8 +108,8 @@
     position: relative;
     overflow: hidden;
     border: none;
-    min-height: 350px;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
+    min-height: 300px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
 .adventure-map::before {
@@ -127,7 +128,7 @@
     width: 100%;
     height: 100%;
     background: transparent;
-    padding: 30px 20px;
+    padding: 20px 12px;
     z-index: 2;
     display: flex;
     align-items: center;
@@ -139,16 +140,16 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
     width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
-    padding: 10px 0;
+    padding: 8px 0;
 }
 
 .stages-container::-webkit-scrollbar {
-    height: 8px;
+    height: 6px;
 }
 
 .stages-container::-webkit-scrollbar-track {
@@ -166,51 +167,51 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
     flex-shrink: 0;
-    min-width: 90px;
+    min-width: 70px;
 }
 
 .stage-node-wrapper:hover .stage-flag {
-    transform: scale(1.15) rotateZ(-5deg);
-    box-shadow: 0 8px 25px rgba(249, 168, 37, 0.5);
+    transform: scale(1.12) rotateZ(-5deg);
+    box-shadow: 0 6px 18px rgba(249, 168, 37, 0.4);
 }
 
 .stage-flag {
-    width: 75px;
-    height: 75px;
-    background: linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
-    border: 4px solid #f9a825;
+    width: 60px;
+    height: 60px;
+    background: url('{{ url_for("static", filename="images/stage_node_background.png") }}') center/cover,
+                linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
+    border: none;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: 0 6px 20px rgba(249, 168, 37, 0.4);
+    box-shadow: 0 4px 12px rgba(249, 168, 37, 0.3);
     transition: all 0.3s ease;
     font-family: 'Fredoka', sans-serif;
 }
 
 .stage-flag.unlocked {
-    background: linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
-    border-color: #f9a825;
+    background: url('{{ url_for("static", filename="images/stage_node_background.png") }}') center/cover,
+                linear-gradient(135deg, #fff59d 0%, #ffeb3b 100%);
     cursor: pointer;
 }
 
 .stage-flag.locked {
     background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
-    border-color: #757575;
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 .flag-text {
-    font-size: 1.6rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: #f57f17;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .stage-flag.locked .flag-text {
@@ -220,28 +221,28 @@
 
 .flag-badge {
     position: absolute;
-    top: -12px;
-    right: -12px;
+    top: -10px;
+    right: -10px;
     background: linear-gradient(135deg, #66bb6a, #43a047);
     color: white;
-    width: 35px;
-    height: 35px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
+    font-size: 1rem;
     font-weight: 700;
-    border: 3px solid white;
-    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.5);
+    border: none;
+    box-shadow: 0 2px 8px rgba(102, 187, 106, 0.4);
 }
 
 .stage-name {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: #558b2f;
     text-align: center;
-    max-width: 90px;
+    max-width: 70px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -249,13 +250,13 @@
 
 /* ========== 하단 패널 ========== */
 .adventure-bottom-panel {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 247, 239, 0.95) 100%);
-    border-top: 5px solid #558b2f;
-    border-bottom: 5px solid #f9a825;
-    padding: 24px;
-    max-height: 300px;
+    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
+                linear-gradient(180deg, rgba(255, 249, 230, 0.95) 0%, rgba(248, 247, 239, 0.95) 100%);
+    border: none;
+    padding: 16px 12px;
+    max-height: 280px;
     overflow-y: auto;
-    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .monster-selection-panel {
@@ -265,54 +266,58 @@
 
 .panel-title {
     font-family: 'Fredoka', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     color: #558b2f;
-    margin-bottom: 16px;
-    text-shadow: 1px 1px 2px rgba(249, 168, 37, 0.3);
-    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-shadow: 1px 1px 2px rgba(249, 168, 37, 0.2);
+    letter-spacing: 1px;
     text-transform: uppercase;
     font-weight: 700;
-    border-bottom: 3px solid #f9a825;
-    padding-bottom: 12px;
+    border: none;
+    padding-bottom: 8px;
 }
 
 .monsters-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
     overflow-x: auto;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
 .monster-card {
-    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-    border: 3px solid #f9a825;
-    border-radius: 15px;
-    padding: 12px;
+    background: url('{{ url_for("static", filename="images/monster_card_panel_background.png") }}') center/cover,
+                linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
     flex-shrink: 0;
-    min-width: 120px;
-    box-shadow: 0 4px 15px rgba(249, 168, 37, 0.2);
+    min-width: 100px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .monster-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(249, 168, 37, 0.4);
-    border-color: #f57f17;
+    transform: translateY(-6px);
+    box-shadow: 0 6px 15px rgba(249, 168, 37, 0.3);
+}
+
+.monster-card.selected {
+    box-shadow: 0 0 15px rgba(249, 168, 37, 0.6);
 }
 
 .monster-image {
     width: 100%;
-    height: 90px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, rgba(249, 168, 37, 0.1), rgba(165, 214, 167, 0.1));
-    border-bottom: 2px solid #f9a825;
-    border-radius: 8px;
+    margin-bottom: 8px;
+    background: rgba(249, 168, 37, 0.05);
+    border: none;
+    border-radius: 6px;
     overflow: hidden;
 }
 
@@ -325,11 +330,11 @@
 .monster-info {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .monster-name {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: #558b2f;
     word-break: break-word;
@@ -340,23 +345,24 @@
 .monster-stats-row {
     display: flex;
     justify-content: center;
-    gap: 6px;
-    font-size: 0.7rem;
+    gap: 4px;
+    font-size: 0.65rem;
 }
 
 .stat {
-    background: linear-gradient(135deg, #fff9e6, #fff3cd);
-    padding: 3px 6px;
-    border-radius: 6px;
-    border: 2px solid #f9a825;
+    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
+                linear-gradient(135deg, #fff9e6, #fff3cd);
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: none;
     color: #f57f17;
     font-weight: 600;
 }
 
 .monster-rarity {
-    font-size: 0.7rem;
-    padding: 4px 8px;
-    border-radius: 8px;
+    font-size: 0.65rem;
+    padding: 3px 6px;
+    border-radius: 6px;
     color: white;
     font-weight: 700;
     text-transform: uppercase;
@@ -374,6 +380,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    padding: 16px;
 }
 
 .stage-modal.hidden {
@@ -392,26 +399,28 @@
 
 .modal-content {
     position: relative;
-    background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-    border: 5px solid #f9a825;
-    border-radius: 20px;
-    padding: 30px;
-    max-width: 500px;
+    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
+                linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 90vw;
+    width: 500px;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 8px 40px rgba(249, 168, 37, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .modal-close {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 12px;
+    right: 12px;
     background: linear-gradient(135deg, #f9a825, #fb8c00);
-    border: 3px solid #f57f17;
+    border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1.3rem;
     cursor: pointer;
     color: white;
     display: flex;
@@ -423,57 +432,58 @@
 
 .modal-close:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(249, 168, 37, 0.6);
+    box-shadow: 0 0 15px rgba(249, 168, 37, 0.5);
 }
 
 .modal-header {
-    margin-bottom: 20px;
-    border-bottom: 3px solid #f9a825;
-    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border: none;
+    padding-bottom: 8px;
 }
 
 .modal-header h2 {
     margin: 0;
     color: #558b2f;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     font-family: 'Fredoka', sans-serif;
     font-weight: 700;
 }
 
 .difficulty-badge {
     display: inline-block;
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 4px 10px;
+    border-radius: 6px;
     color: white;
-    font-size: 0.8rem;
-    margin-top: 8px;
+    font-size: 0.75rem;
+    margin-top: 6px;
     text-transform: uppercase;
     font-weight: 700;
-    letter-spacing: 1px;
-    border: 2px solid rgba(0, 0, 0, 0.1);
+    letter-spacing: 0.5px;
+    border: none;
 }
 
 .modal-body {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .stage-details {
-    background: linear-gradient(135deg, rgba(165, 214, 167, 0.2), rgba(249, 168, 37, 0.1));
-    border: 3px solid #f9a825;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
+    background: url('{{ url_for("static", filename="images/fantasy_rpg_card_background.png") }}') center/cover,
+                linear-gradient(135deg, rgba(165, 214, 167, 0.2), rgba(249, 168, 37, 0.1));
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 16px;
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding: 6px 0;
     color: #2c3e2b;
-    font-size: 0.9rem;
-    border-bottom: 1px solid rgba(249, 168, 37, 0.2);
+    font-size: 0.8rem;
+    border: none;
 }
 
 .detail-row .label {
@@ -489,111 +499,120 @@
 }
 
 .monster-selection {
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
 .selection-prompt {
     color: #558b2f;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     text-align: center;
     margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .selected-info {
-    background: linear-gradient(135deg, rgba(165, 214, 167, 0.15), rgba(165, 214, 167, 0.1));
-    border: 3px solid #66bb6a;
-    border-radius: 12px;
+    background: url('{{ url_for("static", filename="images/monster_card_panel_background.png") }}') center/cover,
+                linear-gradient(135deg, rgba(255, 249, 230, 0.8), rgba(255, 243, 205, 0.8));
+    border: none;
+    border-radius: 10px;
     padding: 12px;
+    margin-bottom: 12px;
 }
 
 .selected-monster {
     display: flex;
+    gap: 10px;
     align-items: center;
-    gap: 12px;
 }
 
 .selected-monster img {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     object-fit: contain;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
 }
 
 .selected-stats {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.selected-stats > div {
+    font-size: 0.8rem;
+    color: #558b2f;
 }
 
 .modal-footer {
     display: flex;
-    gap: 12px;
-    justify-content: center;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-cancel,
+.btn-challenge {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
 }
 
 .btn-cancel {
-    background: linear-gradient(135deg, #ccc, #aaa);
-    border: 3px solid #888;
-    color: #333;
-    padding: 12px 28px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
+    background: linear-gradient(135deg, rgba(248, 247, 239, 0.9), rgba(255, 243, 205, 0.9));
+    color: #558b2f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-cancel:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-challenge {
-    background: linear-gradient(135deg, #81c784, #66bb6a);
-    border: 3px solid #558b2f;
+    background: linear-gradient(135deg, #f9a825, #fb8c00);
     color: white;
-    padding: 12px 28px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: 'Fredoka', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 15px rgba(102, 187, 106, 0.3);
+    box-shadow: 0 4px 12px rgba(249, 168, 37, 0.3);
 }
 
-.btn-challenge:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(102, 187, 106, 0.5);
+.btn-challenge:hover:not(:disabled) {
+    box-shadow: 0 6px 18px rgba(249, 168, 37, 0.5);
+    transform: translateY(-2px);
 }
 
-/* ========== 모바일 최적화 ========== */
+.btn-challenge:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========== 모바일 반응형 ========== */
 @media (max-width: 768px) {
     .adventure-header {
-        padding: 16px 20px;
+        padding: 12px 16px;
     }
 
     .adventure-title {
-        font-size: 1.6rem;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
     }
 
     .header-stats {
-        gap: 10px;
+        gap: 6px;
     }
 
     .stat-item {
-        padding: 10px 14px;
-        font-size: 0.9rem;
+        padding: 6px 10px;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
     }
 
     .stat-value {
-        font-size: 1.4rem;
+        font-size: 1rem;
     }
 
     .adventure-map {
@@ -601,68 +620,110 @@
     }
 
     .map-overlay {
-        padding: 20px 15px;
+        padding: 16px 8px;
+    }
+
+    .stages-container {
+        gap: 10px;
+    }
+
+    .stage-node-wrapper {
+        min-width: 60px;
     }
 
     .stage-flag {
-        width: 65px;
-        height: 65px;
+        width: 50px;
+        height: 50px;
     }
 
     .flag-text {
-        font-size: 1.4rem;
-    }
-
-    .stage-name {
-        font-size: 0.65rem;
-    }
-
-    .adventure-bottom-panel {
-        max-height: 250px;
-        padding: 16px;
-    }
-
-    .panel-title {
         font-size: 1.1rem;
     }
 
+    .stage-name {
+        font-size: 0.6rem;
+        max-width: 60px;
+    }
+
+    .adventure-bottom-panel {
+        padding: 12px;
+        max-height: 250px;
+    }
+
+    .panel-title {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
     .monsters-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 10px;
     }
 
     .monster-card {
-        min-width: 100px;
+        min-width: 90px;
+        padding: 8px;
+    }
+
+    .monster-image {
+        height: 60px;
+        margin-bottom: 6px;
+    }
+
+    .monster-name {
+        font-size: 0.65rem;
+    }
+
+    .monster-stats-row {
+        gap: 3px;
+        font-size: 0.6rem;
     }
 
     .modal-content {
-        padding: 20px;
-        max-width: 90vw;
+        width: 95vw;
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .stage-details {
+        padding: 10px;
+    }
+
+    .detail-row {
+        font-size: 0.75rem;
+        padding: 4px 0;
     }
 }
 
 @media (max-width: 480px) {
     .adventure-header {
-        padding: 12px 16px;
+        padding: 10px 12px;
     }
 
     .adventure-title {
-        font-size: 1.4rem;
-    }
-
-    .header-content {
-        flex-direction: column;
-        gap: 12px;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
     }
 
     .header-stats {
-        width: 100%;
-        justify-content: center;
+        gap: 4px;
     }
 
     .stat-item {
-        padding: 8px 12px;
-        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+
+    .stat-label {
+        font-size: 0.55rem;
+    }
+
+    .stat-value {
+        font-size: 0.9rem;
+        margin-top: 1px;
     }
 
     .adventure-map {
@@ -670,37 +731,80 @@
     }
 
     .map-overlay {
-        padding: 15px 10px;
+        padding: 12px 6px;
     }
 
-    .stages-container {
-        gap: 15px;
+    .stage-node-wrapper {
+        min-width: 50px;
+        gap: 2px;
     }
 
     .stage-flag {
-        width: 60px;
-        height: 60px;
+        width: 45px;
+        height: 45px;
     }
 
     .flag-text {
-        font-size: 1.2rem;
+        font-size: 1rem;
+    }
+
+    .flag-badge {
+        width: 24px;
+        height: 24px;
+        font-size: 0.9rem;
+    }
+
+    .stage-name {
+        font-size: 0.55rem;
+        max-width: 50px;
     }
 
     .adventure-bottom-panel {
-        max-height: 220px;
-        padding: 12px;
+        padding: 10px;
+        max-height: 200px;
     }
 
     .panel-title {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
     }
 
     .monsters-grid {
-        grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+    }
+
+    .monster-card {
+        min-width: 80px;
+        padding: 6px;
+    }
+
+    .monster-image {
+        height: 50px;
+        margin-bottom: 4px;
+    }
+
+    .monster-name {
+        font-size: 0.6rem;
+    }
+
+    .monster-stats-row {
+        gap: 2px;
+        font-size: 0.55rem;
     }
 
     .modal-content {
-        padding: 16px;
+        width: 98vw;
+        padding: 12px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .btn-cancel,
+    .btn-challenge {
+        padding: 8px 16px;
+        font-size: 0.8rem;
     }
 }
