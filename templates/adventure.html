@@ -168,10 +168,9 @@
             return;
         }
         
-        // 전투 시작
-        window.location.href = `{{ url_for('adventure_battle', stage_id='STAGE_ID', selected_monster_id='MONSTER_ID') }}`
-            .replace('STAGE_ID', stageId)
-            .replace('MONSTER_ID', selectedMonsterId);
+        // 전투 시작 - 동적으로 URL 생성
+        const url = `/adventure_battle/${stageId}/${selectedMonsterId}`;
+        window.location.href = url;
     }
 </script>
 {% endblock %}
