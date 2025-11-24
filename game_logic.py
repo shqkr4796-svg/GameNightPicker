@@ -5576,8 +5576,45 @@ def execute_enemy_turn(battle_state):
     available_skills = list(SKILLS.keys())
     
     if use_skill and available_skills:
-        # 랜덤하게 기술 선택
-        skill_name = random.choice(available_skills)
+        # 등급별 기술 확률 가중치 설정
+        skill_weights = []
+        for skill_name in available_skills:
+            skill = SKILLS[skill_name]
+            skill_rarity = skill.get('등급', '레어')
+            
+            # 몬스터 등급에 따라 기술 가중치 설정
+            weight = 0
+            if rarity == '레어':
+                # 레어: 레어(70%), 에픽(25%), 유니크(4%), 레전드리(1%)
+                if skill_rarity == '레어': weight = 70
+                elif skill_rarity == '에픽': weight = 25
+                elif skill_rarity == '유니크': weight = 4
+                elif skill_rarity == '레전드리': weight = 1
+            elif rarity == '에픽':
+                # 에픽: 레어(15%), 에픽(60%), 유니크(20%), 레전드리(5%)
+                if skill_rarity == '레어': weight = 15
+                elif skill_rarity == '에픽': weight = 60
+                elif skill_rarity == '유니크': weight = 20
+                elif skill_rarity == '레전드리': weight = 5
+            elif rarity == '유니크':
+                # 유니크: 레어(5%), 에픽(10%), 유니크(70%), 레전드리(15%)
+                if skill_rarity == '레어': weight = 5
+                elif skill_rarity == '에픽': weight = 10
+                elif skill_rarity == '유니크': weight = 70
+                elif skill_rarity == '레전드리': weight = 15
+            elif rarity == '레전드리':
+                # 레전드리: 유니크(20%), 레전드리(80%)
+                if skill_rarity == '유니크': weight = 20
+                elif skill_rarity == '레전드리': weight = 80
+            
+            skill_weights.append(weight)
+        
+        # 가중치에 따라 기술 선택 (0 이상의 가중치만)
+        if sum(skill_weights) > 0:
+            skill_name = random.choices(available_skills, weights=skill_weights, k=1)[0]
+        else:
+            skill_name = random.choice(available_skills)
+        
         skill = SKILLS[skill_name]
         
         # 기술의 공격력 보정 적용
