@@ -239,6 +239,83 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
+    // 미국 남자 음성 찾기 함수
+    function findMaleVoice(voices) {
+        // 1순위: Google US English Male 또는 Microsoft David
+        let voice = voices.find(v => 
+            v.name.includes('Google US English Male') ||
+            v.name.includes('Microsoft David') ||
+            v.name.includes('Google US Male')
+        );
+        if (voice) return voice;
+        
+        // 2순위: 명시적으로 male/man이 포함된 음성
+        voice = voices.find(v => 
+            v.lang === 'en-US' && 
+            (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('man'))
+        );
+        if (voice) return voice;
+        
+        // 3순위: en-US 음성 중 여자가 아닌 것
+        voice = voices.find(v => 
+            v.lang === 'en-US' && 
+            !v.name.toLowerCase().includes('female') && 
+            !v.name.toLowerCase().includes('woman') &&
+            !v.name.toLowerCase().includes('samantha') &&
+            !v.name.toLowerCase().includes('zira')
+        );
+        if (voice) return voice;
+        
+        // 4순위: 모든 음성 중 male/man 찾기
+        voice = voices.find(v => 
+            v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('man')
+        );
+        if (voice) return voice;
+        
+        // 5순위: 여자가 아닌 첫 번째 음성
+        voice = voices.find(v => 
+            !v.name.toLowerCase().includes('female') && 
+            !v.name.toLowerCase().includes('woman')
+        );
+        if (voice) return voice;
+        
+        // 마지막: 첫 번째 음성
+        return voices[0];
+    }
+    
+    // 미국 여자 음성 찾기 함수
+    function findFemaleVoice(voices) {
+        // 1순위: Google US English Female 또는 Microsoft Zira
+        let voice = voices.find(v => 
+            v.name.includes('Google US English Female') ||
+            v.name.includes('Microsoft Zira')
+        );
+        if (voice) return voice;
+        
+        // 2순위: 명시적으로 female/woman이 포함된 음성
+        voice = voices.find(v => 
+            v.lang === 'en-US' && 
+            (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('woman'))
+        );
+        if (voice) return voice;
+        
+        // 3순위: Samantha 음성
+        voice = voices.find(v => v.name.includes('Samantha'));
+        if (voice) return voice;
+        
+        // 4순위: en-US 음성 중 남자가 아닌 것
+        voice = voices.find(v => 
+            v.lang === 'en-US' && 
+            !v.name.toLowerCase().includes('male') && 
+            !v.name.toLowerCase().includes('man') &&
+            !v.name.toLowerCase().includes('david')
+        );
+        if (voice) return voice;
+        
+        // 마지막: 첫 번째 음성
+        return voices[0];
+    }
+    
     // 공통 음성 재생 함수
     function playAI_Audio() {
         const text = aiPromptText.textContent.trim();
@@ -253,22 +330,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const voices = window.speechSynthesis.getVoices();
         if (speakerData.gender === 'female') {
-            // 미국 여자 음성 우선 순위
-            const femaleVoice = voices.find(voice => 
-                voice.name.includes('Google US English Female') ||
-                voice.name.includes('Microsoft Zira') ||
-                (voice.lang === 'en-US' && (voice.name.includes('female') || voice.name.includes('woman')))
-            ) || voices.find(v => v.lang === 'en-US' && !v.name.includes('male')) || voices[0];
-            if (femaleVoice) utterance.voice = femaleVoice;
+            utterance.voice = findFemaleVoice(voices);
         } else if (speakerData.gender === 'male') {
-            // 미국 남자 음성 우선 순위
-            const maleVoice = voices.find(voice => 
-                voice.name.includes('Google US English Male') ||
-                voice.name.includes('Microsoft David') ||
-                voice.name.includes('Google US Male') ||
-                (voice.lang === 'en-US' && (voice.name.includes('male') || voice.name.includes('man')))
-            ) || voices.find(v => v.lang === 'en-US' && !v.name.includes('female')) || voices[0];
-            if (maleVoice) utterance.voice = maleVoice;
+            utterance.voice = findMaleVoice(voices);
         }
         
         window.speechSynthesis.cancel();
@@ -287,13 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         const voices = window.speechSynthesis.getVoices();
-        // 미국 여자 음성 (사용자 역할)
-        const femaleVoice = voices.find(v => 
-            v.name.includes('Google US English Female') ||
-            v.name.includes('Microsoft Zira') ||
-            (v.lang === 'en-US' && (v.name.includes('female') || v.name.includes('woman')))
-        ) || voices.find(v => v.lang === 'en-US' && !v.name.includes('male')) || voices[0];
-        if (femaleVoice) utterance.voice = femaleVoice;
+        utterance.voice = findMaleVoice(voices);
         
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
