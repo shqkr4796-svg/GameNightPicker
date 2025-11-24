@@ -362,15 +362,70 @@ function updateBattleUI(battleState) {
     document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
     document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
     
-    // HP 텍스트 업데이트
-    const playerHpTexts = document.querySelectorAll('[style*="플레이어"] span[style*="font-weight: 700"]');
-    const enemyHpTexts = document.querySelectorAll('[style*="상대"] span[style*="font-weight: 700"]');
+    // === 적 몬스터 정보 카드 업데이트 ===
+    // 적 몬스터 이름
+    const enemyNameElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] h6');
+    if (enemyNameElements.length > 0) {
+        enemyNameElements[0].textContent = battleState.enemy_monster.name;
+    }
     
+    // 적 몬스터 등급
+    const enemyRarityElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] p[style*="color: #999; font-size: 0.65rem"]');
+    if (enemyRarityElements.length > 0) {
+        enemyRarityElements[0].textContent = battleState.enemy_monster.rarity;
+    }
+    
+    // 적 몬스터 HP 텍스트
+    const enemyHpTexts = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] span[style*="font-weight: 700; font-size: 0.65rem"]');
+    if (enemyHpTexts.length > 0) {
+        enemyHpTexts[0].textContent = battleState.enemy_monster.current_hp + ' / ' + battleState.enemy_monster.max_hp;
+    }
+    
+    // 적 몬스터 ATK
+    const enemyAtkElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] span[style*="color: #FF6B6B"]');
+    if (enemyAtkElements.length > 0) {
+        enemyAtkElements[0].textContent = battleState.enemy_monster.attack;
+    }
+    
+    // 적 몬스터 이미지
+    const enemyMonsterImg = document.getElementById('enemyMonsterImg');
+    if (enemyMonsterImg && battleState.enemy_monster.image) {
+        if (enemyMonsterImg.tagName === 'IMG') {
+            enemyMonsterImg.src = battleState.enemy_monster.image;
+        }
+    }
+    
+    // === 플레이어 몬스터 정보 카드 업데이트 ===
+    // 플레이어 몬스터 이름
+    const playerNameElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] h6');
+    if (playerNameElements.length > 0) {
+        playerNameElements[0].textContent = battleState.player_monster.name;
+    }
+    
+    // 플레이어 몬스터 등급
+    const playerRarityElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] p[style*="color: #999; font-size: 0.65rem"]');
+    if (playerRarityElements.length > 0) {
+        playerRarityElements[0].textContent = battleState.player_monster.rarity;
+    }
+    
+    // 플레이어 몬스터 HP 텍스트
+    const playerHpTexts = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] span[style*="font-weight: 700; font-size: 0.65rem"]');
     if (playerHpTexts.length > 0) {
         playerHpTexts[0].textContent = battleState.player_monster.current_hp + ' / ' + battleState.player_monster.max_hp;
     }
-    if (enemyHpTexts.length > 0) {
-        enemyHpTexts[0].textContent = battleState.enemy_monster.current_hp + ' / ' + battleState.enemy_monster.max_hp;
+    
+    // 플레이어 몬스터 ATK
+    const playerAtkElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] span[style*="color: #4CAF50"]');
+    if (playerAtkElements.length > 0) {
+        playerAtkElements[0].textContent = battleState.player_monster.attack;
+    }
+    
+    // 플레이어 몬스터 이미지
+    const playerMonsterImg = document.getElementById('playerMonsterImg');
+    if (playerMonsterImg && battleState.player_monster.image) {
+        if (playerMonsterImg.tagName === 'IMG') {
+            playerMonsterImg.src = battleState.player_monster.image;
+        }
     }
     
     // 전투 로그 업데이트
