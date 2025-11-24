@@ -810,6 +810,25 @@ def sell_property():
     
     return redirect(url_for('real_estate'))
 
+@app.route('/change_residence', methods=['POST'])
+def change_residence():
+    """거주지 변경"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    property_name = request.form.get('property_name', '')
+    result = game_logic.change_residence(player, property_name)
+    session['player_data'] = player
+    game_logic.save_game(player)
+    
+    if result['success']:
+        flash(result['message'], 'success')
+    else:
+        flash(result['message'], 'error')
+    
+    return redirect(url_for('real_estate'))
+
 @app.route('/shop')
 def shop():
     """상점 페이지"""

@@ -853,6 +853,35 @@ def sell_property(player, property_name=None):
     
     return {'success': False, 'message': '판매 오류가 발생했습니다.'}
 
+def change_residence(player, property_name):
+    """거주지 변경 (소유한 부동산 중에서만)"""
+    if '부동산들' not in player or len(player['부동산들']) == 0:
+        return {'success': False, 'message': '소유한 부동산이 없습니다.'}
+    
+    # 소유하고 있는 부동산인지 확인
+    owned = False
+    for prop in player['부동산들']:
+        if prop['name'] == property_name:
+            owned = True
+            break
+    
+    if not owned:
+        return {'success': False, 'message': '소유하지 않은 부동산입니다.'}
+    
+    # 이미 거주중인지 확인
+    if player.get('거주지') == property_name:
+        return {'success': False, 'message': '이미 거주중인 부동산입니다.'}
+    
+    player['거주지'] = property_name
+    
+    # 기력 회복량 정보 찾기
+    for prop in real_estate:
+        if prop['이름'] == property_name:
+            recovery = prop['기력회복']
+            break
+    
+    return {'success': True, 'message': f"{property_name}로 이사했습니다! (일일 기력회복량: +{recovery})"}
+
 def get_shop_items():
     """상점 아이템 목록"""
     return shop_items

@@ -33,8 +33,12 @@
                                     <strong>{{ "{:,}".format(property['매매']) }}원</strong>
                                 </div>
                                 <div>
-                                    <small class="text-muted">최대기력 증가량:</small><br>
-                                    <strong class="text-info">+{{ property['기력회복'] }} (편의성 등급: {{ property['기력회복'] }}/10)</strong>
+                                    <small class="text-muted">일일 기력회복량:</small><br>
+                                    <strong class="text-info">+{{ property['기력회복'] }}/일</strong>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">편의성 등급:</small><br>
+                                    <strong class="text-info">{{ property['기력회복'] }}/10</strong>
                                 </div>
                             </div>
                             <div class="col-md-6 text-end">
@@ -66,15 +70,23 @@
                                     <div>
                                         <h6 class="mb-2">{{ property['이름'] }}</h6>
                                         <small class="text-muted d-block">월세 수입: <strong class="text-warning">{{ "{:,}".format(property['월세']) }}원/달</strong></small>
-                                        <small class="text-muted d-block">기력회복: <strong class="text-info">+{{ property['기력회복'] }}</strong></small>
+                                        <small class="text-muted d-block">일일 기력회복: <strong class="text-info">+{{ property['기력회복'] }}/일</strong></small>
                                         <small class="text-muted d-block">구매일: {{ owned_property['buy_date'] }}일</small>
                                     </div>
-                                    <form method="POST" action="{{ url_for('sell_property') }}" class="ms-2">
-                                        <input type="hidden" name="property_id" value="{{ loop.index0 }}">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i data-feather="trash-2" class="me-1" size="14"></i>판매
-                                        </button>
-                                    </form>
+                                    <div class="d-flex gap-2 ms-2">
+                                        <form method="POST" action="{{ url_for('change_residence') }}" class="flex-grow-1">
+                                            <input type="hidden" name="property_name" value="{{ property['이름'] }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-info w-100">
+                                                <i data-feather="home" class="me-1" size="14"></i>이주
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('sell_property') }}">
+                                            <input type="hidden" name="property_id" value="{{ loop.index0 }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i data-feather="trash-2" class="me-1" size="14"></i>판매
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                             {% endif %}
@@ -116,8 +128,8 @@
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="card-title mb-0">{{ property['이름'] }}</h6>
                                     <div class="text-end">
-                                        <small class="text-muted d-block">기력회복</small>
-                                        <strong class="text-info d-block">+{{ property['기력회복'] }}/10</strong>
+                                        <small class="text-muted d-block">구매 시 최대기력 +{{ property['기력회복'] }}</small>
+                                        <small class="text-muted d-block">일일 회복: +{{ property['기력회복'] }}/일</small>
                                     </div>
                                 </div>
                                 
