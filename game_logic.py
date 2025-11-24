@@ -290,7 +290,12 @@ def get_player_stats(player):
     tier_conditions = get_tier_conditions()
     
     # 부동산 갯수 계산
-    real_estate_count = 1 if player.get('거주지') else 0
+    if isinstance(player.get('부동산들'), list):
+        real_estate_count = len(player['부동산들'])
+    elif player.get('거주지'):
+        real_estate_count = 1
+    else:
+        real_estate_count = 0
     
     return {
         'total_stats': total_stats,
