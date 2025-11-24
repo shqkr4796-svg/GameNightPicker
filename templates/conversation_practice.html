@@ -344,6 +344,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 다음 턴 로드
     function loadNextTurn() {
+        // 1. 음성 인식 시스템 정리 (오디오 컨텍스트 보호 최우선)
+        if (recognition) {
+            try {
+                recognition.stop();
+                isListening = false;
+            } catch(e) {
+                console.error('Recognition stop error:', e);
+            }
+        }
+        
         fetch('{{ url_for("next_turn") }}', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
@@ -379,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     nextTurnContainer.style.display = 'none';
                     statusMessage.style.display = 'none';
                     
-                    // 음성인식 상태만 간단히 리셋 (오디오 컨텍스트 완벽하게 보호)
+                    // 음성인식 UI 리셋
                     isListening = false;
                     micBtn.style.display = 'block';
                     stopBtn.style.display = 'none';
