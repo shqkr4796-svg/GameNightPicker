@@ -86,34 +86,6 @@
         color: #721c24;
     }
     
-    .conversation-history {
-        background: #f9f9f9;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 15px;
-        max-height: 300px;
-        overflow-y: auto;
-        margin-bottom: 20px;
-    }
-    
-    .history-item {
-        margin-bottom: 12px;
-        padding: 10px;
-        border-radius: 4px;
-        font-size: 0.95rem;
-    }
-    
-    .history-ai {
-        background: #e7f3ff;
-        border-left: 3px solid #0066cc;
-    }
-    
-    .history-user {
-        background: #fff8e7;
-        border-left: 3px solid #ff9900;
-        margin-left: 20px;
-    }
-    
     .mic-icon {
         display: inline-block;
         width: 12px;
@@ -246,9 +218,15 @@
 </div>
 
 <script>
-let mediaRecorder;
-let audioChunks = [];
-let isRecording = false;
+// Web Speech API 초기화
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let isListening = false;
+
+// 사운드 매니저 액세스
+function getSoundManager() {
+    return typeof soundManager !== 'undefined' ? soundManager : null;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const micBtn = document.getElementById('micBtn');
@@ -265,75 +243,113 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
+    if (!SpeechRecognition) {
+        micBtn.disabled = true;
+        statusMessage.style.display = 'block';
+        statusText.textContent = '이 브라우저는 음성 인식을 지원하지 않습니다.';
+        return;
+    }
+    
+    // Recognition 초기화 함수
+    function initRecognition() {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        setupRecognitionListeners();
+    }
+    
+    initRecognition();
+    
     // 음성 인식 시작
-    micBtn.addEventListener('click', async function() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-            isRecording = true;
-            
+    micBtn.addEventListener('click', function() {
+        if (!isListening) {
+            isListening = true;
             micBtn.style.display = 'none';
             stopBtn.style.display = 'block';
             recognizedText.style.display = 'block';
             resultFeedback.style.display = 'none';
-            textContent.textContent = '음성 인식 준비 중...';
+            nextTurnContainer.style.display = 'none';
+            textContent.textContent = '음성 인식 중...';
             
-            mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
+            // 음성 인식 시작 전에 효과음 임시 비활성화
+            const sm = getSoundManager();
+            if (sm) {
+                sm.soundDisabledForSpeechRecognition = true;
+                sm.enabled = false;
+            }
             
-            mediaRecorder.onmicrophonestate = function() {
-                console.log('Microphone state changed');
-            };
-            
-            mediaRecorder.start();
-        } catch (error) {
-            statusMessage.style.display = 'block';
-            statusText.textContent = '마이크 접근 권한이 필요합니다.';
+            recognition.start();
         }
     });
     
-    // 음성 인식 중지 및 처리
-    stopBtn.addEventListener('click', async function() {
-        if (!mediaRecorder || !isRecording) return;
-        
-        isRecording = false;
-        mediaRecorder.stop();
-        
-        mediaRecorder.onstop = async () => {
-            textContent.textContent = '음성 처리 중...';
+    // 음성 인식 중지
+    stopBtn.addEventListener('click', function() {
+        isListening = false;
+        micBtn.style.display = 'block';
+        stopBtn.style.display = 'none';
+        recognition.stop();
+    });
+    
+    // Recognition 이벤트 리스너 설정
+    function setupRecognitionListeners() {
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            let finalTranscript = '';
             
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            
-            // FormData로 서버에 전송
-            const formData = new FormData();
-            formData.append('audio', audioBlob, 'recording.wav');
-            
-            try {
-                const response = await fetch('{{ url_for("transcribe_audio") }}', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    const recognizedText_val = data.text.toLowerCase().trim();
-                    textContent.textContent = recognizedText_val;
-                    checkAnswer(recognizedText_val);
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
                 } else {
-                    textContent.textContent = '음성 인식 실패: ' + data.error;
+                    interimTranscript += transcript;
                 }
-            } catch (error) {
-                textContent.textContent = '오류 발생: ' + error.message;
             }
             
+            const currentText = finalTranscript || interimTranscript;
+            textContent.textContent = currentText;
+            
+            if (finalTranscript) {
+                checkAnswer(finalTranscript.toLowerCase().trim());
+            }
+        };
+        
+        recognition.onerror = function(event) {
+            if (event.error !== 'aborted') {
+                statusMessage.style.display = 'block';
+                const errorMessages = {
+                    'no-speech': '음성을 감지하지 못했습니다. 다시 시도해주세요.',
+                    'audio-capture': '마이크에 접근할 수 없습니다.',
+                    'network': '네트워크 오류가 발생했습니다.',
+                    'permission-denied': '마이크 권한이 거부되었습니다.'
+                };
+                statusText.textContent = errorMessages[event.error] || '오류: ' + event.error;
+            }
+            isListening = false;
             micBtn.style.display = 'block';
             stopBtn.style.display = 'none';
             
-            // 스트림 정리
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            // 효과음 복원
+            const sm = getSoundManager();
+            if (sm && sm.soundDisabledForSpeechRecognition) {
+                sm.enabled = true;
+                sm.soundDisabledForSpeechRecognition = false;
+            }
         };
-    });
+        
+        recognition.onend = function() {
+            isListening = false;
+            micBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            
+            // 효과음 복원
+            const sm = getSoundManager();
+            if (sm && sm.soundDisabledForSpeechRecognition) {
+                sm.enabled = true;
+                sm.soundDisabledForSpeechRecognition = false;
+            }
+        };
+    }
     
     // 정답 확인
     function checkAnswer(userInput) {
@@ -361,6 +377,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 다음 턴 로드
     function loadNextTurn() {
+        if (recognition) {
+            try {
+                recognition.stop();
+                isListening = false;
+            } catch(e) {
+                console.error('Recognition stop error:', e);
+            }
+        }
+        
         fetch('{{ url_for("next_turn") }}', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
@@ -397,6 +422,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     stopBtn.style.display = 'none';
                     
                     targetResponse = turn.user_response.toLowerCase().trim();
+                    
+                    // 새로운 recognition 객체 생성 및 리스너 설정
+                    initRecognition();
                 }
             }
         });
