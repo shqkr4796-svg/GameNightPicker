@@ -334,9 +334,12 @@ function playAudio(textOrElement) {
         
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        utterance.volume = 1;  // 음성 크기 정상화
-        if (voice) utterance.voice = voice;
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;  // 시스템 기본 음량 유지
+        if (voice) {
+            utterance.voice = voice;
+        }
         
         // 재생 끝나면 상태 메시지 숨김
         utterance.onend = function() {
