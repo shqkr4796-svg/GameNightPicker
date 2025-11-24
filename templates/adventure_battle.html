@@ -395,17 +395,22 @@ function updateBattleUI(battleState) {
         }
     }
     
-    // 남은 적 몬스터 수 배지 업데이트 (상단 우측)
+    // 남은 적 몬스터 수 배지 업데이트 (상단 우측) - 깜빡거림 없이 처리
     const enemyCardContainer = document.querySelector('div[style*="position: absolute; top: 0; right: 0"]');
     if (enemyCardContainer) {
         const enemyBadge = enemyCardContainer.querySelector('div[style*="position: absolute; top: -12px"]');
         if (enemyBadge) {
             const remainingEnemyCount = battleState.enemy_count - battleState.defeated_monsters;
-            let badgeHtml = '';
-            for (let i = 0; i < remainingEnemyCount; i++) {
-                badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+            const currentImgs = enemyBadge.querySelectorAll('img');
+            
+            // 이미지 개수가 다를 때만 업데이트
+            if (currentImgs.length !== remainingEnemyCount) {
+                let badgeHtml = '';
+                for (let i = 0; i < remainingEnemyCount; i++) {
+                    badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+                }
+                enemyBadge.innerHTML = badgeHtml;
             }
-            enemyBadge.innerHTML = badgeHtml;
         }
     }
     
@@ -442,17 +447,22 @@ function updateBattleUI(battleState) {
         }
     }
     
-    // 남은 플레이어 몬스터 수 배지 업데이트 (좌측 하단)
+    // 남은 플레이어 몬스터 수 배지 업데이트 (좌측 하단) - 깜빡거림 없이 처리
     const playerCardContainer = document.querySelector('div[style*="position: absolute; bottom: 0; left: 0"]');
     if (playerCardContainer) {
         const playerBadge = playerCardContainer.querySelector('div[style*="position: absolute; top: -12px"]');
         if (playerBadge) {
             const remainingPlayerCount = (battleState.player_team_length || 3) - (battleState.current_team_index || 0);
-            let badgeHtml = '';
-            for (let i = 0; i < remainingPlayerCount; i++) {
-                badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+            const currentImgs = playerBadge.querySelectorAll('img');
+            
+            // 이미지 개수가 다를 때만 업데이트
+            if (currentImgs.length !== remainingPlayerCount) {
+                let badgeHtml = '';
+                for (let i = 0; i < remainingPlayerCount; i++) {
+                    badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+                }
+                playerBadge.innerHTML = badgeHtml;
             }
-            playerBadge.innerHTML = badgeHtml;
         }
     }
     
