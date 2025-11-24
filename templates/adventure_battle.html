@@ -133,41 +133,57 @@
                                 <!-- 슬롯 1 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 0 %}
-                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[0] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[0] }}')">
-                                            {{ battle_state.player_skills[0] }}
-                                        </button>
+                                        {% set skill_name = battle_state.player_skills[0] %}
+                                        {% set usage = skill_usage.get(skill_name, 0) %}
+                                        <div style="position: relative;">
+                                            <button onclick="showSkillInfo('{{ skill_name }}')" title="기술 정보 보기" class="btn w-100" id="skill-btn-0" style="background-color: {% if usage >= 4 %}#555{% else %}#333{% endif %}; color: {% if usage >= 4 %}#888{% else %}white{% endif %}; border: 2px solid {% if usage >= 4 %}#777{% else %}#555{% endif %}; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: {% if usage >= 4 %}not-allowed{% else %}pointer{% endif %}; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="{% if usage < 4 %}this.style.backgroundColor='#444'; this.style.borderColor='#666';{% endif %}" onmouseout="{% if usage < 4 %}this.style.backgroundColor='#333'; this.style.borderColor='#555';{% endif %}" ondblclick="{% if usage < 4 %}useSkill('{{ skill_name }}'){% endif %}" {% if usage >= 4 %}disabled{% endif %}>
+                                                {{ skill_name }}<br><span style="font-size: 0.6rem;">{{ usage }}/4</span>
+                                            </button>
+                                        </div>
                                     {% else %}
-                                        <div style="height: 44px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
+                                        <div style="height: 56px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
                                     {% endif %}
                                 </div>
                                 <!-- 슬롯 2 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 1 %}
-                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[1] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[1] }}')">
-                                            {{ battle_state.player_skills[1] }}
-                                        </button>
+                                        {% set skill_name = battle_state.player_skills[1] %}
+                                        {% set usage = skill_usage.get(skill_name, 0) %}
+                                        <div style="position: relative;">
+                                            <button onclick="showSkillInfo('{{ skill_name }}')" title="기술 정보 보기" class="btn w-100" id="skill-btn-1" style="background-color: {% if usage >= 4 %}#555{% else %}#333{% endif %}; color: {% if usage >= 4 %}#888{% else %}white{% endif %}; border: 2px solid {% if usage >= 4 %}#777{% else %}#555{% endif %}; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: {% if usage >= 4 %}not-allowed{% else %}pointer{% endif %}; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="{% if usage < 4 %}this.style.backgroundColor='#444'; this.style.borderColor='#666';{% endif %}" onmouseout="{% if usage < 4 %}this.style.backgroundColor='#333'; this.style.borderColor='#555';{% endif %}" ondblclick="{% if usage < 4 %}useSkill('{{ skill_name }}'){% endif %}" {% if usage >= 4 %}disabled{% endif %}>
+                                                {{ skill_name }}<br><span style="font-size: 0.6rem;">{{ usage }}/4</span>
+                                            </button>
+                                        </div>
                                     {% else %}
-                                        <div style="height: 44px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
+                                        <div style="height: 56px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
                                     {% endif %}
                                 </div>
                                 <!-- 슬롯 3 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 2 %}
-                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[2] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[2] }}')">
-                                            {{ battle_state.player_skills[2] }}
-                                        </button>
+                                        {% set skill_name = battle_state.player_skills[2] %}
+                                        {% set usage = skill_usage.get(skill_name, 0) %}
+                                        <div style="position: relative;">
+                                            <button onclick="showSkillInfo('{{ skill_name }}')" title="기술 정보 보기" class="btn w-100" id="skill-btn-2" style="background-color: {% if usage >= 4 %}#555{% else %}#333{% endif %}; color: {% if usage >= 4 %}#888{% else %}white{% endif %}; border: 2px solid {% if usage >= 4 %}#777{% else %}#555{% endif %}; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: {% if usage >= 4 %}not-allowed{% else %}pointer{% endif %}; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="{% if usage < 4 %}this.style.backgroundColor='#444'; this.style.borderColor='#666';{% endif %}" onmouseout="{% if usage < 4 %}this.style.backgroundColor='#333'; this.style.borderColor='#555';{% endif %}" ondblclick="{% if usage < 4 %}useSkill('{{ skill_name }}'){% endif %}" {% if usage >= 4 %}disabled{% endif %}>
+                                                {{ skill_name }}<br><span style="font-size: 0.6rem;">{{ usage }}/4</span>
+                                            </button>
+                                        </div>
                                     {% else %}
-                                        <div style="height: 44px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
+                                        <div style="height: 56px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
                                     {% endif %}
                                 </div>
                                 <!-- 슬롯 4 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 3 %}
-                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[3] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[3] }}')">
-                                            {{ battle_state.player_skills[3] }}
-                                        </button>
+                                        {% set skill_name = battle_state.player_skills[3] %}
+                                        {% set usage = skill_usage.get(skill_name, 0) %}
+                                        <div style="position: relative;">
+                                            <button onclick="showSkillInfo('{{ skill_name }}')" title="기술 정보 보기" class="btn w-100" id="skill-btn-3" style="background-color: {% if usage >= 4 %}#555{% else %}#333{% endif %}; color: {% if usage >= 4 %}#888{% else %}white{% endif %}; border: 2px solid {% if usage >= 4 %}#777{% else %}#555{% endif %}; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: {% if usage >= 4 %}not-allowed{% else %}pointer{% endif %}; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="{% if usage < 4 %}this.style.backgroundColor='#444'; this.style.borderColor='#666';{% endif %}" onmouseout="{% if usage < 4 %}this.style.backgroundColor='#333'; this.style.borderColor='#555';{% endif %}" ondblclick="{% if usage < 4 %}useSkill('{{ skill_name }}'){% endif %}" {% if usage >= 4 %}disabled{% endif %}>
+                                                {{ skill_name }}<br><span style="font-size: 0.6rem;">{{ usage }}/4</span>
+                                            </button>
+                                        </div>
                                     {% else %}
-                                        <div style="height: 44px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
+                                        <div style="height: 56px; background-color: transparent; border: 2px dashed #555; border-radius: 6px;"></div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -244,6 +260,7 @@
 let currentSkill = '';
 const skillsInfo = {{ skills_info | tojson }};
 const playerSkills = {{ battle_state.player_skills | tojson }};
+const skillUsage = {{ skill_usage | tojson }};
 
 function showSkillInfo(skillName) {
     currentSkill = skillName;
@@ -257,7 +274,8 @@ function showSkillInfo(skillName) {
         // 범위 표시
         const minDmg = (skill['공격력_보정_min'] * 100).toFixed(0);
         const maxDmg = (skill['공격력_보정_max'] * 100).toFixed(0);
-        document.getElementById('modalSkillDamage').textContent = minDmg + '%~' + maxDmg + '%';
+        const usageCount = skillUsage[skillName] || 0;
+        document.getElementById('modalSkillDamage').textContent = minDmg + '%~' + maxDmg + '% (' + usageCount + '/4)';
         
         // 4개 초과시만 삭제 버튼 표시
         const deleteBtn = document.getElementById('deleteSkillBtn');

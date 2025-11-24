@@ -1766,11 +1766,13 @@ def adventure_battle():
     battle_state = session['battle_state']
     player = session['player_data']
     skills_info = game_logic.get_all_skills_info()
+    skill_usage = battle_state.get('skill_usage_count', {})
     
     return render_template('adventure_battle.html',
                          battle_state=battle_state,
                          player=player,
-                         skills_info=skills_info)
+                         skills_info=skills_info,
+                         skill_usage=skill_usage)
 
 @app.route('/adventure/action', methods=['POST'])
 def adventure_action():

@@ -5490,6 +5490,10 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
     }
     dialogue_level = difficulty_level.get(stage['난이도'], 'level_1')
     
+    # 기술 사용 횟수 초기화 (기술당 4번 제한)
+    player_skills = player.get('모험_기술', ['박치기'])
+    skill_usage_count = {skill: 0 for skill in player_skills}
+    
     battle_state = {
         'stage_id': stage_id,
         'stage_name': stage['이름'],
@@ -5516,7 +5520,8 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
         'player_dialogue': random.choice(PLAYER_DIALOGUES.get(dialogue_level, PLAYER_DIALOGUES['level_1'])),
         'enemy_dialogue': random.choice(ENEMY_DIALOGUES.get(dialogue_level, ENEMY_DIALOGUES['level_1'])),
         'log': [],
-        'player_skills': player.get('모험_기술', ['박치기']),
+        'player_skills': player_skills,
+        'skill_usage_count': skill_usage_count,
         'game_over': False,
         'winner': None
     }
@@ -5573,6 +5578,16 @@ def execute_skill(battle_state, skill_name):
     if not battle_state['player_turn']:
         return {'success': False, 'message': '지금은 플레이어 차례가 아닙니다.'}
     
+    # 기술 사용 횟수 제한 확인 (기술당 4번 제한)
+    if skill_name not in battle_state['skill_usage_count']:
+        battle_state['skill_usage_count'][skill_name] = 0
+    
+    if battle_state['skill_usage_count'][skill_name] >= 4:
+        return {'success': False, 'message': f'{skill_name}은(는) 더 이상 사용할 수 없습니다. (4회 사용 완료)'}
+    
+    # 기술 사용 횟수 증가
+    battle_state['skill_usage_count'][skill_name] += 1
+    
     # 플레이어 공격 (랜덤 범위 적용)
     player_monster = battle_state['player_monster']
     multiplier_min = skill.get('공격력_보정_min', 1.0)
@@ -5580,7 +5595,9 @@ def execute_skill(battle_state, skill_name):
     multiplier = random.uniform(multiplier_min, multiplier_max)
     damage = int(player_monster['attack'] * multiplier)
     battle_state['enemy_monster']['current_hp'] -= damage
-    battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지")
+    
+    usage_count = battle_state['skill_usage_count'][skill_name]
+    battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지 (사용 {usage_count}/4회)")
     
     # 적 체력 확인
     if battle_state['enemy_monster']['current_hp'] <= 0:
