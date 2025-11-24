@@ -253,22 +253,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const voices = window.speechSynthesis.getVoices();
         if (speakerData.gender === 'female') {
+            // 미국 여자 음성 우선 순위
             const femaleVoice = voices.find(voice => 
-                voice.name.includes('female') || voice.name.includes('woman') || voice.voiceURI.includes('female')
-            ) || voices[0];
+                voice.name.includes('Google US English Female') ||
+                voice.name.includes('Microsoft Zira') ||
+                (voice.lang === 'en-US' && (voice.name.includes('female') || voice.name.includes('woman')))
+            ) || voices.find(v => v.lang === 'en-US' && !v.name.includes('male')) || voices[0];
             if (femaleVoice) utterance.voice = femaleVoice;
         } else if (speakerData.gender === 'male') {
+            // 미국 남자 음성 우선 순위
             const maleVoice = voices.find(voice => 
-                voice.name.includes('Google US English Male') || voice.name.includes('Male') || 
-                voice.name.includes('male') || voice.name.includes('man') || voice.name.includes('Aaron') ||
-                voice.name.includes('Daniel') || voice.name.includes('George') ||
-                (voice.voiceURI.includes('male') && !voice.voiceURI.includes('female'))
-            );
-            if (maleVoice) {
-                utterance.voice = maleVoice;
-            } else if (voices.length > 1) {
-                utterance.voice = voices.find(v => !v.name.includes('female') && !v.name.includes('woman')) || voices[0];
-            }
+                voice.name.includes('Google US English Male') ||
+                voice.name.includes('Microsoft David') ||
+                voice.name.includes('Google US Male') ||
+                (voice.lang === 'en-US' && (voice.name.includes('male') || voice.name.includes('man')))
+            ) || voices.find(v => v.lang === 'en-US' && !v.name.includes('female')) || voices[0];
+            if (maleVoice) utterance.voice = maleVoice;
         }
         
         window.speechSynthesis.cancel();
@@ -287,7 +287,12 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         const voices = window.speechSynthesis.getVoices();
-        const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('woman')) || voices[0];
+        // 미국 여자 음성 (사용자 역할)
+        const femaleVoice = voices.find(v => 
+            v.name.includes('Google US English Female') ||
+            v.name.includes('Microsoft Zira') ||
+            (v.lang === 'en-US' && (v.name.includes('female') || v.name.includes('woman')))
+        ) || voices.find(v => v.lang === 'en-US' && !v.name.includes('male')) || voices[0];
         if (femaleVoice) utterance.voice = femaleVoice;
         
         window.speechSynthesis.cancel();
