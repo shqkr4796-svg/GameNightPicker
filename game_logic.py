@@ -5448,7 +5448,7 @@ def get_available_monsters(player):
             })
     
     # 등급순 정렬 (높은 등급이 위로)
-    rarity_order = {'레전드리': 0, '유니크': 1, '에픽': 2, '레어': 3}
+    rarity_order = {'신화급': 0, '레전드리': 1, '유니크': 2, '에픽': 3, '레어': 4}
     available.sort(key=lambda x: rarity_order.get(x['rarity'], 999))
     
     return available
