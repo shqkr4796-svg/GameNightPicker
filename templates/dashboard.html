@@ -60,7 +60,7 @@
                                         </div>
                                         <div class="col-6">
                                             <strong>건강:</strong> {{ "%.1f"|format(player['체력']) }}/10<br>
-                                            <strong>기력:</strong> {{ "%.1f"|format(player['기력']) }}/{{ player['최대기력'] }}<br>
+                                            <strong>기력:</strong> {{ player['기력']|int }}/{{ player['최대기력'] }}<br>
                                             <strong>돈:</strong> {{ "{:,}".format(player['돈']) }}원<br>
                                             <strong>스탯:</strong> {{ player['스탯포인트'] }}
                                         </div>
@@ -113,7 +113,7 @@
                                 <div class="progress" style="height: 24px;">
                                     <div class="progress-bar bg-info d-flex align-items-center justify-content-center" 
                                          style="width: {{ (player['기력'] / player['최대기력'] * 100) }}%; font-size: 12px; font-weight: 500;">
-                                        {{ "%.1f"|format(player['기력']) }}/{{ player['최대기력'] }}
+                                        {{ player['기력']|int }}/{{ player['최대기력'] }}
                                     </div>
                                 </div>
                             </div>
