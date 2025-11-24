@@ -5197,17 +5197,17 @@ def get_ai_followup_meaning(drama_data):
 def get_foreign_speakers():
     """외국인 강사 정보"""
     speakers = [
-        {'name': 'SAM', 'image': 'young_idol_man_sam.png', 'voice': 'male1'},
-        {'name': 'OLIVIA', 'image': 'young_idol_woman_olivia.png', 'voice': 'female1'},
-        {'name': 'JAMES', 'image': 'young_idol_man_james.png', 'voice': 'male2'},
-        {'name': 'EMMA', 'image': 'young_idol_woman_emma.png', 'voice': 'female2'},
-        {'name': 'MICHAEL', 'image': 'young_idol_man_michael.png', 'voice': 'male3'},
-        {'name': 'SOPHIA', 'image': 'young_idol_woman_sophia.png', 'voice': 'female3'},
-        {'name': 'ISABELLA', 'image': 'young_idol_woman_isabella.png', 'voice': 'female4'},
-        {'name': 'NOAH', 'image': 'young_idol_man_noah.png', 'voice': 'male4'},
-        {'name': 'LUCAS', 'image': 'young_idol_man_lucas.png', 'voice': 'male5'},
-        {'name': 'MIA', 'image': 'young_idol_woman_mia.png', 'voice': 'female5'},
-        {'name': 'SOPHIE', 'image': 'young_idol_woman_sophie.png', 'voice': 'female6'}
+        {'name': 'SAM', 'image': 'young_idol_man_sam.png', 'voice': 'male1', 'gender': 'male'},
+        {'name': 'OLIVIA', 'image': 'young_idol_woman_olivia.png', 'voice': 'female1', 'gender': 'female'},
+        {'name': 'JAMES', 'image': 'young_idol_man_james.png', 'voice': 'male2', 'gender': 'male'},
+        {'name': 'EMMA', 'image': 'young_idol_woman_emma.png', 'voice': 'female2', 'gender': 'female'},
+        {'name': 'MICHAEL', 'image': 'young_idol_man_michael.png', 'voice': 'male3', 'gender': 'male'},
+        {'name': 'SOPHIA', 'image': 'young_idol_woman_sophia.png', 'voice': 'female3', 'gender': 'female'},
+        {'name': 'ISABELLA', 'image': 'young_idol_woman_isabella.png', 'voice': 'female4', 'gender': 'female'},
+        {'name': 'NOAH', 'image': 'young_idol_man_noah.png', 'voice': 'male4', 'gender': 'male'},
+        {'name': 'LUCAS', 'image': 'young_idol_man_lucas.png', 'voice': 'male5', 'gender': 'male'},
+        {'name': 'MIA', 'image': 'young_idol_woman_mia.png', 'voice': 'female5', 'gender': 'female'},
+        {'name': 'SOPHIE', 'image': 'young_idol_woman_sophie.png', 'voice': 'female6', 'gender': 'female'}
     ]
     return speakers
 
