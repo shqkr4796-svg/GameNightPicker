@@ -203,19 +203,19 @@ def get_random_monster_image(rarity):
     return random.choice(monster_images[rarity])
 
 def get_tier_conditions():
-    """티어별 조건 반환 (업적 포인트 기준)"""
+    """티어별 조건 반환 (업적 포인트 기준 + 몬스터 등급)"""
     return [
-        {'name': '언랭크', 'image': '/static/tier_unranked.png', 'color': 'secondary', 'conditions': {'dungeon': 0, 'real_estate': 0, 'level': 1, 'achievement_points': 0}},
-        {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 3, 'achievement_points': 5}},
-        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 2, 'level': 7, 'achievement_points': 20}},
-        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 3, 'level': 12, 'achievement_points': 40}},
-        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 5, 'level': 18, 'achievement_points': 70}},
-        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 7, 'level': 25, 'achievement_points': 120}},
-        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 10, 'level': 35, 'achievement_points': 161}}
+        {'name': '언랭크', 'image': '/static/tier_unranked.png', 'color': 'secondary', 'conditions': {'dungeon': 0, 'real_estate': 0, 'level': 1, 'achievement_points': 0, 'rare': 0, 'epic': 0, 'unique': 0, 'legendary': 0}},
+        {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 3, 'achievement_points': 5, 'rare': 1, 'epic': 0, 'unique': 0, 'legendary': 0}},
+        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 2, 'level': 7, 'achievement_points': 20, 'rare': 3, 'epic': 1, 'unique': 0, 'legendary': 0}},
+        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 3, 'level': 12, 'achievement_points': 40, 'rare': 5, 'epic': 3, 'unique': 1, 'legendary': 0}},
+        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 5, 'level': 18, 'achievement_points': 70, 'rare': 8, 'epic': 5, 'unique': 3, 'legendary': 0}},
+        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 7, 'level': 25, 'achievement_points': 120, 'rare': 15, 'epic': 10, 'unique': 5, 'legendary': 1}},
+        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 10, 'level': 35, 'achievement_points': 161, 'rare': 25, 'epic': 15, 'unique': 10, 'legendary': 3}}
     ]
 
 def get_player_tier(player):
-    """플레이어 통계에 따른 티어 계산 (업적 포인트 기준)"""
+    """플레이어 통계에 따른 티어 계산 (업적 포인트 + 몬스터 등급)"""
     dungeon_clears = player.get('던전클리어횟수', 0)
     # 여러 부동산 소유 지원
     if isinstance(player.get('부동산들'), list):
@@ -227,6 +227,24 @@ def get_player_tier(player):
     level = player['레벨']
     achievement_points = get_achievement_points(player)
     
+    # 몬스터 등급별 개수 계산
+    monster_counts = {'rare': 0, 'epic': 0, 'unique': 0, 'legendary': 0}
+    compendium = player.get('도감', {})
+    
+    for monster_id in compendium:
+        if monster_id:
+            monster = get_monster_by_id(monster_id)
+            if monster:
+                rarity = monster.get('등급', '레어').lower()
+                if rarity == '레어':
+                    monster_counts['rare'] += 1
+                elif rarity == '에픽':
+                    monster_counts['epic'] += 1
+                elif rarity == '유니크':
+                    monster_counts['unique'] += 1
+                elif rarity == '레전더리':
+                    monster_counts['legendary'] += 1
+    
     conditions = get_tier_conditions()
     
     # 가장 높은 달성 가능한 티어 찾기
@@ -237,7 +255,11 @@ def get_player_tier(player):
         if (dungeon_clears >= req['dungeon'] and 
             real_estate_count >= req['real_estate'] and 
             level >= req['level'] and
-            achievement_points >= req['achievement_points']):
+            achievement_points >= req['achievement_points'] and
+            monster_counts['rare'] >= req['rare'] and
+            monster_counts['epic'] >= req['epic'] and
+            monster_counts['unique'] >= req['unique'] and
+            monster_counts['legendary'] >= req['legendary']):
             current_tier = tier
         else:
             break
