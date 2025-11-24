@@ -241,19 +241,18 @@
 </div>
 
 <script>
-// 새로운 간단한 음성 재생 시스템
+// 오디오 컨텍스트 보호 - cancel() 사용 제거
+let isPlayingAudio = false;
+
 function playAudio() {
     const text = document.getElementById('aiPromptText').textContent;
     const playBtn = event?.target?.closest('button');
     const voiceType = playBtn?.getAttribute('data-voice') || 'female1';
     const playingStatus = document.getElementById('playingStatus');
     
-    if (!text || !('speechSynthesis' in window)) return;
+    if (!text || !('speechSynthesis' in window) || isPlayingAudio) return;
     
-    // 모든 음성 재생 중단
-    window.speechSynthesis.cancel();
-    
-    // 현재 재생 중 표시
+    isPlayingAudio = true;
     if (playingStatus) playingStatus.style.display = 'inline';
     
     // 음성 선택: 남성 = Daniel, 여성 = Google
@@ -292,7 +291,7 @@ function playAudio() {
         selectedVoice = allVoices.find(v => v.lang === 'en-US') || allVoices[0];
     }
     
-    // 음성 재생
+    // 음성 재생 (cancel() 호출 제거 - 오디오 손상 방지)
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     utterance.rate = 1.0;
@@ -304,10 +303,12 @@ function playAudio() {
     }
     
     utterance.onend = () => {
+        isPlayingAudio = false;
         if (playingStatus) playingStatus.style.display = 'none';
     };
     
     utterance.onerror = () => {
+        isPlayingAudio = false;
         if (playingStatus) playingStatus.style.display = 'none';
     };
     
