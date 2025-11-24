@@ -5930,7 +5930,7 @@ def complete_adventure_battle(player, battle_state):
 
 def get_avatars():
     """아바타 목록 가져오기"""
-    return avatars
+    return []
 
 def get_skill_info(skill_name):
     """기술 정보 가져오기"""
