@@ -145,10 +145,19 @@ def check_daily_expression():
     
     # 부분 일치 확인 (사용자 입력이 정답을 포함하면 정답)
     if correct_expression in user_input or user_input in correct_expression:
-        player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
-        flash(f'정답입니다! ✓ (총 {player["일일표현_진도"]}개 완료)', 'success')
+        # 처음 푼 표현만 진도 증가 (중복 방지)
+        learned_indices = player.get('학습한_표현_인덱스', [])
+        is_new = index not in learned_indices
         
-        # 매번 경험치 +10 보상
+        if is_new:
+            learned_indices.append(index)
+            player['학습한_표현_인덱스'] = learned_indices
+            player['일일표현_진도'] = len(learned_indices)
+            flash(f'정답입니다! ✓ (총 {player["일일표현_진도"]}개 학습 완료)', 'success')
+        else:
+            flash(f'정답입니다! ✓ (이미 학습한 표현입니다)', 'info')
+        
+        # 매번 경험치 +10 보상 (중복 학습해도 경험치는 계속 줌)
         exp_gained = 10
         player['경험치'] += exp_gained
         
