@@ -76,8 +76,8 @@
                                                     <div style="flex: 1;">
                                                         <div style="font-weight: 600; color: #1a1a1a; display: flex; align-items: center; gap: 8px;">
                                                             {{ monster.name }}
-                                                            {% set rarity_emoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'} %}
-                                                            <span style="font-size: 0.7rem; color: #999; font-weight: 500;">{{ rarity_emoji.get(monster.rarity, '') }} {{ monster.rarity }}</span>
+                                                            {% set rarity_colors = {'레어': '#4CAF50', '에픽': '#9C27B0', '유니크': '#FFC107', '레전드리': '#F44336', '신화급': '#2196F3'} %}
+                                                            <span style="font-size: 0.7rem; color: {{ rarity_colors.get(monster.rarity, '#999') }}; font-weight: 500;">{{ monster.rarity }}</span>
                                                         </div>
                                                         <div style="font-size: 0.75rem; color: #999;">
                                                             ATK: {{ monster.attack }} | HP: {{ monster.hp }}
