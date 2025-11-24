@@ -4002,8 +4002,8 @@ def get_expression_quiz():
         'correct_index': next(i for i, opt in enumerate(options) if opt['expression'] == correct_expr['expression'])
     }
 
-def get_drama_conversations():
-    """드라마/애니 기반 다중턴 회화 시나리오"""
+def get_drama_conversations_raw():
+    """드라마/애니 기반 다중턴 회화 시나리오 (원본 데이터)"""
     return [
         {
             'scene': '카페에서 처음 만난 사람',
@@ -5067,6 +5067,69 @@ def get_drama_conversations():
         {'scene': '극장 표 구매 라인', 'turns': [{'ai_prompt': 'Two tickets for the evening show, please.', 'ai_meaning': '저녁 공연 표 2장 주세요.', 'user_response': 'Any preferences? Aisle or center?', 'user_meaning': '선호가 있어요? 통로 아니면 중앙?'}, {'ai_prompt': 'Center would be perfect!', 'ai_meaning': '중앙이 좋겠어요!', 'user_response': 'That\'ll be 50 dollars.', 'user_meaning': '50달러입니다.'}]},
         {'scene': '노인 요양원 방문', 'turns': [{'ai_prompt': 'Grandma! I brought you flowers!', 'ai_meaning': '할머니! 꽃을 가져왔어요!'}, {'ai_prompt': 'Oh darling, how wonderful to see you!', 'ai_meaning': '오 얘야, 너를 만나서 정말 좋아!'}, {'ai_prompt': 'How have you been? Are you comfortable here?', 'ai_meaning': '지내시는 거 잘되세요? 여기 편해요?'}, {'ai_prompt': 'The staff is very nice. I\'m settling in well.', 'ai_meaning': '직원들이 정말 친절해요. 잘 적응하고 있어요.'}]}
     ]
+
+def get_drama_conversations():
+    """드라마/애니 기반 회화 (평탄화된 개별 회화)"""
+    return _flatten_drama_conversations(get_drama_conversations_raw())
+
+def _flatten_drama_conversations(raw_conversations):
+    """turns 배열을 개별 회화로 평탄화 + 모든 필수 필드 보장"""
+    flattened = []
+    for scenario in raw_conversations:
+        turns = scenario.get('turns', [])
+        scene = scenario.get('scene', '')
+        
+        for i, turn in enumerate(turns):
+            # 필수 필드 추출
+            ai_prompt = turn.get('ai_prompt', '')
+            ai_meaning = turn.get('ai_meaning', '')
+            user_response = turn.get('user_response', '')
+            user_meaning = turn.get('user_meaning', '')
+            
+            # ai_followup은 다음 턴의 ai_prompt 또는 빈 문자열
+            ai_followup = turns[i+1].get('ai_prompt', '') if i+1 < len(turns) else ''
+            ai_followup_meaning = turns[i+1].get('ai_meaning', '') if i+1 < len(turns) else ''
+            
+            # user_response가 있는 경우만 포함 (사용자가 대답해야 하는 turn)
+            if user_response:
+                flattened.append({
+                    'scene': scene,
+                    'ai_prompt': ai_prompt,
+                    'ai_meaning': ai_meaning,
+                    'user_response': user_response,
+                    'user_meaning': user_meaning,
+                    'ai_followup': ai_followup,
+                    'ai_followup_meaning': ai_followup_meaning
+                })
+    
+    return flattened
+
+# 원본 함수를 다시 정의 (평탄화된 버전 반환)
+_raw_drama_conversations = [
+    {
+        'scene': '카페에서 처음 만난 사람',
+        'turns': [
+            {
+                'ai_prompt': 'Hey, is this seat taken?',
+                'ai_meaning': '안녕, 이 자리 비었어요?',
+                'user_response': 'No, please sit down.',
+                'user_meaning': '아니요, 앉으세요.'
+            },
+            {
+                'ai_prompt': 'Thanks. So, what brings you here today?',
+                'ai_meaning': '감사합니다. 그래서 오늘 뭐 때문에 여기 왔어요?',
+                'user_response': 'I come here to study.',
+                'user_meaning': '나는 공부하러 여기 와요.'
+            },
+            {
+                'ai_prompt': 'That sounds nice. What are you studying?',
+                'ai_meaning': '좋네요. 뭘 공부하고 있어요?',
+                'user_response': 'English language and culture.',
+                'user_meaning': '영어와 문화를 공부합니다.'
+            }
+        ]
+    }
+]
 
 def get_conversation_prompt(drama_data=None):
     """드라마/애니 기반 AI 대화 프롬프트"""
