@@ -1620,10 +1620,17 @@ def start_adventure():
     
     player = session['player_data']
     stage_id = request.form.get('stage_id', type=int)
-    selected_monster_ids = request.form.getlist('monster_ids')
+    monster_ids_str = request.form.get('monster_ids', '')
     
-    if not stage_id or not selected_monster_ids:
+    if not stage_id or not monster_ids_str:
         flash('스테이지와 몬스터를 선택해주세요.', 'error')
+        return redirect(url_for('adventure'))
+    
+    # 쉼표로 구분된 몬스터 IDs를 리스트로 변환
+    selected_monster_ids = [mid.strip() for mid in monster_ids_str.split(',') if mid.strip()]
+    
+    if not selected_monster_ids:
+        flash('몬스터를 선택해주세요.', 'error')
         return redirect(url_for('adventure'))
     
     # 최대 3마리 확인
