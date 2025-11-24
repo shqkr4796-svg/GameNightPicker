@@ -75,7 +75,7 @@
                 </div>
 
                 <!-- 몬스터 이미지 -->
-                <div class="card-body text-center">
+                <div class="card-body text-center d-flex flex-column align-items-center">
                     {% if monster.get('이미지') and monster['이미지'] != '' %}
                         <img src="{{ monster['이미지'] }}" alt="{{ monster['이름'] }}" 
                              class="monster-gallery-image" style="width: 180px; height: 180px; object-fit: contain; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
