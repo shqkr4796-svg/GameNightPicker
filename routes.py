@@ -1765,10 +1765,12 @@ def adventure_battle():
     
     battle_state = session['battle_state']
     player = session['player_data']
+    skills_info = game_logic.get_all_skills_info()
     
     return render_template('adventure_battle.html',
                          battle_state=battle_state,
-                         player=player)
+                         player=player,
+                         skills_info=skills_info)
 
 @app.route('/adventure/action', methods=['POST'])
 def adventure_action():
@@ -1845,3 +1847,21 @@ def adventure_result():
     return render_template('adventure_result.html',
                          battle_state=battle_state,
                          player=player)
+
+@app.route('/adventure/delete_skill', methods=['POST'])
+def delete_skill():
+    """기술 삭제 (4개 초과시)"""
+    if 'player_data' not in session:
+        return jsonify({'success': False, 'error': '플레이어 정보 없음'})
+    
+    player = session['player_data']
+    skill_to_remove = request.form.get('skill_name', '')
+    
+    if skill_to_remove in player.get('모험_기술', []):
+        player['모험_기술'].remove(skill_to_remove)
+        session['player_data'] = player
+        session.modified = True
+        game_logic.save_game(player)
+        return jsonify({'success': True, 'message': f'{skill_to_remove} 기술이 삭제되었습니다.'})
+    
+    return jsonify({'success': False, 'error': '해당 기술을 찾을 수 없습니다.'})

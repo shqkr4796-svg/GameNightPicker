@@ -5665,3 +5665,13 @@ def complete_adventure_battle(player, battle_state):
 def get_avatars():
     """아바타 목록 가져오기"""
     return avatars
+
+def get_skill_info(skill_name):
+    """기술 정보 가져오기"""
+    from data.adventure_data import SKILLS
+    return SKILLS.get(skill_name, {})
+
+def get_all_skills_info():
+    """모든 기술 정보 가져오기"""
+    from data.adventure_data import SKILLS
+    return SKILLS

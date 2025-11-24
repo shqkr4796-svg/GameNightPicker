@@ -133,7 +133,7 @@
                                 <!-- 슬롯 1 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 0 %}
-                                        <button onclick="useSkill('{{ battle_state.player_skills[0] }}')" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';">
+                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[0] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[0] }}')">
                                             {{ battle_state.player_skills[0] }}
                                         </button>
                                     {% else %}
@@ -143,7 +143,7 @@
                                 <!-- 슬롯 2 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 1 %}
-                                        <button onclick="useSkill('{{ battle_state.player_skills[1] }}')" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';">
+                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[1] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[1] }}')">
                                             {{ battle_state.player_skills[1] }}
                                         </button>
                                     {% else %}
@@ -153,7 +153,7 @@
                                 <!-- 슬롯 3 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 2 %}
-                                        <button onclick="useSkill('{{ battle_state.player_skills[2] }}')" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';">
+                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[2] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[2] }}')">
                                             {{ battle_state.player_skills[2] }}
                                         </button>
                                     {% else %}
@@ -163,7 +163,7 @@
                                 <!-- 슬롯 4 -->
                                 <div>
                                     {% if battle_state.player_skills|length > 3 %}
-                                        <button onclick="useSkill('{{ battle_state.player_skills[3] }}')" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';">
+                                        <button onclick="showSkillInfo('{{ battle_state.player_skills[3] }}')" title="기술 정보 보기" class="btn w-100" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';" ondblclick="useSkill('{{ battle_state.player_skills[3] }}')">
                                             {{ battle_state.player_skills[3] }}
                                         </button>
                                     {% else %}
@@ -171,6 +171,7 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            <p style="color: #999; font-size: 0.7rem; margin-top: 8px;">클릭으로 정보 보기, 더블클릭으로 사용</p>
                         </div>
                     {% else %}
                         <div style="text-align: center; padding: 15px; background-color: #2a2a2a; border-radius: 6px; color: #999; border: 1px solid #444;">
@@ -204,7 +205,100 @@
     </div>
 </div>
 
+<!-- 기술 정보 모달 -->
+<div id="skillModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; padding: 20px;">
+    <div style="background-color: #2a2a2a; border-radius: 8px; padding: 20px; max-width: 400px; margin: auto; margin-top: 50px; border: 2px solid #555; color: white;">
+        <h5 id="modalSkillName" style="color: #bbb; font-weight: 700; margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase;"></h5>
+        
+        <div style="background-color: #333; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+            <p id="modalSkillDesc" style="font-size: 0.85rem; color: #ccc; margin: 0; line-height: 1.5;"></p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div style="background-color: #333; padding: 10px; border-radius: 6px; text-align: center;">
+                <p style="color: #999; font-size: 0.7rem; margin-bottom: 5px;">등급</p>
+                <p id="modalSkillRarity" style="color: #bbb; font-weight: 700; margin: 0;"></p>
+            </div>
+            <div style="background-color: #333; padding: 10px; border-radius: 6px; text-align: center;">
+                <p style="color: #999; font-size: 0.7rem; margin-bottom: 5px;">데미지</p>
+                <p id="modalSkillDamage" style="color: #bbb; font-weight: 700; margin: 0;"></p>
+            </div>
+        </div>
+        
+        <div id="skillUseContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button onclick="closeSkillModal(); useSkill(currentSkill)" class="btn w-100" style="background-color: #4CAF50; color: white; border: none; border-radius: 6px; padding: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem;" onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+                사용
+            </button>
+            <button onclick="closeSkillModal(); deleteSkill(currentSkill)" id="deleteSkillBtn" class="btn w-100" style="background-color: #FF6B6B; color: white; border: none; border-radius: 6px; padding: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem;" onmouseover="this.style.backgroundColor='#ee5a52'" onmouseout="this.style.backgroundColor='#FF6B6B'">
+                삭제
+            </button>
+        </div>
+        
+        <button onclick="closeSkillModal()" class="btn w-100" style="background-color: #333; color: #999; border: 1px solid #555; border-radius: 6px; padding: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem; margin-top: 10px;">
+            닫기
+        </button>
+    </div>
+</div>
+
 <script>
+let currentSkill = '';
+const skillsInfo = {{ skills_info | tojson }};
+const playerSkills = {{ battle_state.player_skills | tojson }};
+
+function showSkillInfo(skillName) {
+    currentSkill = skillName;
+    const skill = skillsInfo[skillName];
+    
+    if (skill) {
+        document.getElementById('modalSkillName').textContent = skill['한글'] || skillName;
+        document.getElementById('modalSkillDesc').textContent = skill['설명'] + '\n' + skill['효과'];
+        document.getElementById('modalSkillRarity').textContent = skill['등급'];
+        document.getElementById('modalSkillDamage').textContent = (skill['공격력_보정'] * 100).toFixed(0) + '%';
+        
+        // 4개 초과시만 삭제 버튼 표시
+        const deleteBtn = document.getElementById('deleteSkillBtn');
+        if (playerSkills.length > 4) {
+            deleteBtn.style.display = 'block';
+        } else {
+            deleteBtn.style.display = 'none';
+        }
+        
+        document.getElementById('skillModal').style.display = 'block';
+    }
+}
+
+function closeSkillModal() {
+    document.getElementById('skillModal').style.display = 'none';
+}
+
+function deleteSkill(skillName) {
+    if (playerSkills.length <= 4) {
+        alert('4개 이하의 기술만 보유할 수 있습니다.');
+        return;
+    }
+    
+    const form = new FormData();
+    form.append('skill_name', skillName);
+    
+    fetch("{{ url_for('delete_skill') }}", {
+        method: 'POST',
+        body: form
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('오류: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다.');
+    });
+}
+
 function useSkill(skillName) {
     const form = new FormData();
     form.append('action_type', 'skill');
@@ -237,5 +331,12 @@ function useSkill(skillName) {
         alert('오류가 발생했습니다.');
     });
 }
+
+// 모달 외부 클릭시 닫기
+document.getElementById('skillModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeSkillModal();
+    }
+});
 </script>
 {% endblock %}
