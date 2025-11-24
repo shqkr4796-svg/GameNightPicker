@@ -337,6 +337,80 @@ function flashMonsterImage(elementId) {
     }, 300);
 }
 
+function updateProgressCircles(battleState) {
+    // 동그라미 업데이트
+    const defeated = battleState.defeated_monsters || 0;
+    const enemyCount = battleState.enemy_count || 3;
+    const unusedSlots = 5 - enemyCount;
+    const defeatedTotal = unusedSlots + defeated;
+    const remainingMonsters = enemyCount - defeated;
+    
+    // 기존 동그라미 제거
+    const circleContainer = document.querySelector('[style*="display: flex; justify-content: center; gap: 3px;"]');
+    if (circleContainer) {
+        circleContainer.innerHTML = '';
+        
+        // 회색 동그라미 추가
+        for (let i = 0; i < defeatedTotal; i++) {
+            const circle = document.createElement('div');
+            circle.style.cssText = 'width: 8px; height: 8px; border-radius: 50%; background-color: #999; border: 1px solid #666;';
+            circleContainer.appendChild(circle);
+        }
+        
+        // 빨간색 동그라미 추가
+        for (let i = 0; i < remainingMonsters; i++) {
+            const circle = document.createElement('div');
+            circle.style.cssText = 'width: 8px; height: 8px; border-radius: 50%; background-color: #FF6B6B; border: 1px solid #666;';
+            circleContainer.appendChild(circle);
+        }
+    }
+}
+
+function updateBattleUI(battleState) {
+    // HP 바 업데이트
+    const playerHpPercent = (battleState.player_monster.current_hp / battleState.player_monster.max_hp * 100);
+    const enemyHpPercent = (battleState.enemy_monster.current_hp / battleState.enemy_monster.max_hp * 100);
+    
+    document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
+    document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
+    
+    // HP 텍스트 업데이트
+    const playerHpTexts = document.querySelectorAll('span');
+    const enemyHpTexts = document.querySelectorAll('span');
+    
+    // 적 몬스터 HP 텍스트
+    const enemyCards = document.querySelectorAll('[style*="flex-direction: row-reverse"]');
+    if (enemyCards.length > 0) {
+        const hpSpans = enemyCards[0].querySelectorAll('span');
+        for (let span of hpSpans) {
+            if (span.textContent.includes('/')) {
+                span.textContent = battleState.enemy_monster.current_hp + ' / ' + battleState.enemy_monster.max_hp;
+                break;
+            }
+        }
+    }
+    
+    // 플레이어 몬스터 HP 텍스트
+    const playerCards = document.querySelectorAll('div[style*="flex: 1; text-align: left;"]');
+    if (playerCards.length > 0) {
+        const hpSpans = playerCards[0].querySelectorAll('span');
+        for (let span of hpSpans) {
+            if (span.textContent.includes('/')) {
+                span.textContent = battleState.player_monster.current_hp + ' / ' + battleState.player_monster.max_hp;
+                break;
+            }
+        }
+    }
+    
+    // 적 몬스터에 피해를 입었으면 적 이미지 플래시
+    if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
+        flashMonsterImage('enemyMonsterImg');
+    }
+    
+    // 동그라미 업데이트
+    updateProgressCircles(battleState);
+}
+
 function useSkill(skillName) {
     const form = new FormData();
     form.append('action_type', 'skill');
@@ -349,22 +423,37 @@ function useSkill(skillName) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const battle = data.battle_state;
+            const battleState = data.battle_state;
             
-            // HP 바 업데이트
-            const playerHpPercent = (battle.player_monster.current_hp / battle.player_monster.max_hp * 100);
-            const enemyHpPercent = (battle.enemy_monster.current_hp / battle.enemy_monster.max_hp * 100);
+            // 전투 UI 업데이트
+            updateBattleUI(battleState);
             
-            document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
-            document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
-            
-            // 적 몬스터에 피해를 입었으면 적 이미지 플래시
-            if (battle.enemy_monster.current_hp < battle.enemy_monster.max_hp) {
-                flashMonsterImage('enemyMonsterImg');
+            // 게임 오버 상태 확인
+            if (data.game_over) {
+                setTimeout(() => {
+                    if (data.winner === 'player') {
+                        alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                        window.location.href = "{{ url_for('adventure') }}";
+                    } else {
+                        alert('패배했습니다. 다시 시도하세요.');
+                        window.location.href = "{{ url_for('adventure') }}";
+                    }
+                }, 500);
+            } else {
+                // 플레이어 턴인 경우 기술 버튼 활성화, 적의 턴인 경우 비활성화
+                const actionContainer = document.getElementById('actionContainer');
+                if (actionContainer) {
+                    if (battleState.player_turn) {
+                        actionContainer.innerHTML = `
+                            <div style="text-align: center; padding: 15px; background-color: #2a2a2a; border-radius: 6px; color: #999; border: 1px solid #444;">
+                                <p style="font-size: 0.85rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">적의 턴입니다...</p>
+                            </div>
+                        `;
+                        // 잠시 후 페이지 새로고침
+                        setTimeout(() => location.reload(), 2000);
+                    }
+                }
             }
-            
-            // 페이지 즉시 새로고침
-            location.reload();
         } else {
             alert('오류: ' + data.error);
         }
