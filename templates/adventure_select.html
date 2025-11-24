@@ -74,7 +74,11 @@
                                                         {% endif %}
                                                     </div>
                                                     <div style="flex: 1;">
-                                                        <div style="font-weight: 600; color: #1a1a1a;">{{ monster.name }}</div>
+                                                        <div style="font-weight: 600; color: #1a1a1a; display: flex; align-items: center; gap: 8px;">
+                                                            {{ monster.name }}
+                                                            {% set rarity_emoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'} %}
+                                                            <span style="font-size: 0.7rem; color: #999; font-weight: 500;">{{ rarity_emoji.get(monster.rarity, '') }} {{ monster.rarity }}</span>
+                                                        </div>
                                                         <div style="font-size: 0.75rem; color: #999;">
                                                             ATK: {{ monster.attack }} | HP: {{ monster.hp }}
                                                         </div>
