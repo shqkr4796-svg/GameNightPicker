@@ -172,24 +172,15 @@
                     <div class="meaning-text" id="userMeaningText">{{ current_turn.user_meaning }}</div>
                 </div>
 
-                <!-- 음성 인식 섹션 -->
+                <!-- 텍스트 입력 섹션 -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="form-group">
-                            <label class="form-label"><strong>🎤 음성 인식:</strong></label>
-                            <button type="button" id="micBtn" class="btn btn-success w-100 mb-2">
-                                <i class="fas fa-microphone me-2"></i>음성 인식 시작
+                            <label class="form-label"><strong>✍️ 대사 입력:</strong></label>
+                            <input type="text" id="userInputText" class="form-control mb-2" placeholder="위의 대사를 입력하세요">
+                            <button type="button" id="submitBtn" class="btn btn-success w-100">
+                                <i class="fas fa-check me-2"></i>답변 확인
                             </button>
-                            <button type="button" id="stopBtn" class="btn btn-danger w-100 mb-2" style="display: none;">
-                                <i class="fas fa-stop me-2"></i>음성 인식 중지
-                            </button>
-                            <div id="recognizedText" class="alert alert-info" style="display: none; min-height: 70px;">
-                                <p class="text-muted small mb-1">인식된 내용:</p>
-                                <p id="textContent" class="mb-0"></p>
-                            </div>
-                            <div id="statusMessage" class="alert alert-secondary" style="display: none;">
-                                <small id="statusText"></small>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -237,73 +228,36 @@
 </div>
 
 <script>
-// 음성 인식 초기화
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = null;
-let isListening = false;
-
-// Recognition 객체 새로 생성 함수 (오디오 컨텍스트 손상 방지)
-function initializeRecognition() {
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.continuous = true;
-        recognition.interimResults = true;
-    }
-    return recognition;
-}
-
-// 초기 recognition 생성
-initializeRecognition();
-
 document.addEventListener('DOMContentLoaded', function() {
-    const micBtn = document.getElementById('micBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const recognizedText = document.getElementById('recognizedText');
-    const textContent = document.getElementById('textContent');
-    const statusMessage = document.getElementById('statusMessage');
-    const statusText = document.getElementById('statusText');
+    const userInputText = document.getElementById('userInputText');
+    const submitBtn = document.getElementById('submitBtn');
     const resultFeedback = document.getElementById('resultFeedback');
     const resultMessage = document.getElementById('resultMessage');
     const nextTurnContainer = document.getElementById('nextTurnContainer');
     const nextTurnBtn = document.getElementById('nextTurnBtn');
     const completionContainer = document.getElementById('completionContainer');
     
-    // 현재 턴의 정답 (전역으로 접근 가능하게 만들기)
+    // 현재 턴의 정답
     let targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
-    if (!recognition) {
-        micBtn.disabled = true;
-        statusMessage.style.display = 'block';
-        statusText.textContent = '이 브라우저는 음성 인식을 지원하지 않습니다.';
-        return;
-    }
+    // 답변 확인 버튼
+    submitBtn.addEventListener('click', function() {
+        const userInput = userInputText.value.toLowerCase().trim();
+        if (!userInput) {
+            resultFeedback.style.display = 'block';
+            resultMessage.className = 'alert alert-warning';
+            resultMessage.innerHTML = '<strong>⚠️ 입력해주세요</strong>';
+            return;
+        }
+        checkAnswer(userInput);
+    });
     
-    
-    // 음성 인식 시작
-    micBtn.addEventListener('click', function() {
-        if (!isListening) {
-            isListening = true;
-            micBtn.style.display = 'none';
-            stopBtn.style.display = 'block';
-            recognizedText.style.display = 'block';
-            resultFeedback.style.display = 'none';
-            nextTurnContainer.style.display = 'none';
-            textContent.textContent = '음성 인식 중...';
-            recognition.start();
+    // Enter 키로도 제출 가능
+    userInputText.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            submitBtn.click();
         }
     });
-    
-    // 음성 인식 중지
-    stopBtn.addEventListener('click', function() {
-        isListening = false;
-        micBtn.style.display = 'block';
-        stopBtn.style.display = 'none';
-        recognition.stop();
-    });
-    
-    // 초기 recognition 리스너 설정
-    setupRecognitionListeners();
     
     // 정답 확인
     function checkAnswer(userInput) {
@@ -332,16 +286,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 다음 턴 로드
     function loadNextTurn() {
-        // 1. 기존 음성 인식 시스템 정리
-        if (recognition) {
-            try {
-                recognition.stop();
-                isListening = false;
-            } catch(e) {
-                console.error('Recognition stop error:', e);
-            }
-        }
-        
         fetch('{{ url_for("next_turn") }}', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
@@ -370,80 +314,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('progressBar').style.width = progress + '%';
                     
                     // UI 리셋
-                    recognizedText.style.display = 'none';
-                    textContent.textContent = '';
+                    userInputText.value = '';
                     resultFeedback.style.display = 'none';
                     resultMessage.innerHTML = '';
                     nextTurnContainer.style.display = 'none';
-                    statusMessage.style.display = 'none';
-                    
-                    // 음성인식 UI 리셋
-                    isListening = false;
-                    micBtn.style.display = 'block';
-                    stopBtn.style.display = 'none';
                     
                     // 새로운 턴 정답으로 업데이트
                     targetResponse = turn.user_response.toLowerCase().trim();
-                    
-                    // 2. 새로운 recognition 객체 생성 (오디오 컨텍스트 초기화)
-                    initializeRecognition();
-                    
-                    // 3. 새 recognition 객체에 이벤트 리스너 다시 설정
-                    setupRecognitionListeners();
                 }
             }
         });
-    }
-    
-    // Recognition 이벤트 리스너 설정 함수
-    function setupRecognitionListeners() {
-        if (!recognition) return;
-        
-        // 음성 인식 결과
-        recognition.onresult = function(event) {
-            let interimTranscript = '';
-            let finalTranscript = '';
-            
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalTranscript += transcript + ' ';
-                } else {
-                    interimTranscript += transcript;
-                }
-            }
-            
-            const currentText = finalTranscript || interimTranscript;
-            textContent.textContent = currentText;
-            
-            if (finalTranscript) {
-                checkAnswer(finalTranscript.toLowerCase().trim());
-            }
-        };
-        
-        // 음성 인식 에러
-        recognition.onerror = function(event) {
-            if (event.error !== 'aborted') {
-                statusMessage.style.display = 'block';
-                const errorMessages = {
-                    'no-speech': '음성을 감지하지 못했습니다. 다시 시도해주세요.',
-                    'audio-capture': '마이크에 접근할 수 없습니다.',
-                    'network': '네트워크 오류가 발생했습니다.',
-                    'permission-denied': '마이크 권한이 거부되었습니다.'
-                };
-                statusText.textContent = errorMessages[event.error] || '오류: ' + event.error;
-            }
-            isListening = false;
-            micBtn.style.display = 'block';
-            stopBtn.style.display = 'none';
-        };
-        
-        // 음성 인식 종료
-        recognition.onend = function() {
-            isListening = false;
-            micBtn.style.display = 'block';
-            stopBtn.style.display = 'none';
-        };
     }
 });
 </script>
