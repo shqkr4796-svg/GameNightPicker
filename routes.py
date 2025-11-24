@@ -71,24 +71,19 @@ def daily_expressions():
 
 @app.route('/conversation_practice')
 def conversation_practice():
-    """대화형 표현 연습"""
+    """드라마/애니 기반 대화 연습"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
-    expressions = game_logic.get_daily_expressions()
     speakers = game_logic.get_foreign_speakers()
     
-    # 랜덤 표현과 외국인 선택
-    random_expr = random.choice(expressions)
+    # 드라마 시나리오 선택
+    drama_data = random.choice(game_logic.get_drama_conversations())
     random_speaker = random.choice(speakers)
-    alien_sentence = game_logic.get_conversation_prompt(random_expr)
-    alien_translation = game_logic.get_conversation_translation(random_expr['expression'])
     
     return render_template('conversation_practice.html',
-                         expression=random_expr,
-                         alien_sentence=alien_sentence,
-                         alien_translation=alien_translation,
+                         drama_data=drama_data,
                          speaker=random_speaker,
                          player=player)
 
@@ -1586,3 +1581,31 @@ def submit_expression_quiz():
     game_logic.save_game(player)
     
     return redirect(url_for('daily_expressions'))
+
+@app.route('/add_exp', methods=['POST'])
+def add_exp():
+    """경험치 추가 (음성 대화 연습)"""
+    if 'player_data' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'})
+    
+    try:
+        data = request.get_json()
+        exp = data.get('exp', 10)
+        
+        player = session['player_data']
+        player['경험치'] += exp
+        
+        # 레벨업 확인
+        while player['경험치'] >= player['경험치최대']:
+            player['경험치'] -= player['경험치최대']
+            player['레벨'] += 1
+            player['경험치최대'] = int(player['경험치최대'] * 1.1)
+            player['스탯포인트'] += 5
+        
+        session['player_data'] = player
+        session.modified = True
+        game_logic.save_game(player)
+        
+        return jsonify({'success': True, 'exp': exp, 'level': player['레벨']})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})

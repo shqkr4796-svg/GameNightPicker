@@ -4002,77 +4002,83 @@ def get_expression_quiz():
         'correct_index': next(i for i, opt in enumerate(options) if opt['expression'] == correct_expr['expression'])
     }
 
-def get_conversation_prompt(expression_data):
-    """표현에 맞는 대화 프롬프트 생성"""
-    conversation_starters = {
-        'Break the ice': "I'm new here and don't know anyone. What should I do?",
-        'Piece of cake': "This assignment looks really hard. How do you feel about it?",
-        'Under the weather': "I haven't seen you in days. Is everything okay?",
-        'Cost an arm and a leg': "Have you seen the prices at that new restaurant?",
-        'Hit the books': "The exam is next week. What are you planning to do?",
-        'On cloud nine': "You look so happy today! What happened?",
-        'It rains cats and dogs': "Look at this weather! What do you think?",
-        'Go the extra mile': "We need to finish this project on time. Are you willing to work hard?",
-        'No pain, no gain': "Training is really tough. Should I keep going?",
-        'Better late than never': "I know I'm late with this report, but I finished it!",
-        'Spill the beans': "You look like you have something to tell me!",
-        'Bite the bullet': "I have to make a difficult decision. What do you think?",
-        'See eye to eye': "You and I have different opinions about this project.",
-        'Give someone a hand': "I have too many boxes to carry. Can you help?",
-        'Keep your fingers crossed': "I'm taking the test tomorrow. Wish me luck!",
-        'Catch you later': "I need to go now. See you soon!",
-        'No worries': "I'm sorry I made a mistake.",
-        'That is piece of cake': "Do you think that problem is difficult?",
-        'Once in a blue moon': "How often do you go on vacation?",
-        'Get the ball rolling': "We should start this new project soon.",
-        'Speak of the devil': "I was just thinking about you!",
-        'Couldn\'t care less': "What do you think about this gossip?",
-        'Hang in there': "I'm having a really tough time.",
-        'Just a minute': "Wait, I need to ask you something!",
-        'Let me know': "I need your opinion on this.",
-        'Long time no see': "Hey, I haven't seen you in forever!",
-        'By the way': "Oh, one more thing before you leave!",
-        'How about you': "I love pizza. What's your favorite food?",
-        'I promise': "Will you really help me finish this?",
-        'That sounds great': "Would you like to go to the beach tomorrow?"
-    }
-    return conversation_starters.get(expression_data['expression'], "How would you respond to this?")
+def get_drama_conversations():
+    """드라마/애니 기반 실제 회화 시나리오"""
+    return [
+        {
+            'scene': '카페에서 처음 만난 사람',
+            'ai_prompt': 'Hey, is this seat taken?',
+            'ai_meaning': '안녕, 이 자리 비었어요?',
+            'user_response': 'No, please sit down.',
+            'user_meaning': '아니요, 앉으세요.',
+            'ai_followup': 'Thanks. So, what brings you here today?',
+            'ai_followup_meaning': '감사합니다. 그래서 오늘 뭐 때문에 여기 왔어요?'
+        },
+        {
+            'scene': '회사 면접',
+            'ai_prompt': 'Tell me about your strengths.',
+            'ai_meaning': '당신의 장점에 대해 말씀해주세요.',
+            'user_response': "I'm a quick learner and very dedicated.",
+            'user_meaning': '저는 빨리 배우고 매우 헌신적입니다.',
+            'ai_followup': 'That\'s great. Can you give me an example?',
+            'ai_followup_meaning': '그건 좋은데요. 예시를 들어줄 수 있어요?'
+        },
+        {
+            'scene': '레스토랑에서 주문',
+            'ai_prompt': 'What would you like to order?',
+            'ai_meaning': '주문하시겠어요?',
+            'user_response': "I'll have the grilled salmon, please.",
+            'user_meaning': '그릴에 구운 연어로 주세요.',
+            'ai_followup': 'Good choice. Would you like anything to drink?',
+            'ai_followup_meaning': '좋은 선택이에요. 마실 것도 주시겠어요?'
+        },
+        {
+            'scene': '여행지에서 길을 묻는 중',
+            'ai_prompt': 'Are you lost?',
+            'ai_meaning': '길을 잃으셨어요?',
+            'user_response': "Yes, I'm looking for the train station.",
+            'user_meaning': '네, 기차역을 찾고 있어요.',
+            'ai_followup': "It's just two blocks away. Turn right at the corner.",
+            'ai_followup_meaning': '바로 2블록 떨어진 곳이에요. 모퉁이에서 오른쪽으로 돌아가세요.'
+        },
+        {
+            'scene': '친구와의 재회',
+            'ai_prompt': "I haven't seen you in years!",
+            'ai_meaning': '몇 년 만이다!',
+            'user_response': 'I know! How have you been?',
+            'user_meaning': '알아요! 잘 지냈어요?',
+            'ai_followup': 'Great! We should catch up over coffee.',
+            'ai_followup_meaning': '좋아! 커피하면서 얘기해야겠다.'
+        }
+    ]
 
-def get_conversation_translation(expression_name):
-    """대화 프롬프트의 한글 해석"""
-    translations = {
-        'Break the ice': "나는 여기서 아무도 모르는 새로운 사람입니다. 뭘 해야 할까요?",
-        'Piece of cake': "이 과제가 정말 어려워 보이는데, 당신은 어떻게 생각하세요?",
-        'Under the weather': "며칠 동안 당신을 못 봤는데, 괜찮아요?",
-        'Cost an arm and a leg': "그 새로운 레스토랑 가격을 봤나요?",
-        'Hit the books': "시험이 다음 주네요. 뭘 할 계획이에요?",
-        'On cloud nine': "오늘 정말 행복해 보이는데, 뭐가 있었어요?",
-        'It rains cats and dogs': "이 날씨 봤어요? 어떻게 생각하세요?",
-        'Go the extra mile': "이 프로젝트를 제 시간에 마쳐야 하는데, 열심히 일할 의향이 있어요?",
-        'No pain, no gain': "훈련이 정말 힘든데, 계속해야 할까요?",
-        'Better late than never': "이 보고서가 늦었지만, 완료했어요!",
-        'Spill the beans': "뭔가 말하고 싶은 게 있는 것 같은데!",
-        'Bite the bullet': "어려운 결정을 내려야 하는데, 어떻게 생각하세요?",
-        'See eye to eye': "우리는 이 프로젝트에 대해 의견이 다르네요.",
-        'Give someone a hand': "박스가 너무 많아서 옮길 수 없어요. 도와줄 수 있어요?",
-        'Keep your fingers crossed': "내일 시험을 보는데, 응원해 주세요!",
-        'Catch you later': "이제 가야 해요. 곧 봐요!",
-        'No worries': "실수해서 미안해요.",
-        'That is piece of cake': "그 문제가 어렵다고 생각해요?",
-        'Once in a blue moon': "얼마나 자주 휴가를 떠나세요?",
-        'Get the ball rolling': "새 프로젝트를 곧 시작해야 할 것 같은데요.",
-        'Speak of the devil': "너의 얘기를 하고 있었어!",
-        'Couldn\'t care less': "이 소문에 대해 어떻게 생각해요?",
-        'Hang in there': "정말 힘든 시간을 보내고 있어요.",
-        'Just a minute': "잠깐만, 뭔가 물어볼 게 있어!",
-        'Let me know': "당신의 의견이 필요해요.",
-        'Long time no see': "오랜만이야, 잘 지냈어?",
-        'By the way': "가기 전에 한 가지 더!",
-        'How about you': "나는 피자를 좋아해. 너는 어떤 음식을 좋아해?",
-        'I promise': "정말 이것을 끝낼 때까지 도와줄 거야?",
-        'That sounds great': "내일 해변에 가는 거 어때?"
-    }
-    return translations.get(expression_name, "이것에 대해 어떻게 대답하시겠어요?")
+def get_conversation_prompt(drama_data=None):
+    """드라마/애니 기반 AI 대화 프롬프트"""
+    if drama_data is None:
+        drama_data = random.choice(get_drama_conversations())
+    return drama_data['ai_prompt']
+
+def get_conversation_translation(drama_data=None):
+    """드라마/애니 기반 AI 대화 한글 번역"""
+    if drama_data is None:
+        drama_data = random.choice(get_drama_conversations())
+    return drama_data['ai_meaning']
+
+def get_user_response_prompt(drama_data):
+    """사용자가 말해야 할 정답 문장"""
+    return drama_data['user_response']
+
+def get_user_response_meaning(drama_data):
+    """사용자 정답 문장의 한글 의미"""
+    return drama_data['user_meaning']
+
+def get_ai_followup(drama_data):
+    """정답 후 AI의 후속 대사"""
+    return drama_data['ai_followup']
+
+def get_ai_followup_meaning(drama_data):
+    """AI 후속 대사의 한글 의미"""
+    return drama_data['ai_followup_meaning']
 
 def get_foreign_speakers():
     """외국인 강사 정보"""

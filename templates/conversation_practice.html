@@ -4,99 +4,132 @@
 
 {% block content %}
 <style>
-    .alien-message {
-        position: relative;
-        min-height: 100px;
+    .conversation-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .speaker-message {
+        background: #e7f3ff;
+        border-left: 4px solid #0066cc;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+    }
+    
+    .user-message {
+        background: #fff8e7;
+        border-left: 4px solid #ff9900;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+    }
+    
+    .response-prompt {
+        background: #f0f8ff;
+        border: 2px dashed #0066cc;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        text-align: center;
+    }
+    
+    .response-text {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #0066cc;
+        margin: 10px 0;
+    }
+    
+    .meaning-text {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 8px;
+        font-style: italic;
+    }
+    
+    .button-group {
         display: flex;
-        align-items: center;
-        cursor: pointer;
-        user-select: none;
-        -webkit-user-select: none;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
     }
     
-    .alien-english {
-        transition: opacity 0.3s ease;
+    .status-success {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
     }
     
-    .alien-korean {
-        position: absolute;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
+    .status-error {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
     }
     
-    .alien-message.revealed .alien-english {
-        opacity: 0;
-    }
-    
-    .alien-message.revealed .alien-korean {
-        opacity: 1;
-    }
-    
-    .play-button {
-        margin-left: 10px;
-        padding: 6px 12px;
-        font-size: 14px;
+    .status-info {
+        background: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
     }
 </style>
 
 <div class="row">
-    <div class="col-12 col-lg-8 offset-lg-2">
+    <div class="col-12 col-lg-8 offset-lg-2 conversation-container">
         <!-- 헤더 -->
         <div class="card mb-4">
             <div class="card-header bg-success text-white">
                 <h4 class="mb-0">
-                    <i class="fas fa-users me-2"></i>외국인과 대화 연습
+                    <i class="fas fa-microphone me-2"></i>드라마/애니 회화 연습
                 </h4>
             </div>
             <div class="card-body text-center">
-                <p class="text-muted mb-2">학습한 표현으로 자연스럽게 대화해보세요!</p>
-                <p class="text-muted mb-0">음성 인식으로 자유롭게 말씀해주세요</p>
+                <p class="text-muted mb-2"><strong>장면:</strong> {{ drama_data.scene }}</p>
+                <p class="text-muted mb-0">음성으로 대사를 말해서 정답하세요!</p>
             </div>
         </div>
 
         <!-- 대화 박스 -->
         <div class="card mb-4">
             <div class="card-body">
-                <!-- 외국인 말 -->
+                <!-- 외국인(AI) 첫 번째 대사 -->
                 <div class="row mb-4">
-                    <div class="col-12 col-sm-3 text-center mb-2 mb-0">
-                        <img src="{{ url_for('static', filename='images/' + speaker.image) }}" alt="{{ speaker.name }}" style="width: 100%; max-width: 150px; border-radius: 10px;">
+                    <div class="col-12 col-sm-3 text-center mb-3 mb-sm-0">
+                        <img src="{{ url_for('static', filename='images/' + speaker.image) }}" alt="{{ speaker.name }}" style="width: 100%; max-width: 120px; border-radius: 10px;">
                         <p class="text-muted mt-2 mb-0"><strong>{{ speaker.name }}</strong></p>
                     </div>
                     <div class="col-12 col-sm-9">
-                        <div class="alert alert-info alien-message" id="alienMessage" data-english="{{ alien_sentence }}" data-korean="{{ alien_translation }}" data-speaker="{{ speaker.image }}">
-                            <div class="alien-english">
-                                <h5 class="mb-0">{{ alien_sentence }}</h5>
-                            </div>
-                            <div class="alien-korean">
-                                <h5 class="mb-0">{{ alien_translation }}</h5>
-                            </div>
+                        <div class="speaker-message">
+                            <div class="response-text">{{ drama_data.ai_prompt }}</div>
+                            <div class="meaning-text">{{ drama_data.ai_meaning }}</div>
                         </div>
-                        <div class="text-muted small mt-2">
-                            💡 길게 누르면 의미를 볼 수 있습니다
-                        </div>
-                        <button type="button" class="btn btn-sm btn-primary play-button" id="playBtn" title="발음 듣기">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="playAudio('{{ drama_data.ai_prompt }}')">
                             <i class="fas fa-play me-1"></i>재생
                         </button>
                     </div>
                 </div>
 
-                <!-- 구분선 -->
                 <hr class="my-4">
 
-                <!-- 사용자 음성 응답 -->
+                <!-- 사용자가 말해야 할 문장 -->
+                <div class="response-prompt">
+                    <h6 class="mb-3">💬 당신이 말해야 할 대사:</h6>
+                    <div class="response-text" id="targetResponse">{{ drama_data.user_response }}</div>
+                    <div class="meaning-text" id="targetMeaning">{{ drama_data.user_meaning }}</div>
+                </div>
+
+                <!-- 음성 인식 섹션 -->
                 <div class="row mb-4">
-                    <div class="col-12 col-sm-9">
+                    <div class="col-12">
                         <div class="form-group">
-                            <label class="form-label"><strong>당신의 음성:</strong></label>
+                            <label class="form-label"><strong>당신의 음성 응답:</strong></label>
                             <button type="button" id="micBtn" class="btn btn-success w-100 mb-2">
                                 <i class="fas fa-microphone me-2"></i>음성 인식 시작
                             </button>
                             <button type="button" id="stopBtn" class="btn btn-danger w-100 mb-2" style="display: none;">
                                 <i class="fas fa-stop me-2"></i>음성 인식 중지
                             </button>
-                            <div id="recognizedText" class="alert alert-info" style="display: none; min-height: 80px;">
+                            <div id="recognizedText" class="alert alert-info" style="display: none; min-height: 70px;">
                                 <p class="text-muted small mb-1">인식된 내용:</p>
                                 <p id="textContent" class="mb-0"></p>
                             </div>
@@ -105,39 +138,57 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 text-center">
-                        <p class="text-muted"><strong>You</strong></p>
+                </div>
+
+                <!-- 결과 피드백 -->
+                <div id="resultFeedback" style="display: none;" class="mb-4">
+                    <div id="resultMessage" class="alert"></div>
+                </div>
+
+                <!-- AI 후속 대사 (정답 후 나타남) -->
+                <div id="aiFollowupContainer" style="display: none;" class="mt-4 pt-4 border-top">
+                    <h6 class="mb-3">✅ 정답입니다!</h6>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="speaker-message">
+                                <div class="response-text" id="followupText"></div>
+                                <div class="meaning-text" id="followupMeaning"></div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="playAudio(document.getElementById('followupText').textContent)">
+                                <i class="fas fa-play me-1"></i>재생
+                            </button>
+                        </div>
                     </div>
+                </div>
+
+                <!-- 다음 시나리오 버튼 -->
+                <div class="button-group">
+                    <a href="{{ url_for('conversation_practice') }}" class="btn btn-primary flex-grow-1">
+                        <i class="fas fa-redo me-2"></i>새로운 대화 시작
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- 학습 정보 -->
-        <div class="card mb-4">
+        <!-- 학습 팁 -->
+        <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">💡 학습 표현</h5>
+                <h5 class="mb-0">💡 학습 팁</h5>
             </div>
             <div class="card-body">
-                <p><strong>표현:</strong> <span class="badge bg-primary">{{ expression.expression }}</span></p>
-                <p><strong>의미:</strong> {{ expression.meaning }}</p>
-                <p><strong>예문 1:</strong> {{ expression.examples[0] }}</p>
-                <p><strong>예문 2:</strong> {{ expression.examples[1] }}</p>
-                <p class="mb-0"><strong>팁:</strong> {{ expression.tip }}</p>
+                <ul class="mb-0">
+                    <li>음성 인식 버튼을 클릭하고 영어로 대사를 말하세요</li>
+                    <li>정확한 문장과 유사하게 말해야 정답입니다</li>
+                    <li>발음과 억양에 신경 쓰세요</li>
+                    <li>정답하면 외국인의 다음 대사를 듣고 대화를 계속할 수 있습니다</li>
+                </ul>
             </div>
-        </div>
-
-        <!-- 새 대화 버튼 -->
-        <div class="text-center mb-4">
-            <a href="{{ url_for('conversation_practice') }}" class="btn btn-primary">
-                <i class="fas fa-redo me-2"></i>새로운 표현 시작
-            </a>
         </div>
     </div>
 </div>
 
 <script>
 // 글로벌 음성 캐시
-let cachedMaleVoice = null;
 let cachedFemaleVoice = null;
 
 // 모든 음성 사전 로드 및 분류
@@ -145,27 +196,12 @@ function loadAllVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
         
-        // 모든 사용 가능한 음성 출력 (디버깅용)
-        const voiceNames = voices.map(v => v.name).join(', ');
-        console.log('Available voices:', voiceNames);
-        
-        // 남자 음성 찾기 - Daniel만 사용 (고정)
-        for (let voice of voices) {
-            const name = voice.name;
-            if (name === 'Daniel') {
-                cachedMaleVoice = voice;
-                console.log('Loaded male voice (Daniel):', voice.name);
-                break;
-            }
-        }
-        
         // 여자 음성 찾기 - Zira/Samantha 우선
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
                 const name = voice.name;
                 if (name.includes('Zira') || name.includes('Samantha') || name.includes('Victoria') || name.includes('Karen') || name.includes('Moira')) {
                     cachedFemaleVoice = voice;
-                    console.log('Loaded female voice (explicit):', voice.name);
                     break;
                 }
             }
@@ -176,30 +212,34 @@ function loadAllVoices() {
             for (let voice of voices) {
                 if (voice.lang === 'en-US') {
                     cachedFemaleVoice = voice;
-                    console.log('Loaded female voice (fallback):', voice.name);
                     break;
                 }
             }
         }
-        
-        console.log('Final male voice:', cachedMaleVoice?.name || 'NONE');
-        console.log('Final female voice:', cachedFemaleVoice?.name || 'NONE');
-    }
-}
-
-// 성별에 맞는 음성 반환
-function getVoiceByGender(isFemale) {
-    if (isFemale) {
-        return cachedFemaleVoice;
-    } else {
-        return cachedMaleVoice;
     }
 }
 
 // 음성 로드 완료 대기
-window.speechSynthesis.onvoiceschanged = function() {
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = function() {
+        loadAllVoices();
+    };
     loadAllVoices();
-};
+}
+
+// 음성 재생
+function playAudio(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        if (cachedFemaleVoice) {
+            utterance.voice = cachedFemaleVoice;
+        }
+        window.speechSynthesis.speak(utterance);
+    }
+}
 
 // Web Speech API 음성 인식
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -214,19 +254,17 @@ if (SpeechRecognition) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadAllVoices();
-    
-    const alienMessage = document.getElementById('alienMessage');
-    const playBtn = document.getElementById('playBtn');
-    const englishText = alienMessage.dataset.english;
-    
-    // 음성 인식 버튼
     const micBtn = document.getElementById('micBtn');
     const stopBtn = document.getElementById('stopBtn');
     const recognizedText = document.getElementById('recognizedText');
     const textContent = document.getElementById('textContent');
     const statusMessage = document.getElementById('statusMessage');
     const statusText = document.getElementById('statusText');
+    const resultFeedback = document.getElementById('resultFeedback');
+    const resultMessage = document.getElementById('resultMessage');
+    const aiFollowupContainer = document.getElementById('aiFollowupContainer');
+    
+    const targetResponse = '{{ drama_data.user_response }}';
     
     if (!recognition) {
         micBtn.disabled = true;
@@ -242,6 +280,8 @@ document.addEventListener('DOMContentLoaded', function() {
             micBtn.style.display = 'none';
             stopBtn.style.display = 'block';
             recognizedText.style.display = 'block';
+            resultFeedback.style.display = 'none';
+            aiFollowupContainer.style.display = 'none';
             textContent.textContent = '음성 인식 중...';
             recognition.start();
         }
@@ -270,12 +310,51 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        textContent.textContent = finalTranscript || interimTranscript;
+        const currentText = finalTranscript || interimTranscript;
+        textContent.textContent = currentText;
+        
+        // 최종 결과인 경우 정답 확인
+        if (finalTranscript) {
+            checkAnswer(finalTranscript.toLowerCase().trim(), targetResponse.toLowerCase().trim());
+        }
     });
+    
+    // 정답 확인
+    function checkAnswer(userInput, targetInput) {
+        resultFeedback.style.display = 'block';
+        resultMessage.className = 'alert';
+        
+        // 부분 일치 확인 (주요 단어들이 포함되어 있는지 확인)
+        const targetWords = targetInput.split(/\s+/);
+        const userWords = userInput.split(/\s+/);
+        
+        // 3개 이상의 주요 단어가 일치하거나 80% 이상 일치하면 정답
+        const matchedWords = targetWords.filter(w => userWords.some(uw => uw.includes(w) || w.includes(uw)));
+        const matchPercentage = matchedWords.length / targetWords.length;
+        
+        if (matchPercentage >= 0.7 || userInput.includes(targetInput) || targetInput.includes(userInput)) {
+            resultMessage.className = 'alert status-success';
+            resultMessage.innerHTML = '<strong>✅ 정답입니다!</strong> 잘 하셨어요!';
+            
+            // AI 후속 대사 표시
+            aiFollowupContainer.style.display = 'block';
+            document.getElementById('followupText').textContent = '{{ drama_data.ai_followup }}';
+            document.getElementById('followupMeaning').textContent = '{{ drama_data.ai_followup_meaning }}';
+            
+            // 경험치 +10
+            fetch('{{ url_for("add_exp") }}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({exp: 10})
+            });
+        } else {
+            resultMessage.className = 'alert status-error';
+            resultMessage.innerHTML = `<strong>❌ 틀렸습니다</strong><br>정답: <strong>${targetResponse}</strong>`;
+        }
+    }
     
     // 음성 인식 에러
     recognition.addEventListener('error', function(event) {
-        // "aborted"는 정상 종료이므로 무시
         if (event.error !== 'aborted') {
             statusMessage.style.display = 'block';
             const errorMessages = {
@@ -296,77 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
         isListening = false;
         micBtn.style.display = 'block';
         stopBtn.style.display = 'none';
-    });
-    
-    // 길게 누르기 (터치와 마우스 지원)
-    let touchTimeout;
-    
-    alienMessage.addEventListener('touchstart', function(e) {
-        touchTimeout = setTimeout(() => {
-            alienMessage.classList.add('revealed');
-        }, 500);
-    });
-    
-    alienMessage.addEventListener('touchend', function(e) {
-        clearTimeout(touchTimeout);
-        if (e.changedTouches.length === 0) {
-            alienMessage.classList.remove('revealed');
-        }
-    });
-    
-    alienMessage.addEventListener('mousedown', function(e) {
-        touchTimeout = setTimeout(() => {
-            alienMessage.classList.add('revealed');
-        }, 500);
-    });
-    
-    alienMessage.addEventListener('mouseup', function(e) {
-        clearTimeout(touchTimeout);
-        alienMessage.classList.remove('revealed');
-    });
-    
-    alienMessage.addEventListener('mouseleave', function(e) {
-        clearTimeout(touchTimeout);
-        alienMessage.classList.remove('revealed');
-    });
-    
-    // 재생 버튼 - Web Speech API 사용
-    playBtn.addEventListener('click', function() {
-        if ('speechSynthesis' in window) {
-            // 기존 발화 중지
-            speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(englishText);
-            utterance.lang = 'en-US';
-            utterance.rate = 1.0;
-            utterance.pitch = 1;
-            utterance.volume = 1;
-            
-            // 성별 감지: 이미지 파일명으로 판단
-            const imgTag = document.querySelector('img[alt]');
-            const imageSrc = (imgTag?.src || '').toLowerCase();
-            const isFemale = imageSrc.includes('woman') || imageSrc.includes('emma') || imageSrc.includes('olivia');
-            
-            // 성별에 맞는 음성 사용
-            const selectedVoice = getVoiceByGender(isFemale);
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-                console.log('Playing with voice:', isFemale ? 'female' : 'male', selectedVoice.name);
-            }
-            
-            // 재생 중 버튼 상태 변경
-            playBtn.disabled = true;
-            playBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>재생 중...';
-            
-            utterance.onend = function() {
-                playBtn.disabled = false;
-                playBtn.innerHTML = '<i class="fas fa-play me-1"></i>재생';
-            };
-            
-            speechSynthesis.speak(utterance);
-        } else {
-            alert('이 브라우저는 음성 재생을 지원하지 않습니다.');
-        }
     });
 });
 </script>
