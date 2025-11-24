@@ -239,9 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
-    // 음성 재생 - 상대방 대사
-    playAudioBtnAI.addEventListener('click', function(e) {
-        e.stopPropagation();
+    // 공통 음성 재생 함수
+    function playAI_Audio() {
         const text = aiPromptText.textContent.trim();
         playAudioBtnAI.classList.add('playing');
         
@@ -274,11 +273,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
-    });
+    }
 
-    // 음성 재생 - 사용자 대사
-    playAudioBtnUser.addEventListener('click', function(e) {
-        e.stopPropagation();
+    function playUser_Audio() {
         const text = userResponseText.textContent.trim();
         playAudioBtnUser.classList.add('playing');
         
@@ -295,6 +292,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
+    }
+    
+    // 음성 재생 - 상대방 대사 (버튼 클릭)
+    playAudioBtnAI.addEventListener('click', function(e) {
+        e.stopPropagation();
+        playAI_Audio();
+    });
+
+    // 음성 재생 - 사용자 대사 (버튼 클릭)
+    playAudioBtnUser.addEventListener('click', function(e) {
+        e.stopPropagation();
+        playUser_Audio();
     });
     
     // 다음 턴 로드
@@ -333,6 +342,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     playAudioBtnUser.classList.remove('playing');
                     
                     targetResponse = turn.user_response.toLowerCase().trim();
+                    
+                    // 자동 재생: 1초 후 상대방 대사 재생, 그 다음 사용자 대사 재생
+                    setTimeout(function() {
+                        playAI_Audio();
+                        setTimeout(function() {
+                            playUser_Audio();
+                        }, 3000);
+                    }, 500);
                 }
             }
         });
@@ -342,11 +359,19 @@ document.addEventListener('DOMContentLoaded', function() {
         loadNextTurn();
     });
     
-    // 페이지 로드 후 안내 메시지
+    // 페이지 로드 후 안내 메시지 및 자동 재생
     resultFeedback.style.display = 'block';
     resultMessage.className = 'alert alert-info';
-    resultMessage.innerHTML = '<strong>📖 대화 연습 가이드</strong><br>위의 대사를 읽고 🔊 버튼으로 발음을 들어보세요. 준비가 되면 "다음 대사로" 버튼을 클릭하세요.';
+    resultMessage.innerHTML = '<strong>📖 대화 연습 가이드</strong><br>대사가 자동으로 재생됩니다. 🔊 버튼으로 다시 들을 수 있습니다.';
     nextTurnContainer.style.display = 'block';
+    
+    // 초기 로드 시 자동 재생: 1초 후 상대방 대사, 그 다음 사용자 대사
+    setTimeout(function() {
+        playAI_Audio();
+        setTimeout(function() {
+            playUser_Audio();
+        }, 3000);
+    }, 1000);
 });
 </script>
 {% endblock %}
