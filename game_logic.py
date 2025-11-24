@@ -5928,10 +5928,6 @@ def complete_adventure_battle(player, battle_state):
     
     return {'success': True, 'rewards': rewards}
 
-def get_avatars():
-    """아바타 목록 가져오기"""
-    return []
-
 def get_skill_info(skill_name):
     """기술 정보 가져오기"""
     from data.adventure_data import SKILLS
