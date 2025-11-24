@@ -293,13 +293,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 voice.voiceURI.includes('female')
             ) || voices[0];
             if (femaleVoice) utterance.voice = femaleVoice;
-        } else {
+        } else if (speakerData.gender === 'male') {
+            // 남자 음성 찾기 (다양한 옵션 시도)
             const maleVoice = voices.find(voice => 
+                voice.name.includes('Google US English Male') ||
+                voice.name.includes('Male') ||
                 voice.name.includes('male') || 
                 voice.name.includes('man') ||
-                voice.voiceURI.includes('male')
-            ) || voices[1];
-            if (maleVoice) utterance.voice = maleVoice;
+                voice.name.includes('Aaron') ||
+                voice.name.includes('Daniel') ||
+                voice.name.includes('George') ||
+                voice.name.includes('Rishi') ||
+                (voice.voiceURI.includes('male') && !voice.voiceURI.includes('female'))
+            );
+            if (maleVoice) {
+                utterance.voice = maleVoice;
+            } else if (voices.length > 1) {
+                // 남자 음성 없으면 첫 번째 남자 같은 음성 시도
+                utterance.voice = voices.find(v => !v.name.includes('female') && !v.name.includes('woman')) || voices[0];
+            }
         }
         
         window.speechSynthesis.cancel();
