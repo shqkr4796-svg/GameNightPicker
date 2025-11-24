@@ -5661,12 +5661,12 @@ def execute_skill(battle_state, skill_name):
     if not battle_state['player_turn']:
         return {'success': False, 'message': '지금은 플레이어 차례가 아닙니다.'}
     
-    # 기술 사용 횟수 제한 확인 (기술당 4번 제한)
+    # 기술 사용 횟수 제한 확인 (기술당 10번 제한)
     if skill_name not in battle_state['skill_usage_count']:
         battle_state['skill_usage_count'][skill_name] = 0
     
-    if battle_state['skill_usage_count'][skill_name] >= 4:
-        return {'success': False, 'message': f'{skill_name}은(는) 더 이상 사용할 수 없습니다. (4회 사용 완료)'}
+    if battle_state['skill_usage_count'][skill_name] >= 10:
+        return {'success': False, 'message': f'{skill_name}은(는) 더 이상 사용할 수 없습니다. (10회 사용 완료)'}
     
     # 기술 사용 횟수 증가
     battle_state['skill_usage_count'][skill_name] += 1
@@ -5680,7 +5680,7 @@ def execute_skill(battle_state, skill_name):
     battle_state['enemy_monster']['current_hp'] -= damage
     
     usage_count = battle_state['skill_usage_count'][skill_name]
-    battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지 (사용 {usage_count}/4회)")
+    battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지 (사용 {usage_count}/10회)")
     
     # 적 체력 확인
     if battle_state['enemy_monster']['current_hp'] <= 0:
