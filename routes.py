@@ -1770,24 +1770,17 @@ def start_adventure():
     
     battle_state = result['battle_state']
     
-    # defeated_monsters 필드 초기화
-    if 'defeated_monsters' not in battle_state:
-        battle_state['defeated_monsters'] = 0
+    # 현재 스테이지의 enemy_count로 항상 설정 (이전 스테이지 정보 제거)
+    battle_state['enemy_count'] = stage.get('enemy_count', 1)
+    battle_state['defeated_monsters'] = 0
     
-    # enemy_count 필드 초기화 (stage에서 가져오기)
-    if 'enemy_count' not in battle_state:
-        battle_state['enemy_count'] = stage.get('enemy_count', 1)
-    
-    # 기존에 진행 중인 전투가 있었는지 확인
+    # 같은 스테이지 재시작 시 처치 수 유지 (기존 진행 상황)
     if 'battle_state' in session:
         prev_battle = session['battle_state']
         prev_stage = prev_battle.get('stage_id')
-        # 같은 스테이지에서만 처치 수를 유지, 다른 스테이지면 리셋
+        # 같은 스테이지에서만 처치 수를 유지
         if prev_stage == stage_id and 'defeated_monsters' in prev_battle:
             battle_state['defeated_monsters'] = prev_battle['defeated_monsters']
-        else:
-            # 새로운 스테이지는 리셋
-            battle_state['defeated_monsters'] = 0
     
     # 적의 선공인 경우 자동으로 적의 턴 실행
     if not battle_state['player_turn']:
