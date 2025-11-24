@@ -33,8 +33,8 @@
                                     <strong>{{ "{:,}".format(property['매매']) }}원</strong>
                                 </div>
                                 <div>
-                                    <small class="text-muted">일일 기력회복량:</small><br>
-                                    <strong class="text-info">+{{ property['기력회복'] }}/일</strong>
+                                    <small class="text-muted">추가 기력 회복량:</small><br>
+                                    <strong class="text-info">+{{ property['기력회복'] }}</strong>
                                 </div>
                                 <div class="mt-2">
                                     <small class="text-muted">편의성 등급:</small><br>
@@ -70,7 +70,7 @@
                                     <div>
                                         <h6 class="mb-2">{{ property['이름'] }}</h6>
                                         <small class="text-muted d-block">월세 수입: <strong class="text-warning">{{ "{:,}".format(property['월세']) }}원/달</strong></small>
-                                        <small class="text-muted d-block">일일 기력회복: <strong class="text-info">+{{ property['기력회복'] }}/일</strong></small>
+                                        <small class="text-muted d-block">추가 기력 회복량: <strong class="text-info">+{{ property['기력회복'] }}</strong></small>
                                         <small class="text-muted d-block">구매일: {{ owned_property['buy_date'] }}일</small>
                                     </div>
                                     <div class="d-flex gap-2 ms-2">
@@ -129,7 +129,7 @@
                                     <h6 class="card-title mb-0">{{ property['이름'] }}</h6>
                                     <div class="text-end">
                                         <small class="text-muted d-block">구매 시 최대기력 +{{ property['기력회복'] }}</small>
-                                        <small class="text-muted d-block">일일 회복: +{{ property['기력회복'] }}/일</small>
+                                        <small class="text-muted d-block">추가 기력 회복량: +{{ property['기력회복'] }}</small>
                                     </div>
                                 </div>
                                 

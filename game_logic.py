@@ -881,7 +881,7 @@ def change_residence(player, property_name):
             recovery = prop['기력회복']
             break
     
-    return {'success': True, 'message': f"{property_name}로 이사했습니다! (일일 기력회복량: +{recovery})"}
+    return {'success': True, 'message': f"{property_name}로 이사했습니다! (추가 기력 회복량: +{recovery})"}
 
 def get_shop_items():
     """상점 아이템 목록"""
