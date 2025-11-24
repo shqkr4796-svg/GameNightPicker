@@ -43,8 +43,11 @@
                 {% if quiz %}
                 <div class="mb-4">
                     <h6 class="text-muted mb-3">📝 다음 예문에서 사용된 표현을 입력하세요</h6>
-                    <div class="alert alert-info mb-4" style="font-size: 1.1rem; font-weight: 500; padding: 20px; border-radius: 8px;">
+                    <div class="alert alert-info mb-3" style="font-size: 1.1rem; font-weight: 500; padding: 20px; border-radius: 8px;">
                         "{{ quiz.example }}"
+                    </div>
+                    <div class="alert alert-light border mb-4" style="font-size: 0.95rem; padding: 15px;">
+                        <strong style="color: #0066cc;">의미:</strong> {{ quiz.correct_meaning }}
                     </div>
                     
                     <form method="POST" action="{{ url_for('submit_expression_quiz') }}" class="mb-3">
