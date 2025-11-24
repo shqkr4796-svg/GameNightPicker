@@ -489,16 +489,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     nextTurnContainer.style.display = 'none';
                     statusMessage.style.display = 'none';
                     
-                    // 음성인식 상태 리셋
-                    if (recognition) {
-                        recognition.stop();
-                    }
+                    // 음성인식 상태 리셋 (전역 onaudioprocess 에러 방지)
                     isListening = false;
+                    if (recognition) {
+                        try {
+                            recognition.abort();
+                        } catch(e) {
+                            // 에러 무시
+                        }
+                    }
                     micBtn.style.display = 'block';
                     stopBtn.style.display = 'none';
                     
                     // 새로운 턴 정답으로 업데이트
                     targetResponse = turn.user_response.toLowerCase().trim();
+                    
+                    // 지연 후 음성 인식 재초기화 (오디오 컨텍스트 복구)
+                    setTimeout(() => {
+                        if (SpeechRecognition && !recognition) {
+                            recognition = new SpeechRecognition();
+                            recognition.lang = 'en-US';
+                            recognition.continuous = true;
+                            recognition.interimResults = true;
+                        }
+                    }, 100);
                 }
             }
         });
