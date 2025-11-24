@@ -39,6 +39,15 @@ def dashboard():
         return redirect(url_for('index'))
     
     player = session['player_data']
+    
+    # 레벨업 확인 및 처리
+    level_ups = game_logic.check_level_up(player)
+    if level_ups > 0:
+        flash(f'레벨업! 현재 레벨: {player["레벨"]} (총 {level_ups}회 레벨업)', 'warning')
+        session['player_data'] = player
+        session.modified = True
+        game_logic.save_game(player)
+    
     stats = game_logic.get_player_stats(player)
     recent_events = game_logic.get_recent_events()
     achievements = game_logic.get_achievements(player)
@@ -172,11 +181,8 @@ def check_daily_expression():
         player['경험치'] += exp_gained
         
         # 레벨업 확인
-        while player['경험치'] >= player['경험치최대']:
-            player['경험치'] -= player['경험치최대']
-            player['레벨'] += 1
-            player['경험치최대'] = int(player['경험치최대'] * 1.1)
-            player['스탯포인트'] += 5
+        level_ups = game_logic.check_level_up(player)
+        if level_ups > 0:
             flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
     else:
         flash(f'틀렸습니다. 다시 시도해보세요. (정답: {correct_expression})', 'error')
@@ -1596,11 +1602,8 @@ def submit_expression_quiz():
         player['경험치'] += 10
         
         # 레벨업 확인
-        while player['경험치'] >= player['경험치최대']:
-            player['경험치'] -= player['경험치최대']
-            player['레벨'] += 1
-            player['경험치최대'] = int(player['경험치최대'] * 1.1)
-            player['스탯포인트'] += 5
+        level_ups = game_logic.check_level_up(player)
+        if level_ups > 0:
             flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
     else:
         # 틀렸을 때 정답 표현의 의미 찾기
@@ -1642,11 +1645,7 @@ def next_turn():
             player['경험치'] += 10
             
             # 레벨업 확인
-            while player['경험치'] >= player['경험치최대']:
-                player['경험치'] -= player['경험치최대']
-                player['레벨'] += 1
-                player['경험치최대'] = int(player['경험치최대'] * 1.1)
-                player['스탯포인트'] += 5
+            game_logic.check_level_up(player)
             
             session['player_data'] = player
             session.modified = True
@@ -1683,11 +1682,7 @@ def add_exp():
         player['경험치'] += exp
         
         # 레벨업 확인
-        while player['경험치'] >= player['경험치최대']:
-            player['경험치'] -= player['경험치최대']
-            player['레벨'] += 1
-            player['경험치최대'] = int(player['경험치최대'] * 1.1)
-            player['스탯포인트'] += 5
+        game_logic.check_level_up(player)
         
         session['player_data'] = player
         session.modified = True
