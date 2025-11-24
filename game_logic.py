@@ -206,12 +206,12 @@ def get_tier_conditions():
     """티어별 조건 반환 (업적 포인트 기준 + 몬스터 등급)"""
     return [
         {'name': '언랭크', 'image': '/static/tier_unranked.png', 'color': 'secondary', 'conditions': {'dungeon': 0, 'real_estate': 0, 'level': 1, 'achievement_points': 0, 'rare': 0, 'epic': 0, 'unique': 0, 'legendary': 0}},
-        {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 3, 'achievement_points': 5, 'rare': 1, 'epic': 0, 'unique': 0, 'legendary': 0}},
-        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 2, 'level': 7, 'achievement_points': 20, 'rare': 3, 'epic': 1, 'unique': 0, 'legendary': 0}},
-        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 3, 'level': 12, 'achievement_points': 40, 'rare': 5, 'epic': 3, 'unique': 1, 'legendary': 0}},
-        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 5, 'level': 18, 'achievement_points': 70, 'rare': 8, 'epic': 5, 'unique': 3, 'legendary': 0}},
-        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 7, 'level': 25, 'achievement_points': 120, 'rare': 15, 'epic': 10, 'unique': 5, 'legendary': 1}},
-        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 10, 'level': 35, 'achievement_points': 161, 'rare': 25, 'epic': 15, 'unique': 10, 'legendary': 3}}
+        {'name': '브론즈', 'image': '/static/tier_bronze.png', 'color': 'warning', 'conditions': {'dungeon': 1, 'real_estate': 1, 'level': 15, 'achievement_points': 5, 'rare': 1, 'epic': 0, 'unique': 0, 'legendary': 0}},
+        {'name': '실버', 'image': '/static/tier_silver.png', 'color': 'light', 'conditions': {'dungeon': 6, 'real_estate': 2, 'level': 40, 'achievement_points': 20, 'rare': 3, 'epic': 1, 'unique': 0, 'legendary': 0}},
+        {'name': '골드', 'image': '/static/tier_gold.png', 'color': 'warning', 'conditions': {'dungeon': 16, 'real_estate': 3, 'level': 70, 'achievement_points': 40, 'rare': 5, 'epic': 3, 'unique': 1, 'legendary': 0}},
+        {'name': '다이아', 'image': '/static/tier_diamond.png', 'color': 'info', 'conditions': {'dungeon': 31, 'real_estate': 5, 'level': 110, 'achievement_points': 70, 'rare': 8, 'epic': 5, 'unique': 3, 'legendary': 0}},
+        {'name': '마스터', 'image': '/static/tier_master.png', 'color': 'primary', 'conditions': {'dungeon': 101, 'real_estate': 7, 'level': 160, 'achievement_points': 120, 'rare': 15, 'epic': 10, 'unique': 5, 'legendary': 1}},
+        {'name': '챌린저', 'image': '/static/tier_challenger.png', 'color': 'danger', 'conditions': {'dungeon': 501, 'real_estate': 10, 'level': 200, 'achievement_points': 161, 'rare': 25, 'epic': 15, 'unique': 10, 'legendary': 3}}
     ]
 
 def get_player_tier(player):
