@@ -21,11 +21,12 @@
                         <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: center; gap: 3px;">
                             {% set defeated = battle_state.get('defeated_monsters', 0) %}
                             {% set enemy_count = battle_state.get('enemy_count', 3) %}
-                            {% set remaining_monsters = [0, enemy_count - defeated]|max %}
                             {% set unused_slots = 5 - enemy_count %}
+                            {% set defeated_total = unused_slots + defeated %}
+                            {% set remaining_monsters = enemy_count - defeated %}
                             
-                            <!-- 회색 동그라미 (사용하지 않는 칸) -->
-                            {% for i in range(unused_slots) %}
+                            <!-- 회색 동그라미 (사용하지 않는 칸 + 처치된 몬스터) -->
+                            {% for i in range(defeated_total) %}
                                 <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #999; border: 1px solid #666;"></div>
                             {% endfor %}
                             
