@@ -4119,6 +4119,236 @@ def get_drama_conversations():
                     'user_meaning': '토요일이 저한테 딱 맞아요!'
                 }
             ]
+        },
+        {
+            'scene': '병원에서 의사와 상담',
+            'turns': [
+                {
+                    'ai_prompt': 'How are you feeling today?',
+                    'ai_meaning': '오늘 기분이 어떠세요?',
+                    'user_response': "I've had a terrible headache for three days.",
+                    'user_meaning': '3일 동안 심한 두통이 있습니다.'
+                },
+                {
+                    'ai_prompt': 'Let me check your blood pressure.',
+                    'ai_meaning': '혈압을 재어보겠습니다.',
+                    'user_response': 'Okay, I understand.',
+                    'user_meaning': '네, 알겠습니다.'
+                },
+                {
+                    'ai_prompt': 'I\'ll prescribe some medicine for you.',
+                    'ai_meaning': '약을 처방해드리겠습니다.',
+                    'user_response': 'Thank you, doctor. How often should I take it?',
+                    'user_meaning': '감사합니다. 하루에 몇 번 복용해야 하나요?'
+                }
+            ]
+        },
+        {
+            'scene': '호텔 체크인',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our hotel. How many nights will you be staying?',
+                    'ai_meaning': '저희 호텔에 오신 것을 환영합니다. 몇 박을 하실 예정인가요?',
+                    'user_response': 'I need a room for three nights, please.',
+                    'user_meaning': '3박을 할 수 있는 객실을 원합니다.'
+                },
+                {
+                    'ai_prompt': 'Do you prefer a single room or a double room?',
+                    'ai_meaning': '싱글 룸이나 더블 룸 중 어느 것을 원하세요?',
+                    'user_response': 'A double room with a sea view would be nice.',
+                    'user_meaning': '바다가 보이는 더블 룸으로 주세요.'
+                },
+                {
+                    'ai_prompt': 'Excellent choice. Here is your room key.',
+                    'ai_meaning': '훌륭한 선택입니다. 여기 방 열쇠입니다.',
+                    'user_response': 'Thank you very much. What time is breakfast?',
+                    'user_meaning': '고마워요. 아침 식사는 몇 시인가요?'
+                }
+            ]
+        },
+        {
+            'scene': '대중교통 표 구매',
+            'turns': [
+                {
+                    'ai_prompt': 'Where would you like to go?',
+                    'ai_meaning': '어디로 가고 싶으세요?',
+                    'user_response': 'I need a ticket to downtown, please.',
+                    'user_meaning': '다운타운으로 가는 표를 주세요.'
+                },
+                {
+                    'ai_prompt': 'One-way or round trip?',
+                    'ai_meaning': '편도입니까, 왕복입니까?',
+                    'user_response': 'One-way ticket. How much is it?',
+                    'user_meaning': '편도표 주세요. 얼마인가요?'
+                },
+                {
+                    'ai_prompt': 'That will be fifteen dollars.',
+                    'ai_meaning': '15달러입니다.',
+                    'user_response': 'Here you go. Which platform does the bus leave from?',
+                    'user_meaning': '여기 있습니다. 버스는 어느 플랫폼에서 출발하나요?'
+                }
+            ]
+        },
+        {
+            'scene': '쇼핑몰에서 옷 구매',
+            'turns': [
+                {
+                    'ai_prompt': 'Hi! Can I help you find anything?',
+                    'ai_meaning': '안녕하세요! 무엇을 도와드릴까요?',
+                    'user_response': 'I\'m looking for a blue shirt in size medium.',
+                    'user_meaning': '미디엄 사이즈의 파란 셔츠를 찾고 있어요.'
+                },
+                {
+                    'ai_prompt': 'Great! Let me check if we have that in stock.',
+                    'ai_meaning': '좋습니다! 재고가 있는지 확인해보겠습니다.',
+                    'user_response': 'Thank you. Can I try it on?',
+                    'user_meaning': '감사합니다. 입어볼 수 있을까요?'
+                },
+                {
+                    'ai_prompt': 'Of course! The fitting room is over there.',
+                    'ai_meaning': '물론이죠! 피팅룸이 저기 있습니다.',
+                    'user_response': 'Perfect! I\'ll take this shirt. Do you have a discount?',
+                    'user_meaning': '좋아요! 이 셔츠로 살게요. 할인이 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '영화표 구매',
+            'turns': [
+                {
+                    'ai_prompt': 'How many tickets would you like?',
+                    'ai_meaning': '표 몇 장을 원하세요?',
+                    'user_response': 'Two tickets for the 7 PM showing, please.',
+                    'user_meaning': '오후 7시 상영분으로 표 2장 주세요.'
+                },
+                {
+                    'ai_prompt': 'That\'s 28 dollars in total. Would you like popcorn?',
+                    'ai_meaning': '총 28달러입니다. 팝콘을 원하세요?',
+                    'user_response': 'Yes, one medium popcorn and two sodas.',
+                    'user_meaning': '네, 중간 사이즈 팝콘과 소다 2잔으로 주세요.'
+                },
+                {
+                    'ai_prompt': 'That will be 42 dollars. Here are your tickets and snacks.',
+                    'ai_meaning': '42달러입니다. 표와 간식이 여기 있습니다.',
+                    'user_response': 'Thank you! Which theater is it?',
+                    'user_meaning': '감사합니다! 어느 관에서 상영하나요?'
+                }
+            ]
+        },
+        {
+            'scene': '사무실에서 상사와의 대화',
+            'turns': [
+                {
+                    'ai_prompt': 'Do you have a moment? I\'d like to discuss your project.',
+                    'ai_meaning': '시간 있어요? 당신의 프로젝트에 대해 얘기하고 싶어요.',
+                    'user_response': 'Of course! What do you think about the progress?',
+                    'user_meaning': '물론이죠! 진행 상황에 대해 어떻게 생각하세요?'
+                },
+                {
+                    'ai_prompt': 'The work is impressive, but we need to speed up the timeline.',
+                    'ai_meaning': '작업이 인상적이지만, 일정을 앞당겨야 해요.',
+                    'user_response': 'I understand. I\'ll work on that right away.',
+                    'user_meaning': '알겠습니다. 지금 바로 그것을 처리하겠습니다.'
+                },
+                {
+                    'ai_prompt': 'Great! I have confidence in you.',
+                    'ai_meaning': '좋아요! 당신을 믿습니다.',
+                    'user_response': 'Thank you for the support. I won\'t let you down.',
+                    'user_meaning': '격려해주셔서 감사합니다. 실망시키지 않겠습니다.'
+                }
+            ]
+        },
+        {
+            'scene': '전화로 예약하기',
+            'turns': [
+                {
+                    'ai_prompt': 'Good morning. How can I help you today?',
+                    'ai_meaning': '좋은 아침입니다. 오늘 무엇을 도와드릴까요?',
+                    'user_response': 'I\'d like to make a reservation for dinner tomorrow night.',
+                    'user_meaning': '내일 저녁 식사 예약을 하고 싶습니다.'
+                },
+                {
+                    'ai_prompt': 'For how many people and what time?',
+                    'ai_meaning': '몇 명이고 몇 시에 하시겠어요?',
+                    'user_response': 'For four people at 7:30 PM, please.',
+                    'user_meaning': '4명이고 오후 7시 30분으로 주세요.'
+                },
+                {
+                    'ai_prompt': 'What name should I put the reservation under?',
+                    'ai_meaning': '누구 이름으로 예약해드릴까요?',
+                    'user_response': 'Under the name John Smith. Thank you!',
+                    'user_meaning': 'John Smith 이름으로 부탁합니다. 감사합니다!'
+                }
+            ]
+        },
+        {
+            'scene': '공항에서 환전하기',
+            'turns': [
+                {
+                    'ai_prompt': 'Good afternoon. What can I do for you?',
+                    'ai_meaning': '좋은 오후입니다. 뭘 도와드릴까요?',
+                    'user_response': 'I need to exchange 500 euros for US dollars.',
+                    'user_meaning': '500유로를 미국 달러로 환전해야 합니다.'
+                },
+                {
+                    'ai_prompt': 'What\'s the current exchange rate?',
+                    'ai_meaning': '현재 환율이 어떻게 되나요?',
+                    'user_response': 'Today\'s rate is 1 euro equals 1.10 dollars.',
+                    'user_meaning': '오늘 환율은 1유로가 1.10달러입니다.'
+                },
+                {
+                    'ai_prompt': 'Alright. Here are your dollars. Your receipt is attached.',
+                    'ai_meaning': '좋습니다. 달러가 여기 있습니다. 영수증이 붙어 있습니다.',
+                    'user_response': 'Perfect! Thank you very much for your help.',
+                    'user_meaning': '완벽합니다! 도와주셔서 정말 감사합니다.'
+                }
+            ]
+        },
+        {
+            'scene': '사무실 신입 직원 소개',
+            'turns': [
+                {
+                    'ai_prompt': 'Everyone, I\'d like to introduce our new team member.',
+                    'ai_meaning': '여러분, 저희 새로운 팀 멤버를 소개해드리겠습니다.',
+                    'user_response': 'Hello everyone! I\'m excited to join the team.',
+                    'user_meaning': '안녕하세요 여러분! 팀에 합류하게 되어 기쁩니다.'
+                },
+                {
+                    'ai_prompt': 'Where are you from?',
+                    'ai_meaning': '어디서 오셨어요?',
+                    'user_response': 'I\'m from California, but I moved here six months ago.',
+                    'user_meaning': '저는 캘리포니아에서 왔는데, 6개월 전에 여기로 이사했습니다.'
+                },
+                {
+                    'ai_prompt': 'Welcome aboard! I\'m sure you\'ll do great work here.',
+                    'ai_meaning': '환영합니다! 여기서 멋진 일을 할 거라고 확신합니다.',
+                    'user_response': 'Thank you! I\'m looking forward to working with all of you.',
+                    'user_meaning': '감사합니다! 여러분 모두와 함께 일하기를 기대합니다.'
+                }
+            ]
+        },
+        {
+            'scene': '카페에서 음료 주문',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome! What can I get for you today?',
+                    'ai_meaning': '환영합니다! 오늘 무엇을 드릴까요?',
+                    'user_response': 'I\'d like an iced latte and a chocolate muffin.',
+                    'user_meaning': '아이스 라떼와 초콜릿 머핀 주세요.'
+                },
+                {
+                    'ai_prompt': 'What size latte would you like?',
+                    'ai_meaning': '라떼는 어느 사이즈로 하실래요?',
+                    'user_response': 'Medium size, please. Can I have extra ice?',
+                    'user_meaning': '중간 사이즈로 주세요. 얼음을 더 넣어도 될까요?'
+                },
+                {
+                    'ai_prompt': 'Of course! That will be 7.50 dollars.',
+                    'ai_meaning': '물론이지요! 7.50달러입니다.',
+                    'user_response': 'Here you go. Can I have a receipt, please?',
+                    'user_meaning': '여기 있습니다. 영수증 주실 수 있을까요?'
+                }
+            ]
         }
     ]
 
