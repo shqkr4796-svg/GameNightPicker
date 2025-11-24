@@ -51,7 +51,7 @@
             </div>
             <div class="card-body text-center">
                 <p class="text-muted mb-2">학습한 표현으로 자연스럽게 대화해보세요!</p>
-                <p class="text-muted mb-0">AI 코칭을 받으며 실력을 높여보세요</p>
+                <p class="text-muted mb-0">음성 인식으로 자유롭게 말씀해주세요</p>
             </div>
         </div>
 
@@ -85,21 +85,25 @@
                 <!-- 구분선 -->
                 <hr class="my-4">
 
-                <!-- 사용자 응답 -->
+                <!-- 사용자 음성 응답 -->
                 <div class="row mb-4">
                     <div class="col-12 col-sm-9">
-                        <form method="POST" action="{{ url_for('submit_conversation') }}">
-                            <div class="form-group">
-                                <label for="user_response" class="form-label"><strong>당신의 응답:</strong></label>
-                                <textarea name="user_response" id="user_response" class="form-control" rows="3" 
-                                          placeholder="표현 '{{ expression.expression }}'을 사용해서 응답하세요..." required autofocus></textarea>
-                            </div>
-                            <input type="hidden" name="expression" value="{{ expression.expression }}">
-                            <input type="hidden" name="context_sentence" value="{{ alien_sentence }}">
-                            <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-send me-2"></i>응답 제출 (AI 코칭)
+                        <div class="form-group">
+                            <label class="form-label"><strong>당신의 음성:</strong></label>
+                            <button type="button" id="micBtn" class="btn btn-success w-100 mb-2">
+                                <i class="fas fa-microphone me-2"></i>음성 인식 시작
                             </button>
-                        </form>
+                            <button type="button" id="stopBtn" class="btn btn-danger w-100 mb-2" style="display: none;">
+                                <i class="fas fa-stop me-2"></i>음성 인식 중지
+                            </button>
+                            <div id="recognizedText" class="alert alert-info" style="display: none; min-height: 80px;">
+                                <p class="text-muted small mb-1">인식된 내용:</p>
+                                <p id="textContent" class="mb-0"></p>
+                            </div>
+                            <div id="statusMessage" class="alert alert-secondary" style="display: none;">
+                                <small id="statusText"></small>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-3 text-center">
                         <p class="text-muted"><strong>You</strong></p>
@@ -197,12 +201,93 @@ window.speechSynthesis.onvoiceschanged = function() {
     loadAllVoices();
 };
 
+// Web Speech API 음성 인식
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+let isListening = false;
+
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     loadAllVoices();
     
     const alienMessage = document.getElementById('alienMessage');
     const playBtn = document.getElementById('playBtn');
     const englishText = alienMessage.dataset.english;
+    
+    // 음성 인식 버튼
+    const micBtn = document.getElementById('micBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const recognizedText = document.getElementById('recognizedText');
+    const textContent = document.getElementById('textContent');
+    const statusMessage = document.getElementById('statusMessage');
+    const statusText = document.getElementById('statusText');
+    
+    if (!recognition) {
+        micBtn.disabled = true;
+        statusMessage.style.display = 'block';
+        statusText.textContent = '이 브라우저는 음성 인식을 지원하지 않습니다.';
+        return;
+    }
+    
+    // 음성 인식 시작
+    micBtn.addEventListener('click', function() {
+        if (!isListening) {
+            isListening = true;
+            micBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            recognizedText.style.display = 'block';
+            textContent.textContent = '음성 인식 중...';
+            recognition.start();
+        }
+    });
+    
+    // 음성 인식 중지
+    stopBtn.addEventListener('click', function() {
+        isListening = false;
+        micBtn.style.display = 'block';
+        stopBtn.style.display = 'none';
+        recognition.stop();
+    });
+    
+    // 음성 인식 결과
+    recognition.addEventListener('result', function(event) {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript + ' ';
+            } else {
+                interimTranscript += transcript;
+            }
+        }
+        
+        textContent.textContent = finalTranscript || interimTranscript;
+    });
+    
+    // 음성 인식 에러
+    recognition.addEventListener('error', function(event) {
+        statusMessage.style.display = 'block';
+        statusText.textContent = '오류: ' + event.error;
+        isListening = false;
+        micBtn.style.display = 'block';
+        stopBtn.style.display = 'none';
+    });
+    
+    // 음성 인식 종료
+    recognition.addEventListener('end', function() {
+        isListening = false;
+        micBtn.style.display = 'block';
+        stopBtn.style.display = 'none';
+    });
     
     // 길게 누르기 (터치와 마우스 지원)
     let touchTimeout;
