@@ -349,6 +349,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // 페이지 로드 시 음성 자동 재생 (500ms 지연으로 안정성 확보)
+    setTimeout(() => {
+        // playAudio 함수를 호출하기 위해 이벤트 객체 모의 생성
+        const mockEvent = {
+            target: {
+                closest: () => document.querySelector('[data-voice]')
+            }
+        };
+        const originalEvent = window.event;
+        window.event = mockEvent;
+        playAudio();
+        window.event = originalEvent;
+    }, 500);
+    
     // 음성 인식 시작
     micBtn.addEventListener('click', function() {
         if (!isListening) {
@@ -462,6 +476,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // 새로운 턴 정답으로 업데이트
                     targetResponse = turn.user_response.toLowerCase().trim();
+                    
+                    // 다음 턴의 음성 자동 재생 (500ms 지연)
+                    setTimeout(() => {
+                        const mockEvent = {
+                            target: {
+                                closest: () => document.querySelector('[data-voice]')
+                            }
+                        };
+                        const originalEvent = window.event;
+                        window.event = mockEvent;
+                        playAudio();
+                        window.event = originalEvent;
+                    }, 500);
                 }
             }
         });
