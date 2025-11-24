@@ -337,35 +337,6 @@ function flashMonsterImage(elementId) {
     }, 300);
 }
 
-function updateProgressCircles(battleState) {
-    // 동그라미 업데이트
-    const defeated = battleState.defeated_monsters || 0;
-    const enemyCount = battleState.enemy_count || 3;
-    const unusedSlots = 5 - enemyCount;
-    const defeatedTotal = unusedSlots + defeated;
-    const remainingMonsters = enemyCount - defeated;
-    
-    // 기존 동그라미 제거 (ID로 선택)
-    const circleContainer = document.getElementById('progressCircles');
-    if (circleContainer) {
-        circleContainer.innerHTML = '';
-        
-        // 회색 동그라미 추가
-        for (let i = 0; i < defeatedTotal; i++) {
-            const circle = document.createElement('div');
-            circle.style.cssText = 'width: 8px; height: 8px; border-radius: 50%; background-color: #999; border: 1px solid #666;';
-            circleContainer.appendChild(circle);
-        }
-        
-        // 빨간색 동그라미 추가
-        for (let i = 0; i < remainingMonsters; i++) {
-            const circle = document.createElement('div');
-            circle.style.cssText = 'width: 8px; height: 8px; border-radius: 50%; background-color: #FF6B6B; border: 1px solid #666;';
-            circleContainer.appendChild(circle);
-        }
-    }
-}
-
 function updateBattleUI(battleState) {
     // 항상 페이지 새로고침 (동그라미와 모든 UI를 정확하게 업데이트)
     setTimeout(() => location.reload(), 500);
