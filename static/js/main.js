@@ -32,6 +32,22 @@ class SoundManager {
         }
     }
 
+    // Web Speech API 중 볼륨 증폭 (시스템 오디오 낮춤 보정)
+    boostVolume() {
+        this.originalVolume = this.volume;
+        this.volume = Math.min(1.0, this.volume * 3); // 최대 1.0으로 제한하며 3배 증폭
+        console.log('🔊 볼륨 증폭:', this.originalVolume, '→', this.volume);
+    }
+
+    // 원래 볼륨으로 복원
+    restoreVolume() {
+        if (this.originalVolume !== undefined) {
+            this.volume = this.originalVolume;
+            console.log('🔊 원래 볼륨 복원:', this.volume);
+            this.originalVolume = undefined;
+        }
+    }
+
     // 간단한 톤 생성
     createTone(frequency, duration, type = 'sine') {
         if (!this.enabled || !this.audioContext) return;

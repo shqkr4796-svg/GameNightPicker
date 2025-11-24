@@ -272,11 +272,10 @@ document.addEventListener('DOMContentLoaded', function() {
             nextTurnContainer.style.display = 'none';
             textContent.textContent = '음성 인식 중...';
             
-            // 음성 인식 시작 전에 효과음 임시 비활성화
+            // 음성 인식 중 볼륨 증폭 (시스템 오디오 낮춤 보정)
             const sm = getSoundManager();
             if (sm) {
-                sm.soundDisabledForSpeechRecognition = true;
-                sm.enabled = false;
+                sm.boostVolume();
             }
             
             recognition.start();
@@ -329,9 +328,10 @@ document.addEventListener('DOMContentLoaded', function() {
             micBtn.style.display = 'block';
             stopBtn.style.display = 'none';
             
-            // 오디오 컨텍스트 재생성 (Web Speech API 손상 복구)
+            // 오디오 컨텍스트 재생성 + 볼륨 복원
             const sm = getSoundManager();
             if (sm) {
+                sm.restoreVolume();
                 setTimeout(() => {
                     sm.rebuildAudioContext();
                     sm.enabled = true;
@@ -344,9 +344,10 @@ document.addEventListener('DOMContentLoaded', function() {
             micBtn.style.display = 'block';
             stopBtn.style.display = 'none';
             
-            // 오디오 컨텍스트 재생성 (Web Speech API 손상 복구)
+            // 오디오 컨텍스트 재생성 + 볼륨 복원
             const sm = getSoundManager();
             if (sm) {
+                sm.restoreVolume();
                 setTimeout(() => {
                     sm.rebuildAudioContext();
                     sm.enabled = true;
