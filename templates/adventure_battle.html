@@ -466,7 +466,7 @@ function updateBattleUI(battleState) {
             let color = '#bbb';
             if (log_line.includes('플레이어')) color = '#4CAF50';
             else if (log_line.includes('적')) color = '#FF6B6B';
-            logHtml += `<div style="margin-bottom: 2px; color: ${color};">> ${log_line}</div>`;
+            logHtml += `<div style="margin-bottom: 2px; color: ${color}; font-size: 0.7rem; line-height: 1.4;">> ${log_line}</div>`;
         }
         logContainer.innerHTML = logHtml;
         logContainer.scrollTop = logContainer.scrollHeight;
