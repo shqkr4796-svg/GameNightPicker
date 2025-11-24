@@ -18,7 +18,7 @@
                 <div style="position: absolute; top: 0; right: 0; width: 80%; transform: scale(0.75); transform-origin: top right;">
                     <div style="text-align: center;">
                         <!-- 처치 진도 표시 -->
-                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: center; gap: 3px;">
+                        <div id="progressCircles" style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: center; gap: 3px;">
                             {% set defeated = battle_state.get('defeated_monsters', 0) %}
                             {% set enemy_count = battle_state.get('enemy_count', 3) %}
                             {% set unused_slots = 5 - enemy_count %}
@@ -345,8 +345,8 @@ function updateProgressCircles(battleState) {
     const defeatedTotal = unusedSlots + defeated;
     const remainingMonsters = enemyCount - defeated;
     
-    // 기존 동그라미 제거
-    const circleContainer = document.querySelector('[style*="display: flex; justify-content: center; gap: 3px;"]');
+    // 기존 동그라미 제거 (ID로 선택)
+    const circleContainer = document.getElementById('progressCircles');
     if (circleContainer) {
         circleContainer.innerHTML = '';
         

@@ -5548,20 +5548,55 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
     return {'success': True, 'battle_state': battle_state}
 
 def execute_enemy_turn(battle_state):
-    """적의 턴 자동 실행"""
+    """적의 턴 자동 실행 (등급/난이도별 기술 사용)"""
+    from data.adventure_data import SKILLS
     import random
     
     if battle_state['game_over'] or battle_state['player_turn']:
         return {'success': False, 'battle_state': battle_state}
     
-    # 적의 기본 공격
-    enemy_damage = battle_state['enemy_monster']['attack']
-    battle_state['player_monster']['current_hp'] -= enemy_damage
-    battle_state['log'].append(f"적의 공격! {enemy_damage} 데미지")
+    enemy_monster = battle_state['enemy_monster']
+    player_monster = battle_state['player_monster']
+    
+    # 등급/난이도별 기술 선택 확률
+    rarity = enemy_monster.get('rarity', '레어')
+    difficulty = battle_state.get('difficulty', 'EASY')
+    
+    # 기술 사용 확률 결정
+    skill_use_probability = {
+        '레어': {'EASY': 0.2, 'NORMAL': 0.3, 'HARD': 0.4},
+        '에픽': {'EASY': 0.4, 'NORMAL': 0.6, 'HARD': 0.8},
+        '유니크': {'EASY': 0.7, 'NORMAL': 0.8, 'HARD': 0.95},
+        '레전드리': {'EASY': 0.9, 'NORMAL': 0.95, 'HARD': 1.0},
+    }
+    
+    use_skill = random.random() < skill_use_probability.get(rarity, {}).get(difficulty, 0.3)
+    
+    # 사용 가능한 기술 목록 (플레이어가 가진 기술 활용)
+    available_skills = list(SKILLS.keys())
+    
+    if use_skill and available_skills:
+        # 랜덤하게 기술 선택
+        skill_name = random.choice(available_skills)
+        skill = SKILLS[skill_name]
+        
+        # 기술의 공격력 보정 적용
+        multiplier_min = skill.get('공격력_보정_min', 1.0)
+        multiplier_max = skill.get('공격력_보정_max', 1.0)
+        multiplier = random.uniform(multiplier_min, multiplier_max)
+        damage = int(enemy_monster['attack'] * multiplier)
+        
+        player_monster['current_hp'] -= damage
+        battle_state['log'].append(f"적 [{skill_name}] 사용! {damage} 데미지")
+    else:
+        # 기본 공격
+        damage = enemy_monster['attack']
+        player_monster['current_hp'] -= damage
+        battle_state['log'].append(f"적의 공격! {damage} 데미지")
     
     # 플레이어 체력 확인
-    if battle_state['player_monster']['current_hp'] <= 0:
-        battle_state['player_monster']['current_hp'] = 0
+    if player_monster['current_hp'] <= 0:
+        player_monster['current_hp'] = 0
         battle_state['game_over'] = True
         battle_state['winner'] = 'enemy'
         battle_state['log'].append(f"패배했습니다...")
@@ -5622,10 +5657,34 @@ def execute_skill(battle_state, skill_name):
     battle_state['player_turn'] = False
     battle_state['log'].append(f"\n적 [{battle_state['enemy_monster']['name']}] 차례...")
     
-    # 적의 기본 공격
-    enemy_damage = battle_state['enemy_monster']['attack']
-    battle_state['player_monster']['current_hp'] -= enemy_damage
-    battle_state['log'].append(f"적의 공격! {enemy_damage} 데미지")
+    # 적의 기술 또는 공격
+    enemy_monster = battle_state['enemy_monster']
+    rarity = enemy_monster.get('rarity', '레어')
+    difficulty = battle_state.get('difficulty', 'EASY')
+    
+    # 기술 사용 확률
+    skill_use_probability = {
+        '레어': {'EASY': 0.2, 'NORMAL': 0.3, 'HARD': 0.4},
+        '에픽': {'EASY': 0.4, 'NORMAL': 0.6, 'HARD': 0.8},
+        '유니크': {'EASY': 0.7, 'NORMAL': 0.8, 'HARD': 0.95},
+        '레전드리': {'EASY': 0.9, 'NORMAL': 0.95, 'HARD': 1.0},
+    }
+    
+    use_skill = random.random() < skill_use_probability.get(rarity, {}).get(difficulty, 0.3)
+    
+    if use_skill and SKILLS:
+        skill_name = random.choice(list(SKILLS.keys()))
+        skill = SKILLS[skill_name]
+        multiplier_min = skill.get('공격력_보정_min', 1.0)
+        multiplier_max = skill.get('공격력_보정_max', 1.0)
+        multiplier = random.uniform(multiplier_min, multiplier_max)
+        enemy_damage = int(enemy_monster['attack'] * multiplier)
+        battle_state['player_monster']['current_hp'] -= enemy_damage
+        battle_state['log'].append(f"적 [{skill_name}] 사용! {enemy_damage} 데미지")
+    else:
+        enemy_damage = enemy_monster['attack']
+        battle_state['player_monster']['current_hp'] -= enemy_damage
+        battle_state['log'].append(f"적의 공격! {enemy_damage} 데미지")
     
     # 플레이어 체력 확인
     if battle_state['player_monster']['current_hp'] <= 0:
