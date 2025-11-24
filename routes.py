@@ -1556,7 +1556,6 @@ def submit_expression_quiz():
         
         flash(f"정답입니다! ✓ ({request.form.get('correct', '')}: {meaning}) 경험치 +10", 'success')
         player['경험치'] += 10
-        player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
         
         # 레벨업 확인
         while player['경험치'] >= player['경험치최대']:
