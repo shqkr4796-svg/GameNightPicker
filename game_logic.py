@@ -5821,8 +5821,7 @@ def complete_adventure_battle(player, battle_state):
         player['모험_아이템'][item_name] = item_count + 1
         rewards['items'].append(item_name)
     
-    # 돈만 지급 (경험치는 안 오름)
-    player['돈'] += rewards['money']
+    # 돈 지급 안함 (경험치도 안 오름)
     
     # 스테이지 클리어 업데이트
     if stage_id > player.get('모험_클리어스테이지', 0):
