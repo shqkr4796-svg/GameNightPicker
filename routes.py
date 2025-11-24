@@ -255,8 +255,6 @@ def take_quiz():
     quiz_word = request.form.get('quiz_word')  # 현재 퀴즈 단어
     
     result = game_logic.process_quiz_answer(player, answer, correct_answer, question_type)
-    session['player_data'] = player
-    game_logic.save_game(player)
     
     if result['correct']:
         # 세션에서 맞춘 단어 추가 (카테고리별로)
@@ -267,7 +265,18 @@ def take_quiz():
             session[session_key].append(quiz_word)
             session.modified = True
         
-        message = f'정답! 경험치 +{result["exp_gained"]}'
+        # 모험 기력 증가: 퀴즈 50번 맞추면 기력 +1
+        player['모험_정답_퀴즈'] = player.get('모험_정답_퀴즈', 0) + 1
+        quiz_correct_count = player['모험_정답_퀴즈']
+        
+        adventure_energy_gained = 0
+        if quiz_correct_count % 50 == 0:
+            player['모험_기력'] = min(player.get('모험_기력', 1) + 1, player.get('모험_기력최대', 1))
+            adventure_energy_gained = 1
+            message = f'정답! 경험치 +{result["exp_gained"]} | 모험 기력 +1! ({quiz_correct_count} 정답 달성)'
+        else:
+            message = f'정답! 경험치 +{result["exp_gained"]} (모험 정답: {quiz_correct_count}/50)'
+        
         message_type = 'success'
     else:
         # 틀린 문제 저장 (카테고리별로)
@@ -299,6 +308,10 @@ def take_quiz():
         
         message = f'틀렸습니다. 정답은 "{result["correct_answer"]}"입니다.'
         message_type = 'error'
+    
+    session['player_data'] = player
+    session.modified = True
+    game_logic.save_game(player)
     
     # AJAX 요청인지 확인
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -1727,6 +1740,12 @@ def start_adventure():
         flash('스테이지와 몬스터를 선택해주세요.', 'error')
         return redirect(url_for('adventure'))
     
+    # 모험 기력 확인
+    adventure_energy = player.get('모험_기력', 1)
+    if adventure_energy <= 0:
+        flash('모험 기력이 부족합니다. 단어 퀴즈를 50번 맞춰서 기력을 충전하세요!', 'error')
+        return redirect(url_for('adventure'))
+    
     # 스테이지 확인
     stages = game_logic.get_adventure_stages()
     stage = next((s for s in stages if s['stage_id'] == stage_id), None)
@@ -1739,6 +1758,9 @@ def start_adventure():
     if stage_id > player.get('모험_클리어스테이지', 0) + 1:
         flash('이전 스테이지를 먼저 클리어해주세요.', 'error')
         return redirect(url_for('adventure'))
+    
+    # 모험 기력 소모
+    player['모험_기력'] = adventure_energy - 1
     
     result = game_logic.start_adventure_battle(player, stage_id, selected_monster_id)
     
@@ -1817,6 +1839,19 @@ def adventure_action():
                             'rewards': complete_result['rewards'],
                             'battle_state': battle_state
                         })
+                elif battle_state['winner'] == 'enemy':
+                    # 패배 처리
+                    session['player_data'] = player
+                    session['battle_state'] = battle_state
+                    session.modified = True
+                    game_logic.save_game(player)
+                    
+                    return jsonify({
+                        'success': True,
+                        'game_over': True,
+                        'winner': 'enemy',
+                        'battle_state': battle_state
+                    })
             else:
                 session['battle_state'] = battle_state
                 session.modified = True

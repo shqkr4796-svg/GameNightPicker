@@ -37,6 +37,9 @@ def create_new_player():
         '모험_기술': ['박치기'],  # 보유한 기술 목록
         '모험_대표몬스터': None,  # 대표 몬스터 ID
         '모험_아이템': {},  # 모험 아이템 인벤토리
+        '모험_기력': 1,  # 모험 기력
+        '모험_기력최대': 1,  # 모험 기력 최대값
+        '모험_정답_퀴즈': 0,  # 모험 기력 증가를 위한 퀴즈 정답 횟수
     }
 
 def save_game(player_data):
@@ -105,6 +108,12 @@ def load_game():
                     player['모험_대표몬스터'] = None
                 if '모험_아이템' not in player:
                     player['모험_아이템'] = {}
+                if '모험_기력' not in player:
+                    player['모험_기력'] = 1
+                if '모험_기력최대' not in player:
+                    player['모험_기력최대'] = 1
+                if '모험_정답_퀴즈' not in player:
+                    player['모험_정답_퀴즈'] = 0
                 
                 return player
     except Exception as e:
