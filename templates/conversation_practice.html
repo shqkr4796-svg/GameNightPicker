@@ -113,6 +113,21 @@
         border-left: 3px solid #ff9900;
         margin-left: 20px;
     }
+    
+    .mic-icon {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: #dc3545;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
 </style>
 
 <div class="row">
@@ -137,12 +152,6 @@
                     <div class="progress-fill" id="progressBar" style="width: {{ (turn_number / total_turns * 100)|int }}%"></div>
                 </div>
             </div>
-        </div>
-
-        <!-- 대화 이력 -->
-        <div id="conversationHistory" class="conversation-history" style="display: none;">
-            <small class="text-muted d-block mb-3">📜 대화 이력</small>
-            <div id="historyContent"></div>
         </div>
 
         <!-- 현재 턴 대화 -->
@@ -172,15 +181,24 @@
                     <div class="meaning-text" id="userMeaningText">{{ current_turn.user_meaning }}</div>
                 </div>
 
-                <!-- 텍스트 입력 섹션 -->
+                <!-- 음성 인식 섹션 -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="form-group">
-                            <label class="form-label"><strong>✍️ 대사 입력:</strong></label>
-                            <input type="text" id="userInputText" class="form-control mb-2" placeholder="위의 대사를 입력하세요">
-                            <button type="button" id="submitBtn" class="btn btn-success w-100">
-                                <i class="fas fa-check me-2"></i>답변 확인
+                            <label class="form-label"><strong>🎤 음성 인식:</strong></label>
+                            <button type="button" id="micBtn" class="btn btn-success w-100 mb-2">
+                                <i class="fas fa-microphone me-2"></i>음성 인식 시작
                             </button>
+                            <button type="button" id="stopBtn" class="btn btn-danger w-100 mb-2" style="display: none;">
+                                <span class="mic-icon"></span>음성 인식 중...
+                            </button>
+                            <div id="recognizedText" class="alert alert-info" style="display: none; min-height: 70px;">
+                                <p class="text-muted small mb-1">인식된 내용:</p>
+                                <p id="textContent" class="mb-0"></p>
+                            </div>
+                            <div id="statusMessage" class="alert alert-secondary" style="display: none;">
+                                <small id="statusText"></small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -228,35 +246,93 @@
 </div>
 
 <script>
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
 document.addEventListener('DOMContentLoaded', function() {
-    const userInputText = document.getElementById('userInputText');
-    const submitBtn = document.getElementById('submitBtn');
+    const micBtn = document.getElementById('micBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const recognizedText = document.getElementById('recognizedText');
+    const textContent = document.getElementById('textContent');
+    const statusMessage = document.getElementById('statusMessage');
+    const statusText = document.getElementById('statusText');
     const resultFeedback = document.getElementById('resultFeedback');
     const resultMessage = document.getElementById('resultMessage');
     const nextTurnContainer = document.getElementById('nextTurnContainer');
     const nextTurnBtn = document.getElementById('nextTurnBtn');
     const completionContainer = document.getElementById('completionContainer');
     
-    // 현재 턴의 정답
     let targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
-    // 답변 확인 버튼
-    submitBtn.addEventListener('click', function() {
-        const userInput = userInputText.value.toLowerCase().trim();
-        if (!userInput) {
-            resultFeedback.style.display = 'block';
-            resultMessage.className = 'alert alert-warning';
-            resultMessage.innerHTML = '<strong>⚠️ 입력해주세요</strong>';
-            return;
+    // 음성 인식 시작
+    micBtn.addEventListener('click', async function() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            isRecording = true;
+            
+            micBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            recognizedText.style.display = 'block';
+            resultFeedback.style.display = 'none';
+            textContent.textContent = '음성 인식 준비 중...';
+            
+            mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
+            
+            mediaRecorder.onmicrophonestate = function() {
+                console.log('Microphone state changed');
+            };
+            
+            mediaRecorder.start();
+        } catch (error) {
+            statusMessage.style.display = 'block';
+            statusText.textContent = '마이크 접근 권한이 필요합니다.';
         }
-        checkAnswer(userInput);
     });
     
-    // Enter 키로도 제출 가능
-    userInputText.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            submitBtn.click();
-        }
+    // 음성 인식 중지 및 처리
+    stopBtn.addEventListener('click', async function() {
+        if (!mediaRecorder || !isRecording) return;
+        
+        isRecording = false;
+        mediaRecorder.stop();
+        
+        mediaRecorder.onstop = async () => {
+            textContent.textContent = '음성 처리 중...';
+            
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            
+            // FormData로 서버에 전송
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.wav');
+            
+            try {
+                const response = await fetch('{{ url_for("transcribe_audio") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const recognizedText_val = data.text.toLowerCase().trim();
+                    textContent.textContent = recognizedText_val;
+                    checkAnswer(recognizedText_val);
+                } else {
+                    textContent.textContent = '음성 인식 실패: ' + data.error;
+                }
+            } catch (error) {
+                textContent.textContent = '오류 발생: ' + error.message;
+            }
+            
+            micBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+            
+            // 스트림 정리
+            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        };
     });
     
     // 정답 확인
@@ -274,7 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
             resultMessage.innerHTML = '<strong>✅ 정답입니다!</strong> 잘 하셨어요! 경험치 +10';
             nextTurnContainer.style.display = 'block';
             
-            // 다음 턴 버튼 클릭 시
             nextTurnBtn.onclick = function() {
                 loadNextTurn();
             };
@@ -294,14 +369,12 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 if (data.is_final && data.turn_number === undefined) {
-                    // 모든 턴 완료
                     resultFeedback.style.display = 'block';
                     resultMessage.className = 'alert alert-success';
                     resultMessage.innerHTML = '<strong>🎉 대화 연습 완료!</strong><br>모든 턴을 성공적으로 완료했습니다!';
                     nextTurnContainer.style.display = 'none';
                     completionContainer.style.display = 'flex';
                 } else {
-                    // 다음 턴 표시
                     const turn = data.next_turn;
                     document.getElementById('aiPromptText').textContent = turn.ai_prompt;
                     document.getElementById('aiMeaningText').textContent = turn.ai_meaning;
@@ -313,13 +386,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     const progress = (data.turn_number / data.total_turns * 100);
                     document.getElementById('progressBar').style.width = progress + '%';
                     
-                    // UI 리셋
-                    userInputText.value = '';
+                    recognizedText.style.display = 'none';
+                    textContent.textContent = '';
                     resultFeedback.style.display = 'none';
                     resultMessage.innerHTML = '';
                     nextTurnContainer.style.display = 'none';
+                    statusMessage.style.display = 'none';
                     
-                    // 새로운 턴 정답으로 업데이트
+                    micBtn.style.display = 'block';
+                    stopBtn.style.display = 'none';
+                    
                     targetResponse = turn.user_response.toLowerCase().trim();
                 }
             }
