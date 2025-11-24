@@ -271,11 +271,11 @@ def take_quiz():
         
         adventure_energy_gained = 0
         if quiz_correct_count % 50 == 0:
-            player['모험_기력'] = min(player.get('모험_기력', 1) + 1, player.get('모험_기력최대', 1))
+            player['모험_기력'] = min(player.get('모험_기력', 100) + 1, player.get('모험_기력최대', 100))
             adventure_energy_gained = 1
             message = f'정답! 경험치 +{result["exp_gained"]} | 모험 기력 +1! ({quiz_correct_count} 정답 달성)'
         else:
-            message = f'정답! 경험치 +{result["exp_gained"]} (모험 정답: {quiz_correct_count}/50)'
+            message = f'정답! 경험치 +{result["exp_gained"]}'
         
         message_type = 'success'
     else:
@@ -1741,7 +1741,7 @@ def start_adventure():
         return redirect(url_for('adventure'))
     
     # 모험 기력 확인
-    adventure_energy = player.get('모험_기력', 1)
+    adventure_energy = player.get('모험_기력', 100)
     if adventure_energy <= 0:
         flash('모험 기력이 부족합니다. 단어 퀴즈를 50번 맞춰서 기력을 충전하세요!', 'error')
         return redirect(url_for('adventure'))

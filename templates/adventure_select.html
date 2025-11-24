@@ -15,12 +15,20 @@
                 <div style="margin-top: 20px; display: inline-block; background-color: #fff; padding: 12px 24px; border-radius: 6px; border: 2px solid #e0e0e0;">
                     <p style="margin: 0; color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">모험 기력</p>
                     <p style="margin: 8px 0 0 0; color: #1a1a1a; font-weight: 700; font-size: 1.2rem;">
-                        {{ player.get('모험_기력', 1) }} / {{ player.get('모험_기력최대', 1) }}
+                        {{ player.get('모험_기력', 100) }} / {{ player.get('모험_기력최대', 100) }}
                     </p>
-                    {% if player.get('모험_기력', 1) > 0 %}
+                    
+                    <!-- 기력 상세 정보 -->
+                    <p style="margin: 8px 0 0 0; color: #666; font-size: 0.75rem; line-height: 1.4;">
+                        {% set quiz_count = player.get('모험_정답_퀴즈', 0) %}
+                        {% set next_reward = (quiz_count // 50 + 1) * 50 %}
+                        다음 기력 보상: {{ next_reward - quiz_count }}번 더 필요<br>
+                        (현재: {{ quiz_count }}회 정답)
+                    </p>
+                    {% if player.get('모험_기력', 100) > 0 %}
                         <p style="margin: 4px 0 0 0; color: #4CAF50; font-size: 0.75rem;">✓ 전투 가능</p>
                     {% else %}
-                        <p style="margin: 4px 0 0 0; color: #FF6B6B; font-size: 0.75rem;">⚠ 기력 부족 (퀴즈 50번 필요)</p>
+                        <p style="margin: 4px 0 0 0; color: #FF6B6B; font-size: 0.75rem;">⚠ 기력 부족</p>
                     {% endif %}
                 </div>
             </div>
