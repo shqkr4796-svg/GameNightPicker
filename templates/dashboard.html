@@ -235,8 +235,8 @@
 
                 <!-- 능력치 차트 탭 -->
                 <div class="tab-pane fade" id="panel-chart" role="tabpanel" aria-labelledby="tab-chart">
-                    <div class="card-body">
-                        <canvas id="statsChart" width="400" height="50"></canvas>
+                    <div class="card-body" style="max-height: 200px; overflow: hidden;">
+                        <canvas id="statsChart" width="200" height="200"></canvas>
                     </div>
                 </div>
             </div>
@@ -403,8 +403,8 @@ fetch('/api/player_stats')
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: true,
+                responsive: false,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         display: false
