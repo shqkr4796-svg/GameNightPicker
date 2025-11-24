@@ -1774,9 +1774,9 @@ def start_adventure():
     if 'defeated_monsters' not in battle_state:
         battle_state['defeated_monsters'] = 0
     
-    # enemy_count 필드 초기화
+    # enemy_count 필드 초기화 (stage에서 가져오기)
     if 'enemy_count' not in battle_state:
-        battle_state['enemy_count'] = 1
+        battle_state['enemy_count'] = stage.get('enemy_count', 1)
     
     # 기존에 진행 중인 전투가 있었는지 확인
     if 'battle_state' in session:
