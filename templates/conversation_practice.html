@@ -250,34 +250,21 @@ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecogni
 let recognition;
 let isListening = false;
 
-// 음성 로드
+// 음성 로드 (평범한 시스템 음성 사용)
 function loadAllVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
-        const enVoices = voices.filter(v => v.lang === 'en-US');
+        const enVoices = voices.filter(v => v.lang === 'en-US' || v.lang.startsWith('en'));
         
-        // 여성 음성들
-        const femaleNames = ['Zira', 'Samantha', 'Victoria', 'Moira', 'Fiona', 'Karen'];
-        const maleNames = ['David', 'Mark', 'Daniel', 'Tom', 'George'];
-        
-        let femaleIdx = 0, maleIdx = 0;
-        
-        for (let voice of enVoices) {
-            if (voice.name.includes('Female') || femaleNames.some(n => voice.name.includes(n))) {
-                if (femaleIdx < 6) cachedVoices[`female${femaleIdx + 1}`] = voice;
-                femaleIdx++;
-            } else if (voice.name.includes('Male') || maleNames.some(n => voice.name.includes(n))) {
-                if (maleIdx < 5) cachedVoices[`male${maleIdx + 1}`] = voice;
-                maleIdx++;
+        if (enVoices.length > 0) {
+            // 시스템의 기본 음성을 모두에게 할당 (평범하고 명확한 음성)
+            const defaultVoice = enVoices[0];
+            for (let i = 1; i <= 6; i++) {
+                cachedVoices[`female${i}`] = defaultVoice;
             }
-        }
-        
-        // 폴백: 일반 음성으로 채우기
-        for (let i = 1; i <= 6; i++) {
-            if (!cachedVoices[`female${i}`] && enVoices.length > 0) cachedVoices[`female${i}`] = enVoices[0];
-        }
-        for (let i = 1; i <= 5; i++) {
-            if (!cachedVoices[`male${i}`] && enVoices.length > 0) cachedVoices[`male${i}`] = enVoices[0];
+            for (let i = 1; i <= 5; i++) {
+                cachedVoices[`male${i}`] = defaultVoice;
+            }
         }
     }
 }
@@ -296,25 +283,27 @@ function playAudio(textOrElement) {
         text = document.getElementById('aiPromptText').textContent;
     }
     
-    // 재생 버튼의 voice 속성 가져오기
-    const playBtn = event?.target?.closest('button') || document.querySelector('[data-voice]');
-    const voiceType = playBtn?.getAttribute('data-voice') || 'female1';
-    
     if (text && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         
         // 재생 상태 표시
         const playingStatus = document.getElementById('playingStatus');
-        playingStatus.style.display = 'inline';
+        if (playingStatus) {
+            playingStatus.style.display = 'inline';
+        }
         
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         utterance.rate = 0.9;
-        if (cachedVoices[voiceType]) utterance.voice = cachedVoices[voiceType];
+        // 캐시된 기본 음성 사용
+        const defaultVoice = Object.values(cachedVoices).find(v => v);
+        if (defaultVoice) utterance.voice = defaultVoice;
         
         // 재생 끝나면 상태 메시지 숨김
         utterance.onend = function() {
-            playingStatus.style.display = 'none';
+            if (playingStatus) {
+                playingStatus.style.display = 'none';
+            }
         };
         
         window.speechSynthesis.speak(utterance);
