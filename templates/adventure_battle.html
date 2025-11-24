@@ -3,6 +3,8 @@
 {% block title %}모험 전투 - 라이프 시뮬레이션{% endblock %}
 
 {% block content %}
+<!-- 효과음 시스템 스크립트 -->
+<script src="{{ url_for('static', filename='js/adventure_sound.js') }}"></script>
 <div class="container-fluid" style="background-color: #1a1a1a; min-height: 100vh; padding: 15px; color: white;">
     <div class="row">
         <div class="col-lg-10 mx-auto">
@@ -266,12 +268,28 @@ let currentSkill = '';
 const skillsInfo = {{ skills_info | tojson }};
 const playerSkills = {{ battle_state.player_skills | tojson }};
 const skillUsage = {{ skill_usage | tojson }};
+const currentPlayerRarity = '{{ battle_state.player_monster.rarity }}';
+let skillButtonClickCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
+
+// 페이지 로드 시 배경음악 시작 및 전투 시작 음향
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        adventureSound.playBattleStartSound();
+        adventureSound.playBackgroundMusic();
+    }, 300);
+});
 
 function showSkillInfo(skillName) {
     currentSkill = skillName;
     const skill = skillsInfo[skillName];
     
     if (skill) {
+        // 기술 선택 시 효과음 (슬롯별로 다르게)
+        const slotIndex = playerSkills.indexOf(skillName);
+        if (slotIndex !== -1) {
+            adventureSound.playSkillSelectSound(slotIndex);
+        }
+        
         document.getElementById('modalSkillName').textContent = skill['한글'] || skillName;
         document.getElementById('modalSkillDesc').textContent = skill['설명'] + '\n' + skill['효과'];
         document.getElementById('modalSkillRarity').textContent = skill['등급'];
@@ -343,13 +361,23 @@ function updateBattleUI(battleState) {
     document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
     document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
     
-    // 적 몬스터에 피해를 입었으면 적 이미지 플래시
+    // 적 몬스터에 피해를 입었으면 적 이미지 플래시 + 피해 음향
     if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
         flashMonsterImage('enemyMonsterImg');
+        const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
+        adventureSound.playDamageSound(damage);
+    }
+    
+    // 플레이어 몬스터에 피해를 입었으면 플레이어 이미지 플래시 + 피해 음향
+    if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
+        flashMonsterImage('playerMonsterImg');
     }
 }
 
 function useSkill(skillName) {
+    // 기술 사용 시 효과음 (등급별 + 기술별)
+    adventureSound.playSkillCastSound(skillName, currentPlayerRarity);
+    
     const form = new FormData();
     form.append('action_type', 'skill');
     form.append('skill_name', skillName);
@@ -370,11 +398,21 @@ function useSkill(skillName) {
             if (data.game_over) {
                 setTimeout(() => {
                     if (data.winner === 'player') {
-                        alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
-                        window.location.href = "{{ url_for('adventure') }}";
+                        // 승리 음향
+                        adventureSound.playVictorySound();
+                        adventureSound.stopBackgroundMusic();
+                        setTimeout(() => {
+                            alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                            window.location.href = "{{ url_for('adventure') }}";
+                        }, 500);
                     } else {
-                        alert('패배했습니다. 다시 시도하세요.');
-                        window.location.href = "{{ url_for('adventure') }}";
+                        // 패배 음향
+                        adventureSound.playDefeatSound();
+                        adventureSound.stopBackgroundMusic();
+                        setTimeout(() => {
+                            alert('패배했습니다. 다시 시도하세요.');
+                            window.location.href = "{{ url_for('adventure') }}";
+                        }, 500);
                     }
                 }, 250);
             } else {

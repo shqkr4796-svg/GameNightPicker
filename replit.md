@@ -68,18 +68,40 @@ Status: **Images placeholder (empty strings)**
 - Current system supports white background monster images
 - Images directory ready at: `/static/monsters/`
 
-## Recent Changes (Nov 21, 2025)
+## Recent Changes (Nov 24, 2025)
 
-1. ✅ Created `data/monsters.py` with 42 unique monsters
-2. ✅ Modified `game_logic.py`:
-   - Changed `next_monster()` to select from pre-defined monster roster
-   - Updated `get_monster_stats()` to use individual monster stat ranges
-   - Modified `update_compendium()` to use original monster names
-   - Updated `get_all_monster_images()` for new monster system
-3. ✅ Monster pokapture system:
-   - Dungeon encounters now spawn specific monsters (not word-based)
-   - Compendium displays collected monsters with original names
-   - Each monster instance has randomized stats within its defined range
+### Adventure System Sound Effects (NEW)
+1. ✅ Created `static/js/adventure_sound.js` - Complete sound effect system
+   - Web Audio API-based procedural sound generation (no external audio files)
+   - Background music: 4-second looping ambient melody
+   - Skill selection sounds: 3 different chord patterns per slot (slotIndex-based)
+   - Skill cast sounds: Rarity + skill-based audio patterns
+   - Damage sounds: Magnitude-based frequency (50+ damage, 20-50, <20)
+   - Combat effects: Battle start fanfare, victory fanfare, defeat sequence
+   - Monster defeated sound: Frequency sweep effect
+
+2. ✅ Modified `templates/adventure_battle.html`:
+   - Added adventure_sound.js script integration
+   - Battle page now plays:
+     - Battle start sound (opening fanfare) when page loads
+     - Background music loop during combat
+     - Skill selection sound when clicking skill buttons (different per slot)
+     - Skill cast sound when using skill (rarity + skill-specific)
+     - Damage sound when taking/dealing damage (magnitude-based)
+     - Victory fanfare on win with background music stop
+     - Defeat sequence on loss with background music stop
+
+### Bug Fixes (Nov 24, 2025)
+1. ✅ Fixed monster ID format issues in savegame.json
+   - Converted wrong format (등급_이름_숫자) → correct format (등급_번호)
+   - Fixed: 에픽_사냥꾼 렉스_11 → 에픽_4
+   - Fixed: 에픽_옵시디언_13 → 에픽_2
+   - Fixed: 7 incorrectly formatted monster IDs
+
+### Previous Changes (Nov 21, 2025)
+1. ✅ Created `data/monsters.py` with 53 unique monsters
+2. ✅ Modified `game_logic.py` for monster system
+3. ✅ Monster capture system with dungeon encounters
 
 ## External Dependencies
 
