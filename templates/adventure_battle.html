@@ -19,29 +19,30 @@
                     <div style="text-align: center;">
                         <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">플레이어</div>
                         <div style="background-color: #2a2a2a; border-radius: 8px; padding: 25px; margin-bottom: 15px; border: 2px solid #444;">
-                            <div style="font-size: 2rem; margin-bottom: 15px;">
+                            <!-- 플레이어 몬스터 이미지/이모지 -->
+                            <div style="font-size: 3.5rem; margin-bottom: 15px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); padding: 20px; border-radius: 8px;">
                                 {% set rarity_emoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'} %}
                                 {{ rarity_emoji.get(battle_state.player_monster.rarity, '') }}
                             </div>
-                            <h5 style="font-weight: 700; margin-bottom: 10px; font-size: 1.2rem;">{{ battle_state.player_monster.name }}</h5>
-                            <p style="color: #999; font-size: 0.85rem; margin-bottom: 15px;">{{ battle_state.player_monster.rarity }}</p>
+                            <h5 style="font-weight: 700; margin-bottom: 8px; font-size: 1.3rem;">{{ battle_state.player_monster.name }}</h5>
+                            <p style="color: #999; font-size: 0.85rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">{{ battle_state.player_monster.rarity }}</p>
                         </div>
 
                         <!-- 플레이어 HP 바 -->
                         <div style="margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="color: #999; font-size: 0.8rem;">HP</span>
+                                <span style="color: #999; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">HP</span>
                                 <span style="color: white; font-weight: 700; font-size: 0.9rem;">{{ battle_state.player_monster.current_hp }} / {{ battle_state.player_monster.max_hp }}</span>
                             </div>
-                            <div style="width: 100%; height: 8px; background-color: #333; border-radius: 4px; overflow: hidden;">
+                            <div style="width: 100%; height: 10px; background-color: #333; border-radius: 5px; overflow: hidden; border: 1px solid #444;">
                                 <div id="playerHpBar" style="height: 100%; width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100) }}%; background: linear-gradient(90deg, #4CAF50, #45a049); transition: width 0.3s;"></div>
                             </div>
                         </div>
 
                         <!-- 플레이어 공격력 -->
-                        <div style="background-color: #2a2a2a; padding: 10px; border-radius: 6px; border: 1px solid #444;">
-                            <span style="color: #999; font-size: 0.8rem;">ATK</span>
-                            <span style="color: white; font-weight: 700; margin-left: 10px;">{{ battle_state.player_monster.attack }}</span>
+                        <div style="background-color: #2a2a2a; padding: 12px; border-radius: 6px; border: 1px solid #444;">
+                            <span style="color: #999; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">공격력</span>
+                            <span style="color: #4CAF50; font-weight: 700; margin-left: 10px; font-size: 0.95rem;">{{ battle_state.player_monster.attack }}</span>
                         </div>
                     </div>
                 </div>
@@ -51,28 +52,29 @@
                     <div style="text-align: center;">
                         <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">적</div>
                         <div style="background-color: #2a2a2a; border-radius: 8px; padding: 25px; margin-bottom: 15px; border: 2px solid #444;">
-                            <div style="font-size: 2rem; margin-bottom: 15px;">
+                            <!-- 적 몬스터 이미지/이모지 -->
+                            <div style="font-size: 3.5rem; margin-bottom: 15px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); padding: 20px; border-radius: 8px;">
                                 {{ rarity_emoji.get(battle_state.enemy_monster.rarity, '') }}
                             </div>
-                            <h5 style="font-weight: 700; margin-bottom: 10px; font-size: 1.2rem;">{{ battle_state.enemy_monster.name }}</h5>
-                            <p style="color: #999; font-size: 0.85rem; margin-bottom: 15px;">{{ battle_state.enemy_monster.rarity }}</p>
+                            <h5 style="font-weight: 700; margin-bottom: 8px; font-size: 1.3rem;">{{ battle_state.enemy_monster.name }}</h5>
+                            <p style="color: #999; font-size: 0.85rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">{{ battle_state.enemy_monster.rarity }}</p>
                         </div>
 
                         <!-- 적 HP 바 -->
                         <div style="margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="color: #999; font-size: 0.8rem;">HP</span>
+                                <span style="color: #999; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">HP</span>
                                 <span style="color: white; font-weight: 700; font-size: 0.9rem;">{{ battle_state.enemy_monster.current_hp }} / {{ battle_state.enemy_monster.max_hp }}</span>
                             </div>
-                            <div style="width: 100%; height: 8px; background-color: #333; border-radius: 4px; overflow: hidden;">
+                            <div style="width: 100%; height: 10px; background-color: #333; border-radius: 5px; overflow: hidden; border: 1px solid #444;">
                                 <div id="enemyHpBar" style="height: 100%; width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100) }}%; background: linear-gradient(90deg, #FF6B6B, #ee5a52); transition: width 0.3s;"></div>
                             </div>
                         </div>
 
                         <!-- 적 공격력 -->
-                        <div style="background-color: #2a2a2a; padding: 10px; border-radius: 6px; border: 1px solid #444;">
-                            <span style="color: #999; font-size: 0.8rem;">ATK</span>
-                            <span style="color: white; font-weight: 700; margin-left: 10px;">{{ battle_state.enemy_monster.attack }}</span>
+                        <div style="background-color: #2a2a2a; padding: 12px; border-radius: 6px; border: 1px solid #444;">
+                            <span style="color: #999; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">공격력</span>
+                            <span style="color: #FF6B6B; font-weight: 700; margin-left: 10px; font-size: 0.95rem;">{{ battle_state.enemy_monster.attack }}</span>
                         </div>
                     </div>
                 </div>
@@ -80,7 +82,7 @@
 
             <!-- 대사 -->
             <div style="text-align: center; margin-bottom: 25px; padding: 20px; background-color: #2a2a2a; border-radius: 8px; border-left: 4px solid #666;">
-                <p style="color: #bbb; font-style: italic; font-size: 0.9rem;">
+                <p style="color: #bbb; font-style: italic; font-size: 0.95rem; margin: 0;">
                     {% if battle_state.player_turn %}
                         "{{ battle_state.player_dialogue }}"
                     {% else %}
@@ -90,11 +92,11 @@
             </div>
 
             <!-- 전투 로그 -->
-            <div style="background-color: #2a2a2a; border-radius: 8px; padding: 20px; margin-bottom: 25px; border: 1px solid #444; max-height: 150px; overflow-y: auto;">
-                <div style="font-size: 0.85rem; color: #999;">
+            <div style="background-color: #2a2a2a; border-radius: 8px; padding: 15px; margin-bottom: 25px; border: 1px solid #444; max-height: 140px; overflow-y: auto;">
+                <div style="font-size: 0.8rem; color: #999; line-height: 1.6;">
                     {% for log_line in battle_state.log %}
-                        <div style="margin-bottom: 5px; color: {% if '플레이어' in log_line %}#4CAF50{% elif '적' in log_line %}#FF6B6B{% else %}#bbb{% endif %};">
-                            {{ log_line }}
+                        <div style="margin-bottom: 4px; color: {% if '플레이어' in log_line %}#4CAF50{% elif '적' in log_line %}#FF6B6B{% else %}#bbb{% endif %};">
+                            > {{ log_line }}
                         </div>
                     {% endfor %}
                 </div>
@@ -105,18 +107,18 @@
                 <div id="actionContainer">
                     {% if battle_state.player_turn %}
                         <div style="text-align: center; margin-bottom: 15px;">
-                            <p style="color: #999; font-size: 0.9rem; margin-bottom: 15px;">기술을 선택하세요</p>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <p style="color: #999; font-size: 0.9rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">기술을 선택하세요</p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                                 {% for skill in battle_state.player_skills %}
-                                    <button onclick="useSkill('{{ skill }}')" class="btn" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;">
+                                    <button onclick="useSkill('{{ skill }}')" class="btn" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 14px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;" onmouseover="this.style.backgroundColor='#444'; this.style.borderColor='#666';" onmouseout="this.style.backgroundColor='#333'; this.style.borderColor='#555';">
                                         {{ skill }}
                                     </button>
                                 {% endfor %}
                             </div>
                         </div>
                     {% else %}
-                        <div style="text-align: center; padding: 20px; background-color: #2a2a2a; border-radius: 8px; color: #999;">
-                            <p style="font-size: 0.9rem;">적의 턴입니다...</p>
+                        <div style="text-align: center; padding: 20px; background-color: #2a2a2a; border-radius: 8px; color: #999; border: 1px solid #444;">
+                            <p style="font-size: 0.9rem; margin: 0;">적의 턴입니다...</p>
                         </div>
                     {% endif %}
                 </div>
@@ -125,17 +127,17 @@
                 <div style="text-align: center;">
                     {% if battle_state.winner == 'player' %}
                         <div style="background-color: #1a3a1a; border: 2px solid #4CAF50; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
-                            <h4 style="color: #4CAF50; font-weight: 700; margin-bottom: 15px; font-size: 1.5rem;">승리!</h4>
-                            <p style="color: #bbb; margin-bottom: 15px;">스테이지 {{ battle_state.stage_id }}을(를) 클리어했습니다!</p>
-                            <a href="{{ url_for('adventure') }}" class="btn" style="background-color: #4CAF50; color: white; border: none; border-radius: 6px; padding: 12px 25px; font-weight: 600; text-decoration: none; display: inline-block;">
+                            <h4 style="color: #4CAF50; font-weight: 700; margin-bottom: 15px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">승리!</h4>
+                            <p style="color: #bbb; margin-bottom: 15px; font-size: 0.95rem;">스테이지 {{ battle_state.stage_id }}을(를) 클리어했습니다!</p>
+                            <a href="{{ url_for('adventure') }}" class="btn" style="background-color: #4CAF50; color: white; border: none; border-radius: 6px; padding: 12px 25px; font-weight: 600; text-decoration: none; display: inline-block; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
                                 계속하기
                             </a>
                         </div>
                     {% else %}
                         <div style="background-color: #3a1a1a; border: 2px solid #FF6B6B; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
-                            <h4 style="color: #FF6B6B; font-weight: 700; margin-bottom: 15px; font-size: 1.5rem;">패배</h4>
-                            <p style="color: #bbb; margin-bottom: 15px;">스테이지 {{ battle_state.stage_id }}에서 패배했습니다.</p>
-                            <a href="{{ url_for('adventure') }}" class="btn" style="background-color: #FF6B6B; color: white; border: none; border-radius: 6px; padding: 12px 25px; font-weight: 600; text-decoration: none; display: inline-block;">
+                            <h4 style="color: #FF6B6B; font-weight: 700; margin-bottom: 15px; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">패배</h4>
+                            <p style="color: #bbb; margin-bottom: 15px; font-size: 0.95rem;">스테이지 {{ battle_state.stage_id }}에서 패배했습니다.</p>
+                            <a href="{{ url_for('adventure') }}" class="btn" style="background-color: #FF6B6B; color: white; border: none; border-radius: 6px; padding: 12px 25px; font-weight: 600; text-decoration: none; display: inline-block; cursor: pointer; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#ee5a52'" onmouseout="this.style.backgroundColor='#FF6B6B'">
                                 다시 시도
                             </a>
                         </div>
