@@ -5559,13 +5559,13 @@ def execute_enemy_turn(battle_state):
 
 def execute_skill(battle_state, skill_name):
     """기술 실행"""
-    from data.skills import SKILL_INFO
+    from data.adventure_data import SKILLS
     import random
     
-    if skill_name not in SKILL_INFO:
+    if skill_name not in SKILLS:
         return {'success': False, 'message': '존재하지 않는 기술입니다.'}
     
-    skill = SKILL_INFO[skill_name]
+    skill = SKILLS[skill_name]
     
     if battle_state['game_over']:
         return {'success': False, 'message': '전투가 이미 끝났습니다.'}
@@ -5573,9 +5573,12 @@ def execute_skill(battle_state, skill_name):
     if not battle_state['player_turn']:
         return {'success': False, 'message': '지금은 플레이어 차례가 아닙니다.'}
     
-    # 플레이어 공격
+    # 플레이어 공격 (랜덤 범위 적용)
     player_monster = battle_state['player_monster']
-    damage = int(player_monster['attack'] * skill['multiplier'])
+    multiplier_min = skill.get('공격력_보정_min', 1.0)
+    multiplier_max = skill.get('공격력_보정_max', 1.0)
+    multiplier = random.uniform(multiplier_min, multiplier_max)
+    damage = int(player_monster['attack'] * multiplier)
     battle_state['enemy_monster']['current_hp'] -= damage
     battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지")
     

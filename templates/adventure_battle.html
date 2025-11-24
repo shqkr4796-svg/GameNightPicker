@@ -253,7 +253,11 @@ function showSkillInfo(skillName) {
         document.getElementById('modalSkillName').textContent = skill['한글'] || skillName;
         document.getElementById('modalSkillDesc').textContent = skill['설명'] + '\n' + skill['효과'];
         document.getElementById('modalSkillRarity').textContent = skill['등급'];
-        document.getElementById('modalSkillDamage').textContent = (skill['공격력_보정'] * 100).toFixed(0) + '%';
+        
+        // 범위 표시
+        const minDmg = (skill['공격력_보정_min'] * 100).toFixed(0);
+        const maxDmg = (skill['공격력_보정_max'] * 100).toFixed(0);
+        document.getElementById('modalSkillDamage').textContent = minDmg + '%~' + maxDmg + '%';
         
         // 4개 초과시만 삭제 버튼 표시
         const deleteBtn = document.getElementById('deleteSkillBtn');
