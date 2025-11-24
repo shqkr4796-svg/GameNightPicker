@@ -2543,6 +2543,32 @@ def get_daily_expressions():
     ]
     return expressions
 
+def get_expression_quiz():
+    """표현 퀴즈 생성 - 예문 + 정답 표현 + 오답 3개"""
+    expressions = get_daily_expressions()
+    
+    # 랜덤 표현 선택
+    correct_expr = random.choice(expressions)
+    
+    # 오답 3개 선택 (정답과 다른 표현에서만)
+    other_expressions = [e for e in expressions if e['expression'] != correct_expr['expression']]
+    wrong_options = random.sample(other_expressions, min(3, len(other_expressions)))
+    
+    # 선택지 생성
+    options = [correct_expr] + wrong_options
+    random.shuffle(options)
+    
+    # 예문 선택 (examples 중 첫 번째)
+    example = correct_expr['examples'][0] if correct_expr['examples'] else correct_expr['example']
+    
+    return {
+        'example': example,
+        'correct_expression': correct_expr['expression'],
+        'correct_meaning': correct_expr['meaning'],
+        'options': [opt['expression'] for opt in options],
+        'correct_index': next(i for i, opt in enumerate(options) if opt['expression'] == correct_expr['expression'])
+    }
+
 def get_conversation_prompt(expression_data):
     """표현에 맞는 대화 프롬프트 생성"""
     conversation_starters = {

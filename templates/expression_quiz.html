@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}표현 퀴즈 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <!-- 헤더 -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>표현 퀴즈 - 예문으로 표현 맞히기
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">현재 경험치</h6>
+                        <h3 class="text-success">{{ player.경험치 }} / {{ player.경험치최대 }}</h3>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">현재 레벨</h6>
+                        <h3 class="text-info">{{ player.레벨 }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 퀴즈 영역 -->
+        <div class="card">
+            <div class="card-body p-5">
+                <!-- 예문 (문제) -->
+                <div class="mb-5">
+                    <h5 class="text-muted mb-3">
+                        <i class="fas fa-book me-2"></i>다음 예문에서 사용된 표현은?
+                    </h5>
+                    <div class="alert alert-info" style="font-size: 1.2rem; font-weight: 500; min-height: 60px; display: flex; align-items: center; padding: 20px; border-radius: 8px;">
+                        "{{ quiz.example }}"
+                    </div>
+                </div>
+
+                <!-- 선택지 -->
+                <form method="POST" action="{{ url_for('submit_expression_quiz') }}" class="mb-4">
+                    <input type="hidden" name="correct" value="{{ quiz.correct_expression }}">
+                    
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-3">
+                            <i class="fas fa-list me-2"></i>보기 선택 (중 하나를 선택하세요)
+                        </h6>
+                        <div style="display: grid; gap: 10px;">
+                            {% for option in quiz.options %}
+                            <label style="cursor: pointer; padding: 15px; border: 2px solid #e0e0e0; border-radius: 8px; transition: all 0.3s; margin-bottom: 0;">
+                                <input type="radio" name="choice" value="{{ option }}" required 
+                                       style="cursor: pointer; margin-right: 10px;" 
+                                       onchange="this.parentElement.style.borderColor='#4f46e5'; this.parentElement.style.backgroundColor='#f3f4ff'">
+                                <span style="font-size: 1.1rem; font-weight: 500;">{{ option }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-check me-2"></i>답 제출 (경험치 +10)
+                        </button>
+                    </div>
+                </form>
+
+                <!-- 정답 표현 정보 (선택사항 - 학습 후 보기) -->
+                <div class="alert alert-light border mt-5" style="margin-bottom: 0;">
+                    <h6 class="text-muted mb-3">💡 정답 표현 정보</h6>
+                    <div>
+                        <p class="mb-2">
+                            <strong>표현:</strong> 
+                            <span style="font-size: 1.1rem; color: #059669;">{{ quiz.correct_expression }}</span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>의미:</strong> 
+                            <span style="color: #555;">{{ quiz.correct_meaning }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 다른 활동 링크 -->
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('daily_expressions') }}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-list me-1"></i>표현 목록
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home me-1"></i>대시보드
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+label:hover {
+    border-color: #4f46e5 !important;
+    background-color: #f9fafb !important;
+}
+</style>
+{% endblock %}

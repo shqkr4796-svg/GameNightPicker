@@ -1528,3 +1528,47 @@ def skip_question():
     
     return redirect(url_for('dungeon_run'))
 
+
+@app.route('/expression_quiz')
+def expression_quiz():
+    """표현 퀴즈 - 예문을 보고 표현 선택"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    quiz = game_logic.get_expression_quiz()
+    
+    return render_template('expression_quiz.html',
+                         quiz=quiz,
+                         player=player)
+
+@app.route('/submit_expression_quiz', methods=['POST'])
+def submit_expression_quiz():
+    """표현 퀴즈 답변 제출"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    user_choice = request.form.get('choice', '').strip()
+    correct_expression = request.form.get('correct', '').strip()
+    
+    if user_choice == correct_expression:
+        flash('정답입니다! ✓ 경험치 +10', 'success')
+        player['경험치'] += 10
+        player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
+        
+        # 레벨업 확인
+        while player['경험치'] >= player['경험치최대']:
+            player['경험치'] -= player['경험치최대']
+            player['레벨'] += 1
+            player['경험치최대'] = int(player['경험치최대'] * 1.1)
+            player['스탯포인트'] += 5
+            flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
+    else:
+        flash(f'틀렸습니다. 정답은: {correct_expression}', 'error')
+    
+    session['player_data'] = player
+    session.modified = True
+    game_logic.save_game(player)
+    
+    return redirect(url_for('expression_quiz'))
