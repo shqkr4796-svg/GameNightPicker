@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}모험 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="background-color: #f5f5f5; min-height: 100vh; padding: 20px;">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- 헤더 -->
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h1 style="font-weight: 700; color: #1a1a1a; font-size: 2.5rem; letter-spacing: 2px;">ADVENTURE</h1>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 5px;">포켓몬식 턴제 전투로 스테이지를 진행하세요</p>
+            </div>
+
+            <div class="row g-3">
+                <!-- 좌측: 몬스터 선택 -->
+                <div class="col-lg-4">
+                    <div style="background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; text-align: center;">대표 몬스터</h5>
+                        
+                        {% if available_monsters %}
+                            <form method="POST" action="{{ url_for('start_adventure') }}" id="adventureForm">
+                                <!-- 스테이지 선택 -->
+                                <div style="margin-bottom: 25px;">
+                                    <label style="display: block; color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">스테이지 선택</label>
+                                    <select name="stage_id" class="form-select" required style="border: 2px solid #e0e0e0; border-radius: 6px; padding: 10px;">
+                                        {% for stage in stages %}
+                                            {% if stage.stage_id <= cleared_stage + 1 %}
+                                                <option value="{{ stage.stage_id }}" {% if stage.stage_id == current_stage %}selected{% endif %}>
+                                                    Stage {{ stage.stage_id }} - {{ stage.난이도 }}
+                                                    {% if stage.stage_id <= cleared_stage %}(클리어됨){% endif %}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- 몬스터 선택 -->
+                                <div style="margin-bottom: 25px;">
+                                    <label style="display: block; color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">몬스터 선택</label>
+                                    <div style="max-height: 400px; overflow-y: auto;">
+                                        {% for monster in available_monsters %}
+                                            <div style="margin-bottom: 10px;">
+                                                <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; cursor: pointer; transition: all 0.3s;">
+                                                    <input type="radio" name="monster_id" value="{{ monster.id }}" style="margin-right: 12px;" required>
+                                                    <div style="flex: 1;">
+                                                        <div style="font-weight: 600; color: #1a1a1a;">{{ monster.name }}</div>
+                                                        <div style="font-size: 0.8rem; color: #999;">
+                                                            공격력: {{ monster.attack }} | 체력: {{ monster.hp }}
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn w-100" style="background-color: #1a1a1a; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;">
+                                    전투 시작
+                                </button>
+                            </form>
+                        {% else %}
+                            <div style="text-align: center; padding: 40px 20px; color: #999;">
+                                <p>포획된 몬스터가 없습니다.</p>
+                                <p style="font-size: 0.85rem; margin-top: 10px;">Word Dungeon에서 몬스터를 포획해주세요.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 우측: 스테이지 정보 -->
+                <div class="col-lg-8">
+                    <div style="background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 25px; text-align: center;">스테이지 정보</h5>
+
+                        <!-- 진행 상황 -->
+                        <div style="margin-bottom: 30px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <span style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">진행도</span>
+                                <span style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem;">Stage {{ cleared_stage }} / 200</span>
+                            </div>
+                            <div style="width: 100%; height: 6px; background-color: #e0e0e0; border-radius: 3px; overflow: hidden;">
+                                <div style="height: 100%; width: {{ (cleared_stage / 200 * 100) }}%; background-color: #1a1a1a; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+
+                        <!-- 난이도별 스테이지 통계 -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 6px; border-left: 4px solid #999;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">쉬움</div>
+                                <div style="color: #1a1a1a; font-weight: 700; font-size: 1.2rem;">1~40</div>
+                            </div>
+                            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 6px; border-left: 4px solid #666;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">보통</div>
+                                <div style="color: #1a1a1a; font-weight: 700; font-size: 1.2rem;">41~80</div>
+                            </div>
+                            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 6px; border-left: 4px solid #333;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">어려움</div>
+                                <div style="color: #1a1a1a; font-weight: 700; font-size: 1.2rem;">81~120</div>
+                            </div>
+                            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 6px; border-left: 4px solid #1a1a1a;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">매우 어려움</div>
+                                <div style="color: #1a1a1a; font-weight: 700; font-size: 1.2rem;">121~200</div>
+                            </div>
+                        </div>
+
+                        <!-- 보유 기술 -->
+                        <div style="margin-top: 30px; padding-top: 25px; border-top: 2px solid #e0e0e0;">
+                            <h6 style="color: #1a1a1a; font-weight: 600; margin-bottom: 15px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;">보유 기술</h6>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                {% for skill in player.get('모험_기술', []) %}
+                                    <span style="background-color: #e0e0e0; color: #1a1a1a; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 뒤로가기 -->
+                    <div style="margin-top: 20px;">
+                        <a href="{{ url_for('dashboard') }}" style="color: #999; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center;">
+                            <span style="margin-right: 5px;">←</span> 대시보드로 돌아가기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

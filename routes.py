@@ -1696,3 +1696,152 @@ def add_exp():
         return jsonify({'success': True, 'exp': exp, 'level': player['레벨']})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+
+# ===== 모험 시스템 라우트 =====
+
+@app.route('/adventure')
+def adventure():
+    """모험 선택 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    available_monsters = game_logic.get_available_monsters(player)
+    stages = game_logic.get_adventure_stages()
+    current_stage = player.get('모험_현재스테이지', 1)
+    cleared_stage = player.get('모험_클리어스테이지', 0)
+    
+    return render_template('adventure_select.html',
+                         player=player,
+                         available_monsters=available_monsters,
+                         stages=stages,
+                         current_stage=current_stage,
+                         cleared_stage=cleared_stage)
+
+@app.route('/adventure/start', methods=['POST'])
+def start_adventure():
+    """모험 전투 시작"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    stage_id = request.form.get('stage_id', type=int)
+    selected_monster_id = request.form.get('monster_id', '')
+    
+    if not stage_id or not selected_monster_id:
+        flash('스테이지와 몬스터를 선택해주세요.', 'error')
+        return redirect(url_for('adventure'))
+    
+    # 스테이지 확인
+    stages = game_logic.get_adventure_stages()
+    stage = next((s for s in stages if s['stage_id'] == stage_id), None)
+    
+    if not stage:
+        flash('존재하지 않는 스테이지입니다.', 'error')
+        return redirect(url_for('adventure'))
+    
+    # 클리어한 스테이지 이하만 도전 가능
+    if stage_id > player.get('모험_클리어스테이지', 0) + 1:
+        flash('이전 스테이지를 먼저 클리어해주세요.', 'error')
+        return redirect(url_for('adventure'))
+    
+    result = game_logic.start_adventure_battle(player, stage_id, selected_monster_id)
+    
+    if not result['success']:
+        flash(result.get('message', '전투를 시작할 수 없습니다.'), 'error')
+        return redirect(url_for('adventure'))
+    
+    session['battle_state'] = result['battle_state']
+    session['player_data'] = player
+    session.modified = True
+    
+    return redirect(url_for('adventure_battle'))
+
+@app.route('/adventure/battle')
+def adventure_battle():
+    """모험 전투 페이지"""
+    if 'player_data' not in session or 'battle_state' not in session:
+        return redirect(url_for('adventure'))
+    
+    battle_state = session['battle_state']
+    player = session['player_data']
+    
+    return render_template('adventure_battle.html',
+                         battle_state=battle_state,
+                         player=player)
+
+@app.route('/adventure/action', methods=['POST'])
+def adventure_action():
+    """전투 액션 실행"""
+    if 'player_data' not in session or 'battle_state' not in session:
+        return jsonify({'success': False, 'error': '전투 중이 아닙니다.'})
+    
+    action_type = request.form.get('action_type')
+    skill_name = request.form.get('skill_name', '')
+    
+    battle_state = session['battle_state']
+    player = session['player_data']
+    
+    if action_type == 'skill':
+        result = game_logic.execute_skill(battle_state, skill_name)
+        if result['success']:
+            battle_state = result['battle_state']
+            
+            # 전투 끝났는지 확인
+            if battle_state['game_over']:
+                if battle_state['winner'] == 'player':
+                    complete_result = game_logic.complete_adventure_battle(player, battle_state)
+                    
+                    if complete_result['success']:
+                        player['경험치'] += complete_result['rewards'].get('exp', 0)
+                        player['돈'] += complete_result['rewards'].get('money', 0)
+                        
+                        # 기술 획득
+                        for skill in complete_result['rewards'].get('skills', []):
+                            if skill not in player.get('모험_기술', []):
+                                player['모험_기술'].append(skill)
+                        
+                        # 스테이지 업데이트
+                        stage_id = battle_state['stage_id']
+                        if stage_id > player.get('모험_클리어스테이지', 0):
+                            player['모험_클리어스테이지'] = stage_id
+                        
+                        session['player_data'] = player
+                        session['battle_state'] = battle_state
+                        session.modified = True
+                        game_logic.save_game(player)
+                        
+                        return jsonify({
+                            'success': True,
+                            'game_over': True,
+                            'winner': 'player',
+                            'rewards': complete_result['rewards'],
+                            'battle_state': battle_state
+                        })
+            else:
+                session['battle_state'] = battle_state
+                session.modified = True
+            
+            return jsonify({
+                'success': True,
+                'battle_state': battle_state,
+                'game_over': battle_state['game_over'],
+                'winner': battle_state.get('winner')
+            })
+        else:
+            return jsonify({'success': False, 'error': result.get('message', '기술 사용 실패')})
+    
+    return jsonify({'success': False, 'error': '잘못된 액션입니다.'})
+
+@app.route('/adventure/result')
+def adventure_result():
+    """모험 결과 페이지"""
+    if 'player_data' not in session or 'battle_state' not in session:
+        return redirect(url_for('adventure'))
+    
+    battle_state = session['battle_state']
+    player = session['player_data']
+    
+    return render_template('adventure_result.html',
+                         battle_state=battle_state,
+                         player=player)
