@@ -51,7 +51,7 @@ def dashboard():
 
 @app.route('/daily_expressions')
 def daily_expressions():
-    """일일 표현 페이지 - 표현 목록"""
+    """일일 표현 페이지 - 표현 목록 + 퀴즈"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
@@ -59,12 +59,15 @@ def daily_expressions():
     expressions = game_logic.get_daily_expressions()
     selected_index = request.args.get('index', None, type=int)
     progress = player.get('일일표현_진도', 0)
+    quiz = game_logic.get_expression_quiz()
     
     return render_template('daily_expressions.html',
                          expressions=expressions,
                          progress=progress,
                          selected_index=selected_index,
-                         expression_count=len(expressions))
+                         expression_count=len(expressions),
+                         quiz=quiz,
+                         player=player)
 
 @app.route('/conversation_practice')
 def conversation_practice():
@@ -1531,28 +1534,21 @@ def skip_question():
 
 @app.route('/expression_quiz')
 def expression_quiz():
-    """표현 퀴즈 - 예문을 보고 표현 선택"""
-    if 'player_data' not in session:
-        return redirect(url_for('index'))
-    
-    player = session['player_data']
-    quiz = game_logic.get_expression_quiz()
-    
-    return render_template('expression_quiz.html',
-                         quiz=quiz,
-                         player=player)
+    """표현 퀴즈 - 표현 학습 페이지로 리다이렉트"""
+    return redirect(url_for('daily_expressions'))
 
 @app.route('/submit_expression_quiz', methods=['POST'])
 def submit_expression_quiz():
-    """표현 퀴즈 답변 제출"""
+    """표현 퀴즈 답변 제출 - 직접 입력 형식"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
-    user_choice = request.form.get('choice', '').strip()
-    correct_expression = request.form.get('correct', '').strip()
+    user_answer = request.form.get('user_answer', '').strip().lower()
+    correct_expression = request.form.get('correct', '').strip().lower()
     
-    if user_choice == correct_expression:
+    # 부분 일치 확인 (사용자 입력이 정답을 포함하면 정답)
+    if correct_expression in user_answer or user_answer in correct_expression:
         flash('정답입니다! ✓ 경험치 +10', 'success')
         player['경험치'] += 10
         player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
@@ -1565,10 +1561,10 @@ def submit_expression_quiz():
             player['스탯포인트'] += 5
             flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
     else:
-        flash(f'틀렸습니다. 정답은: {correct_expression}', 'error')
+        flash(f'틀렸습니다. 정답은: {request.form.get("correct", "")}', 'error')
     
     session['player_data'] = player
     session.modified = True
     game_logic.save_game(player)
     
-    return redirect(url_for('expression_quiz'))
+    return redirect(url_for('daily_expressions'))

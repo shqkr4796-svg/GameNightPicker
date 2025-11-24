@@ -107,6 +107,50 @@
         </div>
         {% endif %}
 
+        <!-- 표현 퀴즈 - 예문으로 표현 맞히기 -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-brain me-2"></i>표현 퀴즈 - 예문으로 표현 맞히기
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if quiz %}
+                <div class="mb-4">
+                    <h6 class="text-muted mb-3">📝 다음 예문에서 사용된 표현을 입력하세요</h6>
+                    <div class="alert alert-info mb-4" style="font-size: 1.1rem; font-weight: 500; padding: 20px; border-radius: 8px;">
+                        "{{ quiz.example }}"
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('submit_expression_quiz') }}" class="mb-3">
+                        <input type="hidden" name="correct" value="{{ quiz.correct_expression }}">
+                        <div class="input-group input-group-lg">
+                            <input type="text" name="user_answer" class="form-control" 
+                                   placeholder="표현을 입력하세요 (예: That's right)"
+                                   required autofocus>
+                            <button class="btn btn-success" type="submit">
+                                <i class="fas fa-check me-2"></i>제출 (경험치 +10)
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="alert alert-light border">
+                        <p class="mb-2">
+                            <strong>💡 정답 표현:</strong> 
+                            <span style="font-size: 1rem; color: #059669;">{{ quiz.correct_expression }}</span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>의미:</strong> 
+                            <span>{{ quiz.correct_meaning }}</span>
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted">퀴즈를 불러오는 중입니다...</p>
+                {% endif %}
+            </div>
+        </div>
+
         <!-- 최근 학습한 표현들 -->
         {% if progress > 0 %}
         <div class="card">
