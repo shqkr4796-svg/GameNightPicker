@@ -23,7 +23,7 @@
                             {% set remaining = battle_state.enemy_count - defeated %}
                             {% if remaining < 0 %}{% set remaining = 0 %}{% endif %}
                             {% for i in range(5) %}
-                                <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {% if i < remaining %}#FF6B6B{% else %}#999{% endif %}; border: 1px solid #666;"></div>
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {% if (4 - i) < remaining %}#FF6B6B{% else %}#999{% endif %}; border: 1px solid #666;"></div>
                             {% endfor %}
                         </div>
                         <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">상대</div>
