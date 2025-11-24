@@ -496,7 +496,7 @@ function updateBattleUI(battleState) {
 }
 
 function updateSkillUsageUI(skillUsage) {
-    // 기술 사용 횟수 업데이트
+    // 기술 사용 횟수 업데이트 + 버튼 상태 변경
     for (let skillName in skillUsage) {
         const slotIndex = playerSkills.indexOf(skillName);
         if (slotIndex !== -1) {
@@ -504,9 +504,31 @@ function updateSkillUsageUI(skillUsage) {
             if (btn) {
                 const usage = skillUsage[skillName];
                 const maxUses = skillMaxUses[skillName] || 10;
+                const isUsed = usage >= maxUses;
+                
+                // 사용 횟수 텍스트 업데이트
                 const usageSpan = btn.querySelector('span');
                 if (usageSpan) {
                     usageSpan.textContent = usage + '/' + maxUses;
+                }
+                
+                // 버튼 상태 업데이트 (색상, 커서, 활성/비활성)
+                if (isUsed) {
+                    btn.style.backgroundColor = '#555';
+                    btn.style.color = '#888';
+                    btn.style.borderColor = '#777';
+                    btn.style.cursor = 'not-allowed';
+                    btn.disabled = true;
+                    // 더블클릭 이벤트 제거
+                    btn.ondblclick = null;
+                } else {
+                    btn.style.backgroundColor = '#333';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = '#555';
+                    btn.style.cursor = 'pointer';
+                    btn.disabled = false;
+                    // 더블클릭 이벤트 복원
+                    btn.ondblclick = function() { useSkill(skillName); };
                 }
             }
         }
