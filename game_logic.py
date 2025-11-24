@@ -5099,11 +5099,17 @@ def get_ai_followup_meaning(drama_data):
 def get_foreign_speakers():
     """외국인 강사 정보"""
     speakers = [
-        {'name': 'SAM', 'image': 'young_idol_man_sam.png'},
-        {'name': 'OLIVIA', 'image': 'young_idol_woman_olivia.png'},
-        {'name': 'JAMES', 'image': 'young_idol_man_james.png'},
-        {'name': 'EMMA', 'image': 'young_idol_woman_emma.png'},
-        {'name': 'MICHAEL', 'image': 'young_idol_man_michael.png'}
+        {'name': 'SAM', 'image': 'young_idol_man_sam.png', 'voice': 'male1'},
+        {'name': 'OLIVIA', 'image': 'young_idol_woman_olivia.png', 'voice': 'female1'},
+        {'name': 'JAMES', 'image': 'young_idol_man_james.png', 'voice': 'male2'},
+        {'name': 'EMMA', 'image': 'young_idol_woman_emma.png', 'voice': 'female2'},
+        {'name': 'MICHAEL', 'image': 'young_idol_man_michael.png', 'voice': 'male3'},
+        {'name': 'SOPHIA', 'image': 'young_idol_woman_sophia.png', 'voice': 'female3'},
+        {'name': 'ISABELLA', 'image': 'young_idol_woman_isabella.png', 'voice': 'female4'},
+        {'name': 'NOAH', 'image': 'young_idol_man_noah.png', 'voice': 'male4'},
+        {'name': 'LUCAS', 'image': 'young_idol_man_lucas.png', 'voice': 'male5'},
+        {'name': 'MIA', 'image': 'young_idol_woman_mia.png', 'voice': 'female5'},
+        {'name': 'SOPHIE', 'image': 'young_idol_woman_sophie.png', 'voice': 'female6'}
     ]
     return speakers
 

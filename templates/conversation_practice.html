@@ -160,7 +160,7 @@
                             <div class="response-text" id="aiPromptText">{{ current_turn.ai_prompt }}</div>
                             <div class="meaning-text" id="aiMeaningText">{{ current_turn.ai_meaning }}</div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="playAudio()">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="playAudio()" data-voice="{{ speaker.voice }}">
                             <i class="fas fa-play me-1"></i>재생
                         </button>
                         <small id="playingStatus" class="text-muted ms-2" style="display: none;">🔊 재생 중...</small>
@@ -242,7 +242,10 @@
 
 <script>
 // 글로벌 변수
-let cachedFemaleVoice = null;
+let cachedVoices = {
+    'female1': null, 'female2': null, 'female3': null, 'female4': null, 'female5': null, 'female6': null,
+    'male1': null, 'male2': null, 'male3': null, 'male4': null, 'male5': null
+};
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
 let isListening = false;
@@ -251,22 +254,30 @@ let isListening = false;
 function loadAllVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
-        for (let voice of voices) {
-            if (voice.lang === 'en-US') {
-                const name = voice.name;
-                if (name.includes('Zira') || name.includes('Samantha') || name.includes('Victoria')) {
-                    cachedFemaleVoice = voice;
-                    break;
-                }
+        const enVoices = voices.filter(v => v.lang === 'en-US');
+        
+        // 여성 음성들
+        const femaleNames = ['Zira', 'Samantha', 'Victoria', 'Moira', 'Fiona', 'Karen'];
+        const maleNames = ['David', 'Mark', 'Daniel', 'Tom', 'George'];
+        
+        let femaleIdx = 0, maleIdx = 0;
+        
+        for (let voice of enVoices) {
+            if (voice.name.includes('Female') || femaleNames.some(n => voice.name.includes(n))) {
+                if (femaleIdx < 6) cachedVoices[`female${femaleIdx + 1}`] = voice;
+                femaleIdx++;
+            } else if (voice.name.includes('Male') || maleNames.some(n => voice.name.includes(n))) {
+                if (maleIdx < 5) cachedVoices[`male${maleIdx + 1}`] = voice;
+                maleIdx++;
             }
         }
-        if (!cachedFemaleVoice) {
-            for (let voice of voices) {
-                if (voice.lang === 'en-US') {
-                    cachedFemaleVoice = voice;
-                    break;
-                }
-            }
+        
+        // 폴백: 일반 음성으로 채우기
+        for (let i = 1; i <= 6; i++) {
+            if (!cachedVoices[`female${i}`] && enVoices.length > 0) cachedVoices[`female${i}`] = enVoices[0];
+        }
+        for (let i = 1; i <= 5; i++) {
+            if (!cachedVoices[`male${i}`] && enVoices.length > 0) cachedVoices[`male${i}`] = enVoices[0];
         }
     }
 }
@@ -276,7 +287,7 @@ if ('speechSynthesis' in window) {
     loadAllVoices();
 }
 
-// 음성 재생 (동적으로 텍스트 전달 가능)
+// 음성 재생 (캐릭터별 음성 지원)
 function playAudio(textOrElement) {
     let text = textOrElement;
     
@@ -284,6 +295,10 @@ function playAudio(textOrElement) {
     if (!textOrElement || typeof textOrElement !== 'string') {
         text = document.getElementById('aiPromptText').textContent;
     }
+    
+    // 재생 버튼의 voice 속성 가져오기
+    const playBtn = event?.target?.closest('button') || document.querySelector('[data-voice]');
+    const voiceType = playBtn?.getAttribute('data-voice') || 'female1';
     
     if (text && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -295,7 +310,7 @@ function playAudio(textOrElement) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         utterance.rate = 0.9;
-        if (cachedFemaleVoice) utterance.voice = cachedFemaleVoice;
+        if (cachedVoices[voiceType]) utterance.voice = cachedVoices[voiceType];
         
         // 재생 끝나면 상태 메시지 숨김
         utterance.onend = function() {
