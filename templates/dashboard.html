@@ -194,13 +194,14 @@
                                                         부동산 {{ tier['conditions']['real_estate'] }}개<br>
                                                         레벨 {{ tier['conditions']['level'] }}<br>
                                                         업적 {{ tier['conditions']['achievement_points'] }}점<br>
-                                                        {% if tier['conditions']['rare'] > 0 or tier['conditions']['epic'] > 0 or tier['conditions']['unique'] > 0 or tier['conditions']['legendary'] > 0 %}
+                                                        {% if tier['conditions']['rare'] > 0 or tier['conditions']['epic'] > 0 or tier['conditions']['unique'] > 0 or tier['conditions']['legendary'] > 0 or tier['conditions'].get('mythic', 0) > 0 %}
                                                             <hr style="margin: 0.3rem 0;">
                                                             <strong style="font-size: 0.7rem;">몬스터 소유</strong><br>
                                                             {% if tier['conditions']['rare'] > 0 %}<span class="badge bg-secondary" style="font-size: 0.6rem;">레어 {{ tier['conditions']['rare'] }}</span>{% endif %}
                                                             {% if tier['conditions']['epic'] > 0 %}<span class="badge bg-info" style="font-size: 0.6rem;">에픽 {{ tier['conditions']['epic'] }}</span>{% endif %}
                                                             {% if tier['conditions']['unique'] > 0 %}<span class="badge bg-warning text-dark" style="font-size: 0.6rem;">유니크 {{ tier['conditions']['unique'] }}</span>{% endif %}
                                                             {% if tier['conditions']['legendary'] > 0 %}<span class="badge bg-danger" style="font-size: 0.6rem;">레전더리 {{ tier['conditions']['legendary'] }}</span>{% endif %}
+                                                            {% if tier['conditions'].get('mythic', 0) > 0 %}<span class="badge bg-dark" style="font-size: 0.6rem;">신화급 {{ tier['conditions']['mythic'] }}</span>{% endif %}
                                                         {% endif %}
                                                     </small>
                                                 </div>
