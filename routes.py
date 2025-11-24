@@ -1768,10 +1768,74 @@ def adventure_action():
                 'success': True,
                 'battle_state': battle_state,
                 'game_over': battle_state['game_over'],
-                'winner': battle_state.get('winner')
+                'winner': battle_state.get('winner'),
+                'skill_usage': battle_state.get('skill_usage_count', {})
             })
         else:
             return jsonify({'success': False, 'error': result.get('message', '기술 사용 실패')})
+    elif action_type == 'enemy_turn':
+        # 적의 턴 처리
+        result = game_logic.execute_skill(battle_state, '')
+        if result['success']:
+            battle_state = result['battle_state']
+            
+            # 전투 끝났는지 확인
+            if battle_state['game_over']:
+                if battle_state['winner'] == 'player':
+                    # 승리 처리
+                    battle_state['defeated_monsters'] = battle_state.get('defeated_monsters', 0) + 1
+                    complete_result = game_logic.complete_adventure_battle(player, battle_state)
+                    
+                    if complete_result['success']:
+                        player['경험치'] += complete_result['rewards'].get('exp', 0)
+                        player['돈'] += complete_result['rewards'].get('money', 0)
+                        
+                        for skill in complete_result['rewards'].get('skills', []):
+                            if skill not in player.get('모험_기술', []):
+                                player['모험_기술'].append(skill)
+                        
+                        stage_id = battle_state['stage_id']
+                        if stage_id > player.get('모험_클리어스테이지', 0):
+                            player['모험_클리어스테이지'] = stage_id
+                        
+                        session['player_data'] = player
+                        session['battle_state'] = battle_state
+                        session.modified = True
+                        game_logic.save_game(player)
+                        
+                        return jsonify({
+                            'success': True,
+                            'game_over': True,
+                            'winner': 'player',
+                            'rewards': complete_result['rewards'],
+                            'battle_state': battle_state
+                        })
+                elif battle_state['winner'] == 'enemy':
+                    # 패배 처리
+                    session['player_data'] = player
+                    session['battle_state'] = battle_state
+                    session.modified = True
+                    game_logic.save_game(player)
+                    
+                    return jsonify({
+                        'success': True,
+                        'game_over': True,
+                        'winner': 'enemy',
+                        'battle_state': battle_state
+                    })
+            else:
+                session['battle_state'] = battle_state
+                session.modified = True
+            
+            return jsonify({
+                'success': True,
+                'battle_state': battle_state,
+                'game_over': battle_state['game_over'],
+                'winner': battle_state.get('winner'),
+                'skill_usage': battle_state.get('skill_usage_count', {})
+            })
+        else:
+            return jsonify({'success': False, 'error': result.get('message', '턴 진행 실패')})
     
     return jsonify({'success': False, 'error': '잘못된 액션입니다.'})
 

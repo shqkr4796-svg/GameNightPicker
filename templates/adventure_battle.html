@@ -354,12 +354,38 @@ function flashMonsterImage(elementId) {
 }
 
 function updateBattleUI(battleState) {
-    // HP 바 업데이트
+    // HP 바 업데이트 (부드러운 애니메이션)
     const playerHpPercent = (battleState.player_monster.current_hp / battleState.player_monster.max_hp * 100);
     const enemyHpPercent = (battleState.enemy_monster.current_hp / battleState.enemy_monster.max_hp * 100);
     
     document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
     document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
+    
+    // HP 텍스트 업데이트
+    const playerHpTexts = document.querySelectorAll('[style*="플레이어"] span[style*="font-weight: 700"]');
+    const enemyHpTexts = document.querySelectorAll('[style*="상대"] span[style*="font-weight: 700"]');
+    
+    if (playerHpTexts.length > 0) {
+        playerHpTexts[0].textContent = battleState.player_monster.current_hp + ' / ' + battleState.player_monster.max_hp;
+    }
+    if (enemyHpTexts.length > 0) {
+        enemyHpTexts[0].textContent = battleState.enemy_monster.current_hp + ' / ' + battleState.enemy_monster.max_hp;
+    }
+    
+    // 전투 로그 업데이트
+    const logContainer = document.querySelector('[max-height="90px"]');
+    if (logContainer && battleState.log) {
+        let logHtml = '';
+        const logs = battleState.log.slice(-10);
+        for (let log_line of logs) {
+            let color = '#bbb';
+            if (log_line.includes('플레이어')) color = '#4CAF50';
+            else if (log_line.includes('적')) color = '#FF6B6B';
+            logHtml += `<div style="margin-bottom: 2px; color: ${color};">> ${log_line}</div>`;
+        }
+        logContainer.innerHTML = logHtml;
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
     
     // 적 몬스터에 피해를 입었으면 적 이미지 플래시 + 피해 음향
     if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
@@ -372,6 +398,119 @@ function updateBattleUI(battleState) {
     if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
         flashMonsterImage('playerMonsterImg');
     }
+}
+
+function updateSkillUsageUI(skillUsage) {
+    // 기술 사용 횟수 업데이트
+    for (let skillName in skillUsage) {
+        const slotIndex = playerSkills.indexOf(skillName);
+        if (slotIndex !== -1) {
+            const btn = document.getElementById('skill-btn-' + slotIndex);
+            if (btn) {
+                const usage = skillUsage[skillName];
+                const maxUses = skillMaxUses[skillName] || 10;
+                const usageSpan = btn.querySelector('span');
+                if (usageSpan) {
+                    usageSpan.textContent = usage + '/' + maxUses;
+                }
+            }
+        }
+    }
+}
+
+function handleEnemyTurn(battleState) {
+    // 적의 턴을 처리하고 플레이어 턴으로 전환 (완전 AJAX 방식)
+    const actionContainer = document.getElementById('actionContainer');
+    
+    // 적의 턴 표시
+    actionContainer.innerHTML = `
+        <div style="text-align: center; padding: 15px; background-color: #2a2a2a; border-radius: 6px; color: #999; border: 1px solid #444;">
+            <p style="font-size: 0.85rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">적의 턴입니다...</p>
+        </div>
+    `;
+    
+    // 1.5초 후 자동으로 적의 턴 진행 (AJAX 요청)
+    setTimeout(() => {
+        const form = new FormData();
+        form.append('action_type', 'enemy_turn');
+        
+        fetch("{{ url_for('adventure_action') }}", {
+            method: 'POST',
+            body: form
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const newBattleState = data.battle_state;
+                updateBattleUI(newBattleState);
+                updateSkillUsageUI(data.skill_usage || {});
+                
+                // 게임 오버 확인
+                if (data.game_over) {
+                    setTimeout(() => {
+                        if (data.winner === 'player') {
+                            // 승리 음향
+                            adventureSound.playVictorySound();
+                            adventureSound.stopBackgroundMusic();
+                            setTimeout(() => {
+                                alert('승리! 스테이지 ' + newBattleState.stage_id + '을(를) 클리어했습니다!');
+                                window.location.href = "{{ url_for('adventure') }}";
+                            }, 500);
+                        } else {
+                            // 패배 음향
+                            adventureSound.playDefeatSound();
+                            adventureSound.stopBackgroundMusic();
+                            setTimeout(() => {
+                                alert('패배했습니다. 다시 시도하세요.');
+                                window.location.href = "{{ url_for('adventure') }}";
+                            }, 500);
+                        }
+                    }, 250);
+                } else if (newBattleState.player_turn) {
+                    // 플레이어 턴으로 전환 (부드러운 UI 업데이트)
+                    setTimeout(() => {
+                        // 기술 버튼 영역 다시 생성
+                        let skillButtonsHtml = `
+                            <div style="text-align: center; margin-bottom: 15px;">
+                                <p style="color: #999; font-size: 0.85rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">기술을 선택하세요</p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 400px; margin: 0 auto;">`;
+                        
+                        for (let i = 0; i < playerSkills.length; i++) {
+                            const skillName = playerSkills[i];
+                            const usage = skillUsage[skillName] || 0;
+                            const maxUses = skillMaxUses[skillName] || 10;
+                            const isUsed = usage >= maxUses;
+                            
+                            skillButtonsHtml += `
+                                <div>
+                                    <button onclick="showSkillInfo('${skillName}')" title="기술 정보 보기" class="btn w-100" id="skill-btn-${i}" 
+                                    style="background-color: ${isUsed ? '#555' : '#333'}; color: ${isUsed ? '#888' : 'white'}; border: 2px solid ${isUsed ? '#777' : '#555'}; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: ${isUsed ? 'not-allowed' : 'pointer'}; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" 
+                                    onmouseover="${isUsed ? '' : "this.style.backgroundColor='#444'; this.style.borderColor='#666';"}"
+                                    onmouseout="${isUsed ? '' : "this.style.backgroundColor='#333'; this.style.borderColor='#555';"}"
+                                    ondblclick="${isUsed ? '' : "useSkill('" + skillName + "')"}"
+                                    ${isUsed ? 'disabled' : ''}>
+                                        ${skillName}<br><span style="font-size: 0.6rem;">${usage}/${maxUses}</span>
+                                    </button>
+                                </div>
+                            `;
+                        }
+                        
+                        skillButtonsHtml += `
+                                </div>
+                                <p style="color: #999; font-size: 0.7rem; margin-top: 8px;">클릭으로 정보 보기, 더블클릭으로 사용</p>
+                            </div>
+                        `;
+                        
+                        actionContainer.innerHTML = skillButtonsHtml;
+                        
+                        // 스킬 사용 횟수 업데이트
+                        Object.assign(skillUsage, data.skill_usage || {});
+                    }, 200);
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }, 1500);
 }
 
 function useSkill(skillName) {
@@ -391,8 +530,9 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 전투 UI 업데이트
+            // 전투 UI 업데이트 (부드러운 애니메이션)
             updateBattleUI(battleState);
+            updateSkillUsageUI(data.skill_usage || {});
             
             // 게임 오버 상태 확인
             if (data.game_over) {
@@ -415,20 +555,9 @@ function useSkill(skillName) {
                         }, 500);
                     }
                 }, 250);
-            } else {
-                // 플레이어 턴인 경우 기술 버튼 활성화, 적의 턴인 경우 비활성화
-                const actionContainer = document.getElementById('actionContainer');
-                if (actionContainer) {
-                    if (battleState.player_turn) {
-                        actionContainer.innerHTML = `
-                            <div style="text-align: center; padding: 15px; background-color: #2a2a2a; border-radius: 6px; color: #999; border: 1px solid #444;">
-                                <p style="font-size: 0.85rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">적의 턴입니다...</p>
-                            </div>
-                        `;
-                        // 잠시 후 페이지 새로고침 (0.5초)
-                        setTimeout(() => location.reload(), 500);
-                    }
-                }
+            } else if (!battleState.player_turn) {
+                // 적의 턴이면 자동 진행 (페이지 새로고침 없이!)
+                handleEnemyTurn(battleState);
             }
         } else {
             alert('오류: ' + data.error);
