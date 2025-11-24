@@ -211,7 +211,7 @@
 
                 <!-- 완료 버튼 (마지막 턴 후 나타남) -->
                 <div id="completionContainer" style="display: none;" class="button-group">
-                    <a href="{{ url_for('home') }}" class="btn btn-primary flex-grow-1">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary flex-grow-1">
                         <i class="fas fa-home me-2"></i>홈으로
                     </a>
                     <a href="{{ url_for('conversation_practice') }}" class="btn btn-success flex-grow-1">
@@ -309,8 +309,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextTurnBtn = document.getElementById('nextTurnBtn');
     const completionContainer = document.getElementById('completionContainer');
     
-    // 현재 턴의 정답
-    const targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
+    // 현재 턴의 정답 (전역으로 접근 가능하게 만들기)
+    let targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
     if (!recognition) {
         micBtn.disabled = true;
