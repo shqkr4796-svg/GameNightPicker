@@ -426,6 +426,9 @@ def generate_adventure_stages():
             atk_mult = 1.0
             rarities = ['레어']
             skill_reward = 0.02 + (stage_id - 1) * 0.002
+            # 기술 카드 등급 가중치: 레어 100%
+            skill_rarity_weights = {'레어': 100, '에픽': 0, '유니크': 0, '레전드리': 0}
+            skill_rarity_range = '레어'
         elif stage_id <= 80:
             difficulty = '보통'
             enemy_count = min(6, 2 + (stage_id - 41) // 8)  # 2~6마리
@@ -433,6 +436,9 @@ def generate_adventure_stages():
             atk_mult = 1.0
             rarities = ['레어', '에픽']
             skill_reward = 0.05 + (stage_id - 40) * 0.002
+            # 기술 카드 등급 가중치: 레어 70%, 에픽 30%
+            skill_rarity_weights = {'레어': 70, '에픽': 30, '유니크': 0, '레전드리': 0}
+            skill_rarity_range = '레어~에픽'
         elif stage_id <= 120:
             difficulty = '어려움'
             enemy_count = min(6, 3 + (stage_id - 81) // 9)  # 3~6마리
@@ -440,6 +446,9 @@ def generate_adventure_stages():
             atk_mult = 1.0
             rarities = ['에픽', '유니크']
             skill_reward = 0.07 + (stage_id - 80) * 0.001
+            # 기술 카드 등급 가중치: 에픽 50%, 유니크 50%
+            skill_rarity_weights = {'레어': 0, '에픽': 50, '유니크': 50, '레전드리': 0}
+            skill_rarity_range = '에픽~유니크'
         elif stage_id <= 160:
             difficulty = '매우 어려움'
             enemy_count = min(6, 4 + (stage_id - 121) // 14)  # 4~6마리
@@ -447,6 +456,9 @@ def generate_adventure_stages():
             atk_mult = 1.0
             rarities = ['유니크', '레전드리']
             skill_reward = 0.09 + (stage_id - 120) * 0.0005
+            # 기술 카드 등급 가중치: 유니크 30%, 레전드리 70%
+            skill_rarity_weights = {'레어': 0, '에픽': 0, '유니크': 30, '레전드리': 70}
+            skill_rarity_range = '유니크~레전드리'
         else:
             difficulty = '극악'
             enemy_count = min(6, 5 + (stage_id - 161) // 39)  # 5~6마리
@@ -454,6 +466,12 @@ def generate_adventure_stages():
             atk_mult = 1.0
             rarities = ['레전드리']
             skill_reward = 0.12 + (stage_id - 160) * 0.0002
+            # 기술 카드 등급 가중치: 레전드리 100%
+            skill_rarity_weights = {'레어': 0, '에픽': 0, '유니크': 0, '레전드리': 100}
+            skill_rarity_range = '레전드리'
+        
+        # 몬스터 등급 범위 표시
+        monster_rarity_range = ' ~ '.join(rarities)
         
         stage = {
             'stage_id': stage_id,
@@ -462,7 +480,10 @@ def generate_adventure_stages():
             'enemy_hp_multiplier': hp_mult,
             'enemy_attack_multiplier': atk_mult,
             'enemy_rarity': rarities,
+            'enemy_rarity_range': monster_rarity_range,  # 몬스터 등급 범위 (예: "레어 ~ 에픽")
             'skill_reward_rate': min(0.15, skill_reward),  # 최대 15%
+            'skill_rarity_weights': skill_rarity_weights,  # 기술 등급별 가중치
+            'skill_rarity_range': skill_rarity_range,  # 기술 등급 범위 (예: "레어 ~ 에픽")
             'enemy_count': enemy_count,  # 난이도별 몬스터 개수
         }
         stages.append(stage)

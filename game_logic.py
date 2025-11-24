@@ -5803,16 +5803,22 @@ def complete_adventure_battle(player, battle_state):
     # 기술 카드 드롭
     if random.random() < stage_config.get('skill_reward_rate', 0.02):
         skill_pools = SKILL_DROP_POOLS.get(stage_id, {})
-        all_skills = []
-        for rarity, skills in skill_pools.items():
-            all_skills.extend(skills)
+        skill_rarity_weights = stage_config.get('skill_rarity_weights', {})
         
-        if all_skills:
-            new_skill = random.choice(all_skills)
-            if new_skill not in player.get('모험_기술', ['박치기']):
-                if len(player.get('모험_기술', [])) < 4:
-                    player['모험_기술'].append(new_skill)
-                    rewards['skills'].append(new_skill)
+        # 가중치에 따라 등급 선택
+        rarities_to_use = [r for r, w in skill_rarity_weights.items() if w > 0]
+        weights = [skill_rarity_weights[r] for r in rarities_to_use]
+        
+        if rarities_to_use and weights:
+            selected_rarity = random.choices(rarities_to_use, weights=weights, k=1)[0]
+            selected_skills = skill_pools.get(selected_rarity, [])
+            
+            if selected_skills:
+                new_skill = random.choice(selected_skills)
+                if new_skill not in player.get('모험_기술', ['박치기']):
+                    if len(player.get('모험_기술', [])) < 4:
+                        player['모험_기술'].append(new_skill)
+                        rewards['skills'].append(new_skill)
     
     # 돈 지급 안함 (경험치도 안 오름)
     

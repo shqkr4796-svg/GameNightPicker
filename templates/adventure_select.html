@@ -47,7 +47,7 @@
                                     <select id="stageSelect" name="stage_id" class="form-select" required style="border: 2px solid #e0e0e0; border-radius: 6px; padding: 10px;">
                                         {% for stage in stages %}
                                             {% if stage.stage_id <= cleared_stage + 1 %}
-                                                <option value="{{ stage.stage_id }}" data-difficulty="{{ stage.난이도 }}" data-enemies="{{ stage.enemy_count }}" data-skill-rate="{{ stage.skill_reward_rate }}" {% if stage.stage_id == current_stage %}selected{% endif %}>
+                                                <option value="{{ stage.stage_id }}" data-difficulty="{{ stage.난이도 }}" data-enemies="{{ stage.enemy_count }}" data-skill-rate="{{ stage.skill_reward_rate }}" data-skill-rarity="{{ stage.skill_rarity_range }}" data-enemy-rarity="{{ stage.enemy_rarity_range }}" {% if stage.stage_id == current_stage %}selected{% endif %}>
                                                     Stage {{ stage.stage_id }} - {{ stage.난이도 }}
                                                     {% if stage.stage_id <= cleared_stage %}(클리어됨){% endif %}
                                                 </option>
@@ -131,6 +131,20 @@
                                     <div id="stageSkillRate" style="color: #1a1a1a; font-weight: 700; font-size: 1.1rem; margin-top: 5px;">2%</div>
                                 </div>
                             </div>
+                            
+                            <!-- 등급 범위 정보 -->
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #FF9800;">
+                                        <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">몬스터 등급</div>
+                                        <div id="stageMonsterRarity" style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem; margin-top: 5px;">레어</div>
+                                    </div>
+                                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #2196F3;">
+                                        <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">기술 카드 등급</div>
+                                        <div id="stageSkillRarity" style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem; margin-top: 5px;">레어</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 난이도별 안내 -->
@@ -184,10 +198,14 @@ document.getElementById('stageSelect').addEventListener('change', function() {
     const difficulty = selectedOption.getAttribute('data-difficulty');
     const enemies = selectedOption.getAttribute('data-enemies');
     const skillRate = (parseFloat(selectedOption.getAttribute('data-skill-rate')) * 100).toFixed(1);
+    const skillRarity = selectedOption.getAttribute('data-skill-rarity');
+    const enemyRarity = selectedOption.getAttribute('data-enemy-rarity');
     
     document.getElementById('stageDifficulty').textContent = difficulty;
     document.getElementById('stageEnemies').textContent = enemies + '마리';
     document.getElementById('stageSkillRate').textContent = skillRate + '%';
+    document.getElementById('stageMonsterRarity').textContent = enemyRarity;
+    document.getElementById('stageSkillRarity').textContent = skillRarity;
 });
 
 // 초기 로드
