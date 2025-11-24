@@ -5853,8 +5853,6 @@ def complete_adventure_battle(player, battle_state):
         return {'success': False, 'message': '스테이지 정보를 찾을 수 없습니다.', 'rewards': {}}
     
     rewards = {
-        'exp': 50 * stage_id,
-        'money': 100 * stage_id,
         'skills': [],
         'items': []
     }
