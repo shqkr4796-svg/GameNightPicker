@@ -1091,7 +1091,7 @@ def sleep(player):
 
 def check_random_event(player):
     """랜덤 이벤트 확인"""
-    if random.random() < 0.1:  # 10% 확률
+    if random.random() < 0.01:  # 1% 확률
         event = random.choice(random_events)
         
         # 이벤트 효과 적용
