@@ -275,8 +275,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 음성 인식 에러
     recognition.addEventListener('error', function(event) {
-        statusMessage.style.display = 'block';
-        statusText.textContent = '오류: ' + event.error;
+        // "aborted"는 정상 종료이므로 무시
+        if (event.error !== 'aborted') {
+            statusMessage.style.display = 'block';
+            const errorMessages = {
+                'no-speech': '음성을 감지하지 못했습니다. 다시 시도해주세요.',
+                'audio-capture': '마이크에 접근할 수 없습니다.',
+                'network': '네트워크 오류가 발생했습니다.',
+                'permission-denied': '마이크 권한이 거부되었습니다.'
+            };
+            statusText.textContent = errorMessages[event.error] || '오류: ' + event.error;
+        }
         isListening = false;
         micBtn.style.display = 'block';
         stopBtn.style.display = 'none';
