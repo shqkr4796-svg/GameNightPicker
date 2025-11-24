@@ -160,10 +160,6 @@
                             <div class="response-text" id="aiPromptText">{{ current_turn.ai_prompt }}</div>
                             <div class="meaning-text" id="aiMeaningText">{{ current_turn.ai_meaning }}</div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="playAudio()" data-voice="{{ speaker.voice }}">
-                            <i class="fas fa-play me-1"></i>재생
-                        </button>
-                        <small id="playingStatus" class="text-muted ms-2" style="display: none;">🔊 재생 중...</small>
                     </div>
                 </div>
 
@@ -241,80 +237,6 @@
 </div>
 
 <script>
-// 오디오 컨텍스트 보호 - cancel() 사용 제거
-let isPlayingAudio = false;
-
-function playAudio() {
-    const text = document.getElementById('aiPromptText').textContent;
-    const playBtn = event?.target?.closest('button');
-    const voiceType = playBtn?.getAttribute('data-voice') || 'female1';
-    const playingStatus = document.getElementById('playingStatus');
-    
-    if (!text || !('speechSynthesis' in window) || isPlayingAudio) return;
-    
-    isPlayingAudio = true;
-    if (playingStatus) playingStatus.style.display = 'inline';
-    
-    // 음성 선택: 남성 = Daniel, 여성 = Google
-    const isMale = voiceType.includes('male');
-    const targetName = isMale ? 'Daniel' : 'Google';
-    
-    // 현재 사용 가능한 음성 중에서 선택
-    const allVoices = window.speechSynthesis.getVoices();
-    let selectedVoice = null;
-    
-    // 정확한 음성 찾기
-    for (let voice of allVoices) {
-        if (voice.lang === 'en-US' && voice.name.includes(targetName)) {
-            selectedVoice = voice;
-            break;
-        }
-    }
-    
-    // 폴백: 같은 성별 다른 음성
-    if (!selectedVoice) {
-        for (let voice of allVoices) {
-            if (voice.lang === 'en-US') {
-                if (isMale && !voice.name.includes('Female') && !voice.name.includes('female')) {
-                    selectedVoice = voice;
-                    break;
-                } else if (!isMale && (voice.name.includes('Female') || voice.name.includes('female'))) {
-                    selectedVoice = voice;
-                    break;
-                }
-            }
-        }
-    }
-    
-    // 최종 폴백: 첫 번째 en-US 음성
-    if (!selectedVoice && allVoices.length > 0) {
-        selectedVoice = allVoices.find(v => v.lang === 'en-US') || allVoices[0];
-    }
-    
-    // 음성 재생 (cancel() 호출 제거 - 오디오 손상 방지)
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-    
-    if (selectedVoice) {
-        utterance.voice = selectedVoice;
-    }
-    
-    utterance.onend = () => {
-        isPlayingAudio = false;
-        if (playingStatus) playingStatus.style.display = 'none';
-    };
-    
-    utterance.onerror = () => {
-        isPlayingAudio = false;
-        if (playingStatus) playingStatus.style.display = 'none';
-    };
-    
-    window.speechSynthesis.speak(utterance);
-}
-
 // 음성 인식 초기화
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
@@ -350,19 +272,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // 페이지 로드 시 음성 자동 재생 (500ms 지연으로 안정성 확보)
-    setTimeout(() => {
-        // playAudio 함수를 호출하기 위해 이벤트 객체 모의 생성
-        const mockEvent = {
-            target: {
-                closest: () => document.querySelector('[data-voice]')
-            }
-        };
-        const originalEvent = window.event;
-        window.event = mockEvent;
-        playAudio();
-        window.event = originalEvent;
-    }, 500);
     
     // 음성 인식 시작
     micBtn.addEventListener('click', function() {
@@ -477,19 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // 새로운 턴 정답으로 업데이트
                     targetResponse = turn.user_response.toLowerCase().trim();
-                    
-                    // 다음 턴의 음성 자동 재생 (500ms 지연)
-                    setTimeout(() => {
-                        const mockEvent = {
-                            target: {
-                                closest: () => document.querySelector('[data-voice]')
-                            }
-                        };
-                        const originalEvent = window.event;
-                        window.event = mockEvent;
-                        playAudio();
-                        window.event = originalEvent;
-                    }, 500);
                 }
             }
         });
