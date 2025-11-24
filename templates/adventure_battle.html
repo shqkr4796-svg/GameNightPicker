@@ -18,7 +18,11 @@
                 <div style="position: absolute; top: 0; right: 0; width: 80%; transform: scale(0.75); transform-origin: top right;">
                     <div style="text-align: center;">
                         <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">상대</div>
-                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px; flex-direction: row-reverse;">
+                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px; flex-direction: row-reverse; position: relative;">
+                            <!-- 남은 적 몬스터 수 배지 -->
+                            <div style="position: absolute; top: -8px; left: -8px; width: 24px; height: 24px; background-color: #FF6B6B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem;">
+                                {{ battle_state.enemy_count - battle_state.defeated_monsters }}
+                            </div>
                             <!-- 적 몬스터 이미지 -->
                             <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                                 {% if battle_state.enemy_monster.image %}
@@ -61,7 +65,11 @@
                 <div style="position: absolute; bottom: 0; left: 0; width: 80%; transform: scale(0.75); transform-origin: bottom left;">
                     <div style="text-align: center;">
                         <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">플레이어</div>
-                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px;">
+                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px; position: relative;">
+                            <!-- 남은 플레이어 몬스터 수 배지 -->
+                            <div style="position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; background-color: #FF6B6B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem;">
+                                {{ battle_state.player_team|length - battle_state.current_team_index - 1 }}
+                            </div>
                             <!-- 플레이어 몬스터 이미지 -->
                             <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                                 {% if battle_state.player_monster.image %}
