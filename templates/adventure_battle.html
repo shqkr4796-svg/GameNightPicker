@@ -17,24 +17,6 @@
                 <!-- 적 몬스터 (오른쪽 상단) -->
                 <div style="position: absolute; top: 0; right: 0; width: 80%; transform: scale(0.75); transform-origin: top right;">
                     <div style="text-align: center;">
-                        <!-- 처치 진도 표시 -->
-                        <div id="progressCircles" style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: center; gap: 3px;">
-                            {% set defeated = battle_state.get('defeated_monsters', 0) %}
-                            {% set enemy_count = battle_state.get('enemy_count', 3) %}
-                            {% set unused_slots = 5 - enemy_count %}
-                            {% set defeated_total = unused_slots + defeated %}
-                            {% set remaining_monsters = enemy_count - defeated %}
-                            
-                            <!-- 회색 동그라미 (사용하지 않는 칸 + 처치된 몬스터) -->
-                            {% for i in range(defeated_total) %}
-                                <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #999; border: 1px solid #666;"></div>
-                            {% endfor %}
-                            
-                            <!-- 빨간색 동그라미 (남은 몬스터) -->
-                            {% for i in range(remaining_monsters) %}
-                                <div style="width: 8px; height: 8px; border-radius: 50%; background-color: #FF6B6B; border: 1px solid #666;"></div>
-                            {% endfor %}
-                        </div>
                         <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">상대</div>
                         <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px; flex-direction: row-reverse;">
                             <!-- 적 몬스터 이미지 -->
