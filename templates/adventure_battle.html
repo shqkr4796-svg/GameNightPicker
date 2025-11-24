@@ -367,48 +367,8 @@ function updateProgressCircles(battleState) {
 }
 
 function updateBattleUI(battleState) {
-    // HP 바 업데이트
-    const playerHpPercent = (battleState.player_monster.current_hp / battleState.player_monster.max_hp * 100);
-    const enemyHpPercent = (battleState.enemy_monster.current_hp / battleState.enemy_monster.max_hp * 100);
-    
-    document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
-    document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
-    
-    // HP 텍스트 업데이트
-    const playerHpTexts = document.querySelectorAll('span');
-    const enemyHpTexts = document.querySelectorAll('span');
-    
-    // 적 몬스터 HP 텍스트
-    const enemyCards = document.querySelectorAll('[style*="flex-direction: row-reverse"]');
-    if (enemyCards.length > 0) {
-        const hpSpans = enemyCards[0].querySelectorAll('span');
-        for (let span of hpSpans) {
-            if (span.textContent.includes('/')) {
-                span.textContent = battleState.enemy_monster.current_hp + ' / ' + battleState.enemy_monster.max_hp;
-                break;
-            }
-        }
-    }
-    
-    // 플레이어 몬스터 HP 텍스트
-    const playerCards = document.querySelectorAll('div[style*="flex: 1; text-align: left;"]');
-    if (playerCards.length > 0) {
-        const hpSpans = playerCards[0].querySelectorAll('span');
-        for (let span of hpSpans) {
-            if (span.textContent.includes('/')) {
-                span.textContent = battleState.player_monster.current_hp + ' / ' + battleState.player_monster.max_hp;
-                break;
-            }
-        }
-    }
-    
-    // 적 몬스터에 피해를 입었으면 적 이미지 플래시
-    if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
-        flashMonsterImage('enemyMonsterImg');
-    }
-    
-    // 동그라미 업데이트
-    updateProgressCircles(battleState);
+    // 항상 페이지 새로고침 (동그라미와 모든 UI를 정확하게 업데이트)
+    setTimeout(() => location.reload(), 500);
 }
 
 function useSkill(skillName) {
