@@ -4002,8 +4002,8 @@ def get_expression_quiz():
         'correct_index': next(i for i, opt in enumerate(options) if opt['expression'] == correct_expr['expression'])
     }
 
-def get_drama_conversations_raw():
-    """드라마/애니 기반 다중턴 회화 시나리오 (원본 데이터)"""
+def get_drama_conversations():
+    """드라마/애니 기반 다중턴 회화 시나리오"""
     return [
         {
             'scene': '카페에서 처음 만난 사람',
@@ -5058,7 +5058,7 @@ def get_drama_conversations_raw():
         {'scene': '직업 상담사와의 진로 상담', 'turns': [{'ai_prompt': 'What career are you interested in?', 'ai_meaning': '어떤 직업에 관심이 있어요?'}, {'ai_prompt': 'I\'ve always wanted to work in technology.', 'ai_meaning': '항상 기술 분야에서 일하고 싶었어요.', 'user_response': 'That\'s a great field. Let\'s explore options.', 'user_meaning': '좋은 분야네요. 옵션을 탐색해봐요.'}]},
         {'scene': '공기업 채용 면접', 'turns': [{'ai_prompt': 'Why do you want to work for our company?', 'ai_meaning': '우리 회사에서 일하고 싶은 이유가 뭐예요?'}, {'ai_prompt': 'Your company\'s values align with mine.', 'ai_meaning': '당신의 회사 가치가 제 가치와 일치해요.', 'user_response': 'That\'s great to hear. When can you start?', 'user_meaning': '좋네요. 언제 시작할 수 있어요?'}]},
         {'scene': '스마트폰 구매 상담', 'turns': [{'ai_prompt': 'Looking for a new phone?', 'ai_meaning': '새로운 휴대폰을 찾고 있어요?'}, {'ai_prompt': 'Yes, something with good camera.', 'ai_meaning': '네, 좋은 카메라가 있는 것.'}, {'ai_prompt': 'This model just came out and has excellent specs.', 'ai_meaning': '이 모델은 최근 출시됐고 훌륭한 스펙이에요.', 'user_response': 'Tell me more about it!', 'user_meaning': '더 말씀해주세요!'}]},
-        {'scene': '치킨 집 먹방 배달', 'turns': [{'ai_prompt': 'Welcome to Chicken Paradise! What can I get you?', 'ai_meaning': '치킨 천국에 오신 것을 환영합니다! 뭘 드릴까요?'}, {'ai_prompt': 'One box of spicy chicken and some fries.', 'ai_meaning': '스파이시 치킨 한 박스와 감자튀김 좀.'}, {'ai_prompt': 'Great choice! Anything to drink?', 'ai_meaning': '좋은 선택이에요! 음료는?', 'user_response': 'A large cola, please!', 'user_meaning': '큰 콜라 주세요!'}]},
+        {'scene': '치킨 집 먹방 배달', 'turns': [{'ai_prompt': 'Welcome to Chicken Paradise! What can I get you?', 'ai_meaning': '치킨 천국에 오신 것을 환영합니다! 뭘 드릴까요?', 'user_response': 'One box of spicy chicken and some fries, please.', 'user_meaning': '스파이시 치킨 한 박스와 감자튀김 주세요.'}, {'ai_prompt': 'Great choice! Anything to drink?', 'ai_meaning': '좋은 선택이에요! 음료는?', 'user_response': 'A large cola, please!', 'user_meaning': '큰 콜라 주세요.'}, {'ai_prompt': 'Perfect! Your order will be ready in 15 minutes.', 'ai_meaning': '완벽합니다! 주문이 15분 안에 준비될 거예요.', 'user_response': 'Thank you! That sounds great!', 'user_meaning': '감사합니다! 좋네요!'}]},
         {'scene': '면허 갱신 센터', 'turns': [{'ai_prompt': 'I\'m here to renew my driver\'s license.', 'ai_meaning': '운전면허를 갱신하러 왔어요.', 'user_response': 'Do you have your old license and ID?', 'user_meaning': '이전 면허증과 신분증 있어요?'}, {'ai_prompt': 'Yes, here they are.', 'ai_meaning': '네, 여기 있습니다.'}, {'ai_prompt': 'It will take about 10 minutes.', 'ai_meaning': '약 10분 정도 걸릴 거예요.', 'user_response': 'That\'s fast. Thank you!', 'user_meaning': '빨라요. 감사합니다!'}]},
         {'scene': '동물 보호소 애완동물 입양', 'turns': [{'ai_prompt': 'Are you looking to adopt?', 'ai_meaning': '입양하러 오셨어요?'}, {'ai_prompt': 'Yes, I\'d like a cat. Do you have any?', 'ai_meaning': '네, 고양이를 원해요. 있어요?'}, {'ai_prompt': 'We have many wonderful cats. Which one interests you?', 'ai_meaning': '훌륭한 고양이가 많아요. 어느 것이 관심이 가요?', 'user_response': 'This orange one is adorable!', 'user_meaning': '이 주황이 정말 귀여워요!'}]},
         {'scene': '세미나 참석 네트워킹', 'turns': [{'ai_prompt': 'Hi! I\'m from the marketing department. What about you?', 'ai_meaning': '안녕! 나는 마케팅 부서에서 왔어요. 너는?'}, {'ai_prompt': 'I\'m in sales. This seminar is very interesting.', 'ai_meaning': '나는 영업 부서에 있어요. 이 세미나 정말 흥미로워.'}, {'ai_prompt': 'Let\'s exchange business cards.', 'ai_meaning': '명함 교환해요.', 'user_response': 'Good idea! Maybe we can collaborate.', 'user_meaning': '좋은 생각이네! 협력할 수 있을 것 같아.'}]},
@@ -5067,10 +5067,6 @@ def get_drama_conversations_raw():
         {'scene': '극장 표 구매 라인', 'turns': [{'ai_prompt': 'Two tickets for the evening show, please.', 'ai_meaning': '저녁 공연 표 2장 주세요.', 'user_response': 'Any preferences? Aisle or center?', 'user_meaning': '선호가 있어요? 통로 아니면 중앙?'}, {'ai_prompt': 'Center would be perfect!', 'ai_meaning': '중앙이 좋겠어요!', 'user_response': 'That\'ll be 50 dollars.', 'user_meaning': '50달러입니다.'}]},
         {'scene': '노인 요양원 방문', 'turns': [{'ai_prompt': 'Grandma! I brought you flowers!', 'ai_meaning': '할머니! 꽃을 가져왔어요!'}, {'ai_prompt': 'Oh darling, how wonderful to see you!', 'ai_meaning': '오 얘야, 너를 만나서 정말 좋아!'}, {'ai_prompt': 'How have you been? Are you comfortable here?', 'ai_meaning': '지내시는 거 잘되세요? 여기 편해요?'}, {'ai_prompt': 'The staff is very nice. I\'m settling in well.', 'ai_meaning': '직원들이 정말 친절해요. 잘 적응하고 있어요.'}]}
     ]
-
-def get_drama_conversations():
-    """드라마/애니 기반 회화 (평탄화된 개별 회화)"""
-    return _flatten_drama_conversations(get_drama_conversations_raw())
 
 def _flatten_drama_conversations(raw_conversations):
     """turns 배열을 개별 회화로 평탄화 + 모든 필수 필드 보장"""

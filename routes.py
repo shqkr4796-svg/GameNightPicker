@@ -78,28 +78,27 @@ def conversation_practice():
     player = session['player_data']
     speakers = game_logic.get_foreign_speakers()
     
-    # 평탄화된 회화 선택 (개별 회화)
-    drama_conversation = random.choice(game_logic.get_drama_conversations())
+    # 드라마 시나리오 선택 (새로운 시나리오 시작)
+    drama_scenario = random.choice(game_logic.get_drama_conversations())
     random_speaker = random.choice(speakers)
     
     # 세션에 현재 대화 정보 저장
     session['current_drama'] = {
-        'scenario': drama_conversation['scene'],
-        'ai_prompt': drama_conversation['ai_prompt'],
-        'ai_meaning': drama_conversation['ai_meaning'],
-        'user_response': drama_conversation['user_response'],
-        'user_meaning': drama_conversation['user_meaning'],
-        'ai_followup': drama_conversation['ai_followup'],
-        'ai_followup_meaning': drama_conversation['ai_followup_meaning'],
+        'scenario': drama_scenario['scene'],
+        'turns': drama_scenario['turns'],
+        'turn_index': 0,
         'speaker': random_speaker['name']
     }
     session.modified = True
     
+    # 첫 번째 턴 데이터
+    current_turn = drama_scenario['turns'][0]
+    
     return render_template('conversation_practice.html',
-                         scenario=drama_conversation['scene'],
-                         current_turn=drama_conversation,
+                         scenario=drama_scenario['scene'],
+                         current_turn=current_turn,
                          turn_number=1,
-                         total_turns=1,
+                         total_turns=len(drama_scenario['turns']),
                          speaker=random_speaker,
                          player=player)
 
