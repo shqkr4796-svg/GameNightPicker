@@ -38,6 +38,7 @@
                 <div class="col-lg-4">
                     <div style="background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; text-align: center;">팀 구성 (최대 3마리)</h5>
+                        <p style="color: #666; font-size: 0.8rem; text-align: center; margin-bottom: 20px;">몬스터를 누른 순서대로 출전 순서가 됩니다</p>
                         
                         {% if available_monsters %}
                             <form method="POST" action="{{ url_for('start_adventure') }}" id="adventureForm">
