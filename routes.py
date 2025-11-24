@@ -1773,8 +1773,15 @@ def start_adventure():
     # 기존에 진행 중인 전투가 있었는지 확인 (스테이지가 같으면 처치 수 유지)
     if 'battle_state' in session:
         prev_battle = session['battle_state']
-        if prev_battle.get('stage_id') == stage_id:
-            battle_state['defeated_monsters'] = prev_battle.get('defeated_monsters', 0)
+        prev_stage = prev_battle.get('stage_id')
+        if prev_stage == stage_id and 'defeated_monsters' in prev_battle:
+            battle_state['defeated_monsters'] = prev_battle['defeated_monsters']
+    
+    # defeated_monsters 필드 안전성 보장 (혹시 없으면 0으로 초기화)
+    if 'defeated_monsters' not in battle_state:
+        battle_state['defeated_monsters'] = 0
+    if 'enemy_count' not in battle_state:
+        battle_state['enemy_count'] = 1
     
     # 적의 선공인 경우 자동으로 적의 턴 실행
     if not battle_state['player_turn']:
