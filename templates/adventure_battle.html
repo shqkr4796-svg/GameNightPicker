@@ -22,7 +22,7 @@
                             <!-- 남은 적 몬스터 수 배지 (동그라미 개수) -->
                             <div style="position: absolute; top: -12px; left: 0; display: flex; gap: 4px; flex-wrap: wrap;">
                                 {% for i in range(battle_state.enemy_count - battle_state.defeated_monsters) %}
-                                    <div style="width: 16px; height: 16px; background-color: #FF6B6B; border-radius: 50%;"></div>
+                                    <div style="width: 10px; height: 10px; background-color: #FF6B6B; border-radius: 50%;"></div>
                                 {% endfor %}
                             </div>
                             <!-- 적 몬스터 이미지 -->
@@ -71,7 +71,7 @@
                             <!-- 남은 플레이어 몬스터 수 배지 (동그라미 개수) -->
                             <div style="position: absolute; top: -12px; left: 0; display: flex; gap: 4px; flex-wrap: wrap;">
                                 {% for i in range(battle_state.player_team|length - battle_state.current_team_index) %}
-                                    <div style="width: 16px; height: 16px; background-color: #FF6B6B; border-radius: 50%;"></div>
+                                    <div style="width: 10px; height: 10px; background-color: #FF6B6B; border-radius: 50%;"></div>
                                 {% endfor %}
                             </div>
                             <!-- 플레이어 몬스터 이미지 -->
