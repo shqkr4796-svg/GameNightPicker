@@ -274,8 +274,7 @@ function showSkillInfo(skillName) {
         // 범위 표시
         const minDmg = (skill['공격력_보정_min'] * 100).toFixed(0);
         const maxDmg = (skill['공격력_보정_max'] * 100).toFixed(0);
-        const usageCount = skillUsage[skillName] || 0;
-        document.getElementById('modalSkillDamage').textContent = minDmg + '%~' + maxDmg + '% (' + usageCount + '/4)';
+        document.getElementById('modalSkillDamage').textContent = minDmg + '%~' + maxDmg + '%';
         
         // 4개 초과시만 삭제 버튼 표시
         const deleteBtn = document.getElementById('deleteSkillBtn');
