@@ -5,35 +5,84 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-8">
-        <!-- 현재 거주지 -->
-        {% if player['거주지'] %}
+        <!-- 현재 거주지 및 소유 부동산 -->
+        {% if player['거주지'] or player.get('부동산들', []) %}
         <div class="card mb-4 border-success">
             <div class="card-header bg-success text-white">
                 <h5 class="mb-0">
-                    <i data-feather="home" class="me-2"></i>현재 거주지
+                    <i data-feather="home" class="me-2"></i>현재 거주지 및 소유 부동산
                 </h5>
             </div>
             <div class="card-body">
+                <!-- 현재 거주지 -->
+                {% if player['거주지'] %}
                 {% for property in properties %}
                     {% if property['이름'] == player['거주지'] %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4 class="text-success">{{ property['이름'] }}</h4>
-                            <p class="text-muted mb-0">월세 수입: {{ "{:,}".format(property['월세']) }}원</p>
-                            <p class="text-muted mb-0">매매가: {{ "{:,}".format(property['매매']) }}원</p>
-                            <p class="text-muted">최대기력 증가: +{{ property['기력회복'] }}</p>
-                        </div>
-                        <div class="col-md-6 text-end mt-2 mt-0">
-                            <form method="POST" action="{{ url_for('sell_property') }}">
-                                <button type="submit" class="btn btn-warning">
-                                    <i data-feather="dollar-sign" class="me-2"></i>
-                                    {{ "{:,}".format((property['매매'] * 0.8)|int) }}원에 판매
-                                </button>
-                            </form>
+                    <div class="mb-4 pb-4 border-bottom">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-success mb-2">
+                                    <i data-feather="star" class="me-2"></i>{{ property['이름'] }} (현재 거주중)
+                                </h5>
+                                <div class="mb-2">
+                                    <small class="text-muted">월세 수입:</small><br>
+                                    <strong class="text-warning">{{ "{:,}".format(property['월세']) }}원/달</strong>
+                                </div>
+                                <div class="mb-2">
+                                    <small class="text-muted">매매가:</small><br>
+                                    <strong>{{ "{:,}".format(property['매매']) }}원</strong>
+                                </div>
+                                <div>
+                                    <small class="text-muted">최대기력 증가량:</small><br>
+                                    <strong class="text-info">+{{ property['기력회복'] }} (편의성 등급: {{ property['기력회복'] }}/10)</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <form method="POST" action="{{ url_for('sell_property') }}">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i data-feather="dollar-sign" class="me-2"></i>
+                                        {{ "{:,}".format((property['매매'] * 0.8)|int) }}원에 판매
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     {% endif %}
                 {% endfor %}
+                {% endif %}
+                
+                <!-- 소유 부동산 목록 -->
+                {% if player.get('부동산들', []) %}
+                <div>
+                    <h6 class="text-info mb-3">
+                        <i data-feather="grid" class="me-2"></i>소유 부동산 목록
+                    </h6>
+                    <div class="row">
+                        {% for owned_property in player['부동산들'] %}
+                        {% for property in properties %}
+                            {% if property['이름'] == owned_property['name'] and property['이름'] != player['거주지'] %}
+                            <div class="col-12 mb-3 p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-2">{{ property['이름'] }}</h6>
+                                        <small class="text-muted d-block">월세 수입: <strong class="text-warning">{{ "{:,}".format(property['월세']) }}원/달</strong></small>
+                                        <small class="text-muted d-block">기력회복: <strong class="text-info">+{{ property['기력회복'] }}</strong></small>
+                                        <small class="text-muted d-block">구매일: {{ owned_property['buy_date'] }}일</small>
+                                    </div>
+                                    <form method="POST" action="{{ url_for('sell_property') }}" class="ms-2">
+                                        <input type="hidden" name="property_id" value="{{ loop.index0 }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i data-feather="trash-2" class="me-1" size="14"></i>판매
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endif %}
@@ -67,7 +116,8 @@
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="card-title mb-0">{{ property['이름'] }}</h6>
                                     <div class="text-end">
-                                        <small class="text-muted d-block">최대기력 증가: +{{ property['기력회복'] }}</small>
+                                        <small class="text-muted d-block">기력회복</small>
+                                        <strong class="text-info d-block">+{{ property['기력회복'] }}/10</strong>
                                     </div>
                                 </div>
                                 
@@ -83,7 +133,7 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <div class="progress" style="height: 8px;">
+                                    <div class="progress" style="height: 6px;">
                                         <div class="progress-bar bg-info" 
                                              style="width: {{ (property['기력회복'] / 10 * 100) }}%"></div>
                                     </div>
