@@ -23,48 +23,30 @@
         transition: width 0.3s;
     }
     
-    .speaker-message, .user-prompt {
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 15px;
-        position: relative;
-        cursor: pointer;
-        transition: all 0.3s;
-        user-select: none;
-    }
-
     .speaker-message {
         background: #e7f3ff;
         border-left: 4px solid #0066cc;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        position: relative;
     }
-
-    .speaker-message:hover {
-        background: #d0e8ff;
-    }
-
+    
     .user-prompt {
         background: #fff8e7;
         border-left: 4px solid #ff9900;
-    }
-
-    .user-prompt:hover {
-        background: #ffedcc;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        position: relative;
     }
     
     .response-text {
         font-size: 1.1rem;
         font-weight: bold;
+        color: #0066cc;
         margin: 10px 0;
         word-break: break-word;
-        transition: opacity 0.3s;
-    }
-
-    .speaker-message .response-text {
-        color: #0066cc;
-    }
-
-    .user-prompt .response-text {
-        color: #ff6600;
     }
     
     .meaning-text {
@@ -72,13 +54,38 @@
         color: #666;
         margin-top: 8px;
         font-style: italic;
-        transition: opacity 0.3s;
     }
-
-    .hidden-content {
-        opacity: 0;
-        height: 0;
-        overflow: hidden;
+    
+    .user-prompt .response-text {
+        color: #ff6600;
+    }
+    
+    .status-box {
+        background: #f0f8ff;
+        border: 2px dashed #0066cc;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        text-align: center;
+    }
+    
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .status-success {
+        background: #d4edda;
+        border: 1px solid #28a745;
+        color: #155724;
+    }
+    
+    .status-error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
     }
 
     .play-audio-btn {
@@ -110,34 +117,6 @@
 
     .play-audio-btn.playing {
         background: #ff6600;
-    }
-
-    .click-hint {
-        position: absolute;
-        bottom: 8px;
-        right: 15px;
-        font-size: 0.75rem;
-        color: #999;
-        opacity: 0.6;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-    }
-
-    .status-success {
-        background: #d4edda;
-        border: 1px solid #28a745;
-        color: #155724;
-    }
-
-    .status-error {
-        background: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
     }
 </style>
 
@@ -175,14 +154,13 @@
                         <p class="text-muted mt-2 mb-0"><strong>{{ speaker.name }}</strong></p>
                     </div>
                     <div class="col-12 col-sm-9">
-                        <div class="speaker-message" id="aiMessageBox" data-state="0">
+                        <div class="speaker-message">
                             <button class="play-audio-btn" id="playAudioBtnAI" title="음성 듣기">
                                 <i class="fas fa-volume-up"></i>
                             </button>
                             <small class="text-muted">상대방 대사:</small>
                             <div class="response-text" id="aiPromptText">{{ current_turn.ai_prompt }}</div>
                             <div class="meaning-text" id="aiMeaningText">{{ current_turn.ai_meaning }}</div>
-                            <div class="click-hint">클릭하기 ✓✓✓</div>
                         </div>
                     </div>
                 </div>
@@ -190,14 +168,13 @@
                 <hr class="my-4">
 
                 <!-- 사용자가 말해야 할 문장 -->
-                <div class="user-prompt" id="userMessageBox" data-state="0">
+                <div class="user-prompt">
                     <button class="play-audio-btn" id="playAudioBtnUser" title="음성 듣기">
                         <i class="fas fa-volume-up"></i>
                     </button>
                     <small class="text-muted">당신이 말해야 할 대사:</small>
                     <div class="response-text" id="userResponseText">{{ current_turn.user_response }}</div>
                     <div class="meaning-text" id="userMeaningText">{{ current_turn.user_meaning }}</div>
-                    <div class="click-hint">클릭하기 ✓✓✓</div>
                 </div>
 
                 <!-- 결과 피드백 -->
@@ -205,14 +182,14 @@
                     <div id="resultMessage" class="alert"></div>
                 </div>
 
-                <!-- 다음 턴 버튼 -->
+                <!-- 다음 턴 버튼 (정답 후 나타남) -->
                 <div id="nextTurnContainer" style="display: none;" class="button-group">
                     <button type="button" id="nextTurnBtn" class="btn btn-success flex-grow-1">
                         <i class="fas fa-arrow-right me-2"></i>다음 대사로
                     </button>
                 </div>
 
-                <!-- 완료 버튼 -->
+                <!-- 완료 버튼 (마지막 턴 후 나타남) -->
                 <div id="completionContainer" style="display: none;" class="button-group">
                     <a href="{{ url_for('index') }}" class="btn btn-primary flex-grow-1">
                         <i class="fas fa-home me-2"></i>홈으로
@@ -231,9 +208,10 @@
             </div>
             <div class="card-body">
                 <ul class="mb-0">
-                    <li><strong>클릭 상태:</strong> 1회 = 영어만 | 2회 = 한국어만 | 3회 = 영어+한국어</li>
-                    <li>🔊 버튼으로 발음을 반복해 들으세요</li>
-                    <li>상대방 발음을 주의깊게 따라 해보세요</li>
+                    <li>상대방 대사의 🔊 버튼을 누르면 자동으로 음성을 들을 수 있습니다</li>
+                    <li>당신의 대사도 🔊 버튼으로 발음을 확인할 수 있습니다</li>
+                    <li>상대방의 발음을 주의깊게 들어보세요</li>
+                    <li>당신이 말해야 할 대사를 읽고 따라 말해보세요</li>
                     <li>각 턴마다 완료 시 경험치 +10을 획득합니다</li>
                 </ul>
             </div>
@@ -241,133 +219,80 @@
     </div>
 </div>
 
-<!-- Speaker 정보 -->
+<!-- Speaker 정보를 JavaScript에서 사용 가능하도록 저장 -->
 <script>
 const speakerData = {
     name: '{{ speaker.name }}',
     gender: '{{ speaker.gender }}'
 };
 
-// 음성 재생 함수
-function playAudio(text, gender) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.95;
-    
-    const voices = window.speechSynthesis.getVoices();
-    if (gender === 'female') {
-        const femaleVoice = voices.find(voice => 
-            voice.name.includes('female') || voice.name.includes('woman') || voice.voiceURI.includes('female')
-        ) || voices[0];
-        if (femaleVoice) utterance.voice = femaleVoice;
-    } else if (gender === 'male') {
-        const maleVoice = voices.find(voice => 
-            voice.name.includes('Google US English Male') || voice.name.includes('Male') || 
-            voice.name.includes('male') || voice.name.includes('man') ||
-            voice.name.includes('Aaron') || voice.name.includes('Daniel') || voice.name.includes('George') ||
-            (voice.voiceURI.includes('male') && !voice.voiceURI.includes('female'))
-        );
-        if (maleVoice) {
-            utterance.voice = maleVoice;
-        } else if (voices.length > 1) {
-            utterance.voice = voices.find(v => !v.name.includes('female') && !v.name.includes('woman')) || voices[0];
-        }
-    }
-    
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-}
-
-// 메시지 상태 업데이트
-function updateMessageState(messageBox, state) {
-    const responseText = messageBox.querySelector('.response-text');
-    const meaningText = messageBox.querySelector('.meaning-text');
-    
-    responseText.classList.remove('hidden-content');
-    meaningText.classList.remove('hidden-content');
-    
-    if (state === 1) {
-        // 영어만
-        meaningText.classList.add('hidden-content');
-    } else if (state === 2) {
-        // 한국어만
-        responseText.classList.add('hidden-content');
-    } else if (state === 3) {
-        // 둘 다 보임
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    const aiMessageBox = document.getElementById('aiMessageBox');
-    const userMessageBox = document.getElementById('userMessageBox');
-    const playAudioBtnAI = document.getElementById('playAudioBtnAI');
-    const playAudioBtnUser = document.getElementById('playAudioBtnUser');
-    const nextTurnBtn = document.getElementById('nextTurnBtn');
     const resultFeedback = document.getElementById('resultFeedback');
     const resultMessage = document.getElementById('resultMessage');
     const nextTurnContainer = document.getElementById('nextTurnContainer');
+    const nextTurnBtn = document.getElementById('nextTurnBtn');
     const completionContainer = document.getElementById('completionContainer');
+    const playAudioBtnAI = document.getElementById('playAudioBtnAI');
+    const playAudioBtnUser = document.getElementById('playAudioBtnUser');
     const aiPromptText = document.getElementById('aiPromptText');
     const userResponseText = document.getElementById('userResponseText');
     
-    // 메시지 클릭 이벤트
-    aiMessageBox.addEventListener('click', function(e) {
-        if (e.target.closest('.play-audio-btn')) return;
-        let state = parseInt(aiMessageBox.dataset.state) || 0;
-        state = (state + 1) % 4;
-        if (state === 0) state = 1;
-        aiMessageBox.dataset.state = state;
-        updateMessageState(aiMessageBox, state);
-    });
+    let targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
-    userMessageBox.addEventListener('click', function(e) {
-        if (e.target.closest('.play-audio-btn')) return;
-        let state = parseInt(userMessageBox.dataset.state) || 0;
-        state = (state + 1) % 4;
-        if (state === 0) state = 1;
-        userMessageBox.dataset.state = state;
-        updateMessageState(userMessageBox, state);
-    });
-    
-    // 음성 재생 버튼
+    // 음성 재생 - 상대방 대사
     playAudioBtnAI.addEventListener('click', function(e) {
         e.stopPropagation();
         const text = aiPromptText.textContent.trim();
         playAudioBtnAI.classList.add('playing');
+        
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         utterance.rate = 0.95;
         utterance.onend = function() {
             playAudioBtnAI.classList.remove('playing');
         };
+        
         const voices = window.speechSynthesis.getVoices();
         if (speakerData.gender === 'female') {
-            const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('woman')) || voices[0];
+            const femaleVoice = voices.find(voice => 
+                voice.name.includes('female') || voice.name.includes('woman') || voice.voiceURI.includes('female')
+            ) || voices[0];
             if (femaleVoice) utterance.voice = femaleVoice;
         } else if (speakerData.gender === 'male') {
-            const maleVoice = voices.find(v => 
-                v.name.includes('Google US English Male') || v.name.includes('Male') || v.name.includes('male') ||
-                (v.voiceURI.includes('male') && !v.voiceURI.includes('female'))
+            const maleVoice = voices.find(voice => 
+                voice.name.includes('Google US English Male') || voice.name.includes('Male') || 
+                voice.name.includes('male') || voice.name.includes('man') || voice.name.includes('Aaron') ||
+                voice.name.includes('Daniel') || voice.name.includes('George') ||
+                (voice.voiceURI.includes('male') && !voice.voiceURI.includes('female'))
             );
-            if (maleVoice) utterance.voice = maleVoice;
+            if (maleVoice) {
+                utterance.voice = maleVoice;
+            } else if (voices.length > 1) {
+                utterance.voice = voices.find(v => !v.name.includes('female') && !v.name.includes('woman')) || voices[0];
+            }
         }
+        
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
     });
-    
+
+    // 음성 재생 - 사용자 대사
     playAudioBtnUser.addEventListener('click', function(e) {
         e.stopPropagation();
         const text = userResponseText.textContent.trim();
         playAudioBtnUser.classList.add('playing');
+        
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         utterance.rate = 0.95;
         utterance.onend = function() {
             playAudioBtnUser.classList.remove('playing');
         };
+        
         const voices = window.speechSynthesis.getVoices();
         const femaleVoice = voices.find(v => v.name.includes('female') || v.name.includes('woman')) || voices[0];
         if (femaleVoice) utterance.voice = femaleVoice;
+        
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
     });
@@ -375,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 다음 턴 로드
     function loadNextTurn() {
         window.speechSynthesis.cancel();
+        
         fetch('{{ url_for("next_turn") }}', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
@@ -397,32 +323,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     document.getElementById('turnNumber').textContent = data.turn_number;
                     document.getElementById('totalTurns').textContent = data.total_turns;
-                    document.getElementById('progressBar').style.width = (data.turn_number / data.total_turns * 100) + '%';
-                    
-                    // 상태 초기화 (다 가리기)
-                    aiMessageBox.dataset.state = 0;
-                    userMessageBox.dataset.state = 0;
-                    updateMessageState(aiMessageBox, 0);
-                    updateMessageState(userMessageBox, 0);
+                    const progress = (data.turn_number / data.total_turns * 100);
+                    document.getElementById('progressBar').style.width = progress + '%';
                     
                     resultFeedback.style.display = 'none';
+                    resultMessage.innerHTML = '';
                     nextTurnContainer.style.display = 'none';
                     playAudioBtnAI.classList.remove('playing');
                     playAudioBtnUser.classList.remove('playing');
+                    
+                    targetResponse = turn.user_response.toLowerCase().trim();
                 }
             }
         });
     }
     
-    nextTurnBtn.addEventListener('click', loadNextTurn);
+    nextTurnBtn.addEventListener('click', function() {
+        loadNextTurn();
+    });
     
-    // 페이지 로드 후 초기 상태 (모두 가리기)
-    updateMessageState(aiMessageBox, 0);
-    updateMessageState(userMessageBox, 0);
-    
+    // 페이지 로드 후 안내 메시지
     resultFeedback.style.display = 'block';
     resultMessage.className = 'alert alert-info';
-    resultMessage.innerHTML = '<strong>📖 대화 연습 가이드</strong><br>상대방 대사와 당신의 대사를 클릭해서 영어/한국어를 선택하세요. 🔊 버튼으로 음성을 들어보세요.';
+    resultMessage.innerHTML = '<strong>📖 대화 연습 가이드</strong><br>위의 대사를 읽고 🔊 버튼으로 발음을 들어보세요. 준비가 되면 "다음 대사로" 버튼을 클릭하세요.';
     nextTurnContainer.style.display = 'block';
 });
 </script>
