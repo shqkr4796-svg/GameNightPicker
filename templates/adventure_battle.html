@@ -15,16 +15,16 @@
             <!-- 몬스터 전투 화면 (상단 적, 하단 플레이어) -->
             <div style="margin-bottom: 15px; position: relative; min-height: 600px;">
                 <!-- 적 몬스터 (오른쪽 상단) -->
-                <div style="position: absolute; top: 0; right: 0; width: 55%; transform: scale(0.9); transform-origin: top right;">
+                <div style="position: absolute; top: 0; right: 0; width: 60%; transform: scale(0.75); transform-origin: top right;">
                     <div style="text-align: center;">
-                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">상대</div>
-                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 20px; border: 2px solid #444; display: flex; gap: 20px;">
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">상대</div>
+                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px;">
                             <!-- 적 몬스터 이미지 -->
-                            <div style="width: 150px; height: 100px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                            <div style="width: 100px; height: 80px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                                 {% if battle_state.enemy_monster.image %}
                                     <img id="enemyMonsterImg" src="{{ battle_state.enemy_monster.image }}" alt="{{ battle_state.enemy_monster.name }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 {% else %}
-                                    <div id="enemyMonsterImg" style="font-size: 2rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                                    <div id="enemyMonsterImg" style="font-size: 1.5rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
                                         {% set rarity_emoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'} %}
                                         {{ rarity_emoji.get(battle_state.enemy_monster.rarity, '') }}
                                     </div>
@@ -33,24 +33,24 @@
                             
                             <!-- 적 몬스터 정보 -->
                             <div style="flex: 1; text-align: left;">
-                                <h6 style="font-weight: 700; margin-bottom: 6px; font-size: 1rem;">{{ battle_state.enemy_monster.name }}</h6>
-                                <p style="color: #999; font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">{{ battle_state.enemy_monster.rarity }}</p>
+                                <h6 style="font-weight: 700; margin-bottom: 3px; font-size: 0.9rem;">{{ battle_state.enemy_monster.name }}</h6>
+                                <p style="color: #999; font-size: 0.65rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">{{ battle_state.enemy_monster.rarity }}</p>
                                 
                                 <!-- HP 바 -->
-                                <div style="margin-bottom: 8px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                        <span style="color: #999; font-size: 0.7rem; text-transform: uppercase;">HP</span>
-                                        <span style="color: white; font-weight: 700; font-size: 0.75rem;">{{ battle_state.enemy_monster.current_hp }} / {{ battle_state.enemy_monster.max_hp }}</span>
+                                <div style="margin-bottom: 6px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                        <span style="color: #999; font-size: 0.6rem; text-transform: uppercase;">HP</span>
+                                        <span style="color: white; font-weight: 700; font-size: 0.65rem;">{{ battle_state.enemy_monster.current_hp }} / {{ battle_state.enemy_monster.max_hp }}</span>
                                     </div>
-                                    <div style="width: 100%; height: 6px; background-color: #333; border-radius: 3px; overflow: hidden; border: 1px solid #444;">
+                                    <div style="width: 100%; height: 4px; background-color: #333; border-radius: 3px; overflow: hidden; border: 1px solid #444;">
                                         <div id="enemyHpBar" style="height: 100%; width: {{ (battle_state.enemy_monster.current_hp / battle_state.enemy_monster.max_hp * 100) }}%; background: linear-gradient(90deg, #FF6B6B, #ee5a52); transition: width 0.3s;"></div>
                                     </div>
                                 </div>
                                 
                                 <!-- 공격력 -->
-                                <div style="background-color: #333; padding: 6px 10px; border-radius: 4px; border: 1px solid #444;">
-                                    <span style="color: #999; font-size: 0.7rem; text-transform: uppercase;">ATK</span>
-                                    <span style="color: #FF6B6B; font-weight: 700; margin-left: 8px; font-size: 0.8rem;">{{ battle_state.enemy_monster.attack }}</span>
+                                <div style="background-color: #333; padding: 4px 8px; border-radius: 4px; border: 1px solid #444;">
+                                    <span style="color: #999; font-size: 0.6rem; text-transform: uppercase;">ATK</span>
+                                    <span style="color: #FF6B6B; font-weight: 700; margin-left: 8px; font-size: 0.7rem;">{{ battle_state.enemy_monster.attack }}</span>
                                 </div>
                             </div>
                         </div>
@@ -58,16 +58,16 @@
                 </div>
 
                 <!-- 플레이어 몬스터 (왼쪽 하단) -->
-                <div style="position: absolute; bottom: 0; left: 0; width: 55%; transform: scale(0.9); transform-origin: bottom left;">
+                <div style="position: absolute; bottom: 0; left: 0; width: 60%; transform: scale(0.75); transform-origin: bottom left;">
                     <div style="text-align: center;">
-                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">플레이어</div>
-                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 20px; border: 2px solid #444; display: flex; gap: 20px;">
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">플레이어</div>
+                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px;">
                             <!-- 플레이어 몬스터 이미지 -->
-                            <div style="width: 150px; height: 100px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                            <div style="width: 100px; height: 80px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                                 {% if battle_state.player_monster.image %}
                                     <img id="playerMonsterImg" src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 {% else %}
-                                    <div id="playerMonsterImg" style="font-size: 2rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+                                    <div id="playerMonsterImg" style="font-size: 1.5rem; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
                                         {% set rarity_emoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'} %}
                                         {{ rarity_emoji.get(battle_state.player_monster.rarity, '') }}
                                     </div>
@@ -76,24 +76,24 @@
                             
                             <!-- 플레이어 몬스터 정보 -->
                             <div style="flex: 1; text-align: left;">
-                                <h6 style="font-weight: 700; margin-bottom: 6px; font-size: 1rem;">{{ battle_state.player_monster.name }}</h6>
-                                <p style="color: #999; font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">{{ battle_state.player_monster.rarity }}</p>
+                                <h6 style="font-weight: 700; margin-bottom: 3px; font-size: 0.9rem;">{{ battle_state.player_monster.name }}</h6>
+                                <p style="color: #999; font-size: 0.65rem; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">{{ battle_state.player_monster.rarity }}</p>
                                 
                                 <!-- HP 바 -->
-                                <div style="margin-bottom: 8px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                        <span style="color: #999; font-size: 0.7rem; text-transform: uppercase;">HP</span>
-                                        <span style="color: white; font-weight: 700; font-size: 0.75rem;">{{ battle_state.player_monster.current_hp }} / {{ battle_state.player_monster.max_hp }}</span>
+                                <div style="margin-bottom: 6px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                                        <span style="color: #999; font-size: 0.6rem; text-transform: uppercase;">HP</span>
+                                        <span style="color: white; font-weight: 700; font-size: 0.65rem;">{{ battle_state.player_monster.current_hp }} / {{ battle_state.player_monster.max_hp }}</span>
                                     </div>
-                                    <div style="width: 100%; height: 6px; background-color: #333; border-radius: 3px; overflow: hidden; border: 1px solid #444;">
+                                    <div style="width: 100%; height: 4px; background-color: #333; border-radius: 3px; overflow: hidden; border: 1px solid #444;">
                                         <div id="playerHpBar" style="height: 100%; width: {{ (battle_state.player_monster.current_hp / battle_state.player_monster.max_hp * 100) }}%; background: linear-gradient(90deg, #4CAF50, #45a049); transition: width 0.3s;"></div>
                                     </div>
                                 </div>
                                 
                                 <!-- 공격력 -->
-                                <div style="background-color: #333; padding: 6px 10px; border-radius: 4px; border: 1px solid #444;">
-                                    <span style="color: #999; font-size: 0.7rem; text-transform: uppercase;">ATK</span>
-                                    <span style="color: #4CAF50; font-weight: 700; margin-left: 8px; font-size: 0.8rem;">{{ battle_state.player_monster.attack }}</span>
+                                <div style="background-color: #333; padding: 4px 8px; border-radius: 4px; border: 1px solid #444;">
+                                    <span style="color: #999; font-size: 0.6rem; text-transform: uppercase;">ATK</span>
+                                    <span style="color: #4CAF50; font-weight: 700; margin-left: 8px; font-size: 0.7rem;">{{ battle_state.player_monster.attack }}</span>
                                 </div>
                             </div>
                         </div>
