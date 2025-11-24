@@ -2539,6 +2539,336 @@ def get_daily_expressions():
             'meaning': '말도 안 돼, 아니야 그럴 리가',
             'situation': '믿을 수 없거나 동의할 수 없을 때',
             'tip': '강한 부정을 표현합니다.'
+        },
+        {
+            'expression': 'I couldn\'t agree more',
+            'example': 'This project is going to be amazing. I couldn\'t agree more.',
+            'examples': [
+                'This project is going to be amazing. I couldn\'t agree more.',
+                'You\'re absolutely right. I couldn\'t agree more.'
+            ],
+            'meaning': '너도 같은 생각이야, 정말 그래',
+            'situation': '상대방의 의견에 완전히 동의할 때',
+            'tip': '강한 동의를 표현합니다.'
+        },
+        {
+            'expression': 'That\'s a tough one',
+            'example': 'Should I change my job? That\'s a tough one.',
+            'examples': [
+                'Should I change my job? That\'s a tough one.',
+                'That\'s a tough one to answer.'
+            ],
+            'meaning': '그건 어려운 문제네, 고민이 많네',
+            'situation': '어려운 상황이나 결정에 대해 말할 때',
+            'tip': '동정과 이해를 표현합니다.'
+        },
+        {
+            'expression': 'I\'m on board',
+            'example': 'Let\'s try this new idea. I\'m on board.',
+            'examples': [
+                'Let\'s try this new idea. I\'m on board.',
+                'I\'m on board with your plan.'
+            ],
+            'meaning': '난 동의해, 참여할게',
+            'situation': '계획이나 제안에 동의할 때',
+            'tip': '적극적인 참여 의지를 보입니다.'
+        },
+        {
+            'expression': 'Let\'s call it a day',
+            'example': 'We\'ve been working for hours. Let\'s call it a day.',
+            'examples': [
+                'We\'ve been working for hours. Let\'s call it a day.',
+                'I\'m tired. Let\'s call it a day.'
+            ],
+            'meaning': '오늘은 여기서 마치자',
+            'situation': '일을 멈추고 쉬기로 할 때',
+            'tip': '자연스러운 종료를 제안합니다.'
+        },
+        {
+            'expression': 'Bring something to the table',
+            'example': 'You need to bring something to the table if you want to join our team.',
+            'examples': [
+                'You need to bring something to the table if you want to join our team.',
+                'Everyone here brings something valuable to the table.'
+            ],
+            'meaning': '뭔가 가치있는 것을 제시하다',
+            'situation': '기여하거나 도움을 줄 때',
+            'tip': '가치있는 기여를 강조합니다.'
+        },
+        {
+            'expression': 'On the same page',
+            'example': 'Let\'s make sure we\'re on the same page about this project.',
+            'examples': [
+                'Let\'s make sure we\'re on the same page about this project.',
+                'Are we on the same page here?'
+            ],
+            'meaning': '같은 생각을 하다, 같은 상태에 있다',
+            'situation': '상호 이해나 의견 일치를 확인할 때',
+            'tip': '공통 이해를 확인하는 표현입니다.'
+        },
+        {
+            'expression': 'Ball is in your court',
+            'example': 'I\'ve done my part. Ball is in your court now.',
+            'examples': [
+                'I\'ve done my part. Ball is in your court now.',
+                'The ball is in your court. What\'s your decision?'
+            ],
+            'meaning': '이제 너차례야, 너의 차례',
+            'situation': '책임이나 결정권이 상대방에게 있을 때',
+            'tip': '다음 행동이 상대방의 책임임을 나타냅니다.'
+        },
+        {
+            'expression': 'Take it with a grain of salt',
+            'example': 'He said he\'ll finish tomorrow, but take it with a grain of salt.',
+            'examples': [
+                'He said he\'ll finish tomorrow, but take it with a grain of salt.',
+                'Take what she says with a grain of salt.'
+            ],
+            'meaning': '그렇게까지 진지하게 받아들이지 말아, 반쯤만 믿어',
+            'situation': '불확실한 정보나 말을 반쯤 의심할 때',
+            'tip': '건전한 회의를 표현합니다.'
+        },
+        {
+            'expression': 'Pull someone\'s leg',
+            'example': 'You\'re pulling my leg! That can\'t be true.',
+            'examples': [
+                'You\'re pulling my leg! That can\'t be true.',
+                'Are you pulling my leg?'
+            ],
+            'meaning': '누군가를 놀리다, 장난치다',
+            'situation': '누군가가 농담이나 거짓말을 할 때',
+            'tip': '친근한 놀림을 표현합니다.'
+        },
+        {
+            'expression': 'Jump on the bandwagon',
+            'example': 'Everyone\'s trying this new diet. Don\'t just jump on the bandwagon.',
+            'examples': [
+                'Everyone\'s trying this new diet. Don\'t just jump on the bandwagon.',
+                'He jumped on the bandwagon without thinking.'
+            ],
+            'meaning': '유행을 따라가다, 남들이 하는 대로 하다',
+            'situation': '무분별한 추종을 설명할 때',
+            'tip': '대체로 부정적인 의미로 사용됩니다.'
+        },
+        {
+            'expression': 'I\'m down',
+            'example': 'Want to grab dinner later? I\'m down.',
+            'examples': [
+                'Want to grab dinner later? I\'m down.',
+                'Are you up for a movie? I\'m down.'
+            ],
+            'meaning': '좋아, 할래, 참여할게',
+            'situation': '제안이나 초대에 동의할 때',
+            'tip': '캐주얼하고 친근한 표현입니다.'
+        },
+        {
+            'expression': 'What\'s the deal?',
+            'example': 'What\'s the deal? Why is everyone looking upset?',
+            'examples': [
+                'What\'s the deal? Why is everyone looking upset?',
+                'What\'s the deal with him?'
+            ],
+            'meaning': '뭐 어떻게 된 일이야? 뭐가 문제야?',
+            'situation': '이상하거나 설명이 필요한 상황에서',
+            'tip': '호기심이나 의문을 표현합니다.'
+        },
+        {
+            'expression': 'I\'m not buying it',
+            'example': 'He says he was busy, but I\'m not buying it.',
+            'examples': [
+                'He says he was busy, but I\'m not buying it.',
+                'I\'m not buying your excuse.'
+            ],
+            'meaning': '난 믿을 수 없어, 납득이 안 돼',
+            'situation': '누군가의 말이나 설명을 의심할 때',
+            'tip': '강한 의심을 표현합니다.'
+        },
+        {
+            'expression': 'Tell me about it',
+            'example': 'I\'m so tired! Tell me about it, I didn\'t sleep last night.',
+            'examples': [
+                'I\'m so tired! Tell me about it, I didn\'t sleep last night.',
+                'Tell me about it, I know exactly how you feel.'
+            ],
+            'meaning': '알고 있어, 정말 그래, 나도 그래',
+            'situation': '상대방의 감정이나 상황에 공감할 때',
+            'tip': '공감과 동의를 표현합니다.'
+        },
+        {
+            'expression': 'No brainer',
+            'example': 'Should I take this job? No brainer, it\'s a great opportunity.',
+            'examples': [
+                'Should I take this job? No brainer, it\'s a great opportunity.',
+                'That\'s a no brainer.'
+            ],
+            'meaning': '고민할 필요 없어, 당연한 것, 너무 뻔해',
+            'situation': '매우 명백한 답이나 선택이 있을 때',
+            'tip': '간단한 결정을 강조합니다.'
+        },
+        {
+            'expression': 'You\'ve got to be kidding',
+            'example': 'You\'ve got to be kidding! That\'s the best news I\'ve heard!',
+            'examples': [
+                'You\'ve got to be kidding! That\'s the best news I\'ve heard!',
+                'You\'ve got to be kidding me!'
+            ],
+            'meaning': '농담하지 마, 진짜야? 말도 안 돼',
+            'situation': '놀라거나 믿기 어려운 상황에서',
+            'tip': '강한 놀라움을 표현합니다.'
+        },
+        {
+            'expression': 'I\'m swamped',
+            'example': 'Can you help me? Sorry, I\'m swamped right now.',
+            'examples': [
+                'Can you help me? Sorry, I\'m swamped right now.',
+                'I\'m swamped with work.'
+            ],
+            'meaning': '난 바빠, 많은 일로 바빠',
+            'situation': '매우 바쁜 상태를 설명할 때',
+            'tip': '업무 과다를 표현합니다.'
+        },
+        {
+            'expression': 'Rain check',
+            'example': 'I can\'t make it today. Can we take a rain check?',
+            'examples': [
+                'I can\'t make it today. Can we take a rain check?',
+                'Let\'s take a rain check on that.'
+            ],
+            'meaning': '다음에 하자, 연기하자',
+            'situation': '약속을 나중으로 미룰 때',
+            'tip': '예의바르게 연기를 제안합니다.'
+        },
+        {
+            'expression': 'What\'s up?',
+            'example': 'Hey, what\'s up? How have you been?',
+            'examples': [
+                'Hey, what\'s up? How have you been?',
+                'What\'s up with you?'
+            ],
+            'meaning': '뭐해? 뭐 어때? 안녕?',
+            'situation': '인사할 때 또는 상태를 묻을 때',
+            'tip': '매우 캐주얼한 인사입니다.'
+        },
+        {
+            'expression': 'Hold up',
+            'example': 'Hold up, I need to ask you something.',
+            'examples': [
+                'Hold up, I need to ask you something.',
+                'Hold up, wait a minute.'
+            ],
+            'meaning': '잠깐, 기다려, 멈춰',
+            'situation': '누군가의 말을 중단시킬 때',
+            'tip': '주의를 끌기 위한 표현입니다.'
+        },
+        {
+            'expression': 'My bad',
+            'example': 'I forgot to call you. My bad!',
+            'examples': [
+                'I forgot to call you. My bad!',
+                'My bad, I\'m sorry.'
+            ],
+            'meaning': '내 잘못이야, 미안해',
+            'situation': '실수를 인정할 때',
+            'tip': '캐주얼한 사과 표현입니다.'
+        },
+        {
+            'expression': 'Lighten up',
+            'example': 'You\'re too serious. Lighten up and have some fun!',
+            'examples': [
+                'You\'re too serious. Lighten up and have some fun!',
+                'Lighten up, it\'s just a joke.'
+            ],
+            'meaning': '너무 심각하지 마, 편해져',
+            'situation': '누군가가 너무 진지할 때',
+            'tip': '친근한 충고입니다.'
+        },
+        {
+            'expression': 'I\'m all ears',
+            'example': 'I have something important to tell you. I\'m all ears.',
+            'examples': [
+                'I have something important to tell you. I\'m all ears.',
+                'Go ahead, I\'m all ears.'
+            ],
+            'meaning': '다 들을게, 말해봐',
+            'situation': '누군가의 말을 들을 준비가 되어 있을 때',
+            'tip': '적극적인 관심을 표현합니다.'
+        },
+        {
+            'expression': 'Strike while the iron is hot',
+            'example': 'You should apply for that job now. Strike while the iron is hot.',
+            'examples': [
+                'You should apply for that job now. Strike while the iron is hot.',
+                'Strike while the iron is hot!'
+            ],
+            'meaning': '기회를 놓치지 마, 지금이 기회야',
+            'situation': '좋은 기회를 놓치지 말 때',
+            'tip': '시간의 중요성을 강조합니다.'
+        },
+        {
+            'expression': 'You nailed it',
+            'example': 'That presentation was perfect! You nailed it!',
+            'examples': [
+                'That presentation was perfect! You nailed it!',
+                'You nailed it on the first try.'
+            ],
+            'meaning': '완벽해, 잘했어, 멋있어',
+            'situation': '누군가가 잘했을 때 칭찬할 때',
+            'tip': '강한 칭찬을 표현합니다.'
+        },
+        {
+            'expression': 'Give me a break',
+            'example': 'You\'re telling me you didn\'t know? Give me a break!',
+            'examples': [
+                'You\'re telling me you didn\'t know? Give me a break!',
+                'Give me a break, that\'s not fair.'
+            ],
+            'meaning': '농담하지 마, 말도 안 돼',
+            'situation': '상대의 말이나 행동이 황당할 때',
+            'tip': '불신이나 불만을 표현합니다.'
+        },
+        {
+            'expression': 'I\'m game',
+            'example': 'Want to play football? I\'m game.',
+            'examples': [
+                'Want to play football? I\'m game.',
+                'Let\'s do it. I\'m game.'
+            ],
+            'meaning': '할래, 참여할게, 좋아',
+            'situation': '제안을 기꺼이 수락할 때',
+            'tip': '"I\'m down"과 유사한 캐주얼한 표현입니다.'
+        },
+        {
+            'expression': 'Cut to the chase',
+            'example': 'I don\'t have much time. Cut to the chase please.',
+            'examples': [
+                'I don\'t have much time. Cut to the chase please.',
+                'Cut to the chase, what do you want?'
+            ],
+            'meaning': '핵심만 말해, 말 좀 줄여',
+            'situation': '불필요한 설명을 피하고 요점만 말할 때',
+            'tip': '직설적인 표현입니다.'
+        },
+        {
+            'expression': 'Wrap it up',
+            'example': 'We need to wrap it up. The meeting ends in 5 minutes.',
+            'examples': [
+                'We need to wrap it up. The meeting ends in 5 minutes.',
+                'Let\'s wrap it up and go home.'
+            ],
+            'meaning': '마무리해, 정리해',
+            'situation': '일이나 회의를 마칠 때',
+            'tip': '자연스러운 종료를 제안합니다.'
+        },
+        {
+            'expression': 'Don\'t worry about it',
+            'example': 'I\'m sorry for the mistake. Don\'t worry about it.',
+            'examples': [
+                'I\'m sorry for the mistake. Don\'t worry about it.',
+                'Don\'t worry about it, everything will be fine.'
+            ],
+            'meaning': '괜찮아, 신경 쓰지 마, 괜찮아요',
+            'situation': '상대방을 위로하거나 안심시킬 때',
+            'tip': '따뜻한 위로와 안심을 표현합니다.'
         }
     ]
     return expressions
