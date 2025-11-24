@@ -2869,6 +2869,1106 @@ def get_daily_expressions():
             'meaning': '괜찮아, 신경 쓰지 마, 괜찮아요',
             'situation': '상대방을 위로하거나 안심시킬 때',
             'tip': '따뜻한 위로와 안심을 표현합니다.'
+        },
+        {
+            'expression': 'All in a day\'s work',
+            'example': 'Fixing bugs all day? That\'s all in a day\'s work for a programmer.',
+            'examples': [
+                'Fixing bugs all day? That\'s all in a day\'s work for a programmer.',
+                'Dealing with customer complaints is all in a day\'s work.'
+            ],
+            'meaning': '흔한 일이야, 일상적이야',
+            'situation': '어려워 보이지만 사실 일상적인 일을 말할 때',
+            'tip': '담담한 태도를 표현합니다.'
+        },
+        {
+            'expression': 'At the end of the day',
+            'example': 'We had some problems, but at the end of the day, we finished the project.',
+            'examples': [
+                'We had some problems, but at the end of the day, we finished the project.',
+                'At the end of the day, it\'s about what matters most to you.'
+            ],
+            'meaning': '결국, 최종적으로, 궁극적으로',
+            'situation': '결론을 짓거나 본질을 강조할 때',
+            'tip': '자주 쓰이는 표현입니다.'
+        },
+        {
+            'expression': 'Back to the drawing board',
+            'example': 'This design doesn\'t work. Back to the drawing board.',
+            'examples': [
+                'This design doesn\'t work. Back to the drawing board.',
+                'The first plan failed, so it\'s back to the drawing board.'
+            ],
+            'meaning': '다시 시작해야 한다, 처음부터 다시',
+            'situation': '계획이 실패했을 때',
+            'tip': '새로 시작해야 할 때 사용합니다.'
+        },
+        {
+            'expression': 'Beat around the bush',
+            'example': 'Stop beating around the bush and tell me the truth!',
+            'examples': [
+                'Stop beating around the bush and tell me the truth!',
+                'Don\'t beat around the bush.'
+            ],
+            'meaning': '주변 이야기를 하다, 요점을 피하다',
+            'situation': '직접 말하지 않고 돌려 말할 때',
+            'tip': '비판적인 표현입니다.'
+        },
+        {
+            'expression': 'Been there, done that',
+            'example': 'You\'re worried? Don\'t be, I\'ve been there, done that.',
+            'examples': [
+                'You\'re worried? Don\'t be, I\'ve been there, done that.',
+                'Been there, done that before.'
+            ],
+            'meaning': '나도 해본 거야, 알고 있어',
+            'situation': '경험이 있음을 나타낼 때',
+            'tip': '자신감 있는 표현입니다.'
+        },
+        {
+            'expression': 'Best of both worlds',
+            'example': 'Working from home gives you the best of both worlds.',
+            'examples': [
+                'Working from home gives you the best of both worlds.',
+                'This car is the best of both worlds: fast and economical.'
+            ],
+            'meaning': '둘 다의 장점을 가지다',
+            'situation': '두 가지 좋은 것을 모두 누릴 때',
+            'tip': '긍정적인 상황을 표현합니다.'
+        },
+        {
+            'expression': 'Between a rock and a hard place',
+            'example': 'I\'m between a rock and a hard place. I don\'t know what to do.',
+            'examples': [
+                'I\'m between a rock and a hard place. I don\'t know what to do.',
+                'He was between a rock and a hard place.'
+            ],
+            'meaning': '진퇴양난이다, 어려운 선택을 강요받다',
+            'situation': '두 가지 어려운 선택 중 하나를 해야 할 때',
+            'tip': '어려운 상황을 표현합니다.'
+        },
+        {
+            'expression': 'Bet on it',
+            'example': 'Will he come? You can bet on it!',
+            'examples': [
+                'Will he come? You can bet on it!',
+                'You can bet on it, I\'m sure.'
+            ],
+            'meaning': '그거 확실해, 걸어, 가능해',
+            'situation': '무언가가 확실함을 강조할 때',
+            'tip': '확신을 표현합니다.'
+        },
+        {
+            'expression': 'Better luck next time',
+            'example': 'Sorry you didn\'t win. Better luck next time!',
+            'examples': [
+                'Sorry you didn\'t win. Better luck next time!',
+                'You\'ll do better next time.'
+            ],
+            'meaning': '다음엔 잘될 거야, 파이팅',
+            'situation': '누군가가 실패했을 때 격려할 때',
+            'tip': '친근한 위로입니다.'
+        },
+        {
+            'expression': 'Beyond a shadow of a doubt',
+            'example': 'He\'s guilty beyond a shadow of a doubt.',
+            'examples': [
+                'He\'s guilty beyond a shadow of a doubt.',
+                'I know beyond a shadow of a doubt that it\'s true.'
+            ],
+            'meaning': '의심의 여지 없이, 확실히',
+            'situation': '확실한 사실을 강조할 때',
+            'tip': '법적 표현처럼 들립니다.'
+        },
+        {
+            'expression': 'Bite off more than you can chew',
+            'example': 'Don\'t bite off more than you can chew. Take it slowly.',
+            'examples': [
+                'Don\'t bite off more than you can chew. Take it slowly.',
+                'He bit off more than he could chew.'
+            ],
+            'meaning': '과욕을 부리다, 감당할 수 없는 것을 하려 하다',
+            'situation': '너무 많은 일을 하려고 할 때',
+            'tip': '경고적 표현입니다.'
+        },
+        {
+            'expression': 'Burning the candle at both ends',
+            'example': 'You\'re burning the candle at both ends. You need rest.',
+            'examples': [
+                'You\'re burning the candle at both ends. You need rest.',
+                'Stop burning the candle at both ends.'
+            ],
+            'meaning': '무리를 하다, 과로하다',
+            'situation': '누군가가 너무 열심히 일할 때',
+            'tip': '걱정스러운 표현입니다.'
+        },
+        {
+            'expression': 'Bury the hatchet',
+            'example': 'Let\'s bury the hatchet and be friends again.',
+            'examples': [
+                'Let\'s bury the hatchet and be friends again.',
+                'It\'s time to bury the hatchet.'
+            ],
+            'meaning': '싸움을 멈추다, 화해하다',
+            'situation': '분쟁을 끝내고 화해할 때',
+            'tip': '화해의 제안입니다.'
+        },
+        {
+            'expression': 'Catch on',
+            'example': 'Do you catch on? Or should I explain again?',
+            'examples': [
+                'Do you catch on? Or should I explain again?',
+                'This trend is starting to catch on.'
+            ],
+            'meaning': '이해하다, 유행이 번지다',
+            'situation': '누군가가 이해했는지 확인할 때',
+            'tip': '다양한 의미로 사용됩니다.'
+        },
+        {
+            'expression': 'Caught in the act',
+            'example': 'He was caught in the act of stealing.',
+            'examples': [
+                'He was caught in the act of stealing.',
+                'I caught her in the act.'
+            ],
+            'meaning': '현행범으로 잡히다, 적발되다',
+            'situation': '누군가가 나쁜 일을 하면서 들켰을 때',
+            'tip': '부정적인 상황입니다.'
+        },
+        {
+            'expression': 'Caught red-handed',
+            'example': 'She was caught red-handed cheating on the exam.',
+            'examples': [
+                'She was caught red-handed cheating on the exam.',
+                'Caught red-handed!'
+            ],
+            'meaning': '증거가 남아 있는 상태로 잡히다',
+            'situation': '명백한 증거와 함께 적발될 때',
+            'tip': '부정적인 상황입니다.'
+        },
+        {
+            'expression': 'Come hell or high water',
+            'example': 'I\'ll be there come hell or high water.',
+            'examples': [
+                'I\'ll be there come hell or high water.',
+                'I will finish this project come hell or high water.'
+            ],
+            'meaning': '어떤 일이 있어도, 어떻게 되든',
+            'situation': '강한 결심을 표현할 때',
+            'tip': '강한 의지를 보입니다.'
+        },
+        {
+            'expression': 'Cry over spilled milk',
+            'example': 'Don\'t cry over spilled milk. It\'s too late to change it.',
+            'examples': [
+                'Don\'t cry over spilled milk. It\'s too late to change it.',
+                'There\'s no point crying over spilled milk.'
+            ],
+            'meaning': '이미 지난 일에 대해 후회하다',
+            'situation': '일어난 일을 받아들여야 할 때',
+            'tip': '조언적 표현입니다.'
+        },
+        {
+            'expression': 'Crystal clear',
+            'example': 'His instructions were crystal clear.',
+            'examples': [
+                'His instructions were crystal clear.',
+                'Make it crystal clear to everyone.'
+            ],
+            'meaning': '아주 명확한, 분명한',
+            'situation': '어떤 것이 매우 명확할 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Cup of tea',
+            'example': 'Math is not my cup of tea.',
+            'examples': [
+                'Math is not my cup of tea.',
+                'Is that your cup of tea?'
+            ],
+            'meaning': '관심사, 좋아하는 것',
+            'situation': '개인의 취향이나 관심을 말할 때',
+            'tip': '자연스러운 표현입니다.'
+        },
+        {
+            'expression': 'Cut corners',
+            'example': 'Don\'t cut corners on quality.',
+            'examples': [
+                'Don\'t cut corners on quality.',
+                'He cut corners to save money.'
+            ],
+            'meaning': '편법을 쓰다, 무시하다, 대충하다',
+            'situation': '올바른 방법을 무시하고 빠르게 하려 할 때',
+            'tip': '부정적인 의미입니다.'
+        },
+        {
+            'expression': 'Call a spade a spade',
+            'example': 'Let\'s call a spade a spade. You made a mistake.',
+            'examples': [
+                'Let\'s call a spade a spade. You made a mistake.',
+                'We should call a spade a spade.'
+            ],
+            'meaning': '솔직하게 말하다, 있는 그대로 말하다',
+            'situation': '직설적으로 진실을 말할 때',
+            'tip': '솔직함을 강조합니다.'
+        },
+        {
+            'expression': 'Clear as day',
+            'example': 'What he meant was clear as day.',
+            'examples': [
+                'What he meant was clear as day.',
+                'It\'s clear as day what happened.'
+            ],
+            'meaning': '아주 명확한, 쉽게 이해할 수 있는',
+            'situation': '어떤 것이 분명할 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Clear as mud',
+            'example': 'Your explanation is clear as mud!',
+            'examples': [
+                'Your explanation is clear as mud!',
+                'That\'s as clear as mud to me.'
+            ],
+            'meaning': '아주 모호한, 전혀 이해가 안 되는',
+            'situation': '어떤 것이 이해하기 어려울 때',
+            'tip': '비꼬아서 사용합니다.'
+        },
+        {
+            'expression': 'Cold shoulder',
+            'example': 'She gave me the cold shoulder when I said hello.',
+            'examples': [
+                'She gave me the cold shoulder when I said hello.',
+                'He got the cold shoulder from his friends.'
+            ],
+            'meaning': '냉대하다, 무시하다',
+            'situation': '누군가가 무시하거나 냉대할 때',
+            'tip': '부정적인 표현입니다.'
+        },
+        {
+            'expression': 'Come out of the woodwork',
+            'example': 'When she won the lottery, people came out of the woodwork asking for money.',
+            'examples': [
+                'When she won the lottery, people came out of the woodwork asking for money.',
+                'Problems came out of the woodwork.'
+            ],
+            'meaning': '갑자기 나타나다, 몰려오다',
+            'situation': '예상하지 못한 것들이 갑자기 나타날 때',
+            'tip': '일반적으로 부정적인 의미입니다.'
+        },
+        {
+            'expression': 'Comparing apples and oranges',
+            'example': 'You\'re comparing apples and oranges. They\'re completely different.',
+            'examples': [
+                'You\'re comparing apples and oranges. They\'re completely different.',
+                'That\'s like comparing apples and oranges.'
+            ],
+            'meaning': '전혀 다른 것을 비교하다',
+            'situation': '비교할 수 없는 것들을 비교할 때',
+            'tip': '일반적으로 비판적입니다.'
+        },
+        {
+            'expression': 'Crank it up',
+            'example': 'Crank it up! Turn the volume louder!',
+            'examples': [
+                'Crank it up! Turn the volume louder!',
+                'Let\'s crank it up and have fun.'
+            ],
+            'meaning': '볼륨을 높이다, 강도를 높이다',
+            'situation': '뭔가를 더 크게 또는 강하게 할 때',
+            'tip': '캐주얼한 표현입니다.'
+        },
+        {
+            'expression': 'Creep up on someone',
+            'example': 'Age is creeping up on me.',
+            'examples': [
+                'Age is creeping up on me.',
+                'Winter is creeping up on us.'
+            ],
+            'meaning': '천천히 다가오다, 어느새 가까워지다',
+            'situation': '시간이 빠르게 흐를 때',
+            'tip': '자연스러운 표현입니다.'
+        },
+        {
+            'expression': 'Cross that bridge when we come to it',
+            'example': 'Don\'t worry about future problems. We\'ll cross that bridge when we come to it.',
+            'examples': [
+                'Don\'t worry about future problems. We\'ll cross that bridge when we come to it.',
+                'Let\'s cross that bridge when we come to it.'
+            ],
+            'meaning': '그 상황이 되면 그때 생각하자',
+            'situation': '지금 걱정할 필요 없다는 뜻으로 말할 때',
+            'tip': '실용적인 조언입니다.'
+        },
+        {
+            'expression': 'Cruise for a bruising',
+            'example': 'If you keep talking like that, you\'re cruising for a bruising.',
+            'examples': [
+                'If you keep talking like that, you\'re cruising for a bruising.',
+                'He\'s cruising for a bruising with that behavior.'
+            ],
+            'meaning': '문제를 자초하다, 곤경에 빠질 짓을 하다',
+            'situation': '위험한 행동에 대해 경고할 때',
+            'tip': '경고적인 표현입니다.'
+        },
+        {
+            'expression': 'Cry uncle',
+            'example': 'I give up! I cry uncle!',
+            'examples': [
+                'I give up! I cry uncle!',
+                'You have to cry uncle to win the game.'
+            ],
+            'meaning': '항복하다, 포기하다',
+            'situation': '누군가가 지쳐서 포기할 때',
+            'tip': '게임에서 자주 사용됩니다.'
+        },
+        {
+            'expression': 'Customary practice',
+            'example': 'It\'s customary practice to shake hands when you meet.',
+            'examples': [
+                'It\'s customary practice to shake hands when you meet.',
+                'That\'s customary practice in our company.'
+            ],
+            'meaning': '관례적인 관행, 전통적인 방식',
+            'situation': '문화나 전통을 설명할 때',
+            'tip': '공식적인 표현입니다.'
+        },
+        {
+            'expression': 'Dead as a doornail',
+            'example': 'The romance between them is dead as a doornail.',
+            'examples': [
+                'The romance between them is dead as a doornail.',
+                'That idea is dead as a doornail.'
+            ],
+            'meaning': '완전히 죽었다, 더 이상 없다',
+            'situation': '어떤 것이 완전히 끝났을 때',
+            'tip': '부정적인 표현입니다.'
+        },
+        {
+            'expression': 'Defeat the purpose',
+            'example': 'Eating sweets on a diet defeats the purpose.',
+            'examples': [
+                'Eating sweets on a diet defeats the purpose.',
+                'That would defeat the purpose.'
+            ],
+            'meaning': '목적을 무효화하다, 역효과를 내다',
+            'situation': '어떤 행동이 목표와 맞지 않을 때',
+            'tip': '역설적인 상황입니다.'
+        },
+        {
+            'expression': 'Delayed gratification',
+            'example': 'Delayed gratification is important for success.',
+            'examples': [
+                'Delayed gratification is important for success.',
+                'He learned the value of delayed gratification.'
+            ],
+            'meaning': '즉각적인 만족을 미루다, 참다',
+            'situation': '인내와 절제를 강조할 때',
+            'tip': '긍정적인 개념입니다.'
+        },
+        {
+            'expression': 'Demo or die',
+            'example': 'In this company, it\'s demo or die to prove your ideas.',
+            'examples': [
+                'In this company, it\'s demo or die to prove your ideas.',
+                'Demo or die is our motto.'
+            ],
+            'meaning': '구현을 보여주거나 실패하거나',
+            'situation': '실제로 해봐야 한다는 뜻으로 말할 때',
+            'tip': '비즈니스 문화에서 자주 사용됩니다.'
+        },
+        {
+            'expression': 'Dime a dozen',
+            'example': 'Good ideas are not dime a dozen, they\'re rare.',
+            'examples': [
+                'Good ideas are not dime a dozen, they\'re rare.',
+                'Such skills are dime a dozen these days.'
+            ],
+            'meaning': '흔한 것, 많고 싼 것',
+            'situation': '어떤 것이 흔하고 흔할 때',
+            'tip': '대체로 부정적인 의미입니다.'
+        },
+        {
+            'expression': 'Divide and conquer',
+            'example': 'Let\'s divide and conquer this big project.',
+            'examples': [
+                'Let\'s divide and conquer this big project.',
+                'We used a divide and conquer strategy.'
+            ],
+            'meaning': '나누어서 정복하다, 분할 정복',
+            'situation': '큰 문제를 작게 나누어 해결할 때',
+            'tip': '전략적인 표현입니다.'
+        },
+        {
+            'expression': 'Do your best',
+            'example': 'Just do your best and don\'t worry about the result.',
+            'examples': [
+                'Just do your best and don\'t worry about the result.',
+                'Do your best and you\'ll succeed.'
+            ],
+            'meaning': '최선을 다하다, 열심히 하다',
+            'situation': '누군가를 격려할 때',
+            'tip': '격려적인 표현입니다.'
+        },
+        {
+            'expression': 'Double take',
+            'example': 'I did a double take when I saw him.',
+            'examples': [
+                'I did a double take when I saw him.',
+                'She did a double take at the sight.'
+            ],
+            'meaning': '다시 한 번 확인하다, 깜짝 놀라다',
+            'situation': '예상 밖의 것을 봤을 때',
+            'tip': '놀라운 반응을 나타냅니다.'
+        },
+        {
+            'expression': 'Down and out',
+            'example': 'He\'s been down and out for a while.',
+            'examples': [
+                'He\'s been down and out for a while.',
+                'Don\'t worry, he won\'t stay down and out.'
+            ],
+            'meaning': '낙담한, 경제적으로 어려운',
+            'situation': '누군가의 어려운 상황을 말할 때',
+            'tip': '동정적인 표현입니다.'
+        },
+        {
+            'expression': 'Down in the dumps',
+            'example': 'She\'s been down in the dumps ever since the breakup.',
+            'examples': [
+                'She\'s been down in the dumps ever since the breakup.',
+                'He looks down in the dumps.'
+            ],
+            'meaning': '기분이 안 좋다, 낙담하다',
+            'situation': '누군가가 우울해 보일 때',
+            'tip': '동정적인 표현입니다.'
+        },
+        {
+            'expression': 'Down the hatch',
+            'example': 'Let\'s drink! Down the hatch!',
+            'examples': [
+                'Let\'s drink! Down the hatch!',
+                'Down the hatch!'
+            ],
+            'meaning': '한 번에 마시다, 넘어간다',
+            'situation': '음료를 마실 때',
+            'tip': '캐주얼한 표현입니다.'
+        },
+        {
+            'expression': 'Down to earth',
+            'example': 'He\'s a famous actor, but he\'s very down to earth.',
+            'examples': [
+                'He\'s a famous actor, but he\'s very down to earth.',
+                'She has a down to earth attitude.'
+            ],
+            'meaning': '실제적인, 겸손한, 친근한',
+            'situation': '누군가의 성격이 겸손할 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Draw the line',
+            'example': 'I don\'t mind helping, but I draw the line at doing all the work.',
+            'examples': [
+                'I don\'t mind helping, but I draw the line at doing all the work.',
+                'You need to draw the line somewhere.'
+            ],
+            'meaning': '선을 긋다, 한계를 정하다',
+            'situation': '허용할 수 없는 한계를 표시할 때',
+            'tip': '경계를 나타냅니다.'
+        },
+        {
+            'expression': 'Dream come true',
+            'example': 'Getting this job is a dream come true for me.',
+            'examples': [
+                'Getting this job is a dream come true for me.',
+                'It\'s like a dream come true.'
+            ],
+            'meaning': '꿈이 실현되다',
+            'situation': '오랫동안 원하던 것이 이루어질 때',
+            'tip': '긍정적이고 행복한 표현입니다.'
+        },
+        {
+            'expression': 'Dressed to kill',
+            'example': 'She was dressed to kill at the party.',
+            'examples': [
+                'She was dressed to kill at the party.',
+                'He was dressed to kill for the date.'
+            ],
+            'meaning': '멋지게 차려입다, 돋보이게 입다',
+            'situation': '누군가가 특별하게 차려입었을 때',
+            'tip': '긍정적인 의미입니다.'
+        },
+        {
+            'expression': 'Dressed to the nines',
+            'example': 'For the wedding, everyone was dressed to the nines.',
+            'examples': [
+                'For the wedding, everyone was dressed to the nines.',
+                'She was dressed to the nines.'
+            ],
+            'meaning': '아주 멋지게 차려입다',
+            'situation': '특별한 행사에 멋있게 옷을 입었을 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Drive someone up the wall',
+            'example': 'His constant talking drives me up the wall.',
+            'examples': [
+                'His constant talking drives me up the wall.',
+                'That noise is driving me up the wall.'
+            ],
+            'meaning': '~를 미치게 하다, 짜증나게 하다',
+            'situation': '무언가가 매우 짜증날 때',
+            'tip': '부정적인 표현입니다.'
+        },
+        {
+            'expression': 'Driving in the fast lane',
+            'example': 'He\'s always driving in the fast lane of life.',
+            'examples': [
+                'He\'s always driving in the fast lane of life.',
+                'Living in the fast lane is exhausting.'
+            ],
+            'meaning': '무모하게 살다, 위험하게 빠르게 살다',
+            'situation': '누군가의 위험한 생활 방식을 말할 때',
+            'tip': '비판적인 톤으로 사용되기도 합니다.'
+        },
+        {
+            'expression': 'Dull as dishwater',
+            'example': 'The movie was as dull as dishwater.',
+            'examples': [
+                'The movie was as dull as dishwater.',
+                'That book is dull as dishwater.'
+            ],
+            'meaning': '아주 지루한, 재미없는',
+            'situation': '어떤 것이 아주 지루할 때',
+            'tip': '부정적인 표현입니다.'
+        },
+        {
+            'expression': 'Dumb down',
+            'example': 'Don\'t dumb down the content for kids.',
+            'examples': [
+                'Don\'t dumb down the content for kids.',
+                'We need to avoid dumbing it down too much.'
+            ],
+            'meaning': '단순화하다, 수준을 낮추다',
+            'situation': '복잡한 것을 쉽게 설명할 때',
+            'tip': '중립적 또는 부정적 의미입니다.'
+        },
+        {
+            'expression': 'Dust off',
+            'example': 'I dusted off my old guitar and started playing again.',
+            'examples': [
+                'I dusted off my old guitar and started playing again.',
+                'Let\'s dust off that old plan.'
+            ],
+            'meaning': '오래된 것을 다시 사용하다, 재개하다',
+            'situation': '오래전에 하던 일을 다시 시작할 때',
+            'tip': '자연스러운 표현입니다.'
+        },
+        {
+            'expression': 'Early bird catches the worm',
+            'example': 'Wake up early! The early bird catches the worm.',
+            'examples': [
+                'Wake up early! The early bird catches the worm.',
+                'The early bird gets the advantages.'
+            ],
+            'meaning': '일찍 시작하는 사람이 성공한다',
+            'situation': '조기 행동의 중요성을 강조할 때',
+            'tip': '긍정적인 조언입니다.'
+        },
+        {
+            'expression': 'Easy as pie',
+            'example': 'This task is easy as pie.',
+            'examples': [
+                'This task is easy as pie.',
+                'That\'s easy as pie!'
+            ],
+            'meaning': '아주 쉽다, 간단하다',
+            'situation': '어떤 것이 매우 쉬울 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Eat humble pie',
+            'example': 'I was wrong about him, so I have to eat humble pie.',
+            'examples': [
+                'I was wrong about him, so I have to eat humble pie.',
+                'He had to eat humble pie after his mistake.'
+            ],
+            'meaning': '자존심을 상하게 받다, 사과하다',
+            'situation': '실수를 인정하고 사과할 때',
+            'tip': '겸손함을 나타냅니다.'
+        },
+        {
+            'expression': 'Eat one\'s heart out',
+            'example': 'He\'s eating his heart out waiting for the results.',
+            'examples': [
+                'He\'s eating his heart out waiting for the results.',
+                'Don\'t eat your heart out.'
+            ],
+            'meaning': '마음이 아프다, 애태우다',
+            'situation': '누군가가 걱정스러워하거나 고통받을 때',
+            'tip': '감정적인 표현입니다.'
+        },
+        {
+            'expression': 'Eat one\'s words',
+            'example': 'He said it would never happen, but now he has to eat his words.',
+            'examples': [
+                'He said it would never happen, but now he has to eat his words.',
+                'You\'ll eat your words.'
+            ],
+            'meaning': '한 말을 뒤집다, 자신의 말을 철회하다',
+            'situation': '누군가가 전에 한 말이 틀렸을 때',
+            'tip': '약간의 조롱이 포함될 수 있습니다.'
+        },
+        {
+            'expression': 'Edge someone out',
+            'example': 'The new product edged out the competition.',
+            'examples': [
+                'The new product edged out the competition.',
+                'She edged him out for the promotion.'
+            ],
+            'meaning': '~를 앞지르다, 근소하게 이기다',
+            'situation': '누군가가 근소한 차이로 이길 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Eleven out of ten',
+            'example': 'Your performance was eleven out of ten!',
+            'examples': [
+                'Your performance was eleven out of ten!',
+                'That\'s eleven out of ten for excellence.'
+            ],
+            'meaning': '최고의, 기대 이상의',
+            'situation': '뭔가가 기대 이상일 때',
+            'tip': '강한 칭찬입니다.'
+        },
+        {
+            'expression': 'End in smoke',
+            'example': 'All our plans ended in smoke when he got sick.',
+            'examples': [
+                'All our plans ended in smoke when he got sick.',
+                'The business ended in smoke.'
+            ],
+            'meaning': '실패하다, 수포가 되다',
+            'situation': '계획이 실패할 때',
+            'tip': '부정적인 표현입니다.'
+        },
+        {
+            'expression': 'Enough is enough',
+            'example': 'I\'ve had it! Enough is enough!',
+            'examples': [
+                'I\'ve had it! Enough is enough!',
+                'Enough is enough, I\'m done.'
+            ],
+            'meaning': '더 이상은 안 돼, 그만해',
+            'situation': '한계에 도달했을 때',
+            'tip': '강한 거절을 표현합니다.'
+        },
+        {
+            'expression': 'Escape by the skin of your teeth',
+            'example': 'He escaped by the skin of his teeth.',
+            'examples': [
+                'He escaped by the skin of his teeth.',
+                'I escaped by the skin of my teeth.'
+            ],
+            'meaning': '간신히 벗어나다, 거의 실패할 뻔하다',
+            'situation': '위험한 상황에서 거의 다 왔을 때',
+            'tip': '극적인 표현입니다.'
+        },
+        {
+            'expression': 'Every dog has its day',
+            'example': 'Don\'t worry, every dog has its day.',
+            'examples': [
+                'Don\'t worry, every dog has its day.',
+                'Every dog has its day eventually.'
+            ],
+            'meaning': '누구나 성공할 때가 있다',
+            'situation': '실패한 사람을 격려할 때',
+            'tip': '긍정적인 조언입니다.'
+        },
+        {
+            'expression': 'Everything but the kitchen sink',
+            'example': 'He packed everything but the kitchen sink.',
+            'examples': [
+                'He packed everything but the kitchen sink.',
+                'They brought everything but the kitchen sink.'
+            ],
+            'meaning': '거의 모든 것, 주방 싱크대 빼고 다',
+            'situation': '많은 물건을 가져갈 때',
+            'tip': '유머러스한 표현입니다.'
+        },
+        {
+            'expression': 'Eye for an eye',
+            'example': 'An eye for an eye makes the world blind.',
+            'examples': [
+                'An eye for an eye makes the world blind.',
+                'He wanted an eye for an eye.'
+            ],
+            'meaning': '동해보복, 앙갚음',
+            'situation': '보복을 말할 때',
+            'tip': '부정적인 행동을 나타냅니다.'
+        },
+        {
+            'expression': 'Face the music',
+            'example': 'You made a mistake, now you have to face the music.',
+            'examples': [
+                'You made a mistake, now you have to face the music.',
+                'He didn\'t want to face the music.'
+            ],
+            'meaning': '결과에 책임지다, 벌을 받다',
+            'situation': '실수의 결과를 받아들일 때',
+            'tip': '부정적인 상황이지만 필요한 행동입니다.'
+        },
+        {
+            'expression': 'Fall through the cracks',
+            'example': 'Some important details fell through the cracks.',
+            'examples': [
+                'Some important details fell through the cracks.',
+                'He fell through the cracks.'
+            ],
+            'meaning': '간과되다, 무시되다',
+            'situation': '중요한 것이 놓쳐질 때',
+            'tip': '부정적인 표현입니다.'
+        },
+        {
+            'expression': 'Feast or famine',
+            'example': 'In this job, it\'s feast or famine.',
+            'examples': [
+                'In this job, it\'s feast or famine.',
+                'Business is feast or famine.'
+            ],
+            'meaning': '많거나 적거나, 양극단',
+            'situation': '극단적인 상황을 말할 때',
+            'tip': '극단적 변화를 나타냅니다.'
+        },
+        {
+            'expression': 'Few and far between',
+            'example': 'Good jobs are few and far between.',
+            'examples': [
+                'Good jobs are few and far between.',
+                'Such opportunities are few and far between.'
+            ],
+            'meaning': '드물다, 거의 없다',
+            'situation': '무언가가 흔하지 않을 때',
+            'tip': '부정적인 의미가 많습니다.'
+        },
+        {
+            'expression': 'Fit as a fiddle',
+            'example': 'He\'s fit as a fiddle even at 80 years old.',
+            'examples': [
+                'He\'s fit as a fiddle even at 80 years old.',
+                'I feel fit as a fiddle today.'
+            ],
+            'meaning': '매우 건강한, 좋은 상태',
+            'situation': '누군가의 건강 상태가 좋을 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Flash in the pan',
+            'example': 'His success was just a flash in the pan.',
+            'examples': [
+                'His success was just a flash in the pan.',
+                'That trend was a flash in the pan.'
+            ],
+            'meaning': '일시적인 성공, 반짝이는 것',
+            'situation': '단기적인 성공에 대해 말할 때',
+            'tip': '부정적인 의미입니다.'
+        },
+        {
+            'expression': 'Flip your lid',
+            'example': 'When she heard the news, she flipped her lid.',
+            'examples': [
+                'When she heard the news, she flipped her lid.',
+                'Don\'t flip your lid!'
+            ],
+            'meaning': '화내다, 미치다 싶이 하다',
+            'situation': '누군가가 매우 화날 때',
+            'tip': '감정적인 표현입니다.'
+        },
+        {
+            'expression': 'Flog a dead horse',
+            'example': 'Don\'t flog a dead horse. That idea is dead.',
+            'examples': [
+                'Don\'t flog a dead horse. That idea is dead.',
+                'We\'re just flogging a dead horse.'
+            ],
+            'meaning': '죽은 말을 때리다, 쓸데없는 짓을 하다',
+            'situation': '쓸데없는 노력에 대해 말할 때',
+            'tip': '조언적 표현입니다.'
+        },
+        {
+            'expression': 'Fly on the wall',
+            'example': 'I\'d like to be a fly on the wall in that meeting.',
+            'examples': [
+                'I\'d like to be a fly on the wall in that meeting.',
+                'To be a fly on the wall...'
+            ],
+            'meaning': '은밀하게 보고 싶다, 몰래 보고 싶다',
+            'situation': '비밀 자리에 가고 싶을 때',
+            'tip': '호기심을 표현합니다.'
+        },
+        {
+            'expression': 'Follow your heart',
+            'example': 'Don\'t worry about others, just follow your heart.',
+            'examples': [
+                'Don\'t worry about others, just follow your heart.',
+                'Follow your heart and you\'ll be happy.'
+            ],
+            'meaning': '마음을 따르다, 본능을 믿다',
+            'situation': '누군가를 격려할 때',
+            'tip': '긍정적인 조언입니다.'
+        },
+        {
+            'expression': 'Foot the bill',
+            'example': 'Who\'s going to foot the bill for this project?',
+            'examples': [
+                'Who\'s going to foot the bill for this project?',
+                'He footed the bill.'
+            ],
+            'meaning': '비용을 부담하다, 돈을 내다',
+            'situation': '누군가가 비용을 낼 때',
+            'tip': '비즈니스 상황에서 자주 쓰입니다.'
+        },
+        {
+            'expression': 'Foregone conclusion',
+            'example': 'It\'s a foregone conclusion that he\'ll win.',
+            'examples': [
+                'It\'s a foregone conclusion that he\'ll win.',
+                'The outcome was a foregone conclusion.'
+            ],
+            'meaning': '당연한 결론, 뻔한 결과',
+            'situation': '결과가 이미 정해진 상황에서',
+            'tip': '예측 가능한 결과를 나타냅니다.'
+        },
+        {
+            'expression': 'Forget about it',
+            'example': 'You can\'t do it? Forget about it!',
+            'examples': [
+                'You can\'t do it? Forget about it!',
+                'Don\'t worry about it. Forget about it.'
+            ],
+            'meaning': '신경 쓰지 마, 잊어버려',
+            'situation': '불가능한 것을 포기할 때',
+            'tip': '캐주얼한 표현입니다.'
+        },
+        {
+            'expression': 'Full steam ahead',
+            'example': 'Let\'s go full steam ahead with the project!',
+            'examples': [
+                'Let\'s go full steam ahead with the project!',
+                'Full steam ahead!'
+            ],
+            'meaning': '전력을 다해, 최대한 빠르게',
+            'situation': '적극적으로 진행할 때',
+            'tip': '긍정적이고 적극적입니다.'
+        },
+        {
+            'expression': 'Fun and games',
+            'example': 'It\'s not all fun and games, you know.',
+            'examples': [
+                'It\'s not all fun and games, you know.',
+                'This is serious, not fun and games.'
+            ],
+            'meaning': '장난과 즐거움만, 심각하지 않은',
+            'situation': '뭔가가 심각하지 않을 때',
+            'tip': '대체로 부정적인 상황에서 사용됩니다.'
+        },
+        {
+            'expression': 'Fundamental difference',
+            'example': 'There\'s a fundamental difference between them.',
+            'examples': [
+                'There\'s a fundamental difference between them.',
+                'It\'s a fundamental difference in approach.'
+            ],
+            'meaning': '근본적인 차이, 기본적인 차이',
+            'situation': '뿌리 깊은 차이를 말할 때',
+            'tip': '중요한 차이를 강조합니다.'
+        },
+        {
+            'expression': 'Get a kick out of',
+            'example': 'I get a kick out of watching comedy movies.',
+            'examples': [
+                'I get a kick out of watching comedy movies.',
+                'She gets a kick out of it.'
+            ],
+            'meaning': '~를 즐기다, 재미있어하다',
+            'situation': '누군가가 뭔가를 즐길 때',
+            'tip': '긍정적인 감정을 나타냅니다.'
+        },
+        {
+            'expression': 'Get a leg up',
+            'example': 'This training will get you a leg up on the competition.',
+            'examples': [
+                'This training will get you a leg up on the competition.',
+                'You\'ll get a leg up if you start now.'
+            ],
+            'meaning': '우위를 얻다, 앞서가다',
+            'situation': '경쟁에서 유리해질 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Get a word in edgewise',
+            'example': 'She talks so much, I can\'t get a word in edgewise.',
+            'examples': [
+                'She talks so much, I can\'t get a word in edgewise.',
+                'He wouldn\'t let me get a word in edgewise.'
+            ],
+            'meaning': '말을 끼워넣다, 입을 열다',
+            'situation': '누군가가 계속 말할 때',
+            'tip': '약간 답답한 상황입니다.'
+        },
+        {
+            'expression': 'Get down and dirty',
+            'example': 'Let\'s get down and dirty and discuss the real issues.',
+            'examples': [
+                'Let\'s get down and dirty and discuss the real issues.',
+                'We need to get down and dirty with this.'
+            ],
+            'meaning': '진지하게 다루다, 핵심을 다루다',
+            'situation': '어려운 문제를 직면할 때',
+            'tip': '직설적인 표현입니다.'
+        },
+        {
+            'expression': 'Get the lead out',
+            'example': 'We\'re late! Get the lead out!',
+            'examples': [
+                'We\'re late! Get the lead out!',
+                'Get the lead out, let\'s go!'
+            ],
+            'meaning': '빨리 해, 움직여',
+            'situation': '누군가를 재촉할 때',
+            'tip': '긴급함을 나타냅니다.'
+        },
+        {
+            'expression': 'Get your feet wet',
+            'example': 'You should get your feet wet in this industry.',
+            'examples': [
+                'You should get your feet wet in this industry.',
+                'He\'s getting his feet wet.'
+            ],
+            'meaning': '처음 시작하다, 경험해보다',
+            'situation': '새로운 분야에 처음 진입할 때',
+            'tip': '긍정적인 시작을 나타냅니다.'
+        },
+        {
+            'expression': 'Ghost town',
+            'example': 'After the factory closed, the city became a ghost town.',
+            'examples': [
+                'After the factory closed, the city became a ghost town.',
+                'The streets look like a ghost town.'
+            ],
+            'meaning': '인구가 거의 없는 곳, 황폐한 곳',
+            'situation': '한산한 장소를 묘사할 때',
+            'tip': '부정적인 이미지입니다.'
+        },
+        {
+            'expression': 'Go against the grain',
+            'example': 'It goes against the grain for me to lie.',
+            'examples': [
+                'It goes against the grain for me to lie.',
+                'Doing this goes against my grain.'
+            ],
+            'meaning': '본성에 어긋나다, 본심에 반하다',
+            'situation': '누군가의 성향에 맞지 않을 때',
+            'tip': '개인적 신념을 나타냅니다.'
+        },
+        {
+            'expression': 'Go for broke',
+            'example': 'I\'m going to go for broke and apply for that job.',
+            'examples': [
+                'I\'m going to go for broke and apply for that job.',
+                'Let\'s go for broke!'
+            ],
+            'meaning': '모든 것을 걸다, 전력을 다하다',
+            'situation': '큰 위험을 감수하면서 시도할 때',
+            'tip': '용감한 결정을 나타냅니다.'
+        },
+        {
+            'expression': 'Go the distance',
+            'example': 'I think we can go the distance with this project.',
+            'examples': [
+                'I think we can go the distance with this project.',
+                'They went the distance.'
+            ],
+            'meaning': '끝까지 가다, 완주하다',
+            'situation': '긴 과정을 완료할 때',
+            'tip': '긍정적인 인내를 나타냅니다.'
+        },
+        {
+            'expression': 'Go with the flow',
+            'example': 'Just go with the flow and see what happens.',
+            'examples': [
+                'Just go with the flow and see what happens.',
+                'I like to go with the flow.'
+            ],
+            'meaning': '흐름을 따르다, 자연스럽게 하다',
+            'situation': '편하고 자연스럽게 진행할 때',
+            'tip': '긍정적인 태도입니다.'
+        },
+        {
+            'expression': 'Going forward',
+            'example': 'Going forward, we need to improve our process.',
+            'examples': [
+                'Going forward, we need to improve our process.',
+                'Going forward, remember this lesson.'
+            ],
+            'meaning': '앞으로, 이제부터',
+            'situation': '미래의 행동을 말할 때',
+            'tip': '비즈니스에서 자주 사용됩니다.'
+        },
+        {
+            'expression': 'Golden opportunity',
+            'example': 'This is a golden opportunity for you.',
+            'examples': [
+                'This is a golden opportunity for you.',
+                'Don\'t miss this golden opportunity.'
+            ],
+            'meaning': '황금 같은 기회, 최고의 기회',
+            'situation': '놓쳐서는 안 될 좋은 기회',
+            'tip': '긍정적이고 중요합니다.'
+        },
+        {
+            'expression': 'Good things come to those who wait',
+            'example': 'Be patient, good things come to those who wait.',
+            'examples': [
+                'Be patient, good things come to those who wait.',
+                'Good things come to those who wait.'
+            ],
+            'meaning': '인내하는 자에게 좋은 것이 온다',
+            'situation': '누군가를 기다리게 할 때',
+            'tip': '긍정적인 조언입니다.'
+        },
+        {
+            'expression': 'Good time was had by all',
+            'example': 'A good time was had by all at the party.',
+            'examples': [
+                'A good time was had by all at the party.',
+                'A good time was had by all.'
+            ],
+            'meaning': '모두가 즐거운 시간을 보냈다',
+            'situation': '행사가 잘 끝났을 때',
+            'tip': '긍정적이고 공식적입니다.'
+        },
+        {
+            'expression': 'Good times were had',
+            'example': 'During our vacation, good times were had.',
+            'examples': [
+                'During our vacation, good times were had.',
+                'Good times were had together.'
+            ],
+            'meaning': '좋은 시간을 보냈다',
+            'situation': '즐거운 경험을 회상할 때',
+            'tip': '긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Grind to a halt',
+            'example': 'The production line ground to a halt.',
+            'examples': [
+                'The production line ground to a halt.',
+                'Everything came to a grind to a halt.'
+            ],
+            'meaning': '완전히 멈추다, 중단되다',
+            'situation': '일이나 과정이 중단될 때',
+            'tip': '부정적인 상황입니다.'
         }
     ]
     return expressions
