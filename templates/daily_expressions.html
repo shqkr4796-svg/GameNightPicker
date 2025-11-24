@@ -68,26 +68,7 @@
             </div>
         </div>
 
-        <!-- 표현 목록 -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">표현 선택</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    {% for expr in expressions %}
-                    <div class="col-lg-6 col-md-12 mb-2">
-                        <a href="{{ url_for('daily_expressions', index=loop.index0) }}" class="btn btn-outline-primary w-100 text-start" style="white-space: normal; height: auto; padding: 12px;">
-                            <strong>{{ loop.index }}. {{ expr.expression }}</strong><br>
-                            <small class="text-muted">{{ expr.meaning }}</small>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- 선택된 표현 학습 -->
+        <!-- 선택된 표현 학습 - 퀴즈 아래 -->
         {% if selected_index is not none and expressions[selected_index] %}
         <div class="card mb-4">
             <div class="card-header">
@@ -142,6 +123,25 @@
             </div>
         </div>
         {% endif %}
+
+        <!-- 표현 목록 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">표현 선택</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for expr in expressions %}
+                    <div class="col-lg-6 col-md-12 mb-2">
+                        <a href="{{ url_for('daily_expressions', index=loop.index0) }}" class="btn btn-outline-primary w-100 text-start" style="white-space: normal; height: auto; padding: 12px;">
+                            <strong>{{ loop.index }}. {{ expr.expression }}</strong><br>
+                            <small class="text-muted">{{ expr.meaning }}</small>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
         <!-- 최근 학습한 표현들 -->
         {% if progress > 0 %}
