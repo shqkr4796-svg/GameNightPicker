@@ -239,15 +239,22 @@
 <script>
 // 음성 인식 초기화
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
+let recognition = null;
 let isListening = false;
 
-if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.continuous = true;
-    recognition.interimResults = true;
+// Recognition 객체 새로 생성 함수 (오디오 컨텍스트 손상 방지)
+function initializeRecognition() {
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+    }
+    return recognition;
 }
+
+// 초기 recognition 생성
+initializeRecognition();
 
 document.addEventListener('DOMContentLoaded', function() {
     const micBtn = document.getElementById('micBtn');
@@ -295,27 +302,8 @@ document.addEventListener('DOMContentLoaded', function() {
         recognition.stop();
     });
     
-    // 음성 인식 결과
-    recognition.addEventListener('result', function(event) {
-        let interimTranscript = '';
-        let finalTranscript = '';
-        
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            const transcript = event.results[i][0].transcript;
-            if (event.results[i].isFinal) {
-                finalTranscript += transcript + ' ';
-            } else {
-                interimTranscript += transcript;
-            }
-        }
-        
-        const currentText = finalTranscript || interimTranscript;
-        textContent.textContent = currentText;
-        
-        if (finalTranscript) {
-            checkAnswer(finalTranscript.toLowerCase().trim());
-        }
-    });
+    // 초기 recognition 리스너 설정
+    setupRecognitionListeners();
     
     // 정답 확인
     function checkAnswer(userInput) {
@@ -344,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 다음 턴 로드
     function loadNextTurn() {
-        // 1. 음성 인식 시스템 정리 (오디오 컨텍스트 보호 최우선)
+        // 1. 기존 음성 인식 시스템 정리
         if (recognition) {
             try {
                 recognition.stop();
@@ -396,33 +384,67 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // 새로운 턴 정답으로 업데이트
                     targetResponse = turn.user_response.toLowerCase().trim();
+                    
+                    // 2. 새로운 recognition 객체 생성 (오디오 컨텍스트 초기화)
+                    initializeRecognition();
+                    
+                    // 3. 새 recognition 객체에 이벤트 리스너 다시 설정
+                    setupRecognitionListeners();
                 }
             }
         });
     }
     
-    // 음성 인식 에러
-    recognition.addEventListener('error', function(event) {
-        if (event.error !== 'aborted') {
-            statusMessage.style.display = 'block';
-            const errorMessages = {
-                'no-speech': '음성을 감지하지 못했습니다. 다시 시도해주세요.',
-                'audio-capture': '마이크에 접근할 수 없습니다.',
-                'network': '네트워크 오류가 발생했습니다.',
-                'permission-denied': '마이크 권한이 거부되었습니다.'
-            };
-            statusText.textContent = errorMessages[event.error] || '오류: ' + event.error;
-        }
-        isListening = false;
-        micBtn.style.display = 'block';
-        stopBtn.style.display = 'none';
-    });
-    
-    recognition.addEventListener('end', function() {
-        isListening = false;
-        micBtn.style.display = 'block';
-        stopBtn.style.display = 'none';
-    });
+    // Recognition 이벤트 리스너 설정 함수
+    function setupRecognitionListeners() {
+        if (!recognition) return;
+        
+        // 음성 인식 결과
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            let finalTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    interimTranscript += transcript;
+                }
+            }
+            
+            const currentText = finalTranscript || interimTranscript;
+            textContent.textContent = currentText;
+            
+            if (finalTranscript) {
+                checkAnswer(finalTranscript.toLowerCase().trim());
+            }
+        };
+        
+        // 음성 인식 에러
+        recognition.onerror = function(event) {
+            if (event.error !== 'aborted') {
+                statusMessage.style.display = 'block';
+                const errorMessages = {
+                    'no-speech': '음성을 감지하지 못했습니다. 다시 시도해주세요.',
+                    'audio-capture': '마이크에 접근할 수 없습니다.',
+                    'network': '네트워크 오류가 발생했습니다.',
+                    'permission-denied': '마이크 권한이 거부되었습니다.'
+                };
+                statusText.textContent = errorMessages[event.error] || '오류: ' + event.error;
+            }
+            isListening = false;
+            micBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+        };
+        
+        // 음성 인식 종료
+        recognition.onend = function() {
+            isListening = false;
+            micBtn.style.display = 'block';
+            stopBtn.style.display = 'none';
+        };
+    }
 });
 </script>
 {% endblock %}
