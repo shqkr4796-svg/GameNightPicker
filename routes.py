@@ -1768,7 +1768,15 @@ def start_adventure():
         flash(result.get('message', '전투를 시작할 수 없습니다.'), 'error')
         return redirect(url_for('adventure'))
     
-    session['battle_state'] = result['battle_state']
+    battle_state = result['battle_state']
+    
+    # 적의 선공인 경우 자동으로 적의 턴 실행
+    if not battle_state['player_turn']:
+        enemy_turn_result = game_logic.execute_enemy_turn(battle_state)
+        if enemy_turn_result['success']:
+            battle_state = enemy_turn_result['battle_state']
+    
+    session['battle_state'] = battle_state
     session['player_data'] = player
     session.modified = True
     
