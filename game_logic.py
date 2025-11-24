@@ -875,6 +875,7 @@ def change_residence(player, property_name):
     player['거주지'] = property_name
     
     # 기력 회복량 정보 찾기
+    recovery = 0
     for prop in real_estate:
         if prop['이름'] == property_name:
             recovery = prop['기력회복']
