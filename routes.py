@@ -1549,7 +1549,12 @@ def submit_expression_quiz():
     
     # 부분 일치 확인 (사용자 입력이 정답을 포함하면 정답)
     if correct_expression in user_answer or user_answer in correct_expression:
-        flash('정답입니다! ✓ 경험치 +10', 'success')
+        # 정답 표현의 의미 찾기
+        expressions = game_logic.get_daily_expressions()
+        correct_expr_data = next((e for e in expressions if e['expression'].lower() == correct_expression), None)
+        meaning = correct_expr_data['meaning'] if correct_expr_data else ''
+        
+        flash(f"정답입니다! ✓ ({request.form.get('correct', '')}: {meaning}) 경험치 +10", 'success')
         player['경험치'] += 10
         player['일일표현_진도'] = player.get('일일표현_진도', 0) + 1
         
@@ -1561,7 +1566,12 @@ def submit_expression_quiz():
             player['스탯포인트'] += 5
             flash(f'레벨업! 현재 레벨: {player["레벨"]}', 'warning')
     else:
-        flash(f'틀렸습니다. 정답은: {request.form.get("correct", "")}', 'error')
+        # 틀렸을 때 정답 표현의 의미 찾기
+        expressions = game_logic.get_daily_expressions()
+        correct_expr_data = next((e for e in expressions if e['expression'].lower() == correct_expression), None)
+        meaning = correct_expr_data['meaning'] if correct_expr_data else ''
+        
+        flash(f"틀렸습니다. 정답: {request.form.get('correct', '')} ({meaning})", 'error')
     
     session['player_data'] = player
     session.modified = True
