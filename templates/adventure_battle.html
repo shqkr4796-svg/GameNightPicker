@@ -360,7 +360,7 @@ function useSkill(skillName) {
                         alert('패배했습니다. 다시 시도하세요.');
                         window.location.href = "{{ url_for('adventure') }}";
                     }
-                }, 500);
+                }, 250);
             } else {
                 // 플레이어 턴인 경우 기술 버튼 활성화, 적의 턴인 경우 비활성화
                 const actionContainer = document.getElementById('actionContainer');
@@ -371,8 +371,8 @@ function useSkill(skillName) {
                                 <p style="font-size: 0.85rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">적의 턴입니다...</p>
                             </div>
                         `;
-                        // 잠시 후 페이지 새로고침
-                        setTimeout(() => location.reload(), 2000);
+                        // 잠시 후 페이지 새로고침 (1초로 단축)
+                        setTimeout(() => location.reload(), 1000);
                     }
                 }
             }
