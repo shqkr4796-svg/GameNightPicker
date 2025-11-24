@@ -19,9 +19,9 @@
                     <div style="text-align: center;">
                         <!-- 처치 진도 표시 -->
                         <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: center; gap: 3px;">
-                            {% set defeated = battle_state.defeated_monsters %}
-                            {% set enemy_count = battle_state.enemy_count %}
-                            {% set remaining_monsters = enemy_count - defeated %}
+                            {% set defeated = battle_state.get('defeated_monsters', 0) %}
+                            {% set enemy_count = battle_state.get('enemy_count', 3) %}
+                            {% set remaining_monsters = [0, enemy_count - defeated]|max %}
                             {% set unused_slots = 5 - enemy_count %}
                             
                             <!-- 회색 동그라미 (사용하지 않는 칸) -->
@@ -362,8 +362,8 @@ function useSkill(skillName) {
                 flashMonsterImage('enemyMonsterImg');
             }
             
-            // 페이지 새로고침
-            setTimeout(() => location.reload(), 1000);
+            // 페이지 즉시 새로고침
+            location.reload();
         } else {
             alert('오류: ' + data.error);
         }
