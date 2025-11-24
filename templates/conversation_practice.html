@@ -241,118 +241,84 @@
 </div>
 
 <script>
-// 글로벌 변수
-let cachedVoices = {
-    'female': null,
-    'male': null
-};
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
-let isListening = false;
-
-// 음성 로드 (Daniel 남성, Google 여성 음성)
-function loadAllVoices() {
-    if ('speechSynthesis' in window) {
-        const voices = window.speechSynthesis.getVoices();
-        
-        // 여성 음성: Google US English 찾기
-        for (let voice of voices) {
-            if (voice.lang === 'en-US' && voice.name.includes('Google')) {
-                cachedVoices['female'] = voice;
-                break;
-            }
+// 새로운 간단한 음성 재생 시스템
+function playAudio() {
+    const text = document.getElementById('aiPromptText').textContent;
+    const playBtn = event?.target?.closest('button');
+    const voiceType = playBtn?.getAttribute('data-voice') || 'female1';
+    const playingStatus = document.getElementById('playingStatus');
+    
+    if (!text || !('speechSynthesis' in window)) return;
+    
+    // 모든 음성 재생 중단
+    window.speechSynthesis.cancel();
+    
+    // 현재 재생 중 표시
+    if (playingStatus) playingStatus.style.display = 'inline';
+    
+    // 음성 선택: 남성 = Daniel, 여성 = Google
+    const isMale = voiceType.includes('male');
+    const targetName = isMale ? 'Daniel' : 'Google';
+    
+    // 현재 사용 가능한 음성 중에서 선택
+    const allVoices = window.speechSynthesis.getVoices();
+    let selectedVoice = null;
+    
+    // 정확한 음성 찾기
+    for (let voice of allVoices) {
+        if (voice.lang === 'en-US' && voice.name.includes(targetName)) {
+            selectedVoice = voice;
+            break;
         }
-        
-        // 여성 음성 폴백: 첫 번째 en-US 음성
-        if (!cachedVoices['female']) {
-            const enVoices = voices.filter(v => v.lang === 'en-US' || v.lang.startsWith('en'));
-            if (enVoices.length > 0) {
-                cachedVoices['female'] = enVoices[0];
-            }
-        }
-        
-        // 남성 음성: Daniel 찾기
-        for (let voice of voices) {
-            if (voice.lang === 'en-US' && voice.name.includes('Daniel')) {
-                cachedVoices['male'] = voice;
-                break;
-            }
-        }
-        
-        // 남성 음성 폴백: Google 남성 음성 또는 기본 음성
-        if (!cachedVoices['male']) {
-            for (let voice of voices) {
-                if (voice.lang === 'en-US' && voice.name.includes('Google')) {
-                    cachedVoices['male'] = voice;
+    }
+    
+    // 폴백: 같은 성별 다른 음성
+    if (!selectedVoice) {
+        for (let voice of allVoices) {
+            if (voice.lang === 'en-US') {
+                if (isMale && !voice.name.includes('Female') && !voice.name.includes('female')) {
+                    selectedVoice = voice;
+                    break;
+                } else if (!isMale && (voice.name.includes('Female') || voice.name.includes('female'))) {
+                    selectedVoice = voice;
                     break;
                 }
             }
         }
-        
-        // 남성 음성 최종 폴백
-        if (!cachedVoices['male']) {
-            const enVoices = voices.filter(v => v.lang === 'en-US' || v.lang.startsWith('en'));
-            if (enVoices.length > 1) {
-                cachedVoices['male'] = enVoices[1];
-            } else if (enVoices.length > 0) {
-                cachedVoices['male'] = enVoices[0];
-            }
-        }
-    }
-}
-
-if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = loadAllVoices;
-    loadAllVoices();
-}
-
-// 음성 재생 (캐릭터별 음성 지원)
-function playAudio(textOrElement) {
-    let text = textOrElement;
-    
-    // 인자가 없거나 문자열이 아닌 경우, 현재 AI 대사 사용
-    if (!textOrElement || typeof textOrElement !== 'string') {
-        text = document.getElementById('aiPromptText').textContent;
     }
     
-    if (text && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        
-        // 재생 상태 표시
-        const playingStatus = document.getElementById('playingStatus');
-        if (playingStatus) {
-            playingStatus.style.display = 'inline';
-        }
-        
-        // 성우 타입 확인 (재생 버튼에서 가져오기)
-        const playBtn = event?.target?.closest('button') || document.querySelector('[data-voice]');
-        const voiceType = playBtn?.getAttribute('data-voice') || 'female1';
-        
-        // 남성/여성 음성 결정
-        const isMale = voiceType.includes('male');
-        const voice = isMale ? cachedVoices['male'] : cachedVoices['female'];
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;  // 시스템 기본 음량 유지
-        if (voice) {
-            utterance.voice = voice;
-        }
-        
-        // 재생 끝나면 상태 메시지 숨김
-        utterance.onend = function() {
-            if (playingStatus) {
-                playingStatus.style.display = 'none';
-            }
-        };
-        
-        window.speechSynthesis.speak(utterance);
+    // 최종 폴백: 첫 번째 en-US 음성
+    if (!selectedVoice && allVoices.length > 0) {
+        selectedVoice = allVoices.find(v => v.lang === 'en-US') || allVoices[0];
     }
+    
+    // 음성 재생
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+    
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    }
+    
+    utterance.onend = () => {
+        if (playingStatus) playingStatus.style.display = 'none';
+    };
+    
+    utterance.onerror = () => {
+        if (playingStatus) playingStatus.style.display = 'none';
+    };
+    
+    window.speechSynthesis.speak(utterance);
 }
 
 // 음성 인식 초기화
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+let isListening = false;
+
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
