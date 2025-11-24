@@ -5431,7 +5431,7 @@ def get_adventure_stages():
     return ADVENTURE_STAGES
 
 def get_available_monsters(player):
-    """플레이어가 보유한 도감 몬스터 반환"""
+    """플레이어가 보유한 도감 몬스터 반환 (높은 등급순)"""
     from data.monsters import get_monster_by_id
     available = []
     
@@ -5446,6 +5446,10 @@ def get_available_monsters(player):
                 'hp': monster_data.get('체력', 0),
                 'image': monster_data.get('이미지', '')
             })
+    
+    # 등급순 정렬 (높은 등급이 위로)
+    rarity_order = {'레전드리': 0, '유니크': 1, '에픽': 2, '레어': 3}
+    available.sort(key=lambda x: rarity_order.get(x['rarity'], 999))
     
     return available
 
