@@ -18,18 +18,54 @@ class AdventureSound {
         if (!this.soundEnabled) return;
         const ctx = this.audioContext;
         const now = ctx.currentTime;
-        const duration = 4; // 4초 루프
+        const duration = 2; // 2초 루프 (빠른 템포)
 
-        // 부드러운 현악기 풍의 배경음악
-        const notes = [
-            { freq: 261.63, time: 0 },      // C (도)
-            { freq: 329.63, time: 1 },      // E (미)
-            { freq: 392.0, time: 2 },       // G (솔)
-            { freq: 329.63, time: 3 }       // E (미)
+        // 포켓몬 스타일 전투 배경음악 - 긴박한 드럼 비트 + 상승하는 멜로디
+        // 드럼 비트 (저주파 펄스)
+        const kickPattern = [
+            { freq: 80, duration: 0.1, time: 0 },
+            { freq: 80, duration: 0.1, time: 0.25 },
+            { freq: 80, duration: 0.15, time: 0.5 },
+            { freq: 80, duration: 0.1, time: 0.8 },
+            { freq: 80, duration: 0.1, time: 1.0 },
+            { freq: 80, duration: 0.1, time: 1.25 },
+            { freq: 80, duration: 0.15, time: 1.5 },
+            { freq: 80, duration: 0.1, time: 1.8 }
         ];
 
-        notes.forEach(note => {
-            this._playTone(note.freq, duration * 0.23, now + note.time, 0.15, 'sine');
+        // 멜로디 라인 (상승하는 음정)
+        const melodyPattern = [
+            { freq: 392.0, duration: 0.15, time: 0, vol: 0.12, type: 'square' },   // G
+            { freq: 493.88, duration: 0.15, time: 0.2, vol: 0.12, type: 'square' }, // B
+            { freq: 587.33, duration: 0.2, time: 0.4, vol: 0.14, type: 'square' },  // D
+            { freq: 698.46, duration: 0.15, time: 0.7, vol: 0.12, type: 'square' }, // F
+            { freq: 587.33, duration: 0.15, time: 0.95, vol: 0.12, type: 'square' },// D
+            { freq: 493.88, duration: 0.2, time: 1.15, vol: 0.14, type: 'square' }, // B
+            { freq: 587.33, duration: 0.15, time: 1.45, vol: 0.12, type: 'square' },// D
+            { freq: 698.46, duration: 0.15, time: 1.7, vol: 0.12, type: 'square' }  // F
+        ];
+
+        // 드럼 비트 재생
+        kickPattern.forEach(note => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.frequency.setValueAtTime(note.freq, now + note.time);
+            osc.frequency.exponentialRampToValueAtTime(20, now + note.time + note.duration);
+            osc.type = 'sine';
+            
+            gain.gain.setValueAtTime(0.2, now + note.time);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + note.time + note.duration);
+            
+            osc.start(now + note.time);
+            osc.stop(now + note.time + note.duration);
+        });
+
+        // 멜로디 재생
+        melodyPattern.forEach(note => {
+            this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
         if (this.isMusicPlaying) {
