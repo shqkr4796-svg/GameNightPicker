@@ -5534,7 +5534,8 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
         'player_skills': player_skills,
         'skill_usage_count': skill_usage_count,
         'game_over': False,
-        'winner': None
+        'winner': None,
+        'enemy_attack_debuff': 0.0  # 적 공격력 약화 비율 (예: 0.15 = 15% 감소)
     }
     
     # 선공 결정 (공격력이 높은 쪽이 먼저)
@@ -5621,13 +5622,26 @@ def execute_enemy_turn(battle_state):
         multiplier_min = skill.get('공격력_보정_min', 1.0)
         multiplier_max = skill.get('공격력_보정_max', 1.0)
         multiplier = random.uniform(multiplier_min, multiplier_max)
-        damage = int(enemy_monster['attack'] * multiplier)
         
+        # 적 공격력에 debuff 적용
+        enemy_attack = enemy_monster['attack']
+        debuff_ratio = battle_state.get('enemy_attack_debuff', 0.0)
+        if debuff_ratio > 0:
+            enemy_attack = int(enemy_attack * (1 - debuff_ratio))
+            battle_state['log'].append(f"(약화됨: {enemy_monster['attack']} → {enemy_attack})")
+        
+        damage = int(enemy_attack * multiplier)
         player_monster['current_hp'] -= damage
         battle_state['log'].append(f"적 [{skill_name}] 사용! {damage} 데미지")
     else:
         # 기본 공격
-        damage = enemy_monster['attack']
+        enemy_attack = enemy_monster['attack']
+        debuff_ratio = battle_state.get('enemy_attack_debuff', 0.0)
+        if debuff_ratio > 0:
+            enemy_attack = int(enemy_attack * (1 - debuff_ratio))
+            battle_state['log'].append(f"(약화됨: {enemy_monster['attack']} → {enemy_attack})")
+        
+        damage = enemy_attack
         player_monster['current_hp'] -= damage
         battle_state['log'].append(f"적의 공격! {damage} 데미지")
     
@@ -5705,6 +5719,13 @@ def execute_skill(battle_state, skill_name):
     usage_count = battle_state['skill_usage_count'][skill_name]
     battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지 (사용 {usage_count}/{max_skill_uses}회)")
     
+    # 특수효과 처리
+    special_effect = skill.get('특수효과', None)
+    if special_effect == 'debuff_attack':
+        # 검은빛: 상대 공격력 15% 감소
+        battle_state['enemy_attack_debuff'] = 0.15
+        battle_state['log'].append(f"적 [{battle_state['enemy_monster']['name']}]의 공격력이 15% 감소했습니다!")
+    
     # 적 체력 확인
     if battle_state['enemy_monster']['current_hp'] <= 0:
         battle_state['enemy_monster']['current_hp'] = 0
@@ -5743,6 +5764,8 @@ def execute_skill(battle_state, skill_name):
                             'current_hp': enemy_hp,
                             'image': enemy_monster_info.get('이미지', '')
                         }
+                        # 새 몬스터 생성 시 debuff 초기화
+                        battle_state['enemy_attack_debuff'] = 0.0
                         battle_state['log'].append(f"\n다음 적 몬스터 등장: {enemy_monster_info['이름']} ({enemy_rarity})")
             
             # 플레이어 차례로 돌아감
@@ -5780,11 +5803,24 @@ def execute_skill(battle_state, skill_name):
         multiplier_min = skill.get('공격력_보정_min', 1.0)
         multiplier_max = skill.get('공격력_보정_max', 1.0)
         multiplier = random.uniform(multiplier_min, multiplier_max)
-        enemy_damage = int(enemy_monster['attack'] * multiplier)
+        
+        # 적 공격력에 debuff 적용
+        enemy_attack = enemy_monster['attack']
+        debuff_ratio = battle_state.get('enemy_attack_debuff', 0.0)
+        if debuff_ratio > 0:
+            enemy_attack = int(enemy_attack * (1 - debuff_ratio))
+        
+        enemy_damage = int(enemy_attack * multiplier)
         battle_state['player_monster']['current_hp'] -= enemy_damage
         battle_state['log'].append(f"적 [{skill_name}] 사용! {enemy_damage} 데미지")
     else:
-        enemy_damage = enemy_monster['attack']
+        # 기본 공격
+        enemy_attack = enemy_monster['attack']
+        debuff_ratio = battle_state.get('enemy_attack_debuff', 0.0)
+        if debuff_ratio > 0:
+            enemy_attack = int(enemy_attack * (1 - debuff_ratio))
+        
+        enemy_damage = enemy_attack
         battle_state['player_monster']['current_hp'] -= enemy_damage
         battle_state['log'].append(f"적의 공격! {enemy_damage} 데미지")
     
