@@ -5645,6 +5645,26 @@ def execute_enemy_turn(battle_state):
     
     return {'success': True, 'battle_state': battle_state}
 
+def get_skill_uses(skill):
+    """기술의 배수에 따라 최대 사용 횟수 계산"""
+    multiplier_max = skill.get('공격력_보정_max', 1.0)
+    
+    # 배수 범위: 1.0 ~ 2.4
+    min_mult = 1.0
+    max_mult = 2.4
+    min_uses = 3
+    max_uses = 10
+    
+    if multiplier_max <= min_mult:
+        return max_uses
+    if multiplier_max >= max_mult:
+        return min_uses
+    
+    # 선형 보간
+    ratio = (multiplier_max - min_mult) / (max_mult - min_mult)
+    uses = max_uses - (ratio * (max_uses - min_uses))
+    return max(min_uses, min(max_uses, round(uses)))
+
 def execute_skill(battle_state, skill_name):
     """기술 실행"""
     from data.adventure_data import SKILLS
@@ -5661,12 +5681,15 @@ def execute_skill(battle_state, skill_name):
     if not battle_state['player_turn']:
         return {'success': False, 'message': '지금은 플레이어 차례가 아닙니다.'}
     
-    # 기술 사용 횟수 제한 확인 (기술당 10번 제한)
+    # 기술별 최대 사용 횟수 계산
+    max_skill_uses = get_skill_uses(skill)
+    
+    # 기술 사용 횟수 제한 확인
     if skill_name not in battle_state['skill_usage_count']:
         battle_state['skill_usage_count'][skill_name] = 0
     
-    if battle_state['skill_usage_count'][skill_name] >= 10:
-        return {'success': False, 'message': f'{skill_name}은(는) 더 이상 사용할 수 없습니다. (10회 사용 완료)'}
+    if battle_state['skill_usage_count'][skill_name] >= max_skill_uses:
+        return {'success': False, 'message': f'{skill_name}은(는) 더 이상 사용할 수 없습니다. ({max_skill_uses}회 사용 완료)'}
     
     # 기술 사용 횟수 증가
     battle_state['skill_usage_count'][skill_name] += 1
@@ -5680,7 +5703,7 @@ def execute_skill(battle_state, skill_name):
     battle_state['enemy_monster']['current_hp'] -= damage
     
     usage_count = battle_state['skill_usage_count'][skill_name]
-    battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지 (사용 {usage_count}/10회)")
+    battle_state['log'].append(f"플레이어 [{skill_name}] 사용! {damage} 데미지 (사용 {usage_count}/{max_skill_uses}회)")
     
     # 적 체력 확인
     if battle_state['enemy_monster']['current_hp'] <= 0:

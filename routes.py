@@ -1793,11 +1793,17 @@ def adventure_battle():
     skills_info = game_logic.get_all_skills_info()
     skill_usage = battle_state.get('skill_usage_count', {})
     
+    # 각 기술의 최대 사용 횟수 계산
+    skill_max_uses = {}
+    for skill_name, skill_info in skills_info.items():
+        skill_max_uses[skill_name] = game_logic.get_skill_uses(skill_info)
+    
     return render_template('adventure_battle.html',
                          battle_state=battle_state,
                          player=player,
                          skills_info=skills_info,
-                         skill_usage=skill_usage)
+                         skill_usage=skill_usage,
+                         skill_max_uses=skill_max_uses)
 
 @app.route('/adventure/action', methods=['POST'])
 def adventure_action():
