@@ -35,58 +35,65 @@
 
             <div class="row g-3">
                 <!-- 좌측: 몬스터 선택 -->
-                <div class="col-lg-5">
+                <div class="col-lg-4">
                     <div style="background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; text-align: center;">보유 몬스터</h5>
+                        <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; text-align: center;">팀 구성 (최대 3마리)</h5>
                         
                         {% if available_monsters %}
-                            <!-- 스테이지 선택 -->
-                            <div style="margin-bottom: 25px;">
-                                <label style="display: block; color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">스테이지 선택</label>
-                                <select id="stageSelect" class="form-select" required style="border: 2px solid #e0e0e0; border-radius: 6px; padding: 10px;">
-                                    {% for stage in stages %}
-                                        {% if stage.stage_id <= cleared_stage + 1 %}
-                                            <option value="{{ stage.stage_id }}" data-difficulty="{{ stage.난이도 }}" data-enemies="{{ stage.enemy_count }}" data-skill-rate="{{ stage.skill_reward_rate }}" data-skill-rarity="{{ stage.skill_rarity_range }}" data-enemy-rarity="{{ stage.enemy_rarity_range }}" {% if stage.stage_id == current_stage %}selected{% endif %}>
-                                                Stage {{ stage.stage_id }} - {{ stage.난이도 }}
-                                                {% if stage.stage_id <= cleared_stage %}(클리어됨){% endif %}
-                                            </option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <!-- 몬스터 리스트 -->
-                            <div style="margin-bottom: 25px;">
-                                <label style="display: block; color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">몬스터 선택</label>
-                                <div id="monsterList" style="max-height: 500px; overflow-y: auto;">
-                                    {% for monster in available_monsters %}
-                                        <div style="margin-bottom: 15px;">
-                                            <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='#999'" onmouseout="this.style.borderColor='#e0e0e0'">
-                                                <input type="checkbox" class="monster-checkbox" value="{{ monster.id }}" data-name="{{ monster.name }}" data-rarity="{{ monster.rarity }}" data-attack="{{ monster.attack }}" data-hp="{{ monster.hp }}" data-image="{{ monster.image }}" style="margin-right: 12px; cursor: pointer;" onchange="updateTeamList()">
-                                                <!-- 몬스터 이미지 -->
-                                                <div style="width: 50px; height: 50px; background-color: #f5f5f5; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow: hidden; flex-shrink: 0;">
-                                                    {% if monster.image %}
-                                                        <img src="{{ monster.image }}" alt="{{ monster.name }}" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
-                                                    {% else %}
-                                                        {% set rarity_emoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'} %}
-                                                        {{ rarity_emoji.get(monster.rarity, '') }}
-                                                    {% endif %}
-                                                </div>
-                                                <div style="flex: 1;">
-                                                    <div style="font-weight: 600; color: #1a1a1a; display: flex; align-items: center; gap: 8px;">
-                                                        {{ monster.name }}
-                                                        {% set rarity_colors = {'레어': '#4CAF50', '에픽': '#9C27B0', '유니크': '#FFC107', '레전드리': '#F44336', '신화급': '#2196F3'} %}
-                                                        <span style="font-size: 0.7rem; color: {{ rarity_colors.get(monster.rarity, '#999') }}; font-weight: 500;">{{ monster.rarity }}</span>
-                                                    </div>
-                                                    <div style="font-size: 0.75rem; color: #999;">
-                                                        ATK: {{ monster.attack }} | HP: {{ monster.hp }}
-                                                    </div>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    {% endfor %}
+                            <form method="POST" action="{{ url_for('start_adventure') }}" id="adventureForm">
+                                <!-- 스테이지 선택 -->
+                                <div style="margin-bottom: 25px;">
+                                    <label style="display: block; color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">스테이지 선택</label>
+                                    <select id="stageSelect" name="stage_id" class="form-select" required style="border: 2px solid #e0e0e0; border-radius: 6px; padding: 10px;">
+                                        {% for stage in stages %}
+                                            {% if stage.stage_id <= cleared_stage + 1 %}
+                                                <option value="{{ stage.stage_id }}" data-difficulty="{{ stage.난이도 }}" data-enemies="{{ stage.enemy_count }}" data-skill-rate="{{ stage.skill_reward_rate }}" data-skill-rarity="{{ stage.skill_rarity_range }}" data-enemy-rarity="{{ stage.enemy_rarity_range }}" {% if stage.stage_id == current_stage %}selected{% endif %}>
+                                                    Stage {{ stage.stage_id }} - {{ stage.난이도 }}
+                                                    {% if stage.stage_id <= cleared_stage %}(클리어됨){% endif %}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
                                 </div>
-                            </div>
+
+                                <!-- 몬스터 선택 (체크박스, 최대 3마리) -->
+                                <div style="margin-bottom: 25px;">
+                                    <label style="display: block; color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">몬스터 선택</label>
+                                    <div style="max-height: 500px; overflow-y: auto;">
+                                        {% for monster in available_monsters %}
+                                            <div style="margin-bottom: 15px;">
+                                                <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='#999'" onmouseout="this.style.borderColor='#e0e0e0'">
+                                                    <input type="checkbox" name="monster_ids" value="{{ monster.id }}" style="margin-right: 12px;" onchange="validateTeamSize()">
+                                                    <!-- 몬스터 이미지 -->
+                                                    <div style="width: 50px; height: 50px; background-color: #f5f5f5; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow: hidden; flex-shrink: 0;">
+                                                        {% if monster.image %}
+                                                            <img src="{{ monster.image }}" alt="{{ monster.name }}" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                                                        {% else %}
+                                                            {% set rarity_emoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'} %}
+                                                            {{ rarity_emoji.get(monster.rarity, '') }}
+                                                        {% endif %}
+                                                    </div>
+                                                    <div style="flex: 1;">
+                                                        <div style="font-weight: 600; color: #1a1a1a; display: flex; align-items: center; gap: 8px;">
+                                                            {{ monster.name }}
+                                                            {% set rarity_colors = {'레어': '#4CAF50', '에픽': '#9C27B0', '유니크': '#FFC107', '레전드리': '#F44336', '신화급': '#2196F3'} %}
+                                                            <span style="font-size: 0.7rem; color: {{ rarity_colors.get(monster.rarity, '#999') }}; font-weight: 500;">{{ monster.rarity }}</span>
+                                                        </div>
+                                                        <div style="font-size: 0.75rem; color: #999;">
+                                                            ATK: {{ monster.attack }} | HP: {{ monster.hp }}
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div id="teamWarning" style="margin-top: 10px; color: #FF6B6B; font-size: 0.85rem; display: none;">최대 3마리까지만 선택 가능합니다.</div>
+                                </div>
+
+                                <button type="submit" class="btn w-100" style="background-color: #1a1a1a; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#1a1a1a'">
+                                    전투 시작
+                                </button>
+                            </form>
                         {% else %}
                             <div style="text-align: center; padding: 40px 20px; color: #999;">
                                 <p>포획된 몬스터가 없습니다.</p>
@@ -96,20 +103,8 @@
                     </div>
                 </div>
 
-                <!-- 중앙: 팀 구성 -->
-                <div class="col-lg-3">
-                    <div style="background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
-                        <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; text-align: center;">팀 구성</h5>
-                        <div id="teamComposition" style="min-height: 300px;">
-                            <div style="text-align: center; color: #999; padding: 20px;">
-                                <p style="font-size: 0.9rem;">몬스터를 선택하면<br>여기 표시됩니다</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- 우측: 스테이지 정보 -->
-                <div class="col-lg-4">
+                <div class="col-lg-8">
                     <div style="background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 25px; text-align: center;">스테이지 정보</h5>
 
@@ -136,6 +131,45 @@
                                     <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">등장 몬스터</div>
                                     <div id="stageEnemies" style="color: #1a1a1a; font-weight: 700; font-size: 1.1rem; margin-top: 5px;">1마리</div>
                                 </div>
+                                <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #333;">
+                                    <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">기술 획득 확률</div>
+                                    <div id="stageSkillRate" style="color: #1a1a1a; font-weight: 700; font-size: 1.1rem; margin-top: 5px;">2%</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 등급 범위 정보 -->
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #FF9800;">
+                                        <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">몬스터 등급</div>
+                                        <div id="stageMonsterRarity" style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem; margin-top: 5px;">레어</div>
+                                    </div>
+                                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #2196F3;">
+                                        <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">기술 카드 등급</div>
+                                        <div id="stageSkillRarity" style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem; margin-top: 5px;">레어</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 난이도별 안내 -->
+                        <h6 style="color: #1a1a1a; font-weight: 600; margin-bottom: 15px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;">난이도별 범위</h6>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div style="background-color: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #999;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">쉬움</div>
+                                <div style="color: #1a1a1a; font-weight: 700;">1~40</div>
+                            </div>
+                            <div style="background-color: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #666;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">보통</div>
+                                <div style="color: #1a1a1a; font-weight: 700;">41~80</div>
+                            </div>
+                            <div style="background-color: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #333;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">어려움</div>
+                                <div style="color: #1a1a1a; font-weight: 700;">81~120</div>
+                            </div>
+                            <div style="background-color: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #1a1a1a;">
+                                <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">매우 어려움</div>
+                                <div style="color: #1a1a1a; font-weight: 700;">121~200</div>
                             </div>
                         </div>
 
@@ -149,126 +183,46 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 뒤로가기 -->
+                    <div style="margin-top: 20px;">
+                        <a href="{{ url_for('dashboard') }}" style="color: #999; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; transition: color 0.3s;" onmouseover="this.style.color='#666'" onmouseout="this.style.color='#999'">
+                            <span style="margin-right: 5px;">←</span> 대시보드로 돌아가기
+                        </a>
+                    </div>
                 </div>
-            </div>
-
-            <!-- 전투 시작 버튼 -->
-            <div style="text-align: center; margin-top: 20px;">
-                <form method="POST" action="{{ url_for('start_adventure') }}" id="adventureForm" style="display: inline;">
-                    <input type="hidden" id="stageIdInput" name="stage_id" value="{{ current_stage }}">
-                    <input type="hidden" id="monsterIdsInput" name="monster_ids" value="">
-                    <button type="button" onclick="submitAdventure()" class="btn" style="background-color: #1a1a1a; color: white; border: none; border-radius: 6px; padding: 15px 40px; font-weight: 600; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#1a1a1a'">
-                        전투 시작
-                    </button>
-                </form>
-            </div>
-
-            <!-- 뒤로가기 -->
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="{{ url_for('dashboard') }}" style="color: #999; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; transition: color 0.3s;" onmouseover="this.style.color='#666'" onmouseout="this.style.color='#999'">
-                    <span style="margin-right: 5px;">←</span> 대시보드로 돌아가기
-                </a>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-let selectedTeam = [];
-
 // 스테이지 선택 시 정보 업데이트
 document.getElementById('stageSelect').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const difficulty = selectedOption.getAttribute('data-difficulty');
     const enemies = selectedOption.getAttribute('data-enemies');
     const skillRate = (parseFloat(selectedOption.getAttribute('data-skill-rate')) * 100).toFixed(1);
+    const skillRarity = selectedOption.getAttribute('data-skill-rarity');
     const enemyRarity = selectedOption.getAttribute('data-enemy-rarity');
     
     document.getElementById('stageDifficulty').textContent = difficulty;
     document.getElementById('stageEnemies').textContent = enemies + '마리';
     document.getElementById('stageSkillRate').textContent = skillRate + '%';
     document.getElementById('stageMonsterRarity').textContent = enemyRarity;
-    
-    // stage_id 업데이트
-    document.getElementById('stageIdInput').value = this.value;
+    document.getElementById('stageSkillRarity').textContent = skillRarity;
 });
 
-// 팀 목록 업데이트
-function updateTeamList() {
-    const checkboxes = document.querySelectorAll('.monster-checkbox:checked');
-    selectedTeam = Array.from(checkboxes).map(cb => ({
-        id: cb.value,
-        name: cb.getAttribute('data-name'),
-        rarity: cb.getAttribute('data-rarity'),
-        attack: cb.getAttribute('data-attack'),
-        hp: cb.getAttribute('data-hp'),
-        image: cb.getAttribute('data-image')
-    }));
-
-    const teamContainer = document.getElementById('teamComposition');
+// 최대 3마리 선택 제한
+function validateTeamSize() {
+    const checkboxes = document.querySelectorAll('input[name="monster_ids"]:checked');
+    const warning = document.getElementById('teamWarning');
     
-    if (selectedTeam.length === 0) {
-        teamContainer.innerHTML = `
-            <div style="text-align: center; color: #999; padding: 20px;">
-                <p style="font-size: 0.9rem;">몬스터를 선택하면<br>여기 표시됩니다</p>
-            </div>
-        `;
-    } else {
-        let html = '';
-        selectedTeam.forEach((monster, idx) => {
-            const rarityEmoji = {'레어': '🔴', '에픽': '🟠', '유니크': '🟣', '레전드리': '💜', '신화급': '⭐'}[monster.rarity] || '';
-            const rarityColor = {'레어': '#4CAF50', '에픽': '#9C27B0', '유니크': '#FFC107', '레전드리': '#F44336', '신화급': '#2196F3'}[monster.rarity] || '#999';
-            
-            html += `
-                <div style="background-color: #f5f5f5; border-radius: 8px; padding: 15px; margin-bottom: 12px; border: 2px solid #e0e0e0;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <div style="background-color: white; width: 30px; height: 30px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #1a1a1a; border: 2px solid #1a1a1a;">${idx + 1}</div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; color: #1a1a1a;">${monster.name}</div>
-                            <div style="font-size: 0.7rem; color: ${rarityColor}; font-weight: 600;">${monster.rarity}</div>
-                        </div>
-                        <button type="button" onclick="removeFromTeam(${idx})" style="background-color: #FF6B6B; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer;" onmouseover="this.style.backgroundColor='#ee5a52'" onmouseout="this.style.backgroundColor='#FF6B6B'">✕</button>
-                    </div>
-                    <div style="display: flex; gap: 5px; font-size: 0.75rem; color: #666;">
-                        ${idx > 0 ? `<button type="button" onclick="moveUp(${idx})" style="flex: 1; background-color: white; border: 1px solid #ccc; padding: 4px; border-radius: 4px; cursor: pointer;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='white'">↑ 순서 올리기</button>` : ''}
-                        ${idx < selectedTeam.length - 1 ? `<button type="button" onclick="moveDown(${idx})" style="flex: 1; background-color: white; border: 1px solid #ccc; padding: 4px; border-radius: 4px; cursor: pointer;" onmouseover="this.style.backgroundColor='#f0f0f0'" onmouseout="this.style.backgroundColor='white'">↓ 순서 내리기</button>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-        teamContainer.innerHTML = html;
+    if (checkboxes.length > 3) {
+        checkboxes[checkboxes.length - 1].checked = false;
+        warning.style.display = 'block';
+        setTimeout(() => { warning.style.display = 'none'; }, 2000);
     }
-}
-
-function removeFromTeam(idx) {
-    const checkbox = document.querySelectorAll('.monster-checkbox')[Array.from(document.querySelectorAll('.monster-checkbox')).findIndex(cb => cb.value === selectedTeam[idx].id)];
-    checkbox.checked = false;
-    updateTeamList();
-}
-
-function moveUp(idx) {
-    if (idx > 0) {
-        [selectedTeam[idx - 1], selectedTeam[idx]] = [selectedTeam[idx], selectedTeam[idx - 1]];
-        updateTeamList();
-    }
-}
-
-function moveDown(idx) {
-    if (idx < selectedTeam.length - 1) {
-        [selectedTeam[idx], selectedTeam[idx + 1]] = [selectedTeam[idx + 1], selectedTeam[idx]];
-        updateTeamList();
-    }
-}
-
-function submitAdventure() {
-    if (selectedTeam.length === 0) {
-        alert('최소 1마리 이상의 몬스터를 선택해주세요.');
-        return;
-    }
-    
-    const monsterIds = selectedTeam.map(m => m.id).join(',');
-    document.getElementById('monsterIdsInput').value = monsterIds;
-    document.getElementById('adventureForm').submit();
 }
 
 // 초기 로드
