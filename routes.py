@@ -1620,10 +1620,15 @@ def start_adventure():
     
     player = session['player_data']
     stage_id = request.form.get('stage_id', type=int)
-    selected_monster_id = request.form.get('monster_id', '')
+    selected_monster_ids = request.form.getlist('monster_ids')
     
-    if not stage_id or not selected_monster_id:
+    if not stage_id or not selected_monster_ids:
         flash('스테이지와 몬스터를 선택해주세요.', 'error')
+        return redirect(url_for('adventure'))
+    
+    # 최대 3마리 확인
+    if len(selected_monster_ids) > 3:
+        flash('최대 3마리까지만 선택 가능합니다.', 'error')
         return redirect(url_for('adventure'))
     
     # 모험 기력 확인
@@ -1648,7 +1653,7 @@ def start_adventure():
     # 모험 기력 소모
     player['모험_기력'] = adventure_energy - 1
     
-    result = game_logic.start_adventure_battle(player, stage_id, selected_monster_id)
+    result = game_logic.start_adventure_battle(player, stage_id, selected_monster_ids)
     
     if not result['success']:
         flash(result.get('message', '전투를 시작할 수 없습니다.'), 'error')

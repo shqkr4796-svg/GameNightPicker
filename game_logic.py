@@ -5453,8 +5453,8 @@ def get_available_monsters(player):
     
     return available
 
-def start_adventure_battle(player, stage_id, selected_monster_id):
-    """모험 전투 시작"""
+def start_adventure_battle(player, stage_id, selected_monster_ids):
+    """모험 전투 시작 (팀 기반)"""
     from data.adventure_data import ADVENTURE_STAGES, ENEMY_DIALOGUES, PLAYER_DIALOGUES
     from data.monsters import get_monster_by_id, get_monsters_by_rarity
     from data.skills import SKILL_INFO
@@ -5465,15 +5465,27 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
     if not stage:
         return {'success': False, 'message': '존재하지 않는 스테이지입니다.'}
     
-    # 플레이어 몬스터 확인
-    if selected_monster_id not in player['도감']:
-        return {'success': False, 'message': '해당 몬스터를 보유하고 있지 않습니다.'}
-    
-    player_monster = player['도감'][selected_monster_id]
-    player_monster_info = get_monster_by_id(selected_monster_id)
-    
-    if not player_monster_info:
-        return {'success': False, 'message': '플레이어 몬스터 정보를 찾을 수 없습니다.'}
+    # 플레이어 몬스터 팀 구성 확인
+    player_team = []
+    for monster_id in selected_monster_ids:
+        if monster_id not in player['도감']:
+            return {'success': False, 'message': '해당 몬스터를 보유하고 있지 않습니다.'}
+        
+        monster_data = player['도감'][monster_id]
+        monster_info = get_monster_by_id(monster_id)
+        
+        if not monster_info:
+            return {'success': False, 'message': '플레이어 몬스터 정보를 찾을 수 없습니다.'}
+        
+        player_team.append({
+            'id': monster_id,
+            'name': monster_data['이름'],
+            'rarity': monster_data['등급'],
+            'attack': monster_data.get('공격력', 0),
+            'max_hp': monster_data.get('체력', 0),
+            'current_hp': monster_data.get('체력', 0),
+            'image': monster_data.get('이미지', '')
+        })
     
     # 적 몬스터 생성
     rarity_list = stage['enemy_rarity']
@@ -5507,21 +5519,18 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
     player_skills = player.get('모험_기술', ['박치기'])
     skill_usage_count = {skill: 0 for skill in player_skills}
     
+    # 현재 활성 몬스터 (첫 번째)
+    current_player_monster = player_team[0]
+    
     battle_state = {
         'stage_id': stage_id,
         'stage_name': stage['이름'],
         'difficulty': stage['난이도'],
-        'enemy_count': stage.get('enemy_count', 1),  # 스테이지의 총 몬스터 수
-        'defeated_monsters': 0,  # 처치한 몬스터 수
-        'player_monster': {
-            'id': selected_monster_id,
-            'name': player_monster['이름'],
-            'rarity': player_monster['등급'],
-            'attack': player_monster.get('공격력', 0),
-            'max_hp': player_monster.get('체력', 0),
-            'current_hp': player_monster.get('체력', 0),
-            'image': player_monster.get('이미지', '')
-        },
+        'enemy_count': stage.get('enemy_count', 1),
+        'defeated_monsters': 0,
+        'player_team': player_team,  # 팀 전체
+        'current_team_index': 0,  # 현재 활성 몬스터 인덱스
+        'player_monster': current_player_monster,  # 현재 활성 몬스터
         'enemy_monster': {
             'id': enemy_monster_id,
             'name': enemy_monster_info['이름'],
@@ -5539,11 +5548,11 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
         'skill_usage_count': skill_usage_count,
         'game_over': False,
         'winner': None,
-        'enemy_attack_debuff': 0.0  # 적 공격력 약화 비율 (예: 0.15 = 15% 감소)
+        'enemy_attack_debuff': 0.0
     }
     
-    # 선공 결정 (공격력이 높은 쪽이 먼저)
-    if player_monster['공격력'] >= enemy_attack:
+    # 선공 결정
+    if current_player_monster['attack'] >= enemy_attack:
         battle_state['player_turn'] = True
         battle_state['log'].append(f"플레이어 몬스터가 높은 공격력으로 선공합니다!")
     else:
@@ -5831,10 +5840,40 @@ def execute_skill(battle_state, skill_name):
     # 플레이어 체력 확인
     if battle_state['player_monster']['current_hp'] <= 0:
         battle_state['player_monster']['current_hp'] = 0
-        battle_state['game_over'] = True
-        battle_state['winner'] = 'enemy'
-        battle_state['log'].append(f"패배했습니다...")
-        return {'success': True, 'battle_state': battle_state}
+        battle_state['log'].append(f"플레이어의 [{battle_state['player_monster']['name']}]이(가) 격파당했습니다!")
+        
+        # 팀 기반 - 다음 몬스터 확인
+        player_team = battle_state.get('player_team', [])
+        current_index = battle_state.get('current_team_index', 0)
+        
+        # 남은 팀원이 있는지 확인
+        if current_index + 1 < len(player_team):
+            # 다음 몬스터로 전환
+            current_index += 1
+            battle_state['current_team_index'] = current_index
+            next_monster = player_team[current_index]
+            
+            battle_state['player_monster'] = {
+                'id': next_monster['id'],
+                'name': next_monster['name'],
+                'rarity': next_monster['rarity'],
+                'attack': next_monster['attack'],
+                'max_hp': next_monster['max_hp'],
+                'current_hp': next_monster['max_hp'],  # 풀 체력으로 회복
+                'image': next_monster['image']
+            }
+            battle_state['log'].append(f"\n다음 팀원 등장: {next_monster['name']} ({next_monster['rarity']})")
+            
+            # 플레이어 차례로 돌아감
+            battle_state['player_turn'] = True
+            battle_state['turn'] += 1
+            return {'success': True, 'battle_state': battle_state}
+        else:
+            # 남은 팀원이 없음 - 패배
+            battle_state['game_over'] = True
+            battle_state['winner'] = 'enemy'
+            battle_state['log'].append(f"모든 팀원이 격파당했습니다... 패배했습니다...")
+            return {'success': True, 'battle_state': battle_state}
     
     # 플레이어 차례로 돌아감
     battle_state['player_turn'] = True

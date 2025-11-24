@@ -37,7 +37,7 @@
                 <!-- 좌측: 몬스터 선택 -->
                 <div class="col-lg-4">
                     <div style="background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; text-align: center;">대표 몬스터</h5>
+                        <h5 style="color: #1a1a1a; font-weight: 600; margin-bottom: 20px; text-align: center;">팀 구성 (최대 3마리)</h5>
                         
                         {% if available_monsters %}
                             <form method="POST" action="{{ url_for('start_adventure') }}" id="adventureForm">
@@ -56,14 +56,14 @@
                                     </select>
                                 </div>
 
-                                <!-- 몬스터 선택 -->
+                                <!-- 몬스터 선택 (체크박스, 최대 3마리) -->
                                 <div style="margin-bottom: 25px;">
                                     <label style="display: block; color: #666; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">몬스터 선택</label>
                                     <div style="max-height: 500px; overflow-y: auto;">
                                         {% for monster in available_monsters %}
                                             <div style="margin-bottom: 15px;">
                                                 <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='#999'" onmouseout="this.style.borderColor='#e0e0e0'">
-                                                    <input type="radio" name="monster_id" value="{{ monster.id }}" style="margin-right: 12px;" required>
+                                                    <input type="checkbox" name="monster_ids" value="{{ monster.id }}" style="margin-right: 12px;" onchange="validateTeamSize()">
                                                     <!-- 몬스터 이미지 -->
                                                     <div style="width: 50px; height: 50px; background-color: #f5f5f5; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; overflow: hidden; flex-shrink: 0;">
                                                         {% if monster.image %}
@@ -87,6 +87,7 @@
                                             </div>
                                         {% endfor %}
                                     </div>
+                                    <div id="teamWarning" style="margin-top: 10px; color: #FF6B6B; font-size: 0.85rem; display: none;">최대 3마리까지만 선택 가능합니다.</div>
                                 </div>
 
                                 <button type="submit" class="btn w-100" style="background-color: #1a1a1a; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#1a1a1a'">
@@ -211,6 +212,18 @@ document.getElementById('stageSelect').addEventListener('change', function() {
     document.getElementById('stageMonsterRarity').textContent = enemyRarity;
     document.getElementById('stageSkillRarity').textContent = skillRarity;
 });
+
+// 최대 3마리 선택 제한
+function validateTeamSize() {
+    const checkboxes = document.querySelectorAll('input[name="monster_ids"]:checked');
+    const warning = document.getElementById('teamWarning');
+    
+    if (checkboxes.length > 3) {
+        checkboxes[checkboxes.length - 1].checked = false;
+        warning.style.display = 'block';
+        setTimeout(() => { warning.style.display = 'none'; }, 2000);
+    }
+}
 
 // 초기 로드
 document.getElementById('stageSelect').dispatchEvent(new Event('change'));
