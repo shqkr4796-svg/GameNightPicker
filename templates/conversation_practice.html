@@ -114,8 +114,8 @@
                 <!-- 사용자가 말해야 할 문장 -->
                 <div class="response-prompt" id="responsePromptContainer">
                     <h6 class="mb-3">💬 당신이 말해야 할 대사:</h6>
-                    <div class="response-text" id="targetResponse"></div>
-                    <div class="meaning-text" id="targetMeaning"></div>
+                    <div class="response-text">{{ drama_data.user_response }}</div>
+                    <div class="meaning-text">{{ drama_data.user_meaning }}</div>
                 </div>
 
                 <!-- 음성 인식 섹션 -->
@@ -253,8 +253,13 @@ if (SpeechRecognition) {
     recognition.interimResults = true;
 }
 
-// 드라마 데이터 (JSON으로 안전하게 전달)
-const dramaData = {{ drama_data | tojson }};
+// 드라마 데이터 (JavaScript에서 안전하게 정의)
+const dramaData = {
+    user_response: `{{ drama_data.user_response }}`,
+    user_meaning: `{{ drama_data.user_meaning }}`,
+    ai_followup: `{{ drama_data.ai_followup }}`,
+    ai_followup_meaning: `{{ drama_data.ai_followup_meaning }}`
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     const micBtn = document.getElementById('micBtn');
@@ -266,12 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultFeedback = document.getElementById('resultFeedback');
     const resultMessage = document.getElementById('resultMessage');
     const aiFollowupContainer = document.getElementById('aiFollowupContainer');
-    const targetResponseDiv = document.getElementById('targetResponse');
-    const targetMeaningDiv = document.getElementById('targetMeaning');
-    
-    // 사용자 정답 문장 표시
-    targetResponseDiv.textContent = dramaData.user_response;
-    targetMeaningDiv.textContent = dramaData.user_meaning;
     
     const targetResponse = dramaData.user_response.toLowerCase().trim();
     
