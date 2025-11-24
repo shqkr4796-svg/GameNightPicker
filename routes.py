@@ -1770,6 +1770,12 @@ def start_adventure():
     
     battle_state = result['battle_state']
     
+    # 기존에 진행 중인 전투가 있었는지 확인 (스테이지가 같으면 처치 수 유지)
+    if 'battle_state' in session:
+        prev_battle = session['battle_state']
+        if prev_battle.get('stage_id') == stage_id:
+            battle_state['defeated_monsters'] = prev_battle.get('defeated_monsters', 0)
+    
     # 적의 선공인 경우 자동으로 적의 턴 실행
     if not battle_state['player_turn']:
         enemy_turn_result = game_logic.execute_enemy_turn(battle_state)
@@ -1819,6 +1825,9 @@ def adventure_action():
             # 전투 끝났는지 확인
             if battle_state['game_over']:
                 if battle_state['winner'] == 'player':
+                    # 처치한 몬스터 수 증가
+                    battle_state['defeated_monsters'] = battle_state.get('defeated_monsters', 0) + 1
+                    
                     complete_result = game_logic.complete_adventure_battle(player, battle_state)
                     
                     if complete_result['success']:

@@ -5507,6 +5507,8 @@ def start_adventure_battle(player, stage_id, selected_monster_id):
         'stage_id': stage_id,
         'stage_name': stage['이름'],
         'difficulty': stage['난이도'],
+        'enemy_count': stage.get('enemy_count', 1),  # 스테이지의 총 몬스터 수
+        'defeated_monsters': 0,  # 처치한 몬스터 수
         'player_monster': {
             'id': selected_monster_id,
             'name': player_monster['이름'],

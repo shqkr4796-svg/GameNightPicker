@@ -17,6 +17,14 @@
                 <!-- 적 몬스터 (오른쪽 상단) -->
                 <div style="position: absolute; top: 0; right: 0; width: 80%; transform: scale(0.75); transform-origin: top right;">
                     <div style="text-align: center;">
+                        <!-- 처치 진도 표시 -->
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: center; gap: 3px;">
+                            {% set defeated = battle_state.defeated_monsters %}
+                            {% set total = battle_state.enemy_count %}
+                            {% for i in range(total) %}
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background-color: {% if i < total - defeated %}#FF6B6B{% else %}#999{% endif %}; border: 1px solid #666;"></div>
+                            {% endfor %}
+                        </div>
                         <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">상대</div>
                         <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px; flex-direction: row-reverse;">
                             <!-- 적 몬스터 이미지 -->
