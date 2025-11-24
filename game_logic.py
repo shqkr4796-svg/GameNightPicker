@@ -5685,10 +5685,52 @@ def execute_skill(battle_state, skill_name):
     # 적 체력 확인
     if battle_state['enemy_monster']['current_hp'] <= 0:
         battle_state['enemy_monster']['current_hp'] = 0
-        battle_state['game_over'] = True
-        battle_state['winner'] = 'player'
-        battle_state['log'].append(f"플레이어가 승리했습니다!")
-        return {'success': True, 'battle_state': battle_state}
+        battle_state['defeated_monsters'] = battle_state.get('defeated_monsters', 0) + 1
+        battle_state['log'].append(f"적 몬스터를 격파했습니다! ({battle_state['defeated_monsters']}/{battle_state.get('enemy_count', 1)})")
+        
+        # 남은 몬스터가 있는지 확인
+        if battle_state['defeated_monsters'] < battle_state.get('enemy_count', 1):
+            # 다음 몬스터 생성
+            stage_id = battle_state['stage_id']
+            stages = get_adventure_stages()
+            stage = next((s for s in stages if s['stage_id'] == stage_id), None)
+            
+            if stage:
+                # 다음 몬스터 생성
+                from data.monsters import MONSTERS_BY_ID
+                import random
+                
+                enemy_rarity = random.choice(stage.get('enemy_rarity', ['레어']))
+                enemy_monsters = [m_id for m_id, m in MONSTERS_BY_ID.items() if m.get('등급') == enemy_rarity]
+                
+                if enemy_monsters:
+                    enemy_monster_id = random.choice(enemy_monsters)
+                    enemy_monster_info = get_monster_by_id(enemy_monster_id)
+                    
+                    if enemy_monster_info:
+                        enemy_attack = int(random.randint(enemy_monster_info['공격력'][0], enemy_monster_info['공격력'][1]) * stage.get('enemy_attack_multiplier', 1.0))
+                        enemy_hp = int(random.randint(enemy_monster_info['체력'][0], enemy_monster_info['체력'][1]) * stage.get('enemy_hp_multiplier', 1.0))
+                        
+                        battle_state['enemy_monster'] = {
+                            'id': enemy_monster_id,
+                            'name': enemy_monster_info['이름'],
+                            'rarity': enemy_rarity,
+                            'attack': enemy_attack,
+                            'max_hp': enemy_hp,
+                            'current_hp': enemy_hp,
+                            'image': enemy_monster_info.get('이미지', '')
+                        }
+                        battle_state['log'].append(f"\n다음 적 몬스터 등장: {enemy_monster_info['이름']} ({enemy_rarity})")
+            
+            # 플레이어 차례로 돌아감
+            battle_state['player_turn'] = True
+            return {'success': True, 'battle_state': battle_state}
+        else:
+            # 모든 몬스터 처치 완료
+            battle_state['game_over'] = True
+            battle_state['winner'] = 'player'
+            battle_state['log'].append(f"스테이지를 클리어했습니다!")
+            return {'success': True, 'battle_state': battle_state}
     
     # 적 차례
     battle_state['player_turn'] = False
