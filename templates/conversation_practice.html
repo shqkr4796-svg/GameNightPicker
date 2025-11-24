@@ -163,6 +163,7 @@
                         <button type="button" class="btn btn-sm btn-primary" onclick="playAudio()">
                             <i class="fas fa-play me-1"></i>재생
                         </button>
+                        <small id="playingStatus" class="text-muted ms-2" style="display: none;">🔊 재생 중...</small>
                     </div>
                 </div>
 
@@ -286,10 +287,21 @@ function playAudio(textOrElement) {
     
     if (text && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+        
+        // 재생 상태 표시
+        const playingStatus = document.getElementById('playingStatus');
+        playingStatus.style.display = 'inline';
+        
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         utterance.rate = 0.9;
         if (cachedFemaleVoice) utterance.voice = cachedFemaleVoice;
+        
+        // 재생 끝나면 상태 메시지 숨김
+        utterance.onend = function() {
+            playingStatus.style.display = 'none';
+        };
+        
         window.speechSynthesis.speak(utterance);
     }
 }
