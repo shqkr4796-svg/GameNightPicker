@@ -5814,13 +5814,6 @@ def complete_adventure_battle(player, battle_state):
                     player['모험_기술'].append(new_skill)
                     rewards['skills'].append(new_skill)
     
-    # 아이템 드롭
-    if random.random() < 0.3:
-        item_name = random.choice(list(REWARD_ITEMS.keys()))
-        item_count = player['모험_아이템'].get(item_name, 0)
-        player['모험_아이템'][item_name] = item_count + 1
-        rewards['items'].append(item_name)
-    
     # 돈 지급 안함 (경험치도 안 오름)
     
     # 스테이지 클리어 업데이트
