@@ -4349,6 +4349,650 @@ def get_drama_conversations():
                     'user_meaning': '여기 있습니다. 영수증 주실 수 있을까요?'
                 }
             ]
+        },
+        {
+            'scene': '집 구하기 상담',
+            'turns': [
+                {
+                    'ai_prompt': 'What kind of apartment are you looking for?',
+                    'ai_meaning': '어떤 종류의 아파트를 찾고 있어요?',
+                    'user_response': 'I need a two-bedroom apartment near the subway.',
+                    'user_meaning': '지하철 근처의 2침실 아파트가 필요해요.'
+                },
+                {
+                    'ai_prompt': 'What\'s your budget?',
+                    'ai_meaning': '예산이 얼마나 되세요?',
+                    'user_response': 'Around 1500 dollars per month.',
+                    'user_meaning': '한 달에 약 1500달러 정도입니다.'
+                },
+                {
+                    'ai_prompt': 'Perfect! I have a few options for you.',
+                    'ai_meaning': '완벽해요! 몇 가지 옵션이 있어요.',
+                    'user_response': 'Can I see them this weekend?',
+                    'user_meaning': '이번 주말에 볼 수 있을까요?'
+                }
+            ]
+        },
+        {
+            'scene': '자동차 렌탈',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our rental agency. How can I help you?',
+                    'ai_meaning': '저희 렌탈 회사에 오신 것을 환영합니다. 뭘 도와드릴까요?',
+                    'user_response': 'I need to rent a car for one week.',
+                    'user_meaning': '1주일 동안 자동차를 렌탈해야 해요.'
+                },
+                {
+                    'ai_prompt': 'What type of car do you prefer?',
+                    'ai_meaning': '어떤 타입의 자동차를 선호하세요?',
+                    'user_response': 'An economy car, something fuel-efficient.',
+                    'user_meaning': '경제형 자동차, 연료 효율이 좋은 것으로 주세요.'
+                },
+                {
+                    'ai_prompt': 'Great! That will be 35 dollars per day.',
+                    'ai_meaning': '좋습니다! 하루에 35달러입니다.',
+                    'user_response': 'Does that include insurance?',
+                    'user_meaning': '보험이 포함되어 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '미용실 방문',
+            'turns': [
+                {
+                    'ai_prompt': 'Hi! Do you have an appointment?',
+                    'ai_meaning': '안녕하세요! 예약이 있으세요?',
+                    'user_response': 'Yes, I have an appointment at 2 PM.',
+                    'user_meaning': '네, 오후 2시 예약이 있어요.'
+                },
+                {
+                    'ai_prompt': 'What would you like to do today?',
+                    'ai_meaning': '오늘 뭘 해드릴까요?',
+                    'user_response': 'I\'d like a haircut and some highlights.',
+                    'user_meaning': '머리를 자르고 하이라이트를 해주고 싶어요.'
+                },
+                {
+                    'ai_prompt': 'Perfect! Let me get you to a stylist.',
+                    'ai_meaning': '좋습니다! 스타일리스트를 데려올게요.',
+                    'user_response': 'Thank you. How long will it take?',
+                    'user_meaning': '감사합니다. 얼마나 걸릴까요?'
+                }
+            ]
+        },
+        {
+            'scene': '은행에서 계좌 개설',
+            'turns': [
+                {
+                    'ai_prompt': 'Good morning. Welcome to our bank.',
+                    'ai_meaning': '좋은 아침입니다. 저희 은행에 오신 것을 환영합니다.',
+                    'user_response': 'I\'d like to open a checking account.',
+                    'user_meaning': '당좌 계좌를 개설하고 싶습니다.'
+                },
+                {
+                    'ai_prompt': 'Can I see your ID and passport?',
+                    'ai_meaning': '신분증과 여권을 볼 수 있을까요?',
+                    'user_response': 'Here you go. What documents do I need?',
+                    'user_meaning': '여기 있습니다. 어떤 서류가 필요한가요?'
+                },
+                {
+                    'ai_prompt': 'Just these two. How much will you deposit initially?',
+                    'ai_meaning': '이 두 개만 있으면 됩니다. 처음에 얼마를 입금하실 건가요?',
+                    'user_response': 'I\'ll deposit 500 dollars to start.',
+                    'user_meaning': '시작으로 500달러를 입금할게요.'
+                }
+            ]
+        },
+        {
+            'scene': '수리점에서 휴대폰 수리',
+            'turns': [
+                {
+                    'ai_prompt': 'What seems to be the problem with your phone?',
+                    'ai_meaning': '휴대폰이 어떻게 된 거 같아요?',
+                    'user_response': 'The screen is cracked and the battery is dying.',
+                    'user_meaning': '화면이 깨졌고 배터리가 죽어가고 있어요.'
+                },
+                {
+                    'ai_prompt': 'I can fix that. It will cost about 150 dollars.',
+                    'ai_meaning': '그걸 고쳐드릴 수 있습니다. 약 150달러가 들 거예요.',
+                    'user_response': 'How long will it take?',
+                    'user_meaning': '얼마나 걸릴까요?'
+                },
+                {
+                    'ai_prompt': 'About two hours. You can wait or come back later.',
+                    'ai_meaning': '약 2시간 정도 걸립니다. 기다리거나 나중에 와도 돼요.',
+                    'user_response': 'I\'ll wait. Can I get a discount?',
+                    'user_meaning': '기다릴게요. 할인받을 수 있을까요?'
+                }
+            ]
+        },
+        {
+            'scene': '우체국에서 소포 발송',
+            'turns': [
+                {
+                    'ai_prompt': 'Hello! How can I help you today?',
+                    'ai_meaning': '안녕하세요! 오늘 무엇을 도와드릴까요?',
+                    'user_response': 'I need to send this package to Japan.',
+                    'user_meaning': '이 소포를 일본으로 보내야 합니다.'
+                },
+                {
+                    'ai_prompt': 'Standard mail or express?',
+                    'ai_meaning': '일반 우편이니 익스프레스니요?',
+                    'user_response': 'Express, please. How much will it cost?',
+                    'user_meaning': '익스프레스로 주세요. 얼마가 들까요?'
+                },
+                {
+                    'ai_prompt': 'It will be 45 dollars. It arrives in 7 to 10 days.',
+                    'ai_meaning': '45달러입니다. 7~10일 안에 도착합니다.',
+                    'user_response': 'That\'s fine. I\'ll go with express.',
+                    'user_meaning': '괜찮습니다. 익스프레스로 할게요.'
+                }
+            ]
+        },
+        {
+            'scene': '동물원 방문',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our zoo! How many tickets do you need?',
+                    'ai_meaning': '저희 동물원에 오신 것을 환영합니다! 표를 몇 장 필요하세요?',
+                    'user_response': 'Three tickets for adults and one for a child.',
+                    'user_meaning': '성인 표 3장과 아이 표 1장으로 주세요.'
+                },
+                {
+                    'ai_prompt': 'That\'s 60 dollars total. Would you like a guide?',
+                    'ai_meaning': '총 60달러입니다. 가이드를 원하세요?',
+                    'user_response': 'Yes, that would be helpful. What time does the show start?',
+                    'user_meaning': '네, 그러면 좋을 것 같습니다. 쇼는 몇 시에 시작하나요?'
+                },
+                {
+                    'ai_prompt': 'The penguin show starts at 3 PM.',
+                    'ai_meaning': '펭귄 쇼는 오후 3시에 시작합니다.',
+                    'user_response': 'Perfect! Here\'s my payment.',
+                    'user_meaning': '좋습니다! 결제하겠습니다.'
+                }
+            ]
+        },
+        {
+            'scene': '약국에서 약 구매',
+            'turns': [
+                {
+                    'ai_prompt': 'Hi! Do you have a prescription?',
+                    'ai_meaning': '안녕하세요! 처방전이 있으세요?',
+                    'user_response': 'Yes, here it is. I need this medicine.',
+                    'user_meaning': '네, 여기 있습니다. 이 약이 필요합니다.'
+                },
+                {
+                    'ai_prompt': 'Let me check if we have it in stock.',
+                    'ai_meaning': '재고가 있는지 확인해볼게요.',
+                    'user_response': 'How much will it cost?',
+                    'user_meaning': '얼마가 될까요?'
+                },
+                {
+                    'ai_prompt': 'It\'s 35 dollars. You can pick it up in 30 minutes.',
+                    'ai_meaning': '35달러입니다. 30분 후에 가져가실 수 있습니다.',
+                    'user_response': 'Great! I\'ll come back later.',
+                    'user_meaning': '좋습니다! 나중에 돌아올게요.'
+                }
+            ]
+        },
+        {
+            'scene': '체육관 회원 가입',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our gym! Are you interested in membership?',
+                    'ai_meaning': '저희 헬스장에 오신 것을 환영합니다! 회원 가입에 관심 있으세요?',
+                    'user_response': 'Yes, I\'d like to join. What are your membership plans?',
+                    'user_meaning': '네, 가입하고 싶습니다. 회원 플랜이 뭐가 있나요?'
+                },
+                {
+                    'ai_prompt': 'We have monthly and annual plans.',
+                    'ai_meaning': '월간과 연간 플랜이 있습니다.',
+                    'user_response': 'What\'s the difference in price?',
+                    'user_meaning': '가격 차이가 뭐가 있나요?'
+                },
+                {
+                    'ai_prompt': 'Monthly is 50 dollars, annual is 500.',
+                    'ai_meaning': '월간은 50달러, 연간은 500달러입니다.',
+                    'user_response': 'I\'ll take the annual plan.',
+                    'user_meaning': '연간 플랜으로 할게요.'
+                }
+            ]
+        },
+        {
+            'scene': '레스토랑 예약 변경',
+            'turns': [
+                {
+                    'ai_prompt': 'Good afternoon. How can I help you?',
+                    'ai_meaning': '좋은 오후입니다. 뭘 도와드릴까요?',
+                    'user_response': 'I need to change my reservation for tonight.',
+                    'user_meaning': '오늘 밤 예약을 변경해야 합니다.'
+                },
+                {
+                    'ai_prompt': 'Of course! What time do you need instead?',
+                    'ai_meaning': '물론이지요! 언제로 바꾸길 원하세요?',
+                    'user_response': 'Can you move it to 8 PM instead of 7 PM?',
+                    'user_meaning': '오후 7시에서 오후 8시로 바꿀 수 있을까요?'
+                },
+                {
+                    'ai_prompt': 'That works perfectly. You\'re all set!',
+                    'ai_meaning': '좋습니다! 다 준비됐습니다!',
+                    'user_response': 'Thank you so much!',
+                    'user_meaning': '정말 감사합니다!'
+                }
+            ]
+        },
+        {
+            'scene': '피트니스 클래스 등록',
+            'turns': [
+                {
+                    'ai_prompt': 'Which class are you interested in?',
+                    'ai_meaning': '어떤 클래스에 관심이 있으세요?',
+                    'user_response': 'I\'d like to try the yoga class.',
+                    'user_meaning': '요가 클래스를 해보고 싶습니다.'
+                },
+                {
+                    'ai_prompt': 'Great choice! How many sessions would you like?',
+                    'ai_meaning': '좋은 선택이에요! 몇 회 수업을 원하세요?',
+                    'user_response': 'Eight sessions, please. What\'s the cost?',
+                    'user_meaning': '8회 수업으로 주세요. 비용이 얼마예요?'
+                },
+                {
+                    'ai_prompt': 'That\'s 80 dollars. We can schedule you for Tuesday and Thursday.',
+                    'ai_meaning': '80달러입니다. 화요일과 목요일로 스케줄을 잡아드릴 수 있습니다.',
+                    'user_response': 'Perfect! When can I start?',
+                    'user_meaning': '완벽합니다! 언제 시작할 수 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '도서관에서 책 대출',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our library. Can I help you?',
+                    'ai_meaning': '저희 도서관에 오신 것을 환영합니다. 뭘 도와드릴까요?',
+                    'user_response': 'I\'m looking for books about cooking.',
+                    'user_meaning': '요리에 관한 책을 찾고 있습니다.'
+                },
+                {
+                    'ai_prompt': 'We have several cookbooks. Do you prefer Italian or Asian?',
+                    'ai_meaning': '요리책이 여러 권 있습니다. 이탈리안이나 아시아 요리 중 뭘 선호하세요?',
+                    'user_response': 'I\'ll take both! Can I borrow them today?',
+                    'user_meaning': '둘 다 가져갈게요! 오늘 빌릴 수 있나요?'
+                },
+                {
+                    'ai_prompt': 'Of course. You can keep them for three weeks.',
+                    'ai_meaning': '물론이지요. 3주 동안 보관하실 수 있습니다.',
+                    'user_response': 'Great! Thank you for your help.',
+                    'user_meaning': '좋습니다! 도와주셔서 감사합니다.'
+                }
+            ]
+        },
+        {
+            'scene': '택시 타기',
+            'turns': [
+                {
+                    'ai_prompt': 'Where are you headed?',
+                    'ai_meaning': '어디로 가세요?',
+                    'user_response': 'I need to go to the airport, please.',
+                    'user_meaning': '공항으로 가주세요.'
+                },
+                {
+                    'ai_prompt': 'Sure! That\'s about 20 miles away. It\'s rush hour so it may take 45 minutes.',
+                    'ai_meaning': '물론이지요! 약 20마일 떨어져 있어요. 러시아워라서 45분 정도 걸릴 수 있습니다.',
+                    'user_response': 'That\'s fine. Can I pay with a credit card?',
+                    'user_meaning': '괜찮습니다. 신용카드로 결제할 수 있나요?'
+                },
+                {
+                    'ai_prompt': 'Absolutely! We accept all major credit cards.',
+                    'ai_meaning': '물론이지요! 모든 주요 신용카드를 받습니다.',
+                    'user_response': 'Perfect! Let\'s go.',
+                    'user_meaning': '좋습니다! 출발합시다.'
+                }
+            ]
+        },
+        {
+            'scene': '옷 수선점 방문',
+            'turns': [
+                {
+                    'ai_prompt': 'Hello! What can I help you with?',
+                    'ai_meaning': '안녕하세요! 무엇을 도와드릴까요?',
+                    'user_response': 'I need to have these pants hemmed.',
+                    'user_meaning': '이 바지 단장을 해줘야 합니다.'
+                },
+                {
+                    'ai_prompt': 'How much shorter would you like them?',
+                    'ai_meaning': '얼마나 짧게 하고 싶으세요?',
+                    'user_response': 'About two inches. How much will it cost?',
+                    'user_meaning': '약 2인치 정도로 해주세요. 비용이 얼마예요?'
+                },
+                {
+                    'ai_prompt': 'That\'s 15 dollars. I can have it done by tomorrow.',
+                    'ai_meaning': '15달러입니다. 내일까지 다 해드릴 수 있어요.',
+                    'user_response': 'That\'s great! I\'ll pick it up tomorrow.',
+                    'user_meaning': '좋습니다! 내일 가져가겠습니다.'
+                }
+            ]
+        },
+        {
+            'scene': '카페에서 일자리 인터뷰',
+            'turns': [
+                {
+                    'ai_prompt': 'Tell me about your experience with customer service.',
+                    'ai_meaning': '고객 서비스 경험에 대해 말씀해주세요.',
+                    'user_response': 'I have three years of experience in retail.',
+                    'user_meaning': '소매업에서 3년의 경험이 있습니다.'
+                },
+                {
+                    'ai_prompt': 'That\'s great. How do you handle difficult customers?',
+                    'ai_meaning': '좋네요. 어려운 고객들을 어떻게 다루세요?',
+                    'user_response': 'I stay calm and listen to their concerns.',
+                    'user_meaning': '침착함을 유지하고 그들의 불만을 경청합니다.'
+                },
+                {
+                    'ai_prompt': 'Perfect! When can you start?',
+                    'ai_meaning': '완벽합니다! 언제 시작할 수 있어요?',
+                    'user_response': 'I can start next week. Thank you for the opportunity!',
+                    'user_meaning': '다음주에 시작할 수 있습니다. 기회를 주셔서 감사합니다!'
+                }
+            ]
+        },
+        {
+            'scene': '수영장 등록',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our swimming pool. Are you interested in lessons?',
+                    'ai_meaning': '저희 수영장에 오신 것을 환영합니다. 수업에 관심이 있으세요?',
+                    'user_response': 'Yes, I\'d like to learn to swim.',
+                    'user_meaning': '네, 수영을 배우고 싶습니다.'
+                },
+                {
+                    'ai_prompt': 'Have you taken lessons before?',
+                    'ai_meaning': '전에 수업을 받은 적이 있으세요?',
+                    'user_response': 'No, I\'m a complete beginner.',
+                    'user_meaning': '아니요, 완전한 초보자입니다.'
+                },
+                {
+                    'ai_prompt': 'No problem! We have classes for all levels.',
+                    'ai_meaning': '괜찮습니다! 모든 수준의 클래스가 있습니다.',
+                    'user_response': 'How much are the beginner classes?',
+                    'user_meaning': '초보자 클래스는 얼마예요?'
+                }
+            ]
+        },
+        {
+            'scene': '치과 예약',
+            'turns': [
+                {
+                    'ai_prompt': 'Good morning. How can I help you?',
+                    'ai_meaning': '좋은 아침입니다. 뭘 도와드릴까요?',
+                    'user_response': 'I\'d like to schedule a cleaning appointment.',
+                    'user_meaning': '클리닝 예약을 하고 싶습니다.'
+                },
+                {
+                    'ai_prompt': 'When would be convenient for you?',
+                    'ai_meaning': '언제가 편하세요?',
+                    'user_response': 'Next Wednesday at 2 PM would be perfect.',
+                    'user_meaning': '다음주 수요일 오후 2시가 딱 좋습니다.'
+                },
+                {
+                    'ai_prompt': 'Perfect! We\'ll see you then. It\'s your first visit?',
+                    'ai_meaning': '좋습니다! 그때 뵙겠습니다. 첫 방문이세요?',
+                    'user_response': 'Yes, can you fill out the registration form?',
+                    'user_meaning': '네, 등록 양식을 작성해주실 수 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '영어 학원 등록',
+            'turns': [
+                {
+                    'ai_prompt': 'What\'s your current English level?',
+                    'ai_meaning': '현재 영어 수준이 어느 정도세요?',
+                    'user_response': 'I\'m intermediate. I can hold a conversation.',
+                    'user_meaning': '저는 중급입니다. 대화를 할 수 있습니다.'
+                },
+                {
+                    'ai_prompt': 'Great! We have classes that focus on business English.',
+                    'ai_meaning': '좋습니다! 비즈니스 영어에 중점을 두는 클래스가 있습니다.',
+                    'user_response': 'That sounds perfect for me. When do classes start?',
+                    'user_meaning': '그게 저한테 딱 맞을 것 같습니다. 클래스는 언제 시작하나요?'
+                },
+                {
+                    'ai_prompt': 'Classes start next Monday. The cost is 200 dollars per month.',
+                    'ai_meaning': '클래스는 다음 월요일에 시작합니다. 한 달에 200달러입니다.',
+                    'user_response': 'I\'ll register for three months, please.',
+                    'user_meaning': '3개월 등록을 해주세요.'
+                }
+            ]
+        },
+        {
+            'scene': '차량 정비소',
+            'turns': [
+                {
+                    'ai_prompt': 'What brings you in today?',
+                    'ai_meaning': '오늘 뭘 하러 오셨어요?',
+                    'user_response': 'My car is making a strange noise. Can you check it?',
+                    'user_meaning': '제 차가 이상한 소리를 내고 있어요. 확인해주실 수 있나요?'
+                },
+                {
+                    'ai_prompt': 'Let me take a look. I\'ll need your car keys.',
+                    'ai_meaning': '확인해볼게요. 자동차 열쇠가 필요합니다.',
+                    'user_response': 'Here they are. How long will it take?',
+                    'user_meaning': '여기 있습니다. 얼마나 걸릴까요?'
+                },
+                {
+                    'ai_prompt': 'About 30 minutes. I\'ll call you when it\'s ready.',
+                    'ai_meaning': '약 30분 정도 걸립니다. 준비되면 전화해드릴게요.',
+                    'user_response': 'Thanks! I\'ll wait in the waiting room.',
+                    'user_meaning': '감사합니다! 대기실에서 기다리겠습니다.'
+                }
+            ]
+        },
+        {
+            'scene': '펍에서 음료 주문',
+            'turns': [
+                {
+                    'ai_prompt': 'Hey there! What can I get you?',
+                    'ai_meaning': '안녕하세요! 뭘 드릴까요?',
+                    'user_response': 'I\'ll have a beer, please. What do you have on tap?',
+                    'user_meaning': '맥주 한 잔 주세요. 생맥주로 뭐가 있어요?'
+                },
+                {
+                    'ai_prompt': 'We have several local brews. Can I recommend the IPA?',
+                    'ai_meaning': '여러 지역 맥주가 있습니다. IPA를 추천할까요?',
+                    'user_response': 'Sure, I\'ll try that. What\'s the price?',
+                    'user_meaning': '좋아요, 그걸 해볼게요. 가격이 뭐예요?'
+                },
+                {
+                    'ai_prompt': 'Six dollars per pint.',
+                    'ai_meaning': '파인트당 6달러입니다.',
+                    'user_response': 'Sounds good! Can I see the menu?',
+                    'user_meaning': '좋습니다! 메뉴를 볼 수 있을까요?'
+                }
+            ]
+        },
+        {
+            'scene': '사진 스튜디오 예약',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our studio. What type of photos do you need?',
+                    'ai_meaning': '저희 스튜디오에 오신 것을 환영합니다. 어떤 종류의 사진이 필요하세요?',
+                    'user_response': 'I need professional headshots for my website.',
+                    'user_meaning': '웹사이트용 전문 헤드샷이 필요합니다.'
+                },
+                {
+                    'ai_prompt': 'Great! Do you have any specific preferences?',
+                    'ai_meaning': '좋습니다! 특별한 선호사항이 있으세요?',
+                    'user_response': 'Yes, a natural background would be nice.',
+                    'user_meaning': '네, 자연스러운 배경이면 좋을 것 같아요.'
+                },
+                {
+                    'ai_prompt': 'Perfect! The session is 100 dollars, and you\'ll get 20 digital images.',
+                    'ai_meaning': '완벽합니다! 세션은 100달러이고 디지털 이미지 20장을 받으실 수 있습니다.',
+                    'user_response': 'When can you fit me in?',
+                    'user_meaning': '언제 저를 들어줄 수 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '호텔 체크아웃',
+            'turns': [
+                {
+                    'ai_prompt': 'Good morning. Checking out today?',
+                    'ai_meaning': '좋은 아침입니다. 오늘 체크아웃하세요?',
+                    'user_response': 'Yes, I need to check out by 11 AM.',
+                    'user_meaning': '네, 오전 11시까지 체크아웃해야 합니다.'
+                },
+                {
+                    'ai_prompt': 'No problem. Did you have any room service charges?',
+                    'ai_meaning': '괜찮습니다. 룸 서비스 요금이 있으셨나요?',
+                    'user_response': 'I ordered coffee this morning. How much is the bill?',
+                    'user_meaning': '오늘 아침에 커피를 주문했어요. 청구서가 얼마예요?'
+                },
+                {
+                    'ai_prompt': 'Your total is 350 dollars. How would you like to pay?',
+                    'ai_meaning': '총 350달러입니다. 어떻게 결제하실 건가요?',
+                    'user_response': 'Credit card, please.',
+                    'user_meaning': '신용카드로 주세요.'
+                }
+            ]
+        },
+        {
+            'scene': '요리 교실',
+            'turns': [
+                {
+                    'ai_prompt': 'Welcome to our cooking class! What type of cuisine are you interested in?',
+                    'ai_meaning': '저희 요리 교실에 오신 것을 환영합니다! 어떤 종류의 요리에 관심이 있으세요?',
+                    'user_response': 'I\'d like to learn French cooking.',
+                    'user_meaning': '프랑스 요리를 배우고 싶습니다.'
+                },
+                {
+                    'ai_prompt': 'Excellent! We have a beginner French class. When works for you?',
+                    'ai_meaning': '좋습니다! 초보자 프랑스 요리 클래스가 있습니다. 언제가 좋아요?',
+                    'user_response': 'I\'m free on Saturday mornings.',
+                    'user_meaning': '토요일 아침에 시간이 있습니다.'
+                },
+                {
+                    'ai_prompt': 'Perfect! Classes are 75 dollars each and run for 3 hours.',
+                    'ai_meaning': '완벽합니다! 클래스는 각각 75달러이고 3시간 동안 진행됩니다.',
+                    'user_response': 'Can I register for four classes?',
+                    'user_meaning': '4개의 클래스로 등록할 수 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '음악 레슨',
+            'turns': [
+                {
+                    'ai_prompt': 'Hi! Do you play any instruments?',
+                    'ai_meaning': '안녕하세요! 악기를 연주하세요?',
+                    'user_response': 'No, I\'ve always wanted to learn guitar.',
+                    'user_meaning': '아니요, 항상 기타를 배우고 싶었어요.'
+                },
+                {
+                    'ai_prompt': 'Great! I can offer private lessons. How many lessons per week?',
+                    'ai_meaning': '좋습니다! 개인 레슨을 제공할 수 있습니다. 주당 몇 회 레슨을 원하세요?',
+                    'user_response': 'Twice a week would be good. What\'s your rate?',
+                    'user_meaning': '주 2회가 좋을 것 같습니다. 수강료가 얼마예요?'
+                },
+                {
+                    'ai_prompt': 'I charge 40 dollars per one-hour lesson.',
+                    'ai_meaning': '1시간 레슨에 40달러를 받습니다.',
+                    'user_response': 'Perfect! Can we start this week?',
+                    'user_meaning': '완벽합니다! 이번 주부터 시작할 수 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '춤 클래스',
+            'turns': [
+                {
+                    'ai_prompt': 'What style of dance are you interested in?',
+                    'ai_meaning': '어떤 스타일의 춤에 관심이 있으세요?',
+                    'user_response': 'I\'ve always wanted to learn salsa.',
+                    'user_meaning': '항상 살사를 배우고 싶었어요.'
+                },
+                {
+                    'ai_prompt': 'Salsa is so much fun! We have a beginner class on Tuesday.',
+                    'ai_meaning': '살사는 정말 재미있어요! 화요일에 초보자 클래스가 있습니다.',
+                    'user_response': 'Tuesday works for me. How many people are in the class?',
+                    'user_meaning': '화요일이 괜찮습니다. 클래스에 사람이 몇 명이에요?'
+                },
+                {
+                    'ai_prompt': 'About 12 people. The class costs 50 dollars per month.',
+                    'ai_meaning': '약 12명입니다. 한 달에 50달러입니다.',
+                    'user_response': 'I\'ll sign up! When does it start?',
+                    'user_meaning': '등록할게요! 언제 시작하나요?'
+                }
+            ]
+        },
+        {
+            'scene': '생일 파티 계획',
+            'turns': [
+                {
+                    'ai_prompt': 'Hello! What type of party are you planning?',
+                    'ai_meaning': '안녕하세요! 어떤 종류의 파티를 계획하고 있어요?',
+                    'user_response': 'I\'m planning a birthday party for my friend.',
+                    'user_meaning': '친구 생일 파티를 계획하고 있습니다.'
+                },
+                {
+                    'ai_prompt': 'How many guests are you expecting?',
+                    'ai_meaning': '손님이 몇 명 정도 올 예정이에요?',
+                    'user_response': 'About 30 people. Can you provide catering?',
+                    'user_meaning': '약 30명 정도입니다. 케이터링을 제공해주실 수 있나요?'
+                },
+                {
+                    'ai_prompt': 'Of course! We can do appetizers, main course, and desserts.',
+                    'ai_meaning': '물론이지요! 에피타이저, 메인 코스, 디저트를 제공할 수 있습니다.',
+                    'user_response': 'What\'s the price per person?',
+                    'user_meaning': '1인당 가격이 얼마예요?'
+                }
+            ]
+        },
+        {
+            'scene': '정원 관리 서비스',
+            'turns': [
+                {
+                    'ai_prompt': 'Thank you for calling. What garden work do you need?',
+                    'ai_meaning': '전화해주셔서 감사합니다. 어떤 정원 작업이 필요하세요?',
+                    'user_response': 'I need my lawn mowed and some trimming done.',
+                    'user_meaning': '잔디를 깎고 일부를 정리해줄 필요가 있습니다.'
+                },
+                {
+                    'ai_prompt': 'How large is your lawn?',
+                    'ai_meaning': '잔디가 얼마나 크세요?',
+                    'user_response': 'It\'s about half an acre.',
+                    'user_meaning': '약 반 에이커 정도입니다.'
+                },
+                {
+                    'ai_prompt': 'That\'s 75 dollars for mowing and 50 for trimming.',
+                    'ai_meaning': '깎기가 75달러이고 정리가 50달러입니다.',
+                    'user_response': 'Can you come next Saturday?',
+                    'user_meaning': '다음 토요일에 올 수 있나요?'
+                }
+            ]
+        },
+        {
+            'scene': '보모 고용',
+            'turns': [
+                {
+                    'ai_prompt': 'Tell me about your childcare experience.',
+                    'ai_meaning': '보육 경험에 대해 말씀해주세요.',
+                    'user_response': 'I have five years of experience caring for young children.',
+                    'user_meaning': '어린 아이들을 돌본 5년의 경험이 있습니다.'
+                },
+                {
+                    'ai_prompt': 'That\'s wonderful! How many children do you typically care for?',
+                    'ai_meaning': '좋습니다! 보통 아이를 몇 명 돌봐요?',
+                    'user_response': 'I can handle up to 3 children.',
+                    'user_meaning': '최대 3명까지 돌볼 수 있습니다.'
+                },
+                {
+                    'ai_prompt': 'Perfect! We need someone for weekends. The pay is 15 dollars per hour.',
+                    'ai_meaning': '완벽합니다! 주말에 필요합니다. 시급은 15달러입니다.',
+                    'user_response': 'That works for me. When can I start?',
+                    'user_meaning': '그게 괜찮습니다. 언제 시작할 수 있나요?'
+                }
+            ]
         }
     ]
 
