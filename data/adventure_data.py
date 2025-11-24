@@ -449,7 +449,7 @@ def generate_adventure_stages():
             skill_reward = 0.09 + (stage_id - 120) * 0.0005
         else:
             difficulty = '극악'
-            enemy_count = 4 + (stage_id - 160) // 10  # 4~8마리
+            enemy_count = min(5, 4 + (stage_id - 160) // 10)  # 4~5마리 (최대 5)
             hp_mult = 15.4 + (stage_id - 160) * 0.08
             atk_mult = 5.2 + (stage_id - 160) * 0.02
             rarities = ['레전드리']
