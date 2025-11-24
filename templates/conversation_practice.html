@@ -112,10 +112,10 @@
                 <hr class="my-4">
 
                 <!-- 사용자가 말해야 할 문장 -->
-                <div class="response-prompt">
+                <div class="response-prompt" id="responsePromptContainer">
                     <h6 class="mb-3">💬 당신이 말해야 할 대사:</h6>
-                    <div class="response-text" id="targetResponse">{{ drama_data.user_response }}</div>
-                    <div class="meaning-text" id="targetMeaning">{{ drama_data.user_meaning }}</div>
+                    <div class="response-text" id="targetResponse"></div>
+                    <div class="meaning-text" id="targetMeaning"></div>
                 </div>
 
                 <!-- 음성 인식 섹션 -->
@@ -253,6 +253,9 @@ if (SpeechRecognition) {
     recognition.interimResults = true;
 }
 
+// 드라마 데이터 (JSON으로 안전하게 전달)
+const dramaData = {{ drama_data | tojson }};
+
 document.addEventListener('DOMContentLoaded', function() {
     const micBtn = document.getElementById('micBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -263,8 +266,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultFeedback = document.getElementById('resultFeedback');
     const resultMessage = document.getElementById('resultMessage');
     const aiFollowupContainer = document.getElementById('aiFollowupContainer');
+    const targetResponseDiv = document.getElementById('targetResponse');
+    const targetMeaningDiv = document.getElementById('targetMeaning');
     
-    const targetResponse = '{{ drama_data.user_response }}';
+    // 사용자 정답 문장 표시
+    targetResponseDiv.textContent = dramaData.user_response;
+    targetMeaningDiv.textContent = dramaData.user_meaning;
+    
+    const targetResponse = dramaData.user_response.toLowerCase().trim();
     
     if (!recognition) {
         micBtn.disabled = true;
@@ -338,8 +347,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // AI 후속 대사 표시
             aiFollowupContainer.style.display = 'block';
-            document.getElementById('followupText').textContent = '{{ drama_data.ai_followup }}';
-            document.getElementById('followupMeaning').textContent = '{{ drama_data.ai_followup_meaning }}';
+            document.getElementById('followupText').textContent = dramaData.ai_followup;
+            document.getElementById('followupMeaning').textContent = dramaData.ai_followup_meaning;
             
             // 경험치 +10
             fetch('{{ url_for("add_exp") }}', {
@@ -349,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } else {
             resultMessage.className = 'alert status-error';
-            resultMessage.innerHTML = `<strong>❌ 틀렸습니다</strong><br>정답: <strong>${targetResponse}</strong>`;
+            resultMessage.innerHTML = `<strong>❌ 틀렸습니다</strong><br>정답: <strong>${dramaData.user_response}</strong>`;
         }
     }
     
