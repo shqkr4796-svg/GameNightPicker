@@ -2320,6 +2320,1912 @@ def get_daily_expressions():
             'situation': '누군가의 제안이나 좋은 소식에 동의할 때',
             'tip': '긍정적인 반응을 표현합니다.'
         }
+        {
+            'expression': 'How are you doing?',
+            'example': '어떻게 지내?',
+            'examples': [
+                '어떻게 지내?',
+                '"How are you doing?" is used when 친구에게 안부 인사.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '어떻게 지내?',
+            'situation': '친구에게 안부 인사',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What's up?',
+            'example': '뭐 하고 있어?',
+            'examples': [
+                '뭐 하고 있어?',
+                '"What's up?" is used when 친구 사이에서 인사.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '뭐 하고 있어?',
+            'situation': '친구 사이에서 인사',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How is it going?',
+            'example': '어때?',
+            'examples': [
+                '어때?',
+                '"How is it going?" is used when 진행 상황을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '어때?',
+            'situation': '진행 상황을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Nice to meet you',
+            'example': '만나서 반갑습니다',
+            'examples': [
+                '만나서 반갑습니다',
+                '"Nice to meet you" is used when 처음 만나는 사람에게.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '만나서 반갑습니다',
+            'situation': '처음 만나는 사람에게',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Glad to see you',
+            'example': '너를 봐서 기뻐',
+            'examples': [
+                '너를 봐서 기뻐',
+                '"Glad to see you" is used when 알고 있던 사람을 다시 만났을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '너를 봐서 기뻐',
+            'situation': '알고 있던 사람을 다시 만났을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am so happy',
+            'example': '정말 행복해',
+            'examples': [
+                '정말 행복해',
+                '"I am so happy" is used when 기쁜 감정을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '정말 행복해',
+            'situation': '기쁜 감정을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am so sad',
+            'example': '정말 슬퍼',
+            'examples': [
+                '정말 슬퍼',
+                '"I am so sad" is used when 슬픈 감정을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '정말 슬퍼',
+            'situation': '슬픈 감정을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I feel great',
+            'example': '기분이 좋아',
+            'examples': [
+                '기분이 좋아',
+                '"I feel great" is used when 좋은 상태를 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '기분이 좋아',
+            'situation': '좋은 상태를 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am so tired',
+            'example': '정말 피곤해',
+            'examples': [
+                '정말 피곤해',
+                '"I am so tired" is used when 피로를 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '정말 피곤해',
+            'situation': '피로를 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am excited',
+            'example': '설레',
+            'examples': [
+                '설레',
+                '"I am excited" is used when 기대감을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '설레',
+            'situation': '기대감을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am nervous',
+            'example': '긴장돼',
+            'examples': [
+                '긴장돼',
+                '"I am nervous" is used when 불안감을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '긴장돼',
+            'situation': '불안감을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am frustrated',
+            'example': '짜증나',
+            'examples': [
+                '짜증나',
+                '"I am frustrated" is used when 답답함을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '짜증나',
+            'situation': '답답함을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am confused',
+            'example': '혼란스러워',
+            'examples': [
+                '혼란스러워',
+                '"I am confused" is used when 이해 안 되는 상황.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '혼란스러워',
+            'situation': '이해 안 되는 상황',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am disappointed',
+            'example': '실망했어',
+            'examples': [
+                '실망했어',
+                '"I am disappointed" is used when 기대에 못 미칠 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '실망했어',
+            'situation': '기대에 못 미칠 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I feel lucky',
+            'example': '운 좋아',
+            'examples': [
+                '운 좋아',
+                '"I feel lucky" is used when 좋은 일이 생겼을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '운 좋아',
+            'situation': '좋은 일이 생겼을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What do you think?',
+            'example': '넌 어떻게 생각해?',
+            'examples': [
+                '넌 어떻게 생각해?',
+                '"What do you think?" is used when 상대의 의견을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '넌 어떻게 생각해?',
+            'situation': '상대의 의견을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I think so too',
+            'example': '나도 그렇게 생각해',
+            'examples': [
+                '나도 그렇게 생각해',
+                '"I think so too" is used when 상대의 의견에 동의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나도 그렇게 생각해',
+            'situation': '상대의 의견에 동의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I disagree',
+            'example': '나는 다르게 생각해',
+            'examples': [
+                '나는 다르게 생각해',
+                '"I disagree" is used when 의견 불일치를 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나는 다르게 생각해',
+            'situation': '의견 불일치를 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you agree?',
+            'example': '너도 동의해?',
+            'examples': [
+                '너도 동의해?',
+                '"Do you agree?" is used when 상대의 동의를 얻으려고.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '너도 동의해?',
+            'situation': '상대의 동의를 얻으려고',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'In my opinion',
+            'example': '내 생각에는',
+            'examples': [
+                '내 생각에는',
+                '"In my opinion" is used when 개인 의견을 제시.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '내 생각에는',
+            'situation': '개인 의견을 제시',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I suggest',
+            'example': '내가 제안하는 것',
+            'examples': [
+                '내가 제안하는 것',
+                '"I suggest" is used when 제안을 할 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '내가 제안하는 것',
+            'situation': '제안을 할 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What about trying',
+            'example': '~을 시도해보는 게 어때?',
+            'examples': [
+                '~을 시도해보는 게 어때?',
+                '"What about trying" is used when 새로운 시도를 제안.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '~을 시도해보는 게 어때?',
+            'situation': '새로운 시도를 제안',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I recommend',
+            'example': '나는 추천해',
+            'examples': [
+                '나는 추천해',
+                '"I recommend" is used when 누군가에게 추천.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나는 추천해',
+            'situation': '누군가에게 추천',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you help me?',
+            'example': '나 좀 도와줄 수 있어?',
+            'examples': [
+                '나 좀 도와줄 수 있어?',
+                '"Can you help me?" is used when 도움을 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 좀 도와줄 수 있어?',
+            'situation': '도움을 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Could you do me a favor?',
+            'example': '날 좀 도와줄 수 있어?',
+            'examples': [
+                '날 좀 도와줄 수 있어?',
+                '"Could you do me a favor?" is used when 부탁을 할 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '날 좀 도와줄 수 있어?',
+            'situation': '부탁을 할 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Would you mind',
+            'example': '~해주시면 안 될까요?',
+            'examples': [
+                '~해주시면 안 될까요?',
+                '"Would you mind" is used when 예의 바른 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '~해주시면 안 될까요?',
+            'situation': '예의 바른 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I borrow',
+            'example': '빌릴 수 있을까?',
+            'examples': [
+                '빌릴 수 있을까?',
+                '"Can I borrow" is used when 무언가를 빌릴 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '빌릴 수 있을까?',
+            'situation': '무언가를 빌릴 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Thank you so much',
+            'example': '정말 감사합니다',
+            'examples': [
+                '정말 감사합니다',
+                '"Thank you so much" is used when 깊은 감사를 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '정말 감사합니다',
+            'situation': '깊은 감사를 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Thank you for your help',
+            'example': '도와줘서 감사해',
+            'examples': [
+                '도와줘서 감사해',
+                '"Thank you for your help" is used when 도움에 대한 감사.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '도와줘서 감사해',
+            'situation': '도움에 대한 감사',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I appreciate it',
+            'example': '고마워',
+            'examples': [
+                '고마워',
+                '"I appreciate it" is used when 감사를 간단히 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '고마워',
+            'situation': '감사를 간단히 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am sorry',
+            'example': '미안해',
+            'examples': [
+                '미안해',
+                '"I am sorry" is used when 잘못을 사과.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '미안해',
+            'situation': '잘못을 사과',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I apologize',
+            'example': '사과합니다',
+            'examples': [
+                '사과합니다',
+                '"I apologize" is used when 공식적인 사과.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '사과합니다',
+            'situation': '공식적인 사과',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'My bad',
+            'example': '내 실수야',
+            'examples': [
+                '내 실수야',
+                '"My bad" is used when 가벼운 사과.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '내 실수야',
+            'situation': '가벼운 사과',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What time is it?',
+            'example': '지금 몇 시야?',
+            'examples': [
+                '지금 몇 시야?',
+                '"What time is it?" is used when 시간을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '지금 몇 시야?',
+            'situation': '시간을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Where are you from?',
+            'example': '어디서 왔어?',
+            'examples': [
+                '어디서 왔어?',
+                '"Where are you from?" is used when 출신지를 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '어디서 왔어?',
+            'situation': '출신지를 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What do you do?',
+            'example': '뭐하는 일을 해?',
+            'examples': [
+                '뭐하는 일을 해?',
+                '"What do you do?" is used when 직업을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '뭐하는 일을 해?',
+            'situation': '직업을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How old are you?',
+            'example': '몇 살이야?',
+            'examples': [
+                '몇 살이야?',
+                '"How old are you?" is used when 나이를 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '몇 살이야?',
+            'situation': '나이를 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you have any siblings?',
+            'example': '형제자매 있어?',
+            'examples': [
+                '형제자매 있어?',
+                '"Do you have any siblings?" is used when 가족 구성을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '형제자매 있어?',
+            'situation': '가족 구성을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What is your hobby?',
+            'example': '취미가 뭐야?',
+            'examples': [
+                '취미가 뭐야?',
+                '"What is your hobby?" is used when 취미를 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '취미가 뭐야?',
+            'situation': '취미를 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you like sports?',
+            'example': '스포츠 좋아해?',
+            'examples': [
+                '스포츠 좋아해?',
+                '"Do you like sports?" is used when 스포츠 관심 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '스포츠 좋아해?',
+            'situation': '스포츠 관심 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What is your favorite food?',
+            'example': '좋아하는 음식이 뭐야?',
+            'examples': [
+                '좋아하는 음식이 뭐야?',
+                '"What is your favorite food?" is used when 음식 선호도를 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '좋아하는 음식이 뭐야?',
+            'situation': '음식 선호도를 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you drink coffee?',
+            'example': '커피 마셔?',
+            'examples': [
+                '커피 마셔?',
+                '"Do you drink coffee?" is used when 음료 선호도.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '커피 마셔?',
+            'situation': '음료 선호도',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What movies do you like?',
+            'example': '어떤 영화 좋아해?',
+            'examples': [
+                '어떤 영화 좋아해?',
+                '"What movies do you like?" is used when 영화 취향을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '어떤 영화 좋아해?',
+            'situation': '영화 취향을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you travel often?',
+            'example': '자주 여행 가?',
+            'examples': [
+                '자주 여행 가?',
+                '"Do you travel often?" is used when 여행 빈도.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '자주 여행 가?',
+            'situation': '여행 빈도',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Where do you live?',
+            'example': '어디 살아?',
+            'examples': [
+                '어디 살아?',
+                '"Where do you live?" is used when 거주지를 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '어디 살아?',
+            'situation': '거주지를 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How long have you been learning English?',
+            'example': '영어 공부한 지 얼마나 됐어?',
+            'examples': [
+                '영어 공부한 지 얼마나 됐어?',
+                '"How long have you been learning English?" is used when 영어 학습 기간.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '영어 공부한 지 얼마나 됐어?',
+            'situation': '영어 학습 기간',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Are you married?',
+            'example': '결혼했어?',
+            'examples': [
+                '결혼했어?',
+                '"Are you married?" is used when 결혼 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '결혼했어?',
+            'situation': '결혼 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you have any pets?',
+            'example': '애완동물 있어?',
+            'examples': [
+                '애완동물 있어?',
+                '"Do you have any pets?" is used when 펫 소유 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '애완동물 있어?',
+            'situation': '펫 소유 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What's your plan for today?',
+            'example': '오늘 뭐 할 거야?',
+            'examples': [
+                '오늘 뭐 할 거야?',
+                '"What's your plan for today?" is used when 오늘의 계획을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '오늘 뭐 할 거야?',
+            'situation': '오늘의 계획을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I use your bathroom?',
+            'example': '화장실 써도 돼?',
+            'examples': [
+                '화장실 써도 돼?',
+                '"Can I use your bathroom?" is used when 화장실 사용 허락.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '화장실 써도 돼?',
+            'situation': '화장실 사용 허락',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Where is the nearest restroom?',
+            'example': '가장 가까운 화장실이 어디예요?',
+            'examples': [
+                '가장 가까운 화장실이 어디예요?',
+                '"Where is the nearest restroom?" is used when 화장실 위치를 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '가장 가까운 화장실이 어디예요?',
+            'situation': '화장실 위치를 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you mind if I open the window?',
+            'example': '창문 열어도 괜찮을까?',
+            'examples': [
+                '창문 열어도 괜찮을까?',
+                '"Do you mind if I open the window?" is used when 행동에 대한 허락.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '창문 열어도 괜찮을까?',
+            'situation': '행동에 대한 허락',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you pass me the salt?',
+            'example': '소금 좀 건네줄래?',
+            'examples': [
+                '소금 좀 건네줄래?',
+                '"Can you pass me the salt?" is used when 물건을 달라고 할 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '소금 좀 건네줄래?',
+            'situation': '물건을 달라고 할 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Would you like some water?',
+            'example': '물 좀 마실래?',
+            'examples': [
+                '물 좀 마실래?',
+                '"Would you like some water?" is used when 뭔가를 제안.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '물 좀 마실래?',
+            'situation': '뭔가를 제안',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am hungry',
+            'example': '배고파',
+            'examples': [
+                '배고파',
+                '"I am hungry" is used when 배고픔을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '배고파',
+            'situation': '배고픔을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am thirsty',
+            'example': '목말라',
+            'examples': [
+                '목말라',
+                '"I am thirsty" is used when 갈증을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '목말라',
+            'situation': '갈증을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I need a break',
+            'example': '쉴 필요가 있어',
+            'examples': [
+                '쉴 필요가 있어',
+                '"I need a break" is used when 휴식이 필요할 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '쉴 필요가 있어',
+            'situation': '휴식이 필요할 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Let's grab lunch',
+            'example': '점심 먹으러 가자',
+            'examples': [
+                '점심 먹으러 가자',
+                '"Let's grab lunch" is used when 함께 식사 제안.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '점심 먹으러 가자',
+            'situation': '함께 식사 제안',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What's for dinner?',
+            'example': '저녁 뭐 먹을 거야?',
+            'examples': [
+                '저녁 뭐 먹을 거야?',
+                '"What's for dinner?" is used when 저녁 음식에 대해.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '저녁 뭐 먹을 거야?',
+            'situation': '저녁 음식에 대해',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'This food is delicious',
+            'example': '이 음식 맛있어',
+            'examples': [
+                '이 음식 맛있어',
+                '"This food is delicious" is used when 음식을 칭찬할 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이 음식 맛있어',
+            'situation': '음식을 칭찬할 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I don't like spicy food',
+            'example': '매운 음식 싫어',
+            'examples': [
+                '매운 음식 싫어',
+                '"I don't like spicy food" is used when 음식 선호도 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '매운 음식 싫어',
+            'situation': '음식 선호도 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you cook?',
+            'example': '요리할 수 있어?',
+            'examples': [
+                '요리할 수 있어?',
+                '"Can you cook?" is used when 요리 능력을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '요리할 수 있어?',
+            'situation': '요리 능력을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What's your favorite restaurant?',
+            'example': '좋아하는 식당이 뭐야?',
+            'examples': [
+                '좋아하는 식당이 뭐야?',
+                '"What's your favorite restaurant?" is used when 음식점 선호도.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '좋아하는 식당이 뭐야?',
+            'situation': '음식점 선호도',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Let's try a new restaurant',
+            'example': '새 식당 가보자',
+            'examples': [
+                '새 식당 가보자',
+                '"Let's try a new restaurant" is used when 새로운 시도 제안.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '새 식당 가보자',
+            'situation': '새로운 시도 제안',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'The weather is nice today',
+            'example': '오늘 날씨 좋네',
+            'examples': [
+                '오늘 날씨 좋네',
+                '"The weather is nice today" is used when 날씨에 대해 말할 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '오늘 날씨 좋네',
+            'situation': '날씨에 대해 말할 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'It is going to rain',
+            'example': '비 올 것 같아',
+            'examples': [
+                '비 올 것 같아',
+                '"It is going to rain" is used when 날씨 예측.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '비 올 것 같아',
+            'situation': '날씨 예측',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I don't like cold weather',
+            'example': '날씨가 추운 게 싫어',
+            'examples': [
+                '날씨가 추운 게 싫어',
+                '"I don't like cold weather" is used when 날씨 선호도.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '날씨가 추운 게 싫어',
+            'situation': '날씨 선호도',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you need an umbrella?',
+            'example': '우산 필요해?',
+            'examples': [
+                '우산 필요해?',
+                '"Do you need an umbrella?" is used when 날씨에 맞는 물건 확인.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '우산 필요해?',
+            'situation': '날씨에 맞는 물건 확인',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'The traffic is terrible today',
+            'example': '오늘 교통 정말 엄청 막혀',
+            'examples': [
+                '오늘 교통 정말 엄청 막혀',
+                '"The traffic is terrible today" is used when 교통 상황.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '오늘 교통 정말 엄청 막혀',
+            'situation': '교통 상황',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How do I get to the station?',
+            'example': '역으로 어떻게 가?',
+            'examples': [
+                '역으로 어떻게 가?',
+                '"How do I get to the station?" is used when 길을 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '역으로 어떻게 가?',
+            'situation': '길을 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Is it far from here?',
+            'example': '여기서 멀어?',
+            'examples': [
+                '여기서 멀어?',
+                '"Is it far from here?" is used when 거리를 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기서 멀어?',
+            'situation': '거리를 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I take a taxi here?',
+            'example': '여기서 택시 탈 수 있어?',
+            'examples': [
+                '여기서 택시 탈 수 있어?',
+                '"Can I take a taxi here?" is used when 교통 수단 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기서 택시 탈 수 있어?',
+            'situation': '교통 수단 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What bus should I take?',
+            'example': '어떤 버스를 타야 해?',
+            'examples': [
+                '어떤 버스를 타야 해?',
+                '"What bus should I take?" is used when 버스 정보 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '어떤 버스를 타야 해?',
+            'situation': '버스 정보 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How much is the fare?',
+            'example': '요금이 얼마야?',
+            'examples': [
+                '요금이 얼마야?',
+                '"How much is the fare?" is used when 요금 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '요금이 얼마야?',
+            'situation': '요금 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I pay by credit card?',
+            'example': '신용카드로 결제 가능해?',
+            'examples': [
+                '신용카드로 결제 가능해?',
+                '"Can I pay by credit card?" is used when 결제 방법 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '신용카드로 결제 가능해?',
+            'situation': '결제 방법 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you have any change?',
+            'example': '잔돈 있어?',
+            'examples': [
+                '잔돈 있어?',
+                '"Do you have any change?" is used when 잔돈 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '잔돈 있어?',
+            'situation': '잔돈 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I lost my wallet',
+            'example': '지갑을 잃어버렸어',
+            'examples': [
+                '지갑을 잃어버렸어',
+                '"I lost my wallet" is used when 긴급 상황 설명.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '지갑을 잃어버렸어',
+            'situation': '긴급 상황 설명',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'My phone battery is dead',
+            'example': '핸드폰 배터리가 떨어졌어',
+            'examples': [
+                '핸드폰 배터리가 떨어졌어',
+                '"My phone battery is dead" is used when 기술 문제.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '핸드폰 배터리가 떨어졌어',
+            'situation': '기술 문제',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I charge my phone here?',
+            'example': '여기서 핸드폰 충전할 수 있어?',
+            'examples': [
+                '여기서 핸드폰 충전할 수 있어?',
+                '"Can I charge my phone here?" is used when 충전 가능 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기서 핸드폰 충전할 수 있어?',
+            'situation': '충전 가능 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What's your phone number?',
+            'example': '핸드폰 번호가 뭐야?',
+            'examples': [
+                '핸드폰 번호가 뭐야?',
+                '"What's your phone number?" is used when 연락처 묻기.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '핸드폰 번호가 뭐야?',
+            'situation': '연락처 묻기',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I add you on social media?',
+            'example': '소셜 미디어에 팔로우해도 돼?',
+            'examples': [
+                '소셜 미디어에 팔로우해도 돼?',
+                '"Can I add you on social media?" is used when 소셜 미디어 연결.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '소셜 미디어에 팔로우해도 돼?',
+            'situation': '소셜 미디어 연결',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What is your email address?',
+            'example': '이메일 주소가 뭐야?',
+            'examples': [
+                '이메일 주소가 뭐야?',
+                '"What is your email address?" is used when 이메일 정보 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이메일 주소가 뭐야?',
+            'situation': '이메일 정보 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Let's exchange contact information',
+            'example': '연락처를 주고받자',
+            'examples': [
+                '연락처를 주고받자',
+                '"Let's exchange contact information" is used when 연락처 교환.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '연락처를 주고받자',
+            'situation': '연락처 교환',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I enjoy your company',
+            'example': '너랑 있으면 좋아',
+            'examples': [
+                '너랑 있으면 좋아',
+                '"I enjoy your company" is used when 상대의 회사를 칭찬.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '너랑 있으면 좋아',
+            'situation': '상대의 회사를 칭찬',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'You are very kind',
+            'example': '넌 정말 착해',
+            'examples': [
+                '넌 정말 착해',
+                '"You are very kind" is used when 성격을 칭찬.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '넌 정말 착해',
+            'situation': '성격을 칭찬',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'You are so talented',
+            'example': '넌 정말 재능 있어',
+            'examples': [
+                '넌 정말 재능 있어',
+                '"You are so talented" is used when 능력을 칭찬.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '넌 정말 재능 있어',
+            'situation': '능력을 칭찬',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'You always make me laugh',
+            'example': '넌 항상 날 웃게 해',
+            'examples': [
+                '넌 항상 날 웃게 해',
+                '"You always make me laugh" is used when 유머감을 칭찬.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '넌 항상 날 웃게 해',
+            'situation': '유머감을 칭찬',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I trust you',
+            'example': '나 너를 믿어',
+            'examples': [
+                '나 너를 믿어',
+                '"I trust you" is used when 신뢰를 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 너를 믿어',
+            'situation': '신뢰를 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'You are my best friend',
+            'example': '넌 내 절친이야',
+            'examples': [
+                '넌 내 절친이야',
+                '"You are my best friend" is used when 우정을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '넌 내 절친이야',
+            'situation': '우정을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I miss you',
+            'example': '너 그리워',
+            'examples': [
+                '너 그리워',
+                '"I miss you" is used when 그리움을 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '너 그리워',
+            'situation': '그리움을 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Let's stay in touch',
+            'example': '계속 연락하자',
+            'examples': [
+                '계속 연락하자',
+                '"Let's stay in touch" is used when 관계 유지 제안.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '계속 연락하자',
+            'situation': '관계 유지 제안',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am sorry for being late',
+            'example': '늦어서 미안해',
+            'examples': [
+                '늦어서 미안해',
+                '"I am sorry for being late" is used when 지각에 대한 사과.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '늦어서 미안해',
+            'situation': '지각에 대한 사과',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I forgot about our appointment',
+            'example': '약속을 깜빡했어',
+            'examples': [
+                '약속을 깜빡했어',
+                '"I forgot about our appointment" is used when 건망증으로 인한 사과.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '약속을 깜빡했어',
+            'situation': '건망증으로 인한 사과',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'That's not what I meant',
+            'example': '내가 그런 뜻은 아니었어',
+            'examples': [
+                '내가 그런 뜻은 아니었어',
+                '"That's not what I meant" is used when 오해 설명.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '내가 그런 뜻은 아니었어',
+            'situation': '오해 설명',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Let's make up',
+            'example': '다시 사이좋게 지내자',
+            'examples': [
+                '다시 사이좋게 지내자',
+                '"Let's make up" is used when 화해 제안.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '다시 사이좋게 지내자',
+            'situation': '화해 제안',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I want to tell you something',
+            'example': '너한테 할 말이 있어',
+            'examples': [
+                '너한테 할 말이 있어',
+                '"I want to tell you something" is used when 중요한 것을 말하려고 할 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '너한테 할 말이 있어',
+            'situation': '중요한 것을 말하려고 할 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can we talk?',
+            'example': '얘기할 수 있어?',
+            'examples': [
+                '얘기할 수 있어?',
+                '"Can we talk?" is used when 대화 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '얘기할 수 있어?',
+            'situation': '대화 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What's wrong?',
+            'example': '뭐가 문제야?',
+            'examples': [
+                '뭐가 문제야?',
+                '"What's wrong?" is used when 문제가 있는지 묻을 때.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '뭐가 문제야?',
+            'situation': '문제가 있는지 묻을 때',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Tell me what happened',
+            'example': '뭐가 일어났는지 말해줘',
+            'examples': [
+                '뭐가 일어났는지 말해줘',
+                '"Tell me what happened" is used when 상황 설명 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '뭐가 일어났는지 말해줘',
+            'situation': '상황 설명 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I don't understand',
+            'example': '이해가 안 돼',
+            'examples': [
+                '이해가 안 돼',
+                '"I don't understand" is used when 이해 불가.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이해가 안 돼',
+            'situation': '이해 불가',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you explain again?',
+            'example': '다시 설명해 줄래?',
+            'examples': [
+                '다시 설명해 줄래?',
+                '"Can you explain again?" is used when 다시 설명 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '다시 설명해 줄래?',
+            'situation': '다시 설명 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Could you speak more slowly?',
+            'example': '좀 더 천천히 말해 줄래?',
+            'examples': [
+                '좀 더 천천히 말해 줄래?',
+                '"Could you speak more slowly?" is used when 말의 속도 조절 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '좀 더 천천히 말해 줄래?',
+            'situation': '말의 속도 조절 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What does this word mean?',
+            'example': '이 단어가 무슨 뜻이야?',
+            'examples': [
+                '이 단어가 무슨 뜻이야?',
+                '"What does this word mean?" is used when 단어의 의미 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이 단어가 무슨 뜻이야?',
+            'situation': '단어의 의미 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How do you spell that?',
+            'example': '그걸 어떻게 철자해?',
+            'examples': [
+                '그걸 어떻게 철자해?',
+                '"How do you spell that?" is used when 철자 확인.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '그걸 어떻게 철자해?',
+            'situation': '철자 확인',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you write it down?',
+            'example': '써 줄래?',
+            'examples': [
+                '써 줄래?',
+                '"Can you write it down?" is used when 글로 남겨주기 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '써 줄래?',
+            'situation': '글로 남겨주기 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you speak English?',
+            'example': '영어 말해?',
+            'examples': [
+                '영어 말해?',
+                '"Do you speak English?" is used when 언어 능력 확인.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '영어 말해?',
+            'situation': '언어 능력 확인',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I speak a little English',
+            'example': '나 영어 조금 말해',
+            'examples': [
+                '나 영어 조금 말해',
+                '"I speak a little English" is used when 언어 능력 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 영어 조금 말해',
+            'situation': '언어 능력 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'English is not my native language',
+            'example': '영어가 내 모국어가 아니야',
+            'examples': [
+                '영어가 내 모국어가 아니야',
+                '"English is not my native language" is used when 영어 비모국어 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '영어가 내 모국어가 아니야',
+            'situation': '영어 비모국어 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am learning English',
+            'example': '나 영어 배우고 있어',
+            'examples': [
+                '나 영어 배우고 있어',
+                '"I am learning English" is used when 현재 학습 상태.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 영어 배우고 있어',
+            'situation': '현재 학습 상태',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How long have you lived here?',
+            'example': '여기 살은 지 얼마나 됐어?',
+            'examples': [
+                '여기 살은 지 얼마나 됐어?',
+                '"How long have you lived here?" is used when 거주 기간.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기 살은 지 얼마나 됐어?',
+            'situation': '거주 기간',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'When did you move here?',
+            'example': '여기로 언제 이사 왔어?',
+            'examples': [
+                '여기로 언제 이사 왔어?',
+                '"When did you move here?" is used when 이사 시기.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기로 언제 이사 왔어?',
+            'situation': '이사 시기',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you like living here?',
+            'example': '여기 사는 거 좋아해?',
+            'examples': [
+                '여기 사는 거 좋아해?',
+                '"Do you like living here?" is used when 거주지 만족도.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기 사는 거 좋아해?',
+            'situation': '거주지 만족도',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What is the best thing about this city?',
+            'example': '이 도시의 가장 좋은 점이 뭐야?',
+            'examples': [
+                '이 도시의 가장 좋은 점이 뭐야?',
+                '"What is the best thing about this city?" is used when 도시의 장점.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이 도시의 가장 좋은 점이 뭐야?',
+            'situation': '도시의 장점',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Have you visited any museums here?',
+            'example': '여기 박물관 다녀본 거 있어?',
+            'examples': [
+                '여기 박물관 다녀본 거 있어?',
+                '"Have you visited any museums here?" is used when 관광지 방문 경험.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기 박물관 다녀본 거 있어?',
+            'situation': '관광지 방문 경험',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What is there to do around here?',
+            'example': '여기 주변에 뭐 할 게 있어?',
+            'examples': [
+                '여기 주변에 뭐 할 게 있어?',
+                '"What is there to do around here?" is used when 주변 활동.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기 주변에 뭐 할 게 있어?',
+            'situation': '주변 활동',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Would you recommend this place?',
+            'example': '이 곳 추천할래?',
+            'examples': [
+                '이 곳 추천할래?',
+                '"Would you recommend this place?" is used when 장소 추천 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이 곳 추천할래?',
+            'situation': '장소 추천 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I have never been there',
+            'example': '나 거기 가본 적 없어',
+            'examples': [
+                '나 거기 가본 적 없어',
+                '"I have never been there" is used when 미경험 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 거기 가본 적 없어',
+            'situation': '미경험 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I have been to many countries',
+            'example': '나 많은 나라를 다녀봤어',
+            'examples': [
+                '나 많은 나라를 다녀봤어',
+                '"I have been to many countries" is used when 여행 경험.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 많은 나라를 다녀봤어',
+            'situation': '여행 경험',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What was your favorite trip?',
+            'example': '가장 좋았던 여행이 뭐야?',
+            'examples': [
+                '가장 좋았던 여행이 뭐야?',
+                '"What was your favorite trip?" is used when 여행 경험 중 최고.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '가장 좋았던 여행이 뭐야?',
+            'situation': '여행 경험 중 최고',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I want to travel more',
+            'example': '나 더 여행하고 싶어',
+            'examples': [
+                '나 더 여행하고 싶어',
+                '"I want to travel more" is used when 여행 욕구.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 더 여행하고 싶어',
+            'situation': '여행 욕구',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Have you ever traveled alone?',
+            'example': '혼자 여행해본 적 있어?',
+            'examples': [
+                '혼자 여행해본 적 있어?',
+                '"Have you ever traveled alone?" is used when 혼자 여행 경험.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '혼자 여행해본 적 있어?',
+            'situation': '혼자 여행 경험',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What should I pack for the trip?',
+            'example': '여행에 뭘 챙겨야 해?',
+            'examples': [
+                '여행에 뭘 챙겨야 해?',
+                '"What should I pack for the trip?" is used when 여행 준비물 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여행에 뭘 챙겨야 해?',
+            'situation': '여행 준비물 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am afraid of flying',
+            'example': '나 비행기 타는 게 무서워',
+            'examples': [
+                '나 비행기 타는 게 무서워',
+                '"I am afraid of flying" is used when 비행기 공포.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 비행기 타는 게 무서워',
+            'situation': '비행기 공포',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Is this your first time here?',
+            'example': '여기 처음이야?',
+            'examples': [
+                '여기 처음이야?',
+                '"Is this your first time here?" is used when 방문 경험.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '여기 처음이야?',
+            'situation': '방문 경험',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I forgot my ID',
+            'example': '신분증을 잃어버렸어',
+            'examples': [
+                '신분증을 잃어버렸어',
+                '"I forgot my ID" is used when 문제 상황.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '신분증을 잃어버렸어',
+            'situation': '문제 상황',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you help me find my keys?',
+            'example': '열쇠 찾는 거 도와줄래?',
+            'examples': [
+                '열쇠 찾는 거 도와줄래?',
+                '"Can you help me find my keys?" is used when 도움 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '열쇠 찾는 거 도와줄래?',
+            'situation': '도움 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I broke my glasses',
+            'example': '안경 깼어',
+            'examples': [
+                '안경 깼어',
+                '"I broke my glasses" is used when 물건 손상 보고.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '안경 깼어',
+            'situation': '물건 손상 보고',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you repair it?',
+            'example': '이거 고쳐줄 수 있어?',
+            'examples': [
+                '이거 고쳐줄 수 있어?',
+                '"Can you repair it?" is used when 수리 가능 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이거 고쳐줄 수 있어?',
+            'situation': '수리 가능 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How much will it cost?',
+            'example': '얼마가 들어?',
+            'examples': [
+                '얼마가 들어?',
+                '"How much will it cost?" is used when 비용 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '얼마가 들어?',
+            'situation': '비용 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Is it worth the price?',
+            'example': '이 가격이 합당해?',
+            'examples': [
+                '이 가격이 합당해?',
+                '"Is it worth the price?" is used when 가격 타당성.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이 가격이 합당해?',
+            'situation': '가격 타당성',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'It is too expensive',
+            'example': '너무 비싸',
+            'examples': [
+                '너무 비싸',
+                '"It is too expensive" is used when 가격 불만.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '너무 비싸',
+            'situation': '가격 불만',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can you give me a discount?',
+            'example': '할인 해줄 수 있어?',
+            'examples': [
+                '할인 해줄 수 있어?',
+                '"Can you give me a discount?" is used when 할인 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '할인 해줄 수 있어?',
+            'situation': '할인 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What payment methods do you accept?',
+            'example': '어떤 결제 방법 받아?',
+            'examples': [
+                '어떤 결제 방법 받아?',
+                '"What payment methods do you accept?" is used when 결제 방법.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '어떤 결제 방법 받아?',
+            'situation': '결제 방법',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Do you have a refund policy?',
+            'example': '환불 정책 있어?',
+            'examples': [
+                '환불 정책 있어?',
+                '"Do you have a refund policy?" is used when 반품 정책 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '환불 정책 있어?',
+            'situation': '반품 정책 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I want to return this',
+            'example': '이거 반품하고 싶어',
+            'examples': [
+                '이거 반품하고 싶어',
+                '"I want to return this" is used when 반품 의사.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이거 반품하고 싶어',
+            'situation': '반품 의사',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What's the return deadline?',
+            'example': '환불 기한이 뭐야?',
+            'examples': [
+                '환불 기한이 뭐야?',
+                '"What's the return deadline?" is used when 반품 기한.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '환불 기한이 뭐야?',
+            'situation': '반품 기한',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am satisfied with the service',
+            'example': '서비스에 만족해',
+            'examples': [
+                '서비스에 만족해',
+                '"I am satisfied with the service" is used when 서비스 만족 표현.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '서비스에 만족해',
+            'situation': '서비스 만족 표현',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'The service was poor',
+            'example': '서비스가 형편없었어',
+            'examples': [
+                '서비스가 형편없었어',
+                '"The service was poor" is used when 서비스 불만.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '서비스가 형편없었어',
+            'situation': '서비스 불만',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I would like to speak to the manager',
+            'example': '매니저와 얘기하고 싶어',
+            'examples': [
+                '매니저와 얘기하고 싶어',
+                '"I would like to speak to the manager" is used when 상급자 호출.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '매니저와 얘기하고 싶어',
+            'situation': '상급자 호출',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'This is my complaint',
+            'example': '이게 내 불만이야',
+            'examples': [
+                '이게 내 불만이야',
+                '"This is my complaint" is used when 민원 제기.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이게 내 불만이야',
+            'situation': '민원 제기',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I have a suggestion',
+            'example': '내가 제안이 있어',
+            'examples': [
+                '내가 제안이 있어',
+                '"I have a suggestion" is used when 제안 제시.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '내가 제안이 있어',
+            'situation': '제안 제시',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I make a reservation?',
+            'example': '예약 가능해?',
+            'examples': [
+                '예약 가능해?',
+                '"Can I make a reservation?" is used when 예약 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '예약 가능해?',
+            'situation': '예약 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What time do you open?',
+            'example': '오픈 시간이 뭐예요?',
+            'examples': [
+                '오픈 시간이 뭐예요?',
+                '"What time do you open?" is used when 영업 시간 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '오픈 시간이 뭐예요?',
+            'situation': '영업 시간 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What time do you close?',
+            'example': '닫는 시간이 뭐예요?',
+            'examples': [
+                '닫는 시간이 뭐예요?',
+                '"What time do you close?" is used when 폐점 시간 문의.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '닫는 시간이 뭐예요?',
+            'situation': '폐점 시간 문의',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Are you open on Sundays?',
+            'example': '일요일에 열어?',
+            'examples': [
+                '일요일에 열어?',
+                '"Are you open on Sundays?" is used when 요일별 영업 여부.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '일요일에 열어?',
+            'situation': '요일별 영업 여부',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I have a reservation under the name...',
+            'example': '제 이름으로 예약돼 있어요',
+            'examples': [
+                '제 이름으로 예약돼 있어요',
+                '"I have a reservation under the name..." is used when 예약 확인.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '제 이름으로 예약돼 있어요',
+            'situation': '예약 확인',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'How many people?',
+            'example': '몇 명이세요?',
+            'examples': [
+                '몇 명이세요?',
+                '"How many people?" is used when 인원 수 확인.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '몇 명이세요?',
+            'situation': '인원 수 확인',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'We have a table for you',
+            'example': '당신을 위한 테이블이 있어요',
+            'examples': [
+                '당신을 위한 테이블이 있어요',
+                '"We have a table for you" is used when 좌석 안내.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '당신을 위한 테이블이 있어요',
+            'situation': '좌석 안내',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Your table is ready',
+            'example': '테이블 준비됐어요',
+            'examples': [
+                '테이블 준비됐어요',
+                '"Your table is ready" is used when 좌석 준비 완료.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '테이블 준비됐어요',
+            'situation': '좌석 준비 완료',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I get a menu?',
+            'example': '메뉴 좀 줄래요?',
+            'examples': [
+                '메뉴 좀 줄래요?',
+                '"Can I get a menu?" is used when 메뉴 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '메뉴 좀 줄래요?',
+            'situation': '메뉴 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'What do you recommend?',
+            'example': '뭘 추천하세요?',
+            'examples': [
+                '뭘 추천하세요?',
+                '"What do you recommend?" is used when 음식 추천 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '뭘 추천하세요?',
+            'situation': '음식 추천 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I am ready to order',
+            'example': '주문할 준비됐어요',
+            'examples': [
+                '주문할 준비됐어요',
+                '"I am ready to order" is used when 주문 준비 완료.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '주문할 준비됐어요',
+            'situation': '주문 준비 완료',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I will have the same',
+            'example': '저도 같은 걸로 할게요',
+            'examples': [
+                '저도 같은 걸로 할게요',
+                '"I will have the same" is used when 동일 메뉴 주문.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '저도 같은 걸로 할게요',
+            'situation': '동일 메뉴 주문',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Make it spicy',
+            'example': '매운맛으로 해 줄래요',
+            'examples': [
+                '매운맛으로 해 줄래요',
+                '"Make it spicy" is used when 맛 조절 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '매운맛으로 해 줄래요',
+            'situation': '맛 조절 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'No onions, please',
+            'example': '양파 빼 줄래요',
+            'examples': [
+                '양파 빼 줄래요',
+                '"No onions, please" is used when 재료 제외 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '양파 빼 줄래요',
+            'situation': '재료 제외 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Can I get extra sauce?',
+            'example': '소스 좀 더 줄래요?',
+            'examples': [
+                '소스 좀 더 줄래요?',
+                '"Can I get extra sauce?" is used when 추가 요청.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '소스 좀 더 줄래요?',
+            'situation': '추가 요청',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Is it vegetarian?',
+            'example': '이거 채식주의자용이에요?',
+            'examples': [
+                '이거 채식주의자용이에요?',
+                '"Is it vegetarian?" is used when 음식 성분 확인.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '이거 채식주의자용이에요?',
+            'situation': '음식 성분 확인',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'Does it contain nuts?',
+            'example': '견과류 들어있어요?',
+            'examples': [
+                '견과류 들어있어요?',
+                '"Does it contain nuts?" is used when 알레르기 유발 물질 확인.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '견과류 들어있어요?',
+            'situation': '알레르기 유발 물질 확인',
+            'tip': 'Commonly used in everyday conversations.'
+        },
+        {
+            'expression': 'I have a food allergy',
+            'example': '나 음식 알레르기 있어',
+            'examples': [
+                '나 음식 알레르기 있어',
+                '"I have a food allergy" is used when 알레르기 고지.',
+                'This is a common way to say it in English.'
+            ],
+            'meaning': '나 음식 알레르기 있어',
+            'situation': '알레르기 고지',
     ]
     return expressions
 
