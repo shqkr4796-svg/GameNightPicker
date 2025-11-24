@@ -21,7 +21,7 @@
                         <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px; flex-direction: row-reverse; position: relative;">
                             <!-- 남은 적 몬스터 수 배지 (동그라미 개수) -->
                             <div style="position: absolute; top: -12px; left: 0; display: flex; gap: 4px; flex-wrap: wrap;">
-                                {% for i in range(battle_state.enemy_count) %}
+                                {% for i in range(battle_state.enemy_count - battle_state.defeated_monsters) %}
                                     <div style="width: 16px; height: 16px; background-color: #FF6B6B; border-radius: 50%;"></div>
                                 {% endfor %}
                             </div>
@@ -70,7 +70,7 @@
                         <div style="background-color: #2a2a2a; border-radius: 6px; padding: 12px 15px; border: 2px solid #444; display: flex; gap: 12px; position: relative;">
                             <!-- 남은 플레이어 몬스터 수 배지 (동그라미 개수) -->
                             <div style="position: absolute; top: -12px; left: 0; display: flex; gap: 4px; flex-wrap: wrap;">
-                                {% for i in range(battle_state.player_team|length) %}
+                                {% for i in range(battle_state.player_team|length - battle_state.current_team_index) %}
                                     <div style="width: 16px; height: 16px; background-color: #FF6B6B; border-radius: 50%;"></div>
                                 {% endfor %}
                             </div>
