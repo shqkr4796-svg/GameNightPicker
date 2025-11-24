@@ -395,6 +395,23 @@ function updateBattleUI(battleState) {
         }
     }
     
+    // 남은 적 몬스터 수 배지 업데이트 (상단 우측)
+    const allDivs = document.querySelectorAll('div[style*="position: absolute"]');
+    for (let div of allDivs) {
+        if (div.style.top === '-12px' && div.style.left === '0px' && div.textContent.includes('')) {
+            const parent = div.parentElement;
+            if (parent && parent.style.top === '0px' && parent.style.right === '0px') {
+                const remainingEnemyCount = battleState.enemy_count - battleState.defeated_monsters;
+                let badgeHtml = '';
+                for (let i = 0; i < remainingEnemyCount; i++) {
+                    badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+                }
+                div.innerHTML = badgeHtml;
+                break;
+            }
+        }
+    }
+    
     // === 플레이어 몬스터 정보 카드 업데이트 ===
     // 플레이어 몬스터 이름
     const playerNameElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] h6');
@@ -425,6 +442,23 @@ function updateBattleUI(battleState) {
     if (playerMonsterImg && battleState.player_monster.image) {
         if (playerMonsterImg.tagName === 'IMG') {
             playerMonsterImg.src = battleState.player_monster.image;
+        }
+    }
+    
+    // 남은 플레이어 몬스터 수 배지 업데이트 (좌측 하단)
+    const allDivsBadge = document.querySelectorAll('div[style*="position: absolute"]');
+    for (let div of allDivsBadge) {
+        if (div.style.top === '-12px' && div.style.left === '0px' && div.textContent.includes('')) {
+            const parent = div.parentElement;
+            if (parent && parent.style.bottom === '0px' && parent.style.left === '0px') {
+                const remainingPlayerCount = (battleState.player_team_length || 3) - (battleState.current_team_index || 0);
+                let badgeHtml = '';
+                for (let i = 0; i < remainingPlayerCount; i++) {
+                    badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+                }
+                div.innerHTML = badgeHtml;
+                break;
+            }
         }
     }
     
