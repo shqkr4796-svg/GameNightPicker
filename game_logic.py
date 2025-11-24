@@ -2319,6 +2319,226 @@ def get_daily_expressions():
             'meaning': '좋은데?, 좋다',
             'situation': '누군가의 제안이나 좋은 소식에 동의할 때',
             'tip': '긍정적인 반응을 표현합니다.'
+        },
+        {
+            'expression': 'That\'s right',
+            'example': 'That\'s right, I forgot about it.',
+            'examples': [
+                'That\'s right, I forgot about it.',
+                'That\'s right, the meeting is at 3 PM.'
+            ],
+            'meaning': '맞아, 그렇지',
+            'situation': '상대의 말이나 지적에 동의할 때',
+            'tip': '매우 자주 쓰이는 확인 표현입니다.'
+        },
+        {
+            'expression': 'I completely agree',
+            'example': 'I completely agree with you on this.',
+            'examples': [
+                'I completely agree with you on this.',
+                'I completely agree, it\'s the best choice.'
+            ],
+            'meaning': '완전히 동의해',
+            'situation': '상대의 의견에 전적으로 동의할 때',
+            'tip': '강한 동의를 표현합니다.'
+        },
+        {
+            'expression': 'Not really',
+            'example': 'Do you like spicy food? Not really.',
+            'examples': [
+                'Do you like spicy food? Not really.',
+                'Not really, I prefer something else.'
+            ],
+            'meaning': '별로 아니야, 아니야',
+            'situation': '질문에 약하게 부정할 때',
+            'tip': '부드러운 거절 표현입니다.'
+        },
+        {
+            'expression': 'Sounds good',
+            'example': 'Let\'s meet tomorrow at 10. Sounds good!',
+            'examples': [
+                'Let\'s meet tomorrow at 10. Sounds good!',
+                'I\'ll send you the file. Sounds good.'
+            ],
+            'meaning': '좋아, 괜찮네',
+            'situation': '제안이나 계획에 동의할 때',
+            'tip': '긍정적이고 친근한 표현입니다.'
+        },
+        {
+            'expression': 'Fair enough',
+            'example': 'I understand, fair enough.',
+            'examples': [
+                'I understand, fair enough.',
+                'That makes sense. Fair enough.'
+            ],
+            'meaning': '그럴 만해, 알겠어',
+            'situation': '상대의 주장이 타당하다고 인정할 때',
+            'tip': '이해와 수용을 표현합니다.'
+        },
+        {
+            'expression': 'For sure',
+            'example': 'I\'ll be there for sure.',
+            'examples': [
+                'I\'ll be there for sure.',
+                'For sure, I won\'t forget.'
+            ],
+            'meaning': '확실해, 틀림없이',
+            'situation': '확실한 약속이나 확인을 할 때',
+            'tip': '강한 확신을 표현합니다.'
+        },
+        {
+            'expression': 'Totally',
+            'example': 'I totally understand what you mean.',
+            'examples': [
+                'I totally understand what you mean.',
+                'That\'s totally fair.'
+            ],
+            'meaning': '완전해, 정말이야',
+            'situation': '완전히 동의하거나 이해할 때',
+            'tip': '강조와 동의를 함께 표현합니다.'
+        },
+        {
+            'expression': 'Absolutely',
+            'example': 'Can you help me? Absolutely!',
+            'examples': [
+                'Can you help me? Absolutely!',
+                'Absolutely, no problem.'
+            ],
+            'meaning': '물론이지, 당연하지',
+            'situation': '확실한 예를 강조할 때',
+            'tip': '매우 긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'Good point',
+            'example': 'That\'s a good point I hadn\'t considered.',
+            'examples': [
+                'That\'s a good point I hadn\'t considered.',
+                'Good point, I agree.'
+            ],
+            'meaning': '좋은 지적이야, 맞는 말이네',
+            'situation': '상대의 좋은 의견이나 지적을 인정할 때',
+            'tip': '상대를 칭찬하면서 동의합니다.'
+        },
+        {
+            'expression': 'I see',
+            'example': 'I see what you mean now.',
+            'examples': [
+                'I see what you mean now.',
+                'I see, thank you for explaining.'
+            ],
+            'meaning': '알겠어, 이해했어',
+            'situation': '상대의 설명을 이해했을 때',
+            'tip': '이해를 표현하는 기본 표현입니다.'
+        },
+        {
+            'expression': 'Got it',
+            'example': 'The meeting is at 2 PM. Got it!',
+            'examples': [
+                'The meeting is at 2 PM. Got it!',
+                'Got it, I\'ll remember that.'
+            ],
+            'meaning': '알겠어, 됐어',
+            'situation': '지시나 정보를 받을 때',
+            'tip': '캐주얼하고 친근한 표현입니다.'
+        },
+        {
+            'expression': 'Makes sense',
+            'example': 'Oh, that makes sense now.',
+            'examples': [
+                'Oh, that makes sense now.',
+                'Makes sense why you\'re busy.'
+            ],
+            'meaning': '말이 돼, 이해가 돼',
+            'situation': '뭔가가 이해가 되거나 타당할 때',
+            'tip': '자주 쓰이는 이해 표현입니다.'
+        },
+        {
+            'expression': 'Exactly',
+            'example': 'Exactly! That\'s what I was thinking.',
+            'examples': [
+                'Exactly! That\'s what I was thinking.',
+                'Exactly right.'
+            ],
+            'meaning': '정확해, 맞아',
+            'situation': '상대의 말이 자신의 생각과 정확히 일치할 때',
+            'tip': '강한 동의를 표현합니다.'
+        },
+        {
+            'expression': 'Definitely',
+            'example': 'Will you come to the party? Definitely!',
+            'examples': [
+                'Will you come to the party? Definitely!',
+                'Definitely, I\'m looking forward to it.'
+            ],
+            'meaning': '확실히, 틀림없어',
+            'situation': '확실한 긍정을 할 때',
+            'tip': '강한 확신과 확실성을 표현합니다.'
+        },
+        {
+            'expression': 'Whatever',
+            'example': 'You can choose, I\'m fine with whatever.',
+            'examples': [
+                'You can choose, I\'m fine with whatever.',
+                'Whatever you think is best.'
+            ],
+            'meaning': '뭐 어때, 상관없어',
+            'situation': '결정을 상대에게 맡기거나 무관심할 때',
+            'tip': '중립적이거나 약간 무관심한 태도입니다.'
+        },
+        {
+            'expression': 'Really?',
+            'example': 'Really? I didn\'t know that!',
+            'examples': [
+                'Really? I didn\'t know that!',
+                'Really? Tell me more.'
+            ],
+            'meaning': '정말?',
+            'situation': '놀라움이나 의외성을 표현할 때',
+            'tip': '호기심과 놀람을 나타냅니다.'
+        },
+        {
+            'expression': 'You think so?',
+            'example': 'You think so? I\'m not sure.',
+            'examples': [
+                'You think so? I\'m not sure.',
+                'You think so? Maybe you\'re right.'
+            ],
+            'meaning': '그래?, 정말 그렇게 생각해?',
+            'situation': '상대의 의견에 약간 의심스러울 때',
+            'tip': '의문이나 회의를 표현합니다.'
+        },
+        {
+            'expression': 'Why not?',
+            'example': 'Let\'s go for a trip. Why not?',
+            'examples': [
+                'Let\'s go for a trip. Why not?',
+                'Why not, it sounds fun.'
+            ],
+            'meaning': '왜 안 돼?, 좋지',
+            'situation': '제안에 동의하거나 가능성을 열어둘 때',
+            'tip': '긍정적인 수용을 표현합니다.'
+        },
+        {
+            'expression': 'Sure thing',
+            'example': 'Can you send me the file? Sure thing!',
+            'examples': [
+                'Can you send me the file? Sure thing!',
+                'I\'ll get it for you. Sure thing.'
+            ],
+            'meaning': '물론이지, 좋아',
+            'situation': '요청을 흔쾌히 수락할 때',
+            'tip': '친근하고 긍정적인 표현입니다.'
+        },
+        {
+            'expression': 'No way',
+            'example': 'No way, that can\'t be true!',
+            'examples': [
+                'No way, that can\'t be true!',
+                'No way, I don\'t believe it.'
+            ],
+            'meaning': '말도 안 돼, 아니야 그럴 리가',
+            'situation': '믿을 수 없거나 동의할 수 없을 때',
+            'tip': '강한 부정을 표현합니다.'
         }
     ]
     return expressions
