@@ -13,14 +13,14 @@
             </div>
 
             <!-- 몬스터 전투 화면 (상단 적, 하단 플레이어) -->
-            <div style="margin-bottom: 15px; position: relative; min-height: 400px;">
+            <div style="margin-bottom: 15px; position: relative; min-height: 600px;">
                 <!-- 적 몬스터 (오른쪽 상단) -->
-                <div style="position: absolute; top: 0; right: 0; width: 50%; transform: scale(1.2); transform-origin: top right;">
+                <div style="position: absolute; top: 0; right: 0; width: 55%; transform: scale(0.9); transform-origin: top right;">
                     <div style="text-align: center;">
                         <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">상대</div>
-                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 15px; border: 2px solid #444; display: flex; gap: 15px;">
+                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 20px; border: 2px solid #444; display: flex; gap: 20px;">
                             <!-- 적 몬스터 이미지 -->
-                            <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                            <div style="width: 150px; height: 100px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                                 {% if battle_state.enemy_monster.image %}
                                     <img id="enemyMonsterImg" src="{{ battle_state.enemy_monster.image }}" alt="{{ battle_state.enemy_monster.name }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 {% else %}
@@ -58,12 +58,12 @@
                 </div>
 
                 <!-- 플레이어 몬스터 (왼쪽 하단) -->
-                <div style="position: absolute; bottom: 0; left: 0; width: 50%; transform: scale(1.2); transform-origin: bottom left;">
+                <div style="position: absolute; bottom: 0; left: 0; width: 55%; transform: scale(0.9); transform-origin: bottom left;">
                     <div style="text-align: center;">
                         <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">플레이어</div>
-                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 15px; border: 2px solid #444; display: flex; gap: 15px;">
+                        <div style="background-color: #2a2a2a; border-radius: 6px; padding: 20px; border: 2px solid #444; display: flex; gap: 20px;">
                             <!-- 플레이어 몬스터 이미지 -->
-                            <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                            <div style="width: 150px; height: 100px; background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                                 {% if battle_state.player_monster.image %}
                                     <img id="playerMonsterImg" src="{{ battle_state.player_monster.image }}" alt="{{ battle_state.player_monster.name }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 {% else %}
