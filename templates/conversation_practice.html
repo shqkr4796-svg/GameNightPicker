@@ -329,11 +329,13 @@ document.addEventListener('DOMContentLoaded', function() {
             micBtn.style.display = 'block';
             stopBtn.style.display = 'none';
             
-            // 효과음 복원
+            // 오디오 컨텍스트 재생성 (Web Speech API 손상 복구)
             const sm = getSoundManager();
-            if (sm && sm.soundDisabledForSpeechRecognition) {
-                sm.enabled = true;
-                sm.soundDisabledForSpeechRecognition = false;
+            if (sm) {
+                setTimeout(() => {
+                    sm.rebuildAudioContext();
+                    sm.enabled = true;
+                }, 100);
             }
         };
         
@@ -342,11 +344,13 @@ document.addEventListener('DOMContentLoaded', function() {
             micBtn.style.display = 'block';
             stopBtn.style.display = 'none';
             
-            // 효과음 복원
+            // 오디오 컨텍스트 재생성 (Web Speech API 손상 복구)
             const sm = getSoundManager();
-            if (sm && sm.soundDisabledForSpeechRecognition) {
-                sm.enabled = true;
-                sm.soundDisabledForSpeechRecognition = false;
+            if (sm) {
+                setTimeout(() => {
+                    sm.rebuildAudioContext();
+                    sm.enabled = true;
+                }, 100);
             }
         };
     }

@@ -19,6 +19,19 @@ class SoundManager {
         }
     }
 
+    // Web Speech API로 손상된 오디오 컨텍스트 재생성
+    rebuildAudioContext() {
+        console.log('🔧 오디오 컨텍스트 재생성 중...');
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('✅ 오디오 컨텍스트 재생성 완료');
+            return true;
+        } catch (error) {
+            console.error('❌ 오디오 컨텍스트 재생성 실패:', error);
+            return false;
+        }
+    }
+
     // 간단한 톤 생성
     createTone(frequency, duration, type = 'sine') {
         if (!this.enabled || !this.audioContext) return;
