@@ -71,19 +71,34 @@ def daily_expressions():
 
 @app.route('/conversation_practice')
 def conversation_practice():
-    """드라마/애니 기반 대화 연습"""
+    """드라마/애니 기반 다중턴 대화 연습"""
     if 'player_data' not in session:
         return redirect(url_for('index'))
     
     player = session['player_data']
     speakers = game_logic.get_foreign_speakers()
     
-    # 드라마 시나리오 선택
-    drama_data = random.choice(game_logic.get_drama_conversations())
+    # 드라마 시나리오 선택 (새로운 시나리오 시작)
+    drama_scenario = random.choice(game_logic.get_drama_conversations())
     random_speaker = random.choice(speakers)
     
+    # 세션에 현재 대화 정보 저장
+    session['current_drama'] = {
+        'scenario': drama_scenario['scene'],
+        'turns': drama_scenario['turns'],
+        'turn_index': 0,
+        'speaker': random_speaker['name']
+    }
+    session.modified = True
+    
+    # 첫 번째 턴 데이터
+    current_turn = drama_scenario['turns'][0]
+    
     return render_template('conversation_practice.html',
-                         drama_data=drama_data,
+                         scenario=drama_scenario['scene'],
+                         current_turn=current_turn,
+                         turn_number=1,
+                         total_turns=len(drama_scenario['turns']),
                          speaker=random_speaker,
                          player=player)
 
@@ -1581,6 +1596,59 @@ def submit_expression_quiz():
     game_logic.save_game(player)
     
     return redirect(url_for('daily_expressions'))
+
+@app.route('/next_turn', methods=['POST'])
+def next_turn():
+    """다음 턴으로 진행 (음성 정답 후)"""
+    if 'player_data' not in session or 'current_drama' not in session:
+        return jsonify({'success': False, 'error': 'No conversation in progress'})
+    
+    try:
+        current_drama = session['current_drama']
+        current_index = current_drama['turn_index']
+        turns = current_drama['turns']
+        total_turns = len(turns)
+        
+        # 다음 턴이 있는지 확인
+        if current_index + 1 < total_turns:
+            current_index += 1
+            current_drama['turn_index'] = current_index
+            session['current_drama'] = current_drama
+            session.modified = True
+            
+            next_turn_data = turns[current_index]
+            
+            # 경험치 +10
+            player = session['player_data']
+            player['경험치'] += 10
+            
+            # 레벨업 확인
+            while player['경험치'] >= player['경험치최대']:
+                player['경험치'] -= player['경험치최대']
+                player['레벨'] += 1
+                player['경험치최대'] = int(player['경험치최대'] * 1.1)
+                player['스탯포인트'] += 5
+            
+            session['player_data'] = player
+            session.modified = True
+            game_logic.save_game(player)
+            
+            return jsonify({
+                'success': True,
+                'next_turn': next_turn_data,
+                'turn_number': current_index + 1,
+                'total_turns': total_turns,
+                'is_final': current_index + 1 == total_turns
+            })
+        else:
+            # 마지막 턴 완료
+            return jsonify({
+                'success': True,
+                'is_final': True,
+                'message': '대화 연습 완료!'
+            })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 @app.route('/add_exp', methods=['POST'])
 def add_exp():

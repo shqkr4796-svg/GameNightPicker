@@ -4003,52 +4003,122 @@ def get_expression_quiz():
     }
 
 def get_drama_conversations():
-    """드라마/애니 기반 실제 회화 시나리오"""
+    """드라마/애니 기반 다중턴 회화 시나리오"""
     return [
         {
             'scene': '카페에서 처음 만난 사람',
-            'ai_prompt': 'Hey, is this seat taken?',
-            'ai_meaning': '안녕, 이 자리 비었어요?',
-            'user_response': 'No, please sit down.',
-            'user_meaning': '아니요, 앉으세요.',
-            'ai_followup': 'Thanks. So, what brings you here today?',
-            'ai_followup_meaning': '감사합니다. 그래서 오늘 뭐 때문에 여기 왔어요?'
+            'turns': [
+                {
+                    'ai_prompt': 'Hey, is this seat taken?',
+                    'ai_meaning': '안녕, 이 자리 비었어요?',
+                    'user_response': 'No, please sit down.',
+                    'user_meaning': '아니요, 앉으세요.'
+                },
+                {
+                    'ai_prompt': 'Thanks. So, what brings you here today?',
+                    'ai_meaning': '감사합니다. 그래서 오늘 뭐 때문에 여기 왔어요?',
+                    'user_response': 'I come here to study.',
+                    'user_meaning': '나는 공부하러 여기 와요.'
+                },
+                {
+                    'ai_prompt': 'That sounds nice. What are you studying?',
+                    'ai_meaning': '좋네요. 뭘 공부하고 있어요?',
+                    'user_response': 'English language and culture.',
+                    'user_meaning': '영어와 문화를 공부합니다.'
+                }
+            ]
         },
         {
             'scene': '회사 면접',
-            'ai_prompt': 'Tell me about your strengths.',
-            'ai_meaning': '당신의 장점에 대해 말씀해주세요.',
-            'user_response': "I'm a quick learner and very dedicated.",
-            'user_meaning': '저는 빨리 배우고 매우 헌신적입니다.',
-            'ai_followup': 'That\'s great. Can you give me an example?',
-            'ai_followup_meaning': '그건 좋은데요. 예시를 들어줄 수 있어요?'
+            'turns': [
+                {
+                    'ai_prompt': 'Tell me about your strengths.',
+                    'ai_meaning': '당신의 장점에 대해 말씀해주세요.',
+                    'user_response': "I'm a quick learner and very dedicated.",
+                    'user_meaning': '저는 빨리 배우고 매우 헌신적입니다.'
+                },
+                {
+                    'ai_prompt': 'That\'s great. Can you give me an example?',
+                    'ai_meaning': '그건 좋은데요. 예시를 들어줄 수 있어요?',
+                    'user_response': 'In my previous job, I finished projects ahead of schedule.',
+                    'user_meaning': '이전 직장에서 프로젝트를 일찍 완료했습니다.'
+                },
+                {
+                    'ai_prompt': 'Excellent. When can you start?',
+                    'ai_meaning': '훌륭합니다. 언제 시작할 수 있어요?',
+                    'user_response': 'I can start next Monday.',
+                    'user_meaning': '다음 주 월요일에 시작할 수 있습니다.'
+                }
+            ]
         },
         {
             'scene': '레스토랑에서 주문',
-            'ai_prompt': 'What would you like to order?',
-            'ai_meaning': '주문하시겠어요?',
-            'user_response': "I'll have the grilled salmon, please.",
-            'user_meaning': '그릴에 구운 연어로 주세요.',
-            'ai_followup': 'Good choice. Would you like anything to drink?',
-            'ai_followup_meaning': '좋은 선택이에요. 마실 것도 주시겠어요?'
+            'turns': [
+                {
+                    'ai_prompt': 'What would you like to order?',
+                    'ai_meaning': '주문하시겠어요?',
+                    'user_response': "I'll have the grilled salmon, please.",
+                    'user_meaning': '그릴에 구운 연어로 주세요.'
+                },
+                {
+                    'ai_prompt': 'Good choice. Would you like anything to drink?',
+                    'ai_meaning': '좋은 선택이에요. 마실 것도 주시겠어요?',
+                    'user_response': 'Yes, I\'ll have water with lemon.',
+                    'user_meaning': '네, 레몬을 넣은 물로 주세요.'
+                },
+                {
+                    'ai_prompt': 'Will that be everything?',
+                    'ai_meaning': '이게 전부일까요?',
+                    'user_response': 'Yes, that will be all. Thank you.',
+                    'user_meaning': '네, 이게 전부입니다. 감사합니다.'
+                }
+            ]
         },
         {
             'scene': '여행지에서 길을 묻는 중',
-            'ai_prompt': 'Are you lost?',
-            'ai_meaning': '길을 잃으셨어요?',
-            'user_response': "Yes, I'm looking for the train station.",
-            'user_meaning': '네, 기차역을 찾고 있어요.',
-            'ai_followup': "It's just two blocks away. Turn right at the corner.",
-            'ai_followup_meaning': '바로 2블록 떨어진 곳이에요. 모퉁이에서 오른쪽으로 돌아가세요.'
+            'turns': [
+                {
+                    'ai_prompt': 'Are you lost?',
+                    'ai_meaning': '길을 잃으셨어요?',
+                    'user_response': "Yes, I'm looking for the train station.",
+                    'user_meaning': '네, 기차역을 찾고 있어요.'
+                },
+                {
+                    'ai_prompt': "It's just two blocks away. Turn right at the corner.",
+                    'ai_meaning': '바로 2블록 떨어진 곳이에요. 모퉁이에서 오른쪽으로 돌아가세요.',
+                    'user_response': 'Thank you so much for your help!',
+                    'user_meaning': '도와주셔서 정말 감사합니다!'
+                },
+                {
+                    'ai_prompt': 'You\'re welcome. Have a safe trip!',
+                    'ai_meaning': '환영합니다. 안전한 여행 되세요!',
+                    'user_response': 'Thank you, goodbye!',
+                    'user_meaning': '감사합니다. 안녕!'
+                }
+            ]
         },
         {
             'scene': '친구와의 재회',
-            'ai_prompt': "I haven't seen you in years!",
-            'ai_meaning': '몇 년 만이다!',
-            'user_response': 'I know! How have you been?',
-            'user_meaning': '알아요! 잘 지냈어요?',
-            'ai_followup': 'Great! We should catch up over coffee.',
-            'ai_followup_meaning': '좋아! 커피하면서 얘기해야겠다.'
+            'turns': [
+                {
+                    'ai_prompt': "I haven't seen you in years!",
+                    'ai_meaning': '몇 년 만이다!',
+                    'user_response': 'I know! How have you been?',
+                    'user_meaning': '알아요! 잘 지냈어요?'
+                },
+                {
+                    'ai_prompt': 'Great! We should catch up over coffee.',
+                    'ai_meaning': '좋아! 커피하면서 얘기해야겠다.',
+                    'user_response': 'That sounds wonderful. When are you free?',
+                    'user_meaning': '좋은 생각이네요. 언제 시간이 돼요?'
+                },
+                {
+                    'ai_prompt': 'How about this Saturday?',
+                    'ai_meaning': '이번 토요일은 어때요?',
+                    'user_response': 'Saturday works perfectly for me!',
+                    'user_meaning': '토요일이 저한테 딱 맞아요!'
+                }
+            ]
         }
     ]
 

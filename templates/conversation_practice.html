@@ -5,8 +5,22 @@
 {% block content %}
 <style>
     .conversation-container {
-        max-width: 800px;
+        max-width: 850px;
         margin: 0 auto;
+    }
+    
+    .progress-bar-custom {
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.3s;
     }
     
     .speaker-message {
@@ -17,7 +31,7 @@
         border-radius: 5px;
     }
     
-    .user-message {
+    .user-prompt {
         background: #fff8e7;
         border-left: 4px solid #ff9900;
         padding: 15px;
@@ -25,20 +39,12 @@
         border-radius: 5px;
     }
     
-    .response-prompt {
-        background: #f0f8ff;
-        border: 2px dashed #0066cc;
-        padding: 15px;
-        margin: 20px 0;
-        border-radius: 5px;
-        text-align: center;
-    }
-    
     .response-text {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: bold;
         color: #0066cc;
         margin: 10px 0;
+        word-break: break-word;
     }
     
     .meaning-text {
@@ -46,6 +52,19 @@
         color: #666;
         margin-top: 8px;
         font-style: italic;
+    }
+    
+    .user-prompt .response-text {
+        color: #ff6600;
+    }
+    
+    .status-box {
+        background: #f0f8ff;
+        border: 2px dashed #0066cc;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        text-align: center;
     }
     
     .button-group {
@@ -57,20 +76,42 @@
     
     .status-success {
         background: #d4edda;
-        border-color: #28a745;
+        border: 1px solid #28a745;
         color: #155724;
     }
     
     .status-error {
         background: #f8d7da;
-        border-color: #f5c6cb;
+        border: 1px solid #f5c6cb;
         color: #721c24;
     }
     
-    .status-info {
-        background: #d1ecf1;
-        border-color: #bee5eb;
-        color: #0c5460;
+    .conversation-history {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+    
+    .history-item {
+        margin-bottom: 12px;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+    }
+    
+    .history-ai {
+        background: #e7f3ff;
+        border-left: 3px solid #0066cc;
+    }
+    
+    .history-user {
+        background: #fff8e7;
+        border-left: 3px solid #ff9900;
+        margin-left: 20px;
     }
 </style>
 
@@ -83,16 +124,31 @@
                     <i class="fas fa-microphone me-2"></i>드라마/애니 회화 연습
                 </h4>
             </div>
-            <div class="card-body text-center">
-                <p class="text-muted mb-2"><strong>장면:</strong> {{ drama_data.scene }}</p>
-                <p class="text-muted mb-0">음성으로 대사를 말해서 정답하세요!</p>
+            <div class="card-body">
+                <p class="mb-2"><strong>📍 장면:</strong> {{ scenario }}</p>
+                <p class="mb-3"><strong>🗣️ 강사:</strong> {{ speaker.name }}</p>
+                
+                <!-- 진행도 표시 -->
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <small class="text-muted">턴 진행 상황</small>
+                    <small class="text-muted"><span id="turnNumber">{{ turn_number }}</span> / <span id="totalTurns">{{ total_turns }}</span></small>
+                </div>
+                <div class="progress-bar-custom">
+                    <div class="progress-fill" id="progressBar" style="width: {{ (turn_number / total_turns * 100)|int }}%"></div>
+                </div>
             </div>
         </div>
 
-        <!-- 대화 박스 -->
+        <!-- 대화 이력 -->
+        <div id="conversationHistory" class="conversation-history" style="display: none;">
+            <small class="text-muted d-block mb-3">📜 대화 이력</small>
+            <div id="historyContent"></div>
+        </div>
+
+        <!-- 현재 턴 대화 -->
         <div class="card mb-4">
             <div class="card-body">
-                <!-- 외국인(AI) 첫 번째 대사 -->
+                <!-- 상대방(AI) 대사 -->
                 <div class="row mb-4">
                     <div class="col-12 col-sm-3 text-center mb-3 mb-sm-0">
                         <img src="{{ url_for('static', filename='images/' + speaker.image) }}" alt="{{ speaker.name }}" style="width: 100%; max-width: 120px; border-radius: 10px;">
@@ -100,10 +156,11 @@
                     </div>
                     <div class="col-12 col-sm-9">
                         <div class="speaker-message">
-                            <div class="response-text">{{ drama_data.ai_prompt }}</div>
-                            <div class="meaning-text">{{ drama_data.ai_meaning }}</div>
+                            <small class="text-muted">상대방 대사:</small>
+                            <div class="response-text" id="aiPromptText">{{ current_turn.ai_prompt }}</div>
+                            <div class="meaning-text" id="aiMeaningText">{{ current_turn.ai_meaning }}</div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="playAudio('{{ drama_data.ai_prompt }}')">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="playAudio()">
                             <i class="fas fa-play me-1"></i>재생
                         </button>
                     </div>
@@ -112,17 +169,17 @@
                 <hr class="my-4">
 
                 <!-- 사용자가 말해야 할 문장 -->
-                <div class="response-prompt" id="responsePromptContainer">
-                    <h6 class="mb-3">💬 당신이 말해야 할 대사:</h6>
-                    <div class="response-text">{{ drama_data.user_response }}</div>
-                    <div class="meaning-text">{{ drama_data.user_meaning }}</div>
+                <div class="user-prompt">
+                    <small class="text-muted">당신이 말해야 할 대사:</small>
+                    <div class="response-text" id="userResponseText">{{ current_turn.user_response }}</div>
+                    <div class="meaning-text" id="userMeaningText">{{ current_turn.user_meaning }}</div>
                 </div>
 
                 <!-- 음성 인식 섹션 -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="form-group">
-                            <label class="form-label"><strong>당신의 음성 응답:</strong></label>
+                            <label class="form-label"><strong>🎤 음성 인식:</strong></label>
                             <button type="button" id="micBtn" class="btn btn-success w-100 mb-2">
                                 <i class="fas fa-microphone me-2"></i>음성 인식 시작
                             </button>
@@ -145,26 +202,20 @@
                     <div id="resultMessage" class="alert"></div>
                 </div>
 
-                <!-- AI 후속 대사 (정답 후 나타남) -->
-                <div id="aiFollowupContainer" style="display: none;" class="mt-4 pt-4 border-top">
-                    <h6 class="mb-3">✅ 정답입니다!</h6>
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="speaker-message">
-                                <div class="response-text" id="followupText"></div>
-                                <div class="meaning-text" id="followupMeaning"></div>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-primary" onclick="playAudio(document.getElementById('followupText').textContent)">
-                                <i class="fas fa-play me-1"></i>재생
-                            </button>
-                        </div>
-                    </div>
+                <!-- 다음 턴 버튼 (정답 후 나타남) -->
+                <div id="nextTurnContainer" style="display: none;" class="button-group">
+                    <button type="button" id="nextTurnBtn" class="btn btn-success flex-grow-1">
+                        <i class="fas fa-arrow-right me-2"></i><span id="nextBtnText">다음 대사로</span>
+                    </button>
                 </div>
 
-                <!-- 다음 시나리오 버튼 -->
-                <div class="button-group">
-                    <a href="{{ url_for('conversation_practice') }}" class="btn btn-primary flex-grow-1">
-                        <i class="fas fa-redo me-2"></i>새로운 대화 시작
+                <!-- 완료 버튼 (마지막 턴 후 나타남) -->
+                <div id="completionContainer" style="display: none;" class="button-group">
+                    <a href="{{ url_for('home') }}" class="btn btn-primary flex-grow-1">
+                        <i class="fas fa-home me-2"></i>홈으로
+                    </a>
+                    <a href="{{ url_for('conversation_practice') }}" class="btn btn-success flex-grow-1">
+                        <i class="fas fa-redo me-2"></i>새로운 시나리오
                     </a>
                 </div>
             </div>
@@ -177,10 +228,11 @@
             </div>
             <div class="card-body">
                 <ul class="mb-0">
-                    <li>음성 인식 버튼을 클릭하고 영어로 대사를 말하세요</li>
-                    <li>정확한 문장과 유사하게 말해야 정답입니다</li>
-                    <li>발음과 억양에 신경 쓰세요</li>
-                    <li>정답하면 외국인의 다음 대사를 듣고 대화를 계속할 수 있습니다</li>
+                    <li>상대방의 대사를 읽고 의미를 이해하세요</li>
+                    <li>당신이 말해야 할 대사를 읽고 음성으로 말해보세요</li>
+                    <li>음성 인식 버튼을 클릭하고 정확하게 대사를 말하세요</li>
+                    <li>정답하면 자동으로 다음 턴으로 진행됩니다</li>
+                    <li>각 턴마다 정답 시 경험치 +10을 획득합니다</li>
                 </ul>
             </div>
         </div>
@@ -188,26 +240,25 @@
 </div>
 
 <script>
-// 글로벌 음성 캐시
+// 글로벌 변수
 let cachedFemaleVoice = null;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+let isListening = false;
 
-// 모든 음성 사전 로드 및 분류
+// 음성 로드
 function loadAllVoices() {
     if ('speechSynthesis' in window) {
         const voices = window.speechSynthesis.getVoices();
-        
-        // 여자 음성 찾기 - Zira/Samantha 우선
         for (let voice of voices) {
             if (voice.lang === 'en-US') {
                 const name = voice.name;
-                if (name.includes('Zira') || name.includes('Samantha') || name.includes('Victoria') || name.includes('Karen') || name.includes('Moira')) {
+                if (name.includes('Zira') || name.includes('Samantha') || name.includes('Victoria')) {
                     cachedFemaleVoice = voice;
                     break;
                 }
             }
         }
-        
-        // 여자 음성이 없으면 첫 번째 en-US 음성
         if (!cachedFemaleVoice) {
             for (let voice of voices) {
                 if (voice.lang === 'en-US') {
@@ -219,47 +270,31 @@ function loadAllVoices() {
     }
 }
 
-// 음성 로드 완료 대기
 if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = function() {
-        loadAllVoices();
-    };
+    window.speechSynthesis.onvoiceschanged = loadAllVoices;
     loadAllVoices();
 }
 
 // 음성 재생
-function playAudio(text) {
+function playAudio() {
+    const text = document.getElementById('aiPromptText').textContent;
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
         utterance.rate = 0.9;
-        if (cachedFemaleVoice) {
-            utterance.voice = cachedFemaleVoice;
-        }
+        if (cachedFemaleVoice) utterance.voice = cachedFemaleVoice;
         window.speechSynthesis.speak(utterance);
     }
 }
 
-// Web Speech API 음성 인식
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
-let isListening = false;
-
+// 음성 인식 초기화
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.continuous = true;
     recognition.interimResults = true;
 }
-
-// 드라마 데이터 (JavaScript에서 안전하게 정의)
-const dramaData = {
-    user_response: `{{ drama_data.user_response }}`,
-    user_meaning: `{{ drama_data.user_meaning }}`,
-    ai_followup: `{{ drama_data.ai_followup }}`,
-    ai_followup_meaning: `{{ drama_data.ai_followup_meaning }}`
-};
 
 document.addEventListener('DOMContentLoaded', function() {
     const micBtn = document.getElementById('micBtn');
@@ -270,9 +305,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusText = document.getElementById('statusText');
     const resultFeedback = document.getElementById('resultFeedback');
     const resultMessage = document.getElementById('resultMessage');
-    const aiFollowupContainer = document.getElementById('aiFollowupContainer');
+    const nextTurnContainer = document.getElementById('nextTurnContainer');
+    const nextTurnBtn = document.getElementById('nextTurnBtn');
+    const completionContainer = document.getElementById('completionContainer');
     
-    const targetResponse = dramaData.user_response.toLowerCase().trim();
+    // 현재 턴의 정답
+    const targetResponse = document.getElementById('userResponseText').textContent.toLowerCase().trim();
     
     if (!recognition) {
         micBtn.disabled = true;
@@ -289,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
             stopBtn.style.display = 'block';
             recognizedText.style.display = 'block';
             resultFeedback.style.display = 'none';
-            aiFollowupContainer.style.display = 'none';
+            nextTurnContainer.style.display = 'none';
             textContent.textContent = '음성 인식 중...';
             recognition.start();
         }
@@ -310,7 +348,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         for (let i = event.resultIndex; i < event.results.length; i++) {
             const transcript = event.results[i][0].transcript;
-            
             if (event.results[i].isFinal) {
                 finalTranscript += transcript + ' ';
             } else {
@@ -321,44 +358,77 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentText = finalTranscript || interimTranscript;
         textContent.textContent = currentText;
         
-        // 최종 결과인 경우 정답 확인
         if (finalTranscript) {
-            checkAnswer(finalTranscript.toLowerCase().trim(), targetResponse.toLowerCase().trim());
+            checkAnswer(finalTranscript.toLowerCase().trim());
         }
     });
     
     // 정답 확인
-    function checkAnswer(userInput, targetInput) {
+    function checkAnswer(userInput) {
         resultFeedback.style.display = 'block';
         resultMessage.className = 'alert';
         
-        // 부분 일치 확인 (주요 단어들이 포함되어 있는지 확인)
-        const targetWords = targetInput.split(/\s+/);
+        const targetWords = targetResponse.split(/\s+/);
         const userWords = userInput.split(/\s+/);
-        
-        // 3개 이상의 주요 단어가 일치하거나 80% 이상 일치하면 정답
         const matchedWords = targetWords.filter(w => userWords.some(uw => uw.includes(w) || w.includes(uw)));
         const matchPercentage = matchedWords.length / targetWords.length;
         
-        if (matchPercentage >= 0.7 || userInput.includes(targetInput) || targetInput.includes(userInput)) {
+        if (matchPercentage >= 0.7 || userInput.includes(targetResponse) || targetResponse.includes(userInput)) {
             resultMessage.className = 'alert status-success';
-            resultMessage.innerHTML = '<strong>✅ 정답입니다!</strong> 잘 하셨어요!';
+            resultMessage.innerHTML = '<strong>✅ 정답입니다!</strong> 잘 하셨어요! 경험치 +10';
+            nextTurnContainer.style.display = 'block';
             
-            // AI 후속 대사 표시
-            aiFollowupContainer.style.display = 'block';
-            document.getElementById('followupText').textContent = dramaData.ai_followup;
-            document.getElementById('followupMeaning').textContent = dramaData.ai_followup_meaning;
-            
-            // 경험치 +10
-            fetch('{{ url_for("add_exp") }}', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({exp: 10})
-            });
+            // 다음 턴 버튼 클릭 시
+            nextTurnBtn.onclick = function() {
+                loadNextTurn();
+            };
         } else {
             resultMessage.className = 'alert status-error';
-            resultMessage.innerHTML = `<strong>❌ 틀렸습니다</strong><br>정답: <strong>${dramaData.user_response}</strong>`;
+            resultMessage.innerHTML = `<strong>❌ 틀렸습니다</strong><br>정답: <strong>${targetResponse}</strong>`;
         }
+    }
+    
+    // 다음 턴 로드
+    function loadNextTurn() {
+        fetch('{{ url_for("next_turn") }}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                if (data.is_final && data.turn_number === undefined) {
+                    // 모든 턴 완료
+                    resultFeedback.style.display = 'block';
+                    resultMessage.className = 'alert alert-success';
+                    resultMessage.innerHTML = '<strong>🎉 대화 연습 완료!</strong><br>모든 턴을 성공적으로 완료했습니다!';
+                    nextTurnContainer.style.display = 'none';
+                    completionContainer.style.display = 'flex';
+                } else {
+                    // 다음 턴 표시
+                    const turn = data.next_turn;
+                    document.getElementById('aiPromptText').textContent = turn.ai_prompt;
+                    document.getElementById('aiMeaningText').textContent = turn.ai_meaning;
+                    document.getElementById('userResponseText').textContent = turn.user_response;
+                    document.getElementById('userMeaningText').textContent = turn.user_meaning;
+                    
+                    document.getElementById('turnNumber').textContent = data.turn_number;
+                    document.getElementById('totalTurns').textContent = data.total_turns;
+                    const progress = (data.turn_number / data.total_turns * 100);
+                    document.getElementById('progressBar').style.width = progress + '%';
+                    
+                    // UI 리셋
+                    recognizedText.style.display = 'none';
+                    resultFeedback.style.display = 'none';
+                    nextTurnContainer.style.display = 'none';
+                    micBtn.style.display = 'block';
+                    stopBtn.style.display = 'none';
+                    
+                    // 새로운 턴 정답으로 업데이트
+                    targetResponse = turn.user_response.toLowerCase().trim();
+                }
+            }
+        });
     }
     
     // 음성 인식 에러
@@ -378,7 +448,6 @@ document.addEventListener('DOMContentLoaded', function() {
         stopBtn.style.display = 'none';
     });
     
-    // 음성 인식 종료
     recognition.addEventListener('end', function() {
         isListening = false;
         micBtn.style.display = 'block';
