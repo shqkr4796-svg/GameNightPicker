@@ -5697,11 +5697,11 @@ def execute_skill(battle_state, skill_name):
             
             if stage:
                 # 다음 몬스터 생성
-                from data.monsters import MONSTERS_BY_ID
                 import random
+                from data.monsters import get_monster_by_id, get_monsters_by_rarity
                 
                 enemy_rarity = random.choice(stage.get('enemy_rarity', ['레어']))
-                enemy_monsters = [m_id for m_id, m in MONSTERS_BY_ID.items() if m.get('등급') == enemy_rarity]
+                enemy_monsters = get_monsters_by_rarity(enemy_rarity)
                 
                 if enemy_monsters:
                     enemy_monster_id = random.choice(enemy_monsters)
