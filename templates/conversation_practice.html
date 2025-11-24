@@ -419,8 +419,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // UI 리셋
                     recognizedText.style.display = 'none';
+                    textContent.textContent = '';
                     resultFeedback.style.display = 'none';
+                    resultMessage.innerHTML = '';
                     nextTurnContainer.style.display = 'none';
+                    statusMessage.style.display = 'none';
+                    
+                    // 음성인식 상태 리셋
+                    if (recognition) {
+                        recognition.stop();
+                    }
+                    isListening = false;
                     micBtn.style.display = 'block';
                     stopBtn.style.display = 'none';
                     
