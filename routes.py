@@ -42,12 +42,48 @@ def dashboard():
     stats = game_logic.get_player_stats(player)
     recent_events = game_logic.get_recent_events()
     achievements = game_logic.get_achievements(player)
+    avatars = game_logic.get_avatars()
     
     return render_template('dashboard.html', 
                          player=player, 
                          stats=stats,
                          recent_events=recent_events,
-                         achievements=achievements)
+                         achievements=achievements,
+                         avatars=avatars)
+
+@app.route('/avatar')
+def avatar():
+    """아바타 선택 페이지"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    avatars = game_logic.get_avatars()
+    
+    return render_template('avatar.html', player=player, avatars=avatars)
+
+@app.route('/select_avatar', methods=['POST'])
+def select_avatar():
+    """아바타 선택"""
+    if 'player_data' not in session:
+        return redirect(url_for('index'))
+    
+    player = session['player_data']
+    avatar_id = request.form.get('avatar_id', 'avatar_1')
+    
+    # 아바타 ID 검증
+    avatars = game_logic.get_avatars()
+    valid_ids = [a['id'] for a in avatars]
+    
+    if avatar_id in valid_ids:
+        player['아바타'] = avatar_id
+        session['player_data'] = player
+        game_logic.save_game(player)
+        flash('아바타가 변경되었습니다!', 'success')
+    else:
+        flash('잘못된 아바타입니다.', 'error')
+    
+    return redirect(url_for('avatar'))
 
 @app.route('/daily_expressions')
 def daily_expressions():

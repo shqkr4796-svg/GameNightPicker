@@ -37,6 +37,7 @@ def create_new_player():
         '모험_기술': ['박치기'],  # 보유한 기술 목록
         '모험_대표몬스터': None,  # 대표 몬스터 ID
         '모험_아이템': {},  # 모험 아이템 인벤토리
+        '아바타': 'avatar_1',  # 플레이어 아바타 (기본값: avatar_1)
     }
 
 def save_game(player_data):
@@ -105,6 +106,10 @@ def load_game():
                     player['모험_대표몬스터'] = None
                 if '모험_아이템' not in player:
                     player['모험_아이템'] = {}
+                
+                # 아바타 필드 추가 (기존 플레이어 호환성)
+                if '아바타' not in player:
+                    player['아바타'] = 'avatar_1'
                 
                 return player
     except Exception as e:
@@ -5661,3 +5666,7 @@ def complete_adventure_battle(player, battle_state):
         player['모험_클리어스테이지'] = stage_id
     
     return {'success': True, 'rewards': rewards}
+
+def get_avatars():
+    """아바타 목록 가져오기"""
+    return avatars

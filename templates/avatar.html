@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}아바타 선택 - 라이프 시뮬레이션{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i data-feather="user" class="me-2"></i>아바타 선택
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <p class="text-muted">좋아하는 아바타를 선택해보세요!</p>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    {% for avatar in avatars %}
+                    <div class="col-md-6 col-lg-3">
+                        <form method="POST" action="{{ url_for('select_avatar') }}" class="h-100">
+                            <div class="card h-100 {% if player['아바타'] == avatar['id'] %}border-success{% else %}border-light{% endif %} cursor-pointer">
+                                <button type="submit" name="avatar_id" value="{{ avatar['id'] }}" 
+                                        class="btn btn-link text-decoration-none text-dark h-100 w-100 p-0"
+                                        style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                    <div class="card-body text-center">
+                                        <div style="font-size: 60px; margin-bottom: 10px;">{{ avatar['이모지'] }}</div>
+                                        <h6 class="card-title mb-1">{{ avatar['이름'] }}</h6>
+                                        <p class="card-text small text-muted mb-2">{{ avatar['설명'] }}</p>
+                                        {% if player['아바타'] == avatar['id'] %}
+                                        <span class="badge bg-success">선택됨</span>
+                                        {% endif %}
+                                    </div>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <i data-feather="arrow-left" class="me-2"></i>돌아가기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

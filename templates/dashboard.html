@@ -46,6 +46,22 @@
                 <!-- 플레이어 상태 탭 -->
                 <div class="tab-pane fade show active" id="panel-status" role="tabpanel" aria-labelledby="tab-status">
                     <div class="card-body">
+                        <!-- 아바타 표시 -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                {% set avatar_emoji = '' %}
+                                {% if player.get('아바타') %}
+                                    {% for avatar in avatars %}
+                                        {% if avatar['id'] == player['아바타'] %}
+                                            {% set avatar_emoji = avatar['이모지'] %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                <div style="font-size: 80px; margin-bottom: 10px;">{{ avatar_emoji }}</div>
+                                <p class="text-muted small">클릭하여 아바타 변경</p>
+                            </div>
+                        </div>
+
                         <div class="row g-3">
                             <!-- 기본 정보 -->
                             <div class="col-md-6">
@@ -274,6 +290,10 @@
                 <div class="tab-pane fade show active" id="panel-action" role="tabpanel" aria-labelledby="tab-action">
                     <div class="card-body">
                         <div class="d-grid gap-2 mb-3">
+                            <a href="{{ url_for('avatar') }}" class="btn btn-outline-secondary w-100 btn-sm">
+                                <i data-feather="user" class="me-2"></i>아바타 선택
+                            </a>
+                            
                             <form method="POST" action="{{ url_for('sleep') }}">
                                 <button type="submit" class="btn btn-success w-100 btn-sm">
                                     <i data-feather="moon" class="me-2"></i>잠자기
