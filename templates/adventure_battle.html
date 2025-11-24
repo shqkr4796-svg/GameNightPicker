@@ -268,6 +268,7 @@ let currentSkill = '';
 const skillsInfo = {{ skills_info | tojson }};
 const playerSkills = {{ battle_state.player_skills | tojson }};
 const skillUsage = {{ skill_usage | tojson }};
+const skillMaxUses = {{ skill_max_uses | tojson }};
 const currentPlayerRarity = '{{ battle_state.player_monster.rarity }}';
 let skillButtonClickCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
 
@@ -373,8 +374,9 @@ function updateBattleUI(battleState) {
     }
     
     // 전투 로그 업데이트
-    const logContainer = document.querySelector('[max-height="90px"]');
-    if (logContainer && battleState.log) {
+    const logContainers = document.querySelectorAll('div[style*="max-height: 90px"]');
+    if (logContainers.length > 0 && battleState.log) {
+        const logContainer = logContainers[0];
         let logHtml = '';
         const logs = battleState.log.slice(-10);
         for (let log_line of logs) {
