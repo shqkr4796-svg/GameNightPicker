@@ -18,51 +18,75 @@ class AdventureSound {
         if (!this.soundEnabled) return;
         const ctx = this.audioContext;
         const now = ctx.currentTime;
-        const duration = 6; // 6초 루프 (자연스러운 멜로디)
+        const duration = 8; // 8초 루프 (포켓몬 스타일)
 
-        // 자연스럽고 평화로운 멜로디 - 다양한 패턴
-        // 주 멜로디 라인 (부드러운 sine)
-        const melodyPattern = [
-            { freq: 329.63, duration: 0.6, time: 0, vol: 0.15, type: 'sine' },      // E
-            { freq: 392.0, duration: 0.6, time: 0.7, vol: 0.15, type: 'sine' },     // G
-            { freq: 440.0, duration: 0.8, time: 1.4, vol: 0.16, type: 'sine' },     // A
-            { freq: 493.88, duration: 0.6, time: 2.3, vol: 0.15, type: 'sine' },    // B
-            { freq: 440.0, duration: 0.6, time: 3.0, vol: 0.15, type: 'sine' },     // A
-            { freq: 392.0, duration: 0.8, time: 3.7, vol: 0.16, type: 'sine' },     // G
-            { freq: 349.23, duration: 0.6, time: 4.6, vol: 0.15, type: 'sine' },    // F
-            { freq: 329.63, duration: 0.8, time: 5.3, vol: 0.15, type: 'sine' }     // E
+        // 포켓몬 게임 스타일 배경음악 - 아르페지오 패턴
+        // 베이스 라인 (저음)
+        const bassPattern = [
+            { freq: 164.81, duration: 0.5, time: 0, vol: 0.1, type: 'sine' },       // E
+            { freq: 196.0, duration: 0.5, time: 0.5, vol: 0.1, type: 'sine' },      // G
+            { freq: 220.0, duration: 0.5, time: 1.0, vol: 0.1, type: 'sine' },      // A
+            { freq: 196.0, duration: 0.5, time: 1.5, vol: 0.1, type: 'sine' },      // G
+            { freq: 164.81, duration: 0.5, time: 2.0, vol: 0.1, type: 'sine' },     // E
+            { freq: 196.0, duration: 0.5, time: 2.5, vol: 0.1, type: 'sine' },      // G
+            { freq: 220.0, duration: 0.5, time: 3.0, vol: 0.1, type: 'sine' },      // A
+            { freq: 196.0, duration: 0.5, time: 3.5, vol: 0.1, type: 'sine' },      // G
+            { freq: 164.81, duration: 0.5, time: 4.0, vol: 0.1, type: 'sine' },     // E
+            { freq: 196.0, duration: 0.5, time: 4.5, vol: 0.1, type: 'sine' },      // G
+            { freq: 220.0, duration: 0.5, time: 5.0, vol: 0.1, type: 'sine' },      // A
+            { freq: 196.0, duration: 0.5, time: 5.5, vol: 0.1, type: 'sine' },      // G
+            { freq: 164.81, duration: 0.5, time: 6.0, vol: 0.1, type: 'sine' },     // E
+            { freq: 196.0, duration: 0.5, time: 6.5, vol: 0.1, type: 'sine' },      // G
+            { freq: 220.0, duration: 0.5, time: 7.0, vol: 0.1, type: 'sine' },      // A
+            { freq: 196.0, duration: 0.5, time: 7.5, vol: 0.1, type: 'sine' }       // G
         ];
 
-        // 화음 배경 (부드러운 harmony) - 3도 아래
-        const harmonyPattern = [
-            { freq: 246.94, duration: 0.6, time: 0, vol: 0.08, type: 'sine' },      // B (한 옥타브 아래)
-            { freq: 293.66, duration: 0.6, time: 0.7, vol: 0.08, type: 'sine' },    // D
-            { freq: 329.63, duration: 0.8, time: 1.4, vol: 0.08, type: 'sine' },    // E
-            { freq: 369.99, duration: 0.6, time: 2.3, vol: 0.08, type: 'sine' },    // F#
-            { freq: 329.63, duration: 0.6, time: 3.0, vol: 0.08, type: 'sine' },    // E
-            { freq: 293.66, duration: 0.8, time: 3.7, vol: 0.08, type: 'sine' },    // D
-            { freq: 261.63, duration: 0.6, time: 4.6, vol: 0.08, type: 'sine' },    // C
-            { freq: 246.94, duration: 0.8, time: 5.3, vol: 0.08, type: 'sine' }     // B
+        // 중간 음역대 아르페지오 (주요 멜로디)
+        const middlePattern = [
+            { freq: 329.63, duration: 0.35, time: 0.2, vol: 0.14, type: 'sine' },   // E
+            { freq: 392.0, duration: 0.35, time: 0.55, vol: 0.14, type: 'sine' },   // G
+            { freq: 440.0, duration: 0.35, time: 0.9, vol: 0.14, type: 'sine' },    // A
+            { freq: 392.0, duration: 0.35, time: 1.25, vol: 0.14, type: 'sine' },   // G
+            { freq: 329.63, duration: 0.35, time: 1.6, vol: 0.14, type: 'sine' },   // E
+            { freq: 392.0, duration: 0.35, time: 1.95, vol: 0.14, type: 'sine' },   // G
+            { freq: 440.0, duration: 0.35, time: 2.3, vol: 0.14, type: 'sine' },    // A
+            { freq: 392.0, duration: 0.35, time: 2.65, vol: 0.14, type: 'sine' },   // G
+            { freq: 329.63, duration: 0.35, time: 3.0, vol: 0.14, type: 'sine' },   // E (반복)
+            { freq: 392.0, duration: 0.35, time: 3.35, vol: 0.14, type: 'sine' },   // G
+            { freq: 440.0, duration: 0.35, time: 3.7, vol: 0.14, type: 'sine' },    // A
+            { freq: 392.0, duration: 0.35, time: 4.05, vol: 0.14, type: 'sine' },   // G
+            { freq: 329.63, duration: 0.35, time: 4.4, vol: 0.14, type: 'sine' },   // E
+            { freq: 392.0, duration: 0.35, time: 4.75, vol: 0.14, type: 'sine' },   // G
+            { freq: 440.0, duration: 0.35, time: 5.1, vol: 0.14, type: 'sine' },    // A
+            { freq: 392.0, duration: 0.35, time: 5.45, vol: 0.14, type: 'sine' },   // G
+            { freq: 329.63, duration: 0.35, time: 5.8, vol: 0.14, type: 'sine' },   // E
+            { freq: 392.0, duration: 0.35, time: 6.15, vol: 0.14, type: 'sine' },   // G
+            { freq: 440.0, duration: 0.35, time: 6.5, vol: 0.14, type: 'sine' },    // A
+            { freq: 392.0, duration: 0.35, time: 6.85, vol: 0.14, type: 'sine' }    // G
         ];
 
-        // 높은 음역대 악센트 (아름다운 반짝임)
-        const accentPattern = [
-            { freq: 659.25, duration: 0.3, time: 1.8, vol: 0.1, type: 'sine' },     // E (high)
-            { freq: 740.0, duration: 0.3, time: 2.8, vol: 0.1, type: 'sine' },      // F# (high)
-            { freq: 698.46, duration: 0.3, time: 4.0, vol: 0.1, type: 'sine' },     // F (high)
-            { freq: 659.25, duration: 0.3, time: 5.0, vol: 0.1, type: 'sine' }      // E (high)
+        // 높은 음역대 악센트 (맑고 밝은 느낌)
+        const highPattern = [
+            { freq: 659.25, duration: 0.25, time: 0.4, vol: 0.09, type: 'sine' },   // E (high)
+            { freq: 783.99, duration: 0.25, time: 1.2, vol: 0.09, type: 'sine' },   // G (high)
+            { freq: 880.0, duration: 0.25, time: 2.0, vol: 0.09, type: 'sine' },    // A (high)
+            { freq: 783.99, duration: 0.25, time: 2.8, vol: 0.09, type: 'sine' },   // G (high)
+            { freq: 659.25, duration: 0.25, time: 3.6, vol: 0.09, type: 'sine' },   // E (high)
+            { freq: 783.99, duration: 0.25, time: 4.4, vol: 0.09, type: 'sine' },   // G (high)
+            { freq: 880.0, duration: 0.25, time: 5.2, vol: 0.09, type: 'sine' },    // A (high)
+            { freq: 783.99, duration: 0.25, time: 6.0, vol: 0.09, type: 'sine' }    // G (high)
         ];
 
         // 모든 패턴 재생
-        melodyPattern.forEach(note => {
+        bassPattern.forEach(note => {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
-        harmonyPattern.forEach(note => {
+        middlePattern.forEach(note => {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
-        accentPattern.forEach(note => {
+        highPattern.forEach(note => {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
