@@ -18,11 +18,10 @@ class AdventureSound {
         if (!this.soundEnabled) return;
         const ctx = this.audioContext;
         const now = ctx.currentTime;
-        const duration = 4; // 4초 루프 (활발한 전투 음악)
+        const duration = 12; // 12초 루프 (긴 포켓몬 전투 음악)
 
-        // 신나는 포켓몬 전투 배경음악 - 펑키하고 업비트한 느낌
-        // 메인 멜로디 라인 (square wave로 신나는 느낌)
-        const mainMelody = [
+        // === 섹션 1 (0-3초): 신나는 메인 테마 ===
+        const section1Main = [
             { freq: 523.25, duration: 0.3, time: 0, vol: 0.16, type: 'square' },    // C5
             { freq: 587.33, duration: 0.3, time: 0.35, vol: 0.16, type: 'square' }, // D5
             { freq: 659.25, duration: 0.4, time: 0.7, vol: 0.17, type: 'square' },  // E5
@@ -34,7 +33,46 @@ class AdventureSound {
             { freq: 740.0, duration: 0.3, time: 3.0, vol: 0.16, type: 'square' }    // F#5
         ];
 
-        // 베이스 펄스 (드럼처럼 들리게)
+        // === 섹션 2 (3-6초): 상승하는 멜로디 ===
+        const section2Main = [
+            { freq: 659.25, duration: 0.25, time: 3.0, vol: 0.17, type: 'square' },  // E5
+            { freq: 698.46, duration: 0.25, time: 3.3, vol: 0.17, type: 'square' },  // F5
+            { freq: 783.99, duration: 0.25, time: 3.6, vol: 0.17, type: 'square' },  // G5
+            { freq: 880.0, duration: 0.3, time: 3.9, vol: 0.18, type: 'square' },    // A5
+            { freq: 987.77, duration: 0.35, time: 4.3, vol: 0.18, type: 'square' },  // B5
+            { freq: 1046.5, duration: 0.4, time: 4.7, vol: 0.18, type: 'square' },   // C6
+            { freq: 987.77, duration: 0.3, time: 5.2, vol: 0.17, type: 'square' },   // B5
+            { freq: 880.0, duration: 0.25, time: 5.55, vol: 0.16, type: 'square' },  // A5
+            { freq: 783.99, duration: 0.25, time: 5.85, vol: 0.16, type: 'square' }  // G5
+        ];
+
+        // === 섹션 3 (6-9초): 다른 멜로디 변주 ===
+        const section3Main = [
+            { freq: 440.0, duration: 0.3, time: 6.0, vol: 0.16, type: 'square' },    // A4
+            { freq: 523.25, duration: 0.3, time: 6.35, vol: 0.16, type: 'square' },  // C5
+            { freq: 587.33, duration: 0.3, time: 6.7, vol: 0.16, type: 'square' },   // D5
+            { freq: 659.25, duration: 0.35, time: 7.05, vol: 0.17, type: 'square' }, // E5
+            { freq: 740.0, duration: 0.3, time: 7.45, vol: 0.17, type: 'square' },   // F#5
+            { freq: 659.25, duration: 0.3, time: 7.8, vol: 0.16, type: 'square' },   // E5
+            { freq: 587.33, duration: 0.3, time: 8.15, vol: 0.16, type: 'square' },  // D5
+            { freq: 523.25, duration: 0.3, time: 8.5, vol: 0.16, type: 'square' },   // C5
+            { freq: 587.33, duration: 0.25, time: 8.85, vol: 0.16, type: 'square' }  // D5
+        ];
+
+        // === 섹션 4 (9-12초): 클라이맥스 테마 ===
+        const section4Main = [
+            { freq: 659.25, duration: 0.2, time: 9.0, vol: 0.17, type: 'square' },   // E5
+            { freq: 783.99, duration: 0.2, time: 9.25, vol: 0.17, type: 'square' },  // G5
+            { freq: 659.25, duration: 0.2, time: 9.5, vol: 0.17, type: 'square' },   // E5
+            { freq: 880.0, duration: 0.2, time: 9.75, vol: 0.18, type: 'square' },   // A5
+            { freq: 783.99, duration: 0.2, time: 10.0, vol: 0.17, type: 'square' },  // G5
+            { freq: 1046.5, duration: 0.3, time: 10.25, vol: 0.19, type: 'square' }, // C6
+            { freq: 987.77, duration: 0.25, time: 10.6, vol: 0.18, type: 'square' }, // B5
+            { freq: 880.0, duration: 0.25, time: 10.9, vol: 0.17, type: 'square' },  // A5
+            { freq: 783.99, duration: 0.3, time: 11.2, vol: 0.17, type: 'square' }   // G5
+        ];
+
+        // 베이스 펄스 (지속적인 리듬)
         const bassPulse = [
             { freq: 110, duration: 0.2, time: 0, vol: 0.12, type: 'sine' },        // A2
             { freq: 110, duration: 0.2, time: 0.5, vol: 0.12, type: 'sine' },      // A2
@@ -43,34 +81,67 @@ class AdventureSound {
             { freq: 110, duration: 0.2, time: 2, vol: 0.12, type: 'sine' },        // A2
             { freq: 110, duration: 0.2, time: 2.5, vol: 0.12, type: 'sine' },      // A2
             { freq: 147.93, duration: 0.2, time: 3, vol: 0.12, type: 'sine' },     // D3
-            { freq: 110, duration: 0.2, time: 3.5, vol: 0.12, type: 'sine' }       // A2
+            { freq: 110, duration: 0.2, time: 3.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 110, duration: 0.2, time: 4, vol: 0.12, type: 'sine' },        // A2
+            { freq: 110, duration: 0.2, time: 4.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 123.47, duration: 0.2, time: 5, vol: 0.12, type: 'sine' },     // B2
+            { freq: 110, duration: 0.2, time: 5.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 110, duration: 0.2, time: 6, vol: 0.12, type: 'sine' },        // A2
+            { freq: 110, duration: 0.2, time: 6.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 147.93, duration: 0.2, time: 7, vol: 0.12, type: 'sine' },     // D3
+            { freq: 110, duration: 0.2, time: 7.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 110, duration: 0.2, time: 8, vol: 0.12, type: 'sine' },        // A2
+            { freq: 110, duration: 0.2, time: 8.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 123.47, duration: 0.2, time: 9, vol: 0.12, type: 'sine' },     // B2
+            { freq: 110, duration: 0.2, time: 9.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 110, duration: 0.2, time: 10, vol: 0.12, type: 'sine' },       // A2
+            { freq: 110, duration: 0.2, time: 10.5, vol: 0.12, type: 'sine' },     // A2
+            { freq: 147.93, duration: 0.2, time: 11, vol: 0.12, type: 'sine' },    // D3
+            { freq: 110, duration: 0.2, time: 11.5, vol: 0.12, type: 'sine' }      // A2
         ];
 
-        // 리드 라인 (높은 음역대 - 비브라토 느낌)
+        // 리드 라인 (높은 음역대 - 변주)
         const leadLine = [
             { freq: 880.0, duration: 0.25, time: 0.2, vol: 0.11, type: 'sine' },   // A5
             { freq: 932.33, duration: 0.25, time: 0.5, vol: 0.11, type: 'sine' },  // B♭5
             { freq: 1046.5, duration: 0.3, time: 0.8, vol: 0.12, type: 'sine' },   // C6
             { freq: 932.33, duration: 0.25, time: 1.2, vol: 0.11, type: 'sine' },  // B♭5
-            { freq: 880.0, duration: 0.25, time: 1.5, vol: 0.11, type: 'sine' },   // A5
-            { freq: 932.33, duration: 0.25, time: 1.8, vol: 0.11, type: 'sine' },  // B♭5
-            { freq: 1046.5, duration: 0.3, time: 2.1, vol: 0.12, type: 'sine' },   // C6
-            { freq: 1174.66, duration: 0.3, time: 2.5, vol: 0.12, type: 'sine' },  // D6
-            { freq: 1046.5, duration: 0.25, time: 2.85, vol: 0.11, type: 'sine' }, // C6
-            { freq: 932.33, duration: 0.25, time: 3.15, vol: 0.11, type: 'sine' }  // B♭5
+            { freq: 1174.66, duration: 0.3, time: 3.2, vol: 0.12, type: 'sine' },  // D6
+            { freq: 1046.5, duration: 0.25, time: 3.55, vol: 0.11, type: 'sine' }, // C6
+            { freq: 987.77, duration: 0.25, time: 3.85, vol: 0.11, type: 'sine' }, // B5
+            { freq: 1046.5, duration: 0.3, time: 4.15, vol: 0.12, type: 'sine' },  // C6
+            { freq: 1174.66, duration: 0.25, time: 4.5, vol: 0.12, type: 'sine' }, // D6
+            { freq: 1046.5, duration: 0.25, time: 4.8, vol: 0.11, type: 'sine' },  // C6
+            { freq: 987.77, duration: 0.25, time: 5.1, vol: 0.11, type: 'sine' },  // B5
+            { freq: 1174.66, duration: 0.3, time: 6.2, vol: 0.12, type: 'sine' },  // D6
+            { freq: 1046.5, duration: 0.25, time: 6.55, vol: 0.11, type: 'sine' }, // C6
+            { freq: 1046.5, duration: 0.3, time: 9.2, vol: 0.12, type: 'sine' },   // C6
+            { freq: 1174.66, duration: 0.25, time: 9.55, vol: 0.12, type: 'sine' },// D6
+            { freq: 1046.5, duration: 0.25, time: 9.85, vol: 0.11, type: 'sine' }  // C6
         ];
 
-        // 코드 배경음 (아래쪽)
+        // 코드 배경음 (아래쪽 - 변화)
         const chordBg = [
-            { freq: 261.63, duration: 0.7, time: 0, vol: 0.09, type: 'sine' },     // C4
-            { freq: 329.63, duration: 0.7, time: 0.7, vol: 0.09, type: 'sine' },   // E4
-            { freq: 392.0, duration: 0.7, time: 1.4, vol: 0.09, type: 'sine' },    // G4
-            { freq: 329.63, duration: 0.7, time: 2.1, vol: 0.09, type: 'sine' },   // E4
-            { freq: 261.63, duration: 0.9, time: 2.8, vol: 0.09, type: 'sine' }    // C4
+            { freq: 261.63, duration: 0.6, time: 0, vol: 0.09, type: 'sine' },     // C4
+            { freq: 329.63, duration: 0.6, time: 0.7, vol: 0.09, type: 'sine' },   // E4
+            { freq: 392.0, duration: 0.6, time: 1.4, vol: 0.09, type: 'sine' },    // G4
+            { freq: 329.63, duration: 0.6, time: 2.1, vol: 0.09, type: 'sine' },   // E4
+            { freq: 293.66, duration: 0.6, time: 3.0, vol: 0.09, type: 'sine' },   // D4
+            { freq: 349.23, duration: 0.6, time: 3.7, vol: 0.09, type: 'sine' },   // F4
+            { freq: 440.0, duration: 0.6, time: 4.4, vol: 0.09, type: 'sine' },    // A4
+            { freq: 392.0, duration: 0.6, time: 5.1, vol: 0.09, type: 'sine' },    // G4
+            { freq: 329.63, duration: 0.6, time: 6.0, vol: 0.09, type: 'sine' },   // E4
+            { freq: 392.0, duration: 0.6, time: 6.7, vol: 0.09, type: 'sine' },    // G4
+            { freq: 440.0, duration: 0.6, time: 7.4, vol: 0.09, type: 'sine' },    // A4
+            { freq: 349.23, duration: 0.6, time: 8.1, vol: 0.09, type: 'sine' },   // F4
+            { freq: 261.63, duration: 0.6, time: 9.0, vol: 0.09, type: 'sine' },   // C4
+            { freq: 329.63, duration: 0.6, time: 9.7, vol: 0.09, type: 'sine' },   // E4
+            { freq: 392.0, duration: 0.6, time: 10.4, vol: 0.09, type: 'sine' },   // G4
+            { freq: 329.63, duration: 0.6, time: 11.1, vol: 0.09, type: 'sine' }   // E4
         ];
 
         // 모든 패턴 재생
-        mainMelody.forEach(note => {
+        [...section1Main, ...section2Main, ...section3Main, ...section4Main].forEach(note => {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
