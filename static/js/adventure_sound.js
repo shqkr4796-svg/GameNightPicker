@@ -18,75 +18,71 @@ class AdventureSound {
         if (!this.soundEnabled) return;
         const ctx = this.audioContext;
         const now = ctx.currentTime;
-        const duration = 8; // 8초 루프 (포켓몬 스타일)
+        const duration = 4; // 4초 루프 (활발한 전투 음악)
 
-        // 포켓몬 게임 스타일 배경음악 - 아르페지오 패턴
-        // 베이스 라인 (저음)
-        const bassPattern = [
-            { freq: 164.81, duration: 0.5, time: 0, vol: 0.1, type: 'sine' },       // E
-            { freq: 196.0, duration: 0.5, time: 0.5, vol: 0.1, type: 'sine' },      // G
-            { freq: 220.0, duration: 0.5, time: 1.0, vol: 0.1, type: 'sine' },      // A
-            { freq: 196.0, duration: 0.5, time: 1.5, vol: 0.1, type: 'sine' },      // G
-            { freq: 164.81, duration: 0.5, time: 2.0, vol: 0.1, type: 'sine' },     // E
-            { freq: 196.0, duration: 0.5, time: 2.5, vol: 0.1, type: 'sine' },      // G
-            { freq: 220.0, duration: 0.5, time: 3.0, vol: 0.1, type: 'sine' },      // A
-            { freq: 196.0, duration: 0.5, time: 3.5, vol: 0.1, type: 'sine' },      // G
-            { freq: 164.81, duration: 0.5, time: 4.0, vol: 0.1, type: 'sine' },     // E
-            { freq: 196.0, duration: 0.5, time: 4.5, vol: 0.1, type: 'sine' },      // G
-            { freq: 220.0, duration: 0.5, time: 5.0, vol: 0.1, type: 'sine' },      // A
-            { freq: 196.0, duration: 0.5, time: 5.5, vol: 0.1, type: 'sine' },      // G
-            { freq: 164.81, duration: 0.5, time: 6.0, vol: 0.1, type: 'sine' },     // E
-            { freq: 196.0, duration: 0.5, time: 6.5, vol: 0.1, type: 'sine' },      // G
-            { freq: 220.0, duration: 0.5, time: 7.0, vol: 0.1, type: 'sine' },      // A
-            { freq: 196.0, duration: 0.5, time: 7.5, vol: 0.1, type: 'sine' }       // G
+        // 신나는 포켓몬 전투 배경음악 - 펑키하고 업비트한 느낌
+        // 메인 멜로디 라인 (square wave로 신나는 느낌)
+        const mainMelody = [
+            { freq: 523.25, duration: 0.3, time: 0, vol: 0.16, type: 'square' },    // C5
+            { freq: 587.33, duration: 0.3, time: 0.35, vol: 0.16, type: 'square' }, // D5
+            { freq: 659.25, duration: 0.4, time: 0.7, vol: 0.17, type: 'square' },  // E5
+            { freq: 587.33, duration: 0.3, time: 1.15, vol: 0.16, type: 'square' }, // D5
+            { freq: 523.25, duration: 0.3, time: 1.5, vol: 0.16, type: 'square' },  // C5
+            { freq: 587.33, duration: 0.3, time: 1.85, vol: 0.16, type: 'square' }, // D5
+            { freq: 659.25, duration: 0.4, time: 2.2, vol: 0.17, type: 'square' },  // E5
+            { freq: 783.99, duration: 0.3, time: 2.65, vol: 0.16, type: 'square' }, // G5
+            { freq: 740.0, duration: 0.3, time: 3.0, vol: 0.16, type: 'square' }    // F#5
         ];
 
-        // 중간 음역대 아르페지오 (주요 멜로디)
-        const middlePattern = [
-            { freq: 329.63, duration: 0.35, time: 0.2, vol: 0.14, type: 'sine' },   // E
-            { freq: 392.0, duration: 0.35, time: 0.55, vol: 0.14, type: 'sine' },   // G
-            { freq: 440.0, duration: 0.35, time: 0.9, vol: 0.14, type: 'sine' },    // A
-            { freq: 392.0, duration: 0.35, time: 1.25, vol: 0.14, type: 'sine' },   // G
-            { freq: 329.63, duration: 0.35, time: 1.6, vol: 0.14, type: 'sine' },   // E
-            { freq: 392.0, duration: 0.35, time: 1.95, vol: 0.14, type: 'sine' },   // G
-            { freq: 440.0, duration: 0.35, time: 2.3, vol: 0.14, type: 'sine' },    // A
-            { freq: 392.0, duration: 0.35, time: 2.65, vol: 0.14, type: 'sine' },   // G
-            { freq: 329.63, duration: 0.35, time: 3.0, vol: 0.14, type: 'sine' },   // E (반복)
-            { freq: 392.0, duration: 0.35, time: 3.35, vol: 0.14, type: 'sine' },   // G
-            { freq: 440.0, duration: 0.35, time: 3.7, vol: 0.14, type: 'sine' },    // A
-            { freq: 392.0, duration: 0.35, time: 4.05, vol: 0.14, type: 'sine' },   // G
-            { freq: 329.63, duration: 0.35, time: 4.4, vol: 0.14, type: 'sine' },   // E
-            { freq: 392.0, duration: 0.35, time: 4.75, vol: 0.14, type: 'sine' },   // G
-            { freq: 440.0, duration: 0.35, time: 5.1, vol: 0.14, type: 'sine' },    // A
-            { freq: 392.0, duration: 0.35, time: 5.45, vol: 0.14, type: 'sine' },   // G
-            { freq: 329.63, duration: 0.35, time: 5.8, vol: 0.14, type: 'sine' },   // E
-            { freq: 392.0, duration: 0.35, time: 6.15, vol: 0.14, type: 'sine' },   // G
-            { freq: 440.0, duration: 0.35, time: 6.5, vol: 0.14, type: 'sine' },    // A
-            { freq: 392.0, duration: 0.35, time: 6.85, vol: 0.14, type: 'sine' }    // G
+        // 베이스 펄스 (드럼처럼 들리게)
+        const bassPulse = [
+            { freq: 110, duration: 0.2, time: 0, vol: 0.12, type: 'sine' },        // A2
+            { freq: 110, duration: 0.2, time: 0.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 123.47, duration: 0.2, time: 1, vol: 0.12, type: 'sine' },     // B2
+            { freq: 110, duration: 0.2, time: 1.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 110, duration: 0.2, time: 2, vol: 0.12, type: 'sine' },        // A2
+            { freq: 110, duration: 0.2, time: 2.5, vol: 0.12, type: 'sine' },      // A2
+            { freq: 147.93, duration: 0.2, time: 3, vol: 0.12, type: 'sine' },     // D3
+            { freq: 110, duration: 0.2, time: 3.5, vol: 0.12, type: 'sine' }       // A2
         ];
 
-        // 높은 음역대 악센트 (맑고 밝은 느낌)
-        const highPattern = [
-            { freq: 659.25, duration: 0.25, time: 0.4, vol: 0.09, type: 'sine' },   // E (high)
-            { freq: 783.99, duration: 0.25, time: 1.2, vol: 0.09, type: 'sine' },   // G (high)
-            { freq: 880.0, duration: 0.25, time: 2.0, vol: 0.09, type: 'sine' },    // A (high)
-            { freq: 783.99, duration: 0.25, time: 2.8, vol: 0.09, type: 'sine' },   // G (high)
-            { freq: 659.25, duration: 0.25, time: 3.6, vol: 0.09, type: 'sine' },   // E (high)
-            { freq: 783.99, duration: 0.25, time: 4.4, vol: 0.09, type: 'sine' },   // G (high)
-            { freq: 880.0, duration: 0.25, time: 5.2, vol: 0.09, type: 'sine' },    // A (high)
-            { freq: 783.99, duration: 0.25, time: 6.0, vol: 0.09, type: 'sine' }    // G (high)
+        // 리드 라인 (높은 음역대 - 비브라토 느낌)
+        const leadLine = [
+            { freq: 880.0, duration: 0.25, time: 0.2, vol: 0.11, type: 'sine' },   // A5
+            { freq: 932.33, duration: 0.25, time: 0.5, vol: 0.11, type: 'sine' },  // B♭5
+            { freq: 1046.5, duration: 0.3, time: 0.8, vol: 0.12, type: 'sine' },   // C6
+            { freq: 932.33, duration: 0.25, time: 1.2, vol: 0.11, type: 'sine' },  // B♭5
+            { freq: 880.0, duration: 0.25, time: 1.5, vol: 0.11, type: 'sine' },   // A5
+            { freq: 932.33, duration: 0.25, time: 1.8, vol: 0.11, type: 'sine' },  // B♭5
+            { freq: 1046.5, duration: 0.3, time: 2.1, vol: 0.12, type: 'sine' },   // C6
+            { freq: 1174.66, duration: 0.3, time: 2.5, vol: 0.12, type: 'sine' },  // D6
+            { freq: 1046.5, duration: 0.25, time: 2.85, vol: 0.11, type: 'sine' }, // C6
+            { freq: 932.33, duration: 0.25, time: 3.15, vol: 0.11, type: 'sine' }  // B♭5
+        ];
+
+        // 코드 배경음 (아래쪽)
+        const chordBg = [
+            { freq: 261.63, duration: 0.7, time: 0, vol: 0.09, type: 'sine' },     // C4
+            { freq: 329.63, duration: 0.7, time: 0.7, vol: 0.09, type: 'sine' },   // E4
+            { freq: 392.0, duration: 0.7, time: 1.4, vol: 0.09, type: 'sine' },    // G4
+            { freq: 329.63, duration: 0.7, time: 2.1, vol: 0.09, type: 'sine' },   // E4
+            { freq: 261.63, duration: 0.9, time: 2.8, vol: 0.09, type: 'sine' }    // C4
         ];
 
         // 모든 패턴 재생
-        bassPattern.forEach(note => {
+        mainMelody.forEach(note => {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
-        middlePattern.forEach(note => {
+        bassPulse.forEach(note => {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
-        highPattern.forEach(note => {
+        leadLine.forEach(note => {
+            this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
+        });
+
+        chordBg.forEach(note => {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
