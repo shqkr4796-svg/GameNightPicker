@@ -266,5 +266,28 @@ document.getElementById('adventureForm').addEventListener('submit', function(e) 
 
 // 초기 로드
 document.getElementById('stageSelect').dispatchEvent(new Event('change'));
+
+// 배경음악 토글 함수
+let musicIsPlaying = true;
+function toggleBackgroundMusic() {
+    musicIsPlaying = !musicIsPlaying;
+    const btn = document.getElementById('musicToggleBtn');
+    
+    if (musicIsPlaying) {
+        adventureSound.playBackgroundMusic();
+        btn.textContent = '🔊 ON';
+        btn.style.backgroundColor = '#1a1a1a';
+    } else {
+        adventureSound.stopBackgroundMusic();
+        btn.textContent = '🔇 OFF';
+        btn.style.backgroundColor = '#999';
+    }
+}
+
+// 페이지 로드 시 배경음악 자동 시작
+document.addEventListener('DOMContentLoaded', function() {
+    adventureSound.playBackgroundMusic();
+    musicIsPlaying = true;
+});
 </script>
 {% endblock %}
