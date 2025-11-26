@@ -382,6 +382,16 @@ class AdventureSound {
         }
         return this.soundEnabled;
     }
+
+    // 음량 조절 (0-1 범위)
+    setVolume(volumePercent) {
+        this.masterVolume = volumePercent / 100;
+    }
+
+    // 마스터 볼륨 적용 헬퍼
+    _getVolume(baseVolume) {
+        return baseVolume * (this.masterVolume || 1);
+    }
 }
 
 // 전역 사운드 인스턴스
