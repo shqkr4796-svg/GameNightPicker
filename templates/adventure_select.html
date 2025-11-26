@@ -3,7 +3,6 @@
 {% block title %}모험 - 라이프 시뮬레이션{% endblock %}
 
 {% block content %}
-<script src="{{ url_for('static', filename='js/adventure_sound.js') }}"></script>
 <div class="container-fluid" style="background-color: #f5f5f5; min-height: 100vh; padding: 20px;">
     <div class="row">
         <div class="col-lg-10 mx-auto">
@@ -266,31 +265,38 @@ document.getElementById('adventureForm').addEventListener('submit', function(e) 
 
 // 초기 로드
 document.getElementById('stageSelect').dispatchEvent(new Event('change'));
+</script>
 
+<script src="{{ url_for('static', filename='js/adventure_sound.js') }}"></script>
+
+<script>
 // 배경음악 토글 함수
 function toggleBackgroundMusic() {
-    const isEnabled = adventureSound.toggleSound();
     const btn = document.getElementById('musicToggleBtn');
     
-    if (isEnabled) {
-        btn.textContent = '🔊 ON';
-        btn.style.backgroundColor = '#1a1a1a';
-    } else {
+    if (adventureSound.soundEnabled) {
+        // 현재 ON 상태 → OFF로 변경
+        adventureSound.soundEnabled = false;
+        adventureSound.stopBackgroundMusic();
         btn.textContent = '🔇 OFF';
         btn.style.backgroundColor = '#999';
+    } else {
+        // 현재 OFF 상태 → ON으로 변경
+        adventureSound.soundEnabled = true;
+        adventureSound.playBackgroundMusic();
+        btn.textContent = '🔊 ON';
+        btn.style.backgroundColor = '#1a1a1a';
     }
 }
 
-// 페이지 로드 시 배경음악 자동 시작
-document.addEventListener('DOMContentLoaded', function() {
-    if (!adventureSound.soundEnabled) {
-        adventureSound.toggleSound();
+// 페이지 로드 후 배경음악 시작
+setTimeout(function() {
+    if (typeof adventureSound !== 'undefined') {
+        adventureSound.soundEnabled = true;
+        adventureSound.playBackgroundMusic();
+        document.getElementById('musicToggleBtn').textContent = '🔊 ON';
+        document.getElementById('musicToggleBtn').style.backgroundColor = '#1a1a1a';
     }
-    const btn = document.getElementById('musicToggleBtn');
-    if (adventureSound.soundEnabled) {
-        btn.textContent = '🔊 ON';
-        btn.style.backgroundColor = '#1a1a1a';
-    }
-});
+}, 100);
 </script>
 {% endblock %}
