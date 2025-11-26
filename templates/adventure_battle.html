@@ -10,17 +10,8 @@
         <div class="col-lg-10 mx-auto">
             <!-- 스테이지 정보 (간소화) -->
             <div style="text-align: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #333;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <div style="flex: 1;">
-                        <h5 style="font-weight: 700; letter-spacing: 2px; margin-bottom: 3px;">{{ battle_state.stage_name }}</h5>
-                        <p style="color: #999; font-size: 0.8rem; margin: 0;">{{ battle_state.difficulty }}</p>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px; margin-left: 20px;">
-                        <span style="color: #999; font-size: 0.75rem; text-transform: uppercase;">음량</span>
-                        <input type="range" id="volumeSlider" min="0" max="100" value="70" style="width: 120px; cursor: pointer;" oninput="setMusicVolume(this.value)">
-                        <span id="volumeValue" style="color: #999; font-size: 0.75rem; width: 25px; text-align: right;">70%</span>
-                    </div>
-                </div>
+                <h5 style="font-weight: 700; letter-spacing: 2px; margin-bottom: 3px;">{{ battle_state.stage_name }}</h5>
+                <p style="color: #999; font-size: 0.8rem; margin: 0;">{{ battle_state.difficulty }}</p>
             </div>
 
             <!-- 몬스터 전투 화면 (상단 적, 하단 플레이어) -->
@@ -701,11 +692,5 @@ document.getElementById('skillModal').addEventListener('click', function(e) {
         closeSkillModal();
     }
 });
-
-// 음량 조절 함수
-function setMusicVolume(volumePercent) {
-    adventureSound.setVolume(volumePercent);
-    document.getElementById('volumeValue').textContent = volumePercent + '%';
-}
 </script>
 {% endblock %}
