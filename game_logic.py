@@ -5912,8 +5912,12 @@ def complete_adventure_battle(player, battle_state):
         'items': []
     }
     
-    # 기술 카드 드롭
-    if random.random() < stage_config.get('skill_reward_rate', 0.02):
+    # 기술 카드 드롭 (심화 난이도에서 2배 확률)
+    skill_reward_rate = stage_config.get('skill_reward_rate', 0.02)
+    if player.get('모험_난이도') == '심화':
+        skill_reward_rate *= 2
+    
+    if random.random() < skill_reward_rate:
         skill_pools = SKILL_DROP_POOLS.get(stage_id, {})
         skill_rarity_weights = stage_config.get('skill_rarity_weights', {})
         
