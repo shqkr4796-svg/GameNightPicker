@@ -17,14 +17,25 @@ class AdventureSound {
     // 배경음악 (무한 반복)
     playBackgroundMusic() {
         if (this.isMusicPlaying) return;
-        // 기존 음악이 있으면 먼저 정지하고 리셋
+        
+        // 모든 기존 음악 정지
         this.isMusicPlaying = false;
         if (this.musicLoopTimeout) {
             clearTimeout(this.musicLoopTimeout);
             this.musicLoopTimeout = null;
         }
+        
+        // 활성 oscillators 즉시 정지 (이전 재생이 겹치지 않도록)
+        this.activeOscillators.forEach(osc => {
+            try {
+                osc.stop(this.audioContext.currentTime);
+            } catch (e) {}
+        });
+        this.activeOscillators = [];
+        
         // Master Gain 리셋 (모든 소리 정지)
         this.masterGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        
         // 약간의 딜레이 후 음악 시작
         setTimeout(() => {
             if (!this.isMusicPlaying && this.soundEnabled) {
