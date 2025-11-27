@@ -1848,6 +1848,23 @@ def adventure_result():
     battle_state = session['battle_state']
     player = session['player_data']
     
+    # 200스테이지 클리어 시 심화 난이도로 전환
+    if battle_state.get('winner') == 'player' and battle_state.get('stage_id') == 200:
+        current_difficulty = player.get('모험_난이도', '일반')
+        if current_difficulty == '일반':
+            player['모험_난이도'] = '심화'
+            player['모험_클리어스테이지'] = 200
+            player['모험_현재스테이지'] = 1
+            flash('모든 스테이지를 클리어했습니다! 심화 난이도가 해금되었습니다!', 'success')
+        else:
+            # 심화 난이도에서 다시 200스테이지 클리어
+            player['모험_클리어스테이지'] = 200
+            player['모험_현재스테이지'] = 1
+            flash('심화 난이도를 다시 클리어했습니다!', 'success')
+        session['player_data'] = player
+        session.modified = True
+        game_logic.save_game(player)
+    
     return render_template('adventure_result.html',
                          battle_state=battle_state,
                          player=player)

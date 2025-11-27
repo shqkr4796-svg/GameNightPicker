@@ -40,6 +40,7 @@ def create_new_player():
         '모험_기력': 1,  # 모험 기력
         '모험_기력최대': 100,  # 모험 기력 최대값
         '모험_정답_퀴즈': 0,  # 모험 기력 증가를 위한 퀴즈 정답 횟수
+        '모험_난이도': '일반',  # 모험 난이도 (일반 또는 심화)
     }
 
 def save_game(player_data):
@@ -114,6 +115,8 @@ def load_game():
                     player['모험_기력최대'] = 100
                 if '모험_정답_퀴즈' not in player:
                     player['모험_정답_퀴즈'] = 0
+                if '모험_난이도' not in player:
+                    player['모험_난이도'] = '일반'
                 
                 return player
     except Exception as e:
@@ -5510,8 +5513,9 @@ def start_adventure_battle(player, stage_id, selected_monster_ids):
         return {'success': False, 'message': '적 몬스터 정보를 찾을 수 없습니다.'}
     
     # 적 몬스터 스탯 계산
-    enemy_attack = int(random.randint(enemy_monster_info['공격력'][0], enemy_monster_info['공격력'][1]) * stage['enemy_attack_multiplier'])
-    enemy_hp = int(random.randint(enemy_monster_info['체력'][0], enemy_monster_info['체력'][1]) * stage['enemy_hp_multiplier'])
+    difficulty_multiplier = 2 if player.get('모험_난이도') == '심화' else 1
+    enemy_attack = int(random.randint(enemy_monster_info['공격력'][0], enemy_monster_info['공격력'][1]) * stage['enemy_attack_multiplier'] * difficulty_multiplier)
+    enemy_hp = int(random.randint(enemy_monster_info['체력'][0], enemy_monster_info['체력'][1]) * stage['enemy_hp_multiplier'] * difficulty_multiplier)
     
     # 난이도에 따른 대사 레벨 결정
     difficulty_level = {
