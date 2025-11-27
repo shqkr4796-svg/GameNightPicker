@@ -5,6 +5,8 @@ class AdventureSound {
         this.backgroundMusic = null;
         this.isMusicPlaying = false;
         this.soundEnabled = true;
+        this.activeOscillators = [];
+        this.musicLoopTimeout = null;
     }
 
     // 배경음악 (무한 반복)
@@ -157,13 +159,17 @@ class AdventureSound {
             this._playTone(note.freq, note.duration, now + note.time, note.vol, note.type);
         });
 
-        if (this.isMusicPlaying) {
-            setTimeout(() => this._loopBackgroundMusic(), duration * 1000);
+        if (this.isMusicPlaying && this.soundEnabled) {
+            this.musicLoopTimeout = setTimeout(() => this._loopBackgroundMusic(), duration * 1000);
         }
     }
 
     stopBackgroundMusic() {
         this.isMusicPlaying = false;
+        if (this.musicLoopTimeout) {
+            clearTimeout(this.musicLoopTimeout);
+            this.musicLoopTimeout = null;
+        }
     }
 
     // 기술 선택 소리 (슬롯 1, 2, 3 다르게)
@@ -351,6 +357,13 @@ class AdventureSound {
 
         osc.start(startTime);
         osc.stop(startTime + duration);
+        
+        // 활성 oscillator 추적
+        this.activeOscillators.push(osc);
+        setTimeout(() => {
+            const idx = this.activeOscillators.indexOf(osc);
+            if (idx > -1) this.activeOscillators.splice(idx, 1);
+        }, (duration + 0.1) * 1000);
     }
 
     // 주파수 스윕 (화살표 음)

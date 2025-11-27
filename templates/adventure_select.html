@@ -273,20 +273,10 @@ document.getElementById('stageSelect').dispatchEvent(new Event('change'));
 // 배경음악 토글 함수
 function toggleBackgroundMusic() {
     const btn = document.getElementById('musicToggleBtn');
+    const isEnabled = adventureSound.toggleSound();
     
-    if (adventureSound.soundEnabled) {
-        // 현재 ON 상태 → OFF로 변경
-        adventureSound.soundEnabled = false;
-        adventureSound.stopBackgroundMusic();
-        btn.textContent = '🔇 OFF';
-        btn.style.backgroundColor = '#999';
-    } else {
-        // 현재 OFF 상태 → ON으로 변경
-        adventureSound.soundEnabled = true;
-        adventureSound.playBackgroundMusic();
-        btn.textContent = '🔊 ON';
-        btn.style.backgroundColor = '#1a1a1a';
-    }
+    btn.textContent = isEnabled ? '🔊 ON' : '🔇 OFF';
+    btn.style.backgroundColor = isEnabled ? '#1a1a1a' : '#999';
 }
 
 // 페이지 로드 후 배경음악 시작
