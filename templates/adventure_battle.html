@@ -5,6 +5,25 @@
 {% block content %}
 <!-- 효과음 시스템 스크립트 -->
 <script src="{{ url_for('static', filename='js/adventure_sound.js') }}"></script>
+
+<!-- 배경음악 상태 복구 -->
+<script>
+setTimeout(function() {
+    if (typeof adventureSound !== 'undefined') {
+        const savedMusicState = localStorage.getItem('adventureMusicEnabled');
+        const shouldPlayMusic = savedMusicState !== 'false'; // 기본값은 true
+        
+        if (shouldPlayMusic) {
+            adventureSound.soundEnabled = true;
+            adventureSound.playBackgroundMusic();
+        } else {
+            adventureSound.soundEnabled = false;
+            adventureSound.stopBackgroundMusic();
+        }
+    }
+}, 100);
+</script>
+
 <div class="container-fluid" style="background-color: #1a1a1a; min-height: 100vh; padding: 15px; color: white;">
     <div class="row">
         <div class="col-lg-10 mx-auto">
