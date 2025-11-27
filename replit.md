@@ -15,7 +15,9 @@ Preferred communication style: Simple, everyday language.
 - **UI Framework**: Bootstrap 5 with custom CSS animations and responsive design
 - **JavaScript**: Vanilla JavaScript with Web Audio API for monster sound effects, Feather icons for interactive elements
 - **Static Assets**: CSS animations, progress bars, monster images (planned), sound effects
-- **Audio System**: Rarity-based monster appearance sound effects (Rare, Epic, Unique, Legendary)
+- **Audio System**: 
+  - Rarity-based monster appearance sound effects (Rare, Epic, Unique, Legendary)
+  - RPG battle background music with single-minor-key progression (Am-G-C-F), drum beats, synth
 
 ### Backend Architecture
 - **Web Framework**: Flask with session-based state management
@@ -38,6 +40,13 @@ Preferred communication style: Simple, everyday language.
   - Capture probability based on rarity (Rare: 50%, Epic: 10%, Unique: 5%, Legendary: 1%)
   - Compendium tracking of captured monsters
 
+- **Adventure System**: 
+  - 200 stages in general difficulty + unlockable 200 stages in hard (심화) difficulty
+  - 3-monster team battles with turn-based combat
+  - Hard difficulty (심화): Enemies have 2x attack and 2x HP, skill card drop rate 2x higher
+  - Automatic stage reset to 1 when clearing stage 200 (can unlock hard difficulty or replay hard)
+  - Text-to-Speech enabled for vocabulary practice
+
 - **Monster System**: 
   - Fixed monster roster with individual names and stat ranges
   - Rarity-based appearance rates in dungeons
@@ -49,6 +58,7 @@ Preferred communication style: Simple, everyday language.
   - Epic: Square wave with ascending pitch
   - Unique: Multi-harmonic blend with pulsing effect
   - Legendary: Drum-like kick + high-frequency effect combo
+  - Background Music: RPG battle theme with Am-G-C-F chord progression, drum beats, syncopation
 
 - **Progression**: Level-based system with experience, stat allocation, and tier ranks
 
@@ -68,40 +78,29 @@ Status: **Images placeholder (empty strings)**
 - Current system supports white background monster images
 - Images directory ready at: `/static/monsters/`
 
-## Recent Changes (Nov 24, 2025)
+## Recent Changes (Nov 27, 2025)
 
-### Adventure System Sound Effects (NEW)
-1. ✅ Created `static/js/adventure_sound.js` - Complete sound effect system
-   - Web Audio API-based procedural sound generation (no external audio files)
-   - Background music: 4-second looping ambient melody
-   - Skill selection sounds: 3 different chord patterns per slot (slotIndex-based)
-   - Skill cast sounds: Rarity + skill-based audio patterns
-   - Damage sounds: Magnitude-based frequency (50+ damage, 20-50, <20)
-   - Combat effects: Battle start fanfare, victory fanfare, defeat sequence
-   - Monster defeated sound: Frequency sweep effect
+### Adventure System Updates
+1. ✅ **Hard Difficulty (심화) System** - Complete implementation
+   - Players unlock hard difficulty after clearing stage 200 in normal mode
+   - Hard difficulty: Same 200 stages but enemies have 2x attack and 2x HP
+   - Skill card acquisition rate 2x higher in hard difficulty (0.02% → 0.04% at stage 1, up to 25.6% at stage 200)
+   - Stage select shows current difficulty indicator: "(일반)" for normal, "🔥 심화" for hard
+   - Auto-reset to stage 1 when clearing stage 200 for infinite replayability
 
-2. ✅ Modified `templates/adventure_battle.html`:
-   - Added adventure_sound.js script integration
-   - Battle page now plays:
-     - Battle start sound (opening fanfare) when page loads
-     - Background music loop during combat
-     - Skill selection sound when clicking skill buttons (different per slot)
-     - Skill cast sound when using skill (rarity + skill-specific)
-     - Damage sound when taking/dealing damage (magnitude-based)
-     - Victory fanfare on win with background music stop
-     - Defeat sequence on loss with background music stop
+2. ✅ **Background Music System** - Enhanced RPG battle theme
+   - Replaced with new single-minor-key battle music (Am-G-C-F chord progression)
+   - Features: Strong drum kick beats, bass line following Am-G-C-F, repeating catchy melody hooks
+   - Syncopation and 16th note patterns for dynamic feel
+   - Dissonant tones (diminished) for tension
+   - Modern synth-like high-frequency lead lines
+   - 8-second loop for continuous battle atmosphere
+   - ON/OFF button with immediate state reflection (no flickering)
 
-### Bug Fixes (Nov 24, 2025)
-1. ✅ Fixed monster ID format issues in savegame.json
-   - Converted wrong format (등급_이름_숫자) → correct format (등급_번호)
-   - Fixed: 에픽_사냥꾼 렉스_11 → 에픽_4
-   - Fixed: 에픽_옵시디언_13 → 에픽_2
-   - Fixed: 7 incorrectly formatted monster IDs
-
-### Previous Changes (Nov 21, 2025)
-1. ✅ Created `data/monsters.py` with 53 unique monsters
-2. ✅ Modified `game_logic.py` for monster system
-3. ✅ Monster capture system with dungeon encounters
+3. ✅ **Audio UI Improvements**
+   - Background music toggle button loads with no visual flicker
+   - Button state reflects localStorage immediately on page load
+   - Music state syncs between adventure selection and battle pages
 
 ## External Dependencies
 
@@ -109,6 +108,6 @@ Status: **Images placeholder (empty strings)**
 - **Bootstrap 5**: Frontend UI framework with dark theme support
 - **Chart.js**: Data visualization for player statistics
 - **Feather Icons**: Scalable vector icons
-- **Web Audio API**: Browser-native sound effects (no external audio files)
+- **Web Audio API**: Browser-native sound effects and background music (no external audio files)
 
 The application uses a self-contained architecture perfect for local deployment and development.
