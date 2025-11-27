@@ -8,6 +8,7 @@
 
 <!-- 배경음악 상태 복구 -->
 <script>
+// 음악 재생 (adventureSound 로드 후)
 setTimeout(function() {
     if (typeof adventureSound !== 'undefined') {
         const savedMusicState = localStorage.getItem('adventureMusicEnabled');
@@ -30,7 +31,7 @@ setTimeout(function() {
             adventureSound.soundEnabled = false;
         }
     }
-}, 100);
+}, 50);
 </script>
 
 <div class="container-fluid" style="background-color: #1a1a1a; min-height: 100vh; padding: 15px; color: white;">

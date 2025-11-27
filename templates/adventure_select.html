@@ -282,26 +282,31 @@ function toggleBackgroundMusic() {
     btn.style.backgroundColor = isEnabled ? '#1a1a1a' : '#999';
 }
 
-// 페이지 로드 후 저장된 배경음악 상태 복구
+// 저장된 배경음악 상태 미리 복구 (페이지 로드 전)
+document.addEventListener('DOMContentLoaded', function() {
+    const savedMusicState = localStorage.getItem('adventureMusicEnabled');
+    const shouldPlayMusic = savedMusicState !== 'false';
+    const btn = document.getElementById('musicToggleBtn');
+    
+    // 버튼 상태 즉시 표시
+    btn.textContent = shouldPlayMusic ? '🔊 ON' : '🔇 OFF';
+    btn.style.backgroundColor = shouldPlayMusic ? '#1a1a1a' : '#999';
+});
+
+// 음악 재생 (adventureSound 로드 후)
 setTimeout(function() {
     if (typeof adventureSound !== 'undefined') {
         const savedMusicState = localStorage.getItem('adventureMusicEnabled');
-        const shouldPlayMusic = savedMusicState !== 'false'; // 기본값은 true
-        
-        const btn = document.getElementById('musicToggleBtn');
+        const shouldPlayMusic = savedMusicState !== 'false';
         
         if (shouldPlayMusic) {
             adventureSound.soundEnabled = true;
             adventureSound.playBackgroundMusic();
-            btn.textContent = '🔊 ON';
-            btn.style.backgroundColor = '#1a1a1a';
         } else {
             adventureSound.soundEnabled = false;
             adventureSound.stopBackgroundMusic();
-            btn.textContent = '🔇 OFF';
-            btn.style.backgroundColor = '#999';
         }
     }
-}, 100);
+}, 50);
 </script>
 {% endblock %}
