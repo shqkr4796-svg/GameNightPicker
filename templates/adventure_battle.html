@@ -13,12 +13,21 @@ setTimeout(function() {
         const savedMusicState = localStorage.getItem('adventureMusicEnabled');
         const shouldPlayMusic = savedMusicState !== 'false'; // 기본값은 true
         
+        // 먼저 모든 음악을 확실히 정지
+        adventureSound.isMusicPlaying = false;
+        adventureSound.masterGain.gain.setValueAtTime(0, adventureSound.audioContext.currentTime);
+        
+        if (adventureSound.musicLoopTimeout) {
+            clearTimeout(adventureSound.musicLoopTimeout);
+            adventureSound.musicLoopTimeout = null;
+        }
+        
+        // 저장된 상태에 따라 배경음악 시작
         if (shouldPlayMusic) {
             adventureSound.soundEnabled = true;
             adventureSound.playBackgroundMusic();
         } else {
             adventureSound.soundEnabled = false;
-            adventureSound.stopBackgroundMusic();
         }
     }
 }, 100);
