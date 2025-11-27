@@ -10,9 +10,18 @@
             <div style="text-align: center; margin-bottom: 40px;">
                 <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 15px;">
                     <h1 style="font-weight: 700; color: #1a1a1a; font-size: 2.5rem; letter-spacing: 2px; margin: 0;">ADVENTURE</h1>
-                    <button onclick="toggleBackgroundMusic()" id="musicToggleBtn" style="display:none; background-color: #1a1a1a; color: white; border: none; border-radius: 6px; padding: 10px 16px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; min-width: 80px;" onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#1a1a1a'">
+                    <button onclick="toggleBackgroundMusic()" id="musicToggleBtn" style="background-color: #1a1a1a; color: white; border: none; border-radius: 6px; padding: 10px 16px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; min-width: 80px;" onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#1a1a1a'">
                         🔊 ON
                     </button>
+                    <script>
+                        (function() {
+                            const btn = document.getElementById('musicToggleBtn');
+                            const savedMusicState = localStorage.getItem('adventureMusicEnabled');
+                            const shouldPlayMusic = savedMusicState !== 'false';
+                            btn.textContent = shouldPlayMusic ? '🔊 ON' : '🔇 OFF';
+                            btn.style.backgroundColor = shouldPlayMusic ? '#1a1a1a' : '#999';
+                        })();
+                    </script>
                 </div>
                 <p style="color: #666; font-size: 0.95rem; margin-top: 5px;">턴제 전투로 스테이지를 진행하세요</p>
                 
@@ -281,18 +290,6 @@ function toggleBackgroundMusic() {
     btn.textContent = isEnabled ? '🔊 ON' : '🔇 OFF';
     btn.style.backgroundColor = isEnabled ? '#1a1a1a' : '#999';
 }
-
-// 저장된 배경음악 상태 미리 복구 (페이지 로드 전)
-document.addEventListener('DOMContentLoaded', function() {
-    const savedMusicState = localStorage.getItem('adventureMusicEnabled');
-    const shouldPlayMusic = savedMusicState !== 'false';
-    const btn = document.getElementById('musicToggleBtn');
-    
-    // 버튼 상태 설정 후 표시
-    btn.textContent = shouldPlayMusic ? '🔊 ON' : '🔇 OFF';
-    btn.style.backgroundColor = shouldPlayMusic ? '#1a1a1a' : '#999';
-    btn.style.display = 'block';  // 상태 결정 후에만 표시
-});
 
 // 음악 재생 (adventureSound 로드 후)
 setTimeout(function() {
