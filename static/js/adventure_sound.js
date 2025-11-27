@@ -7,11 +7,18 @@ class AdventureSound {
         this.soundEnabled = true;
         this.activeOscillators = [];
         this.musicLoopTimeout = null;
+        
+        // Master Gain Node 생성 (모든 사운드 제어용)
+        this.masterGain = this.audioContext.createGain();
+        this.masterGain.connect(this.audioContext.destination);
+        this.masterGain.gain.value = 1;
     }
 
     // 배경음악 (무한 반복)
     playBackgroundMusic() {
         if (this.isMusicPlaying) return;
+        // Master Gain 음량 복구
+        this.masterGain.gain.setValueAtTime(1, this.audioContext.currentTime);
         this.isMusicPlaying = true;
         this._loopBackgroundMusic();
     }
@@ -170,6 +177,8 @@ class AdventureSound {
             clearTimeout(this.musicLoopTimeout);
             this.musicLoopTimeout = null;
         }
+        // Master Gain을 0으로 설정해서 모든 음악 음소거
+        this.masterGain.gain.setValueAtTime(0, this.audioContext.currentTime);
     }
 
     // 기술 선택 소리 (슬롯 1, 2, 3 다르게)
@@ -345,7 +354,7 @@ class AdventureSound {
         const gain = ctx.createGain();
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(this.masterGain);
 
         osc.frequency.value = frequency;
         osc.type = waveType;
@@ -373,7 +382,7 @@ class AdventureSound {
         const gain = ctx.createGain();
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(this.masterGain);
 
         osc.frequency.setValueAtTime(startFreq, startTime);
         osc.frequency.exponentialRampToValueAtTime(endFreq, startTime + duration);
