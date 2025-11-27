@@ -17,10 +17,22 @@ class AdventureSound {
     // 배경음악 (무한 반복)
     playBackgroundMusic() {
         if (this.isMusicPlaying) return;
-        // Master Gain 음량 복구
-        this.masterGain.gain.setValueAtTime(1, this.audioContext.currentTime);
-        this.isMusicPlaying = true;
-        this._loopBackgroundMusic();
+        // 기존 음악이 있으면 먼저 정지하고 리셋
+        this.isMusicPlaying = false;
+        if (this.musicLoopTimeout) {
+            clearTimeout(this.musicLoopTimeout);
+            this.musicLoopTimeout = null;
+        }
+        // Master Gain 리셋 (모든 소리 정지)
+        this.masterGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        // 약간의 딜레이 후 음악 시작
+        setTimeout(() => {
+            if (!this.isMusicPlaying && this.soundEnabled) {
+                this.masterGain.gain.setValueAtTime(1, this.audioContext.currentTime);
+                this.isMusicPlaying = true;
+                this._loopBackgroundMusic();
+            }
+        }, 50);
     }
 
     _loopBackgroundMusic() {
@@ -155,8 +167,17 @@ class AdventureSound {
             clearTimeout(this.musicLoopTimeout);
             this.musicLoopTimeout = null;
         }
-        // Master Gain을 0으로 설정해서 모든 음악 음소거
+        // Master Gain을 0으로 즉시 설정해서 모든 음악 음소거
         this.masterGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        // 활성 oscillators 즉시 정지
+        this.activeOscillators.forEach(osc => {
+            try {
+                osc.stop(this.audioContext.currentTime);
+            } catch (e) {
+                // 이미 정지된 oscillator 무시
+            }
+        });
+        this.activeOscillators = [];
     }
 
     // 기술 선택 소리 (슬롯 1, 2, 3 다르게)
