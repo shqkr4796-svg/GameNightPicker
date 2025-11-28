@@ -771,8 +771,9 @@ function useSkill(skillName) {
             
             // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
-                // 내 몬스터만 업데이트 (상대 공격 반영, 로그는 적 공격만)
-                updateBattleUI(battleState, true, 'player');
+                // 원본 battleState 새로 생성 (완전한 로그 보장)
+                const completeBattleState = JSON.parse(JSON.stringify(data.battle_state));
+                updateBattleUI(completeBattleState, true, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
