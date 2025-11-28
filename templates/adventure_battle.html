@@ -773,8 +773,9 @@ function useSkill(skillName) {
             
             // 0.5초 후: 상대 공격 표시 (전체 로그)
             setTimeout(() => {
-                // 원본 battleState 사용 (필터링 없이 전체 로그 표시)
-                updateBattleUI(battleState, true, 'player');
+                // 백엔드 원본 데이터 새로 깊은 복사 (필터링 없이 전체 로그 표시)
+                const completeBattleState = JSON.parse(JSON.stringify(data.battle_state));
+                updateBattleUI(completeBattleState, true, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
