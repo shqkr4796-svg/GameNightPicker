@@ -395,9 +395,9 @@ function submitQuizAnswer(event) {
                     nextQuestionType === '뜻맞히기' ? nextWord['단어'] : nextWord['뜻'];
                 form.querySelector('input[name="quiz_word"]').value = nextWord['단어'];
                 
-                // 입력 필드 초기화 및 포커스
+                // 입력 필드 초기화 및 포커스 (스크롤 고정)
                 answerInput.value = '';
-                answerInput.focus();
+                answerInput.focus({ preventScroll: true });
                 
                 // 발음 듣기 버튼 업데이트 (있으면)
                 const speakBtn = document.querySelector('.btn-outline-info, .btn-outline-primary');
