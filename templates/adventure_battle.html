@@ -749,7 +749,7 @@ function useSkill(skillName) {
             
             // 로그에서 상대 공격 항목 제거 (플레이어 공격만 남기기)
             if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
-                // 적 공격 관련 로그 제거: "플레이어 몬스터에게", "차례", "적의 공격"
+                // 적 턴, 적의 공격 로그 제거
                 const filteredLog = [];
                 for (let log of battleStateBeforeEnemyAttack.log) {
                     if (!log.includes('플레이어 몬스터에게') && !log.includes('차례') && !log.includes('적의 공격')) {
