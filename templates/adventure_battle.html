@@ -725,37 +725,13 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 첫 번째: 내 공격 HP와 반짝임만 표시 (HP 차이로 상대 공격 표시, 로그는 그대로)
-            const battleStateBeforeEnemyAttack = JSON.parse(JSON.stringify(battleState));
-            
-            // HP 역계산 (상대 공격 전 상태로 복원)
-            let playerDamageTaken = 0;
-            if (battleState.log && battleState.log.length > 0) {
-                for (let i = battleState.log.length - 1; i >= 0; i--) {
-                    const logLine = battleState.log[i];
-                    if (logLine.includes('플레이어 몬스터에게') && logLine.includes('피해')) {
-                        const damageMatch = logLine.match(/(\d+)\s*피해/);
-                        if (damageMatch) {
-                            playerDamageTaken += parseInt(damageMatch[1]);
-                        }
-                    }
-                }
-            }
-            
-            battleStateBeforeEnemyAttack.player_monster.current_hp = 
-                battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
-            
-            // 첫 번째 업데이트: 플레이어 기술 사용 로그만 표시
-            const firstUpdateLog = battleStateBeforeEnemyAttack.log.filter(log => log.includes('플레이어'));
-            battleStateBeforeEnemyAttack.log = firstUpdateLog;
-            
-            updateBattleUI(battleStateBeforeEnemyAttack, true, 'enemy');
+            // 즉시: 상대 몬스터 HP 감소만 표시 (로그 제외)
+            updateBattleUI(battleState, true, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
-            // 0.5초 후: 완전한 원본 데이터로 업데이트
+            // 0.5초 후: 전체 로그와 내 HP 감소 표시
             setTimeout(() => {
-                const completeBattleState = JSON.parse(JSON.stringify(data.battle_state));
-                updateBattleUI(completeBattleState, true, 'player');
+                updateBattleUI(battleState, true, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
