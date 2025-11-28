@@ -1666,6 +1666,12 @@ def start_adventure():
         enemy_turn_result = game_logic.execute_enemy_turn(battle_state)
         if enemy_turn_result['success']:
             battle_state = enemy_turn_result['battle_state']
+            # 게임 오버가 아니면 계속 진행, 게임 오버면 패배 페이지로
+            if battle_state['game_over'] and battle_state['winner'] != 'player':
+                session['battle_state'] = battle_state
+                session['player_data'] = player
+                session.modified = True
+                return redirect(url_for('adventure_battle'))
     
     session['battle_state'] = battle_state
     session['player_data'] = player
