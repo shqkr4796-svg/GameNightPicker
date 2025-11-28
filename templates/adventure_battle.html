@@ -725,10 +725,13 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 0.5초 후: 전체 로그 표시
+            // 즉시: 상대 몬스터만 업데이트
+            updateBattleUI(battleState, true, 'enemy');
+            updateSkillUsageUI(data.skill_usage || {});
+            
+            // 0.5초 후: 내 몬스터 업데이트 (전체 로그 포함)
             setTimeout(() => {
-                updateBattleUI(battleState, true, 'both');
-                updateSkillUsageUI(data.skill_usage || {});
+                updateBattleUI(battleState, true, 'player');
                 
                 // 게임 오버 상태 확인
                 if (data.game_over) {
