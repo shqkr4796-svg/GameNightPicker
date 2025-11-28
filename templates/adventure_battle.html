@@ -528,7 +528,13 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
     if (logContainers.length > 0 && battleState.log) {
         const logContainer = logContainers[0];
         let logHtml = '';
-        const logs = battleState.log.slice(-10);
+        let logs = battleState.log.slice(-10);
+        
+        // updateMode에 따라 로그 필터링
+        if (updateMode === 'enemy') {
+            // 적 공격 내용 제외 (플레이어 공격만)
+            logs = logs.filter(log => !log.includes('플레이어 몬스터에게'));
+        }
         
         for (let log_line of logs) {
             let color = '#bbb';
@@ -725,70 +731,102 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 몬스터 교체 여부 확인 (마지막 로그에서만 확인)
-            let isMonsterSwapped = false;
-            if (battleState.log && battleState.log.length > 0) {
-                const lastLogs = battleState.log.slice(-3);
-                isMonsterSwapped = lastLogs.some(log => log.includes('다음 팀원 등장'));
-            }
-            const delayTime = isMonsterSwapped ? 0 : 500;
+            // 첫 번째: 내 공격까지만 표시 (상대 공격 제외)
+            const battleStateBeforeEnemyAttack = JSON.parse(JSON.stringify(battleState));
             
-            // 딜레이 후 업데이트 (반짝임 효과 포함)
+            // 로그 필터링 + HP 역계산
+            let playerDamageTaken = 0; // 상대 공격으로 받은 피해
+            if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
+                let lastPlayerAttackIndex = -1;
+                
+                // 로그에서 피해 정보 추출 및 적 공격 항목 제거
+                for (let i = battleStateBeforeEnemyAttack.log.length - 1; i >= 0; i--) {
+                    const logLine = battleStateBeforeEnemyAttack.log[i];
+                    
+                    // 적의 공격 항목에서 피해량 추출
+                    if (logLine.includes('플레이어 몬스터에게') && logLine.includes('피해')) {
+                        const damageMatch = logLine.match(/(\d+)\s*피해/);
+                        if (damageMatch) {
+                            playerDamageTaken += parseInt(damageMatch[1]);
+                        }
+                    }
+                    // 플레이어 공격 항목 찾기
+                    else if (logLine.includes('플레이어') && !logLine.includes('플레이어 몬스터에게')) {
+                        lastPlayerAttackIndex = i;
+                    }
+                }
+                
+                // 로그를 플레이어 공격까지만 잘라내기
+                if (lastPlayerAttackIndex !== -1) {
+                    battleStateBeforeEnemyAttack.log = battleStateBeforeEnemyAttack.log.slice(0, lastPlayerAttackIndex + 1);
+                }
+            }
+            
+            // HP 복원: 상대 공격 전 상태로
+            battleStateBeforeEnemyAttack.player_monster.current_hp = 
+                battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
+            
+            // 내 공격 표시 (상대 몬스터만 업데이트, 반짝임 활성화)
+            updateBattleUI(battleState, true, 'enemy');
+            updateSkillUsageUI(data.skill_usage || {});
+            
+            // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
-                updateBattleUI(battleState, true, 'both');
+                // 내 몬스터만 업데이트 (상대 공격 반영, 반짝임 활성화)
+                updateBattleUI(battleState, true, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
                 if (data.game_over) {
-                setTimeout(() => {
-                    if (data.winner === 'player') {
-                        adventureSound.playVictorySound();
-                        adventureSound.stopBackgroundMusic();
-                        
-                        // 아이템 획득 팝업 처리
-                        if (data.rewards && data.rewards.items) {
-                            for (let item of data.rewards.items) {
-                                if (item === '기술충전제' || item === '기술초기화제') {
-                                    showItemAcquireModal(item);
+                    setTimeout(() => {
+                        if (data.winner === 'player') {
+                            adventureSound.playVictorySound();
+                            adventureSound.stopBackgroundMusic();
+                            
+                            // 아이템 획득 팝업 처리
+                            if (data.rewards && data.rewards.items) {
+                                for (let item of data.rewards.items) {
+                                    if (item === '기술충전제' || item === '기술초기화제') {
+                                        showItemAcquireModal(item);
+                                    }
                                 }
                             }
-                        }
-                        
-                        // 기술 획득/교체 팝업 처리
-                        if (data.rewards) {
-                            if (data.rewards.skill_added) {
-                                // 4개 미만: 기술 획득 팝업
-                                showSkillAcquireModal(data.rewards.skills[0]);
-                                setTimeout(() => {
+                            
+                            // 기술 획득/교체 팝업 처리
+                            if (data.rewards) {
+                                if (data.rewards.skill_added) {
+                                    // 4개 미만: 기술 획득 팝업
+                                    showSkillAcquireModal(data.rewards.skills[0]);
+                                    setTimeout(() => {
+                                        alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                                        window.location.href = "{{ url_for('adventure') }}";
+                                    }, 2000);
+                                } else if (data.rewards.new_skill) {
+                                    // 4개 이상: 기술 교체 팝업
+                                    window.pendingNewSkill = data.rewards.new_skill;
+                                    showSkillReplaceModal(data.rewards.new_skill, data.rewards.current_skills);
+                                } else {
+                                    // 기술 미획득
                                     alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
                                     window.location.href = "{{ url_for('adventure') }}";
-                                }, 2000);
-                            } else if (data.rewards.new_skill) {
-                                // 4개 이상: 기술 교체 팝업
-                                window.pendingNewSkill = data.rewards.new_skill;
-                                showSkillReplaceModal(data.rewards.new_skill, data.rewards.current_skills);
+                                }
                             } else {
-                                // 기술 미획득
                                 alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
                                 window.location.href = "{{ url_for('adventure') }}";
                             }
                         } else {
-                            alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
-                            window.location.href = "{{ url_for('adventure') }}";
+                            adventureSound.playDefeatSound();
+                            adventureSound.stopBackgroundMusic();
+                            setTimeout(() => {
+                                alert('패배했습니다. 다시 시도하세요.');
+                                window.location.href = "{{ url_for('adventure') }}";
+                            }, 500);
                         }
-                    } else {
-                        adventureSound.playDefeatSound();
-                        adventureSound.stopBackgroundMusic();
-                        setTimeout(() => {
-                            alert('패배했습니다. 다시 시도하세요.');
-                            window.location.href = "{{ url_for('adventure') }}";
-                        }, 500);
-                    }
-                }, 250);
+                    }, 250);
                 } else if (!battleState.player_turn) {
                     handleEnemyTurn(battleState);
                 }
-            }, delayTime);
+            }, 500);
         } else {
             alert('오류: ' + data.error);
         }
