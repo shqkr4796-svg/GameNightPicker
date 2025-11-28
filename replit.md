@@ -78,9 +78,27 @@ Status: **Images placeholder (empty strings)**
 - Current system supports white background monster images
 - Images directory ready at: `/static/monsters/`
 
-## Recent Changes (Nov 27, 2025)
+## Recent Changes (Nov 28, 2025)
 
-### Adventure System Updates
+### Skill Acquisition & Replacement UI (Nov 28)
+1. ✅ **기술 획득 팝업** - 새 기술 획득 시 표시
+   - 4개 미만 기술: 자동 추가 + 팝업 알림 (녹색 테마)
+   - 기술명, 설명, 효과 정보 표시
+   - 확인 버튼 클릭 시 스테이지 클리어 alert 표시
+
+2. ✅ **기술 교체 UI** - 4개 이상 기술일 때 선택 가능
+   - 새 기술 정보 표시 (주황색 테마)
+   - 기존 4개 기술 버튼 표시 (2x2 그리드)
+   - 클릭하여 교체할 기술 선택 (선택 시 주황색 하이라이트)
+   - 교체 확인 버튼 활성화 및 AJAX 처리
+   - 교체 완료 후 진행
+
+3. ✅ **Backend 처리**
+   - complete_adventure_battle: 4개 미만/이상 구분하여 rewards 반환
+   - /adventure/replace_skill: 기술 교체 API 엔드포인트 추가
+   - 기술 교체 시 세션 저장 및 파일 저장
+
+### Previous Updates (Nov 27)
 1. ✅ **Hard Difficulty (심화) System** - Complete implementation
    - Players unlock hard difficulty after clearing stage 200 in normal mode
    - Hard difficulty: Same 200 stages but enemies have 2x attack and 2x HP

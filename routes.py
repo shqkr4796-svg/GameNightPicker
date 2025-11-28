@@ -1886,3 +1886,26 @@ def delete_skill():
         return jsonify({'success': True, 'message': f'{skill_to_remove} 기술이 삭제되었습니다.'})
     
     return jsonify({'success': False, 'error': '해당 기술을 찾을 수 없습니다.'})
+
+@app.route('/adventure/replace_skill', methods=['POST'])
+def replace_skill():
+    """기술 교체 (4개 이상일 때)"""
+    if 'player_data' not in session:
+        return jsonify({'success': False, 'error': '플레이어 정보 없음'})
+    
+    player = session['player_data']
+    new_skill = request.form.get('new_skill', '')
+    old_skill = request.form.get('old_skill', '')
+    
+    current_skills = player.get('모험_기술', [])
+    
+    if old_skill in current_skills and len(current_skills) >= 4:
+        current_skills.remove(old_skill)
+        current_skills.append(new_skill)
+        player['모험_기술'] = current_skills
+        session['player_data'] = player
+        session.modified = True
+        game_logic.save_game(player)
+        return jsonify({'success': True, 'message': f'{old_skill} → {new_skill}로 교체되었습니다.'})
+    
+    return jsonify({'success': False, 'error': '기술 교체 실패'})

@@ -718,11 +718,205 @@ function useSkill(skillName) {
     });
 }
 
+// 기술 획득 팝업 모달
+const skillAcquireModal = document.createElement('div');
+skillAcquireModal.id = 'skillAcquireModal';
+skillAcquireModal.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 10000; justify-content: center; align-items: center;';
+skillAcquireModal.innerHTML = `
+    <div style="background-color: #2a2a2a; border: 2px solid #4CAF50; border-radius: 8px; padding: 30px; max-width: 400px; text-align: center; color: white;">
+        <h4 style="color: #4CAF50; font-weight: 700; margin-bottom: 15px;">기술 획득!</h4>
+        <p id="acquireSkillName" style="font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: #fff;"></p>
+        <p id="acquireSkillDesc" style="color: #bbb; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px;"></p>
+        <button onclick="closeSkillAcquireModal()" class="btn w-100" style="background-color: #4CAF50; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; cursor: pointer;">
+            확인
+        </button>
+    </div>
+`;
+document.body.appendChild(skillAcquireModal);
+
+// 기술 교체 팝업 모달
+const skillReplaceModal = document.createElement('div');
+skillReplaceModal.id = 'skillReplaceModal';
+skillReplaceModal.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 10000; justify-content: center; align-items: center; overflow-y: auto;';
+skillReplaceModal.innerHTML = `
+    <div style="background-color: #2a2a2a; border: 2px solid #FF9800; border-radius: 8px; padding: 30px; max-width: 500px; text-align: center; color: white; margin: 20px auto;">
+        <h4 style="color: #FF9800; font-weight: 700; margin-bottom: 10px;">기술이 가득 찼습니다!</h4>
+        <p style="color: #bbb; font-size: 0.85rem; margin-bottom: 20px;">기술 4개의 한계에 도달했습니다. 새 기술과 기존 기술 중 하나를 교체할 수 있습니다.</p>
+        
+        <div style="background-color: #1a1a1a; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+            <p style="color: #999; font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase;">새 기술</p>
+            <p id="newSkillName" style="font-size: 1.1rem; font-weight: 600; color: #FF9800; margin: 0;"></p>
+            <p id="newSkillDesc" style="color: #bbb; font-size: 0.8rem; margin-top: 5px;"></p>
+        </div>
+        
+        <p style="color: #999; font-size: 0.75rem; margin-bottom: 12px;">기존 기술 중 하나를 선택하세요:</p>
+        <div id="existingSkillsContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px;"></div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button onclick="closeSkillReplaceModal()" class="btn w-100" style="background-color: #333; color: #999; border: 1px solid #555; border-radius: 6px; padding: 12px; font-weight: 600; cursor: pointer;">
+                취소
+            </button>
+            <button onclick="confirmSkillReplace()" id="confirmReplaceBtn" class="btn w-100" style="background-color: #4CAF50; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; cursor: pointer; display: none;">
+                교체 확인
+            </button>
+        </div>
+    </div>
+`;
+document.body.appendChild(skillReplaceModal);
+
+let selectedOldSkill = null;
+
+function showSkillAcquireModal(newSkill) {
+    document.getElementById('acquireSkillName').textContent = skillsInfo[newSkill]?.['한글'] || newSkill;
+    document.getElementById('acquireSkillDesc').textContent = (skillsInfo[newSkill]?.['설명'] || '') + '\n' + (skillsInfo[newSkill]?.['효과'] || '');
+    document.getElementById('skillAcquireModal').style.display = 'flex';
+}
+
+function closeSkillAcquireModal() {
+    document.getElementById('skillAcquireModal').style.display = 'none';
+}
+
+function showSkillReplaceModal(newSkill, currentSkills) {
+    const newSkillInfo = skillsInfo[newSkill];
+    document.getElementById('newSkillName').textContent = newSkillInfo?.['한글'] || newSkill;
+    document.getElementById('newSkillDesc').textContent = newSkillInfo?.['설명'] || '';
+    
+    let existingHtml = '';
+    for (let skill of currentSkills) {
+        const skillInfo = skillsInfo[skill];
+        existingHtml += `
+            <button onclick="selectOldSkill('${skill}')" style="background-color: #333; color: white; border: 2px solid #555; border-radius: 6px; padding: 10px; font-size: 0.75rem; cursor: pointer; word-break: break-word;" class="existing-skill-btn" data-skill="${skill}">
+                ${skillInfo?.['한글'] || skill}
+            </button>
+        `;
+    }
+    document.getElementById('existingSkillsContainer').innerHTML = existingHtml;
+    selectedOldSkill = null;
+    document.getElementById('confirmReplaceBtn').style.display = 'none';
+    document.getElementById('skillReplaceModal').style.display = 'flex';
+}
+
+function closeSkillReplaceModal() {
+    document.getElementById('skillReplaceModal').style.display = 'none';
+    selectedOldSkill = null;
+}
+
+function selectOldSkill(skill) {
+    selectedOldSkill = skill;
+    document.querySelectorAll('.existing-skill-btn').forEach(btn => {
+        if (btn.getAttribute('data-skill') === skill) {
+            btn.style.backgroundColor = '#FF9800';
+            btn.style.borderColor = '#FFB84D';
+        } else {
+            btn.style.backgroundColor = '#333';
+            btn.style.borderColor = '#555';
+        }
+    });
+    document.getElementById('confirmReplaceBtn').style.display = 'block';
+}
+
+function confirmSkillReplace() {
+    if (!selectedOldSkill) {
+        alert('교체할 기술을 선택해주세요.');
+        return;
+    }
+    
+    const form = new FormData();
+    form.append('new_skill', window.pendingNewSkill);
+    form.append('old_skill', selectedOldSkill);
+    
+    fetch("{{ url_for('replace_skill') }}", {
+        method: 'POST',
+        body: form
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeSkillReplaceModal();
+            alert(data.message);
+        } else {
+            alert('오류: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다.');
+    });
+}
+
 // 모달 외부 클릭시 닫기
 document.getElementById('skillModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeSkillModal();
     }
 });
+
+// 승리 시 기술 획득/교체 팝업 처리
+const originalUseSkill = useSkill;
+useSkill = function(skillName) {
+    const form = new FormData();
+    form.append('action_type', 'skill');
+    form.append('skill_name', skillName);
+    
+    fetch("{{ url_for('adventure_action') }}", {
+        method: 'POST',
+        body: form
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const battleState = data.battle_state;
+            updateBattleUI(battleState);
+            updateSkillUsageUI(data.skill_usage || {});
+            
+            if (data.game_over) {
+                setTimeout(() => {
+                    if (data.winner === 'player') {
+                        adventureSound.playVictorySound();
+                        adventureSound.stopBackgroundMusic();
+                        
+                        // 기술 획득/교체 팝업 처리
+                        if (data.rewards) {
+                            if (data.rewards.skill_added) {
+                                // 4개 미만: 기술 획득 팝업
+                                showSkillAcquireModal(data.rewards.skills[0]);
+                                setTimeout(() => {
+                                    alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                                    window.location.href = "{{ url_for('adventure') }}";
+                                }, 2000);
+                            } else if (data.rewards.new_skill) {
+                                // 4개 이상: 기술 교체 팝업
+                                window.pendingNewSkill = data.rewards.new_skill;
+                                showSkillReplaceModal(data.rewards.new_skill, data.rewards.current_skills);
+                            } else {
+                                // 기술 미획득
+                                alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                                window.location.href = "{{ url_for('adventure') }}";
+                            }
+                        } else {
+                            alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                            window.location.href = "{{ url_for('adventure') }}";
+                        }
+                    } else {
+                        adventureSound.playDefeatSound();
+                        adventureSound.stopBackgroundMusic();
+                        setTimeout(() => {
+                            alert('패배했습니다. 다시 시도하세요.');
+                            window.location.href = "{{ url_for('adventure') }}";
+                        }, 500);
+                    }
+                }, 250);
+            } else if (!battleState.player_turn) {
+                handleEnemyTurn(battleState);
+            }
+        } else {
+            alert('오류: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다.');
+    });
+};
 </script>
 {% endblock %}

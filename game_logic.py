@@ -5932,9 +5932,17 @@ def complete_adventure_battle(player, battle_state):
             if selected_skills:
                 new_skill = random.choice(selected_skills)
                 if new_skill not in player.get('모험_기술', ['박치기']):
-                    if len(player.get('모험_기술', [])) < 4:
+                    current_skills = player.get('모험_기술', [])
+                    if len(current_skills) < 4:
+                        # 4개 미만: 자동 추가
                         player['모험_기술'].append(new_skill)
                         rewards['skills'].append(new_skill)
+                        rewards['skill_added'] = True
+                    else:
+                        # 4개 이상: 교체 UI를 위해 new_skill 정보 반환
+                        rewards['new_skill'] = new_skill
+                        rewards['current_skills'] = current_skills
+                        rewards['skill_added'] = False
     
     # 돈 지급 안함 (경험치도 안 오름)
     
