@@ -528,17 +528,7 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
     if (logContainers.length > 0 && battleState.log) {
         const logContainer = logContainers[0];
         let logHtml = '';
-        let logs = battleState.log.slice(-10);
-        
-        // updateMode에 따라 로그 처리
-        if (updateMode === 'enemy') {
-            // 첫 번째: 플레이어 공격만 표시 (로그 초기화)
-            logs = logs.filter(log => !log.includes('플레이어 몬스터에게') && !log.includes('차례'));
-            logContainer.innerHTML = ''; // 로그 초기화
-        } else if (updateMode === 'player') {
-            // 두 번째: 적 로그만 추가 (기존 로그 유지)
-            logs = logs.filter(log => log.includes('플레이어 몬스터에게') || log.includes('차례'));
-        }
+        const logs = battleState.log.slice(-10);
         
         for (let log_line of logs) {
             let color = '#bbb';
@@ -546,14 +536,7 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
             else if (log_line.includes('적')) color = '#FF6B6B';
             logHtml += `<div style="margin-bottom: 2px; color: ${color}; font-size: 0.7rem; line-height: 1.4;">> ${log_line}</div>`;
         }
-        
-        // updateMode에 따라 누적 또는 초기화
-        if (updateMode === 'enemy') {
-            logContainer.innerHTML = logHtml;
-        } else {
-            logContainer.innerHTML += logHtml;
-        }
-        
+        logContainer.innerHTML = logHtml;
         logContainer.scrollTop = logContainer.scrollHeight;
     }
     
@@ -765,10 +748,15 @@ function useSkill(skillName) {
                 battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
             
             // 로그에서 상대 공격 항목 제거 (플레이어 공격만 남기기)
-            if (battleStateBeforeEnemyAttack.log) {
-                battleStateBeforeEnemyAttack.log = battleStateBeforeEnemyAttack.log.filter(log => 
-                    !log.includes('플레이어 몬스터에게') && !log.includes('차례')
-                );
+            if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
+                // 역순으로 순회하면서 적 공격 관련 로그 제거
+                const filteredLog = [];
+                for (let log of battleStateBeforeEnemyAttack.log) {
+                    if (!log.includes('플레이어 몬스터에게') && !log.includes('차례')) {
+                        filteredLog.push(log);
+                    }
+                }
+                battleStateBeforeEnemyAttack.log = filteredLog;
             }
             
             // 내 공격 표시 (상대 몬스터만 업데이트, 반짝임 활성화)
