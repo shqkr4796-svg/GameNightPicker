@@ -1075,5 +1075,33 @@ function useSkillReset() {
 
 // 페이지 로드 시 아이템 카운트 업데이트
 window.addEventListener('load', updateItemCounts);
+
+// 배경음악 토글 함수
+function toggleBackgroundMusic() {
+    const btn = document.getElementById('musicToggleBtn');
+    const isEnabled = adventureSound.toggleSound();
+    
+    // localStorage에 상태 저장
+    localStorage.setItem('adventureMusicEnabled', isEnabled ? 'true' : 'false');
+    
+    btn.textContent = isEnabled ? '🔊 ON' : '🔇 OFF';
+    btn.style.backgroundColor = isEnabled ? '#1a1a1a' : '#999';
+}
+
+// 음악 재생 (adventureSound 로드 후)
+setTimeout(function() {
+    if (typeof adventureSound !== 'undefined') {
+        const savedMusicState = localStorage.getItem('adventureMusicEnabled');
+        const shouldPlayMusic = savedMusicState !== 'false';
+        
+        if (shouldPlayMusic) {
+            adventureSound.soundEnabled = true;
+            adventureSound.playBackgroundMusic();
+        } else {
+            adventureSound.soundEnabled = false;
+            adventureSound.stopBackgroundMusic();
+        }
+    }
+}, 50);
 </script>
 {% endblock %}
