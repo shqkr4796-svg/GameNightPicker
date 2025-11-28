@@ -80,23 +80,33 @@ Status: **Images placeholder (empty strings)**
 
 ## Recent Changes (Nov 28, 2025)
 
-### Skill Acquisition & Replacement UI (Nov 28)
+### Skill Item System (Nov 28 - Latest)
+1. ✅ **기술 충전제 시스템** - 기술 횟수 부분 회복
+   - 드롭 확률: 기술 카드와 동일 (스테이지 1: 0.02%, 심화: 0.04%)
+   - 효과: 최대 제한 횟수의 1/2 회복 (최대치 초과 불가)
+   - 팝업: 초록색 테마로 획득 시 알림
+   - 데이터: 모험_아이템에 '기술충전제' 추가
+
+2. ✅ **기술 초기화제 시스템** - 모든 기술 횟수 리셋
+   - 드롭 확률: 기술 카드의 1/2 (스테이지 1: 0.01%, 심화: 0.02%)
+   - 효과: 모든 기술 사용 횟수 완전 리셋
+   - 팝업: 파란색 테마로 획득 시 알림
+   - 데이터: 모험_아이템에 '기술초기화제' 추가
+
+3. ✅ **Backend 구현**
+   - /adventure/use_skill_item: 아이템 사용 엔드포인트 추가
+   - 기술 충전제 사용 시 회복량 계산 (최대치 이상 불가)
+   - 기술 초기화제 사용 시 즉시 리셋 처리
+
+4. ✅ **Frontend UI 업그레이드**
+   - showItemAcquireModal(): 아이템 획득 팝업 함수 추가
+   - 기술 획득/교체 팝업과 동일한 패턴의 디자인
+   - 아이템 획득 후 기술 팝업 순서대로 표시
+
+### Skill Acquisition & Replacement UI (Nov 28 - Previous)
 1. ✅ **기술 획득 팝업** - 새 기술 획득 시 표시
-   - 4개 미만 기술: 자동 추가 + 팝업 알림 (녹색 테마)
-   - 기술명, 설명, 효과 정보 표시
-   - 확인 버튼 클릭 시 스테이지 클리어 alert 표시
-
-2. ✅ **기술 교체 UI** - 4개 이상 기술일 때 선택 가능
-   - 새 기술 정보 표시 (주황색 테마)
-   - 기존 4개 기술 버튼 표시 (2x2 그리드)
-   - 클릭하여 교체할 기술 선택 (선택 시 주황색 하이라이트)
-   - 교체 확인 버튼 활성화 및 AJAX 처리
-   - 교체 완료 후 진행
-
-3. ✅ **Backend 처리**
-   - complete_adventure_battle: 4개 미만/이상 구분하여 rewards 반환
-   - /adventure/replace_skill: 기술 교체 API 엔드포인트 추가
-   - 기술 교체 시 세션 저장 및 파일 저장
+2. ✅ **기술 교체 UI** - 4개 이상 기술일 때 선택 가능  
+3. ✅ **Backend 처리** - complete_adventure_battle, replace_skill 엔드포인트
 
 ### Previous Updates (Nov 27)
 1. ✅ **Hard Difficulty (심화) System** - Complete implementation

@@ -5944,6 +5944,30 @@ def complete_adventure_battle(player, battle_state):
                         rewards['current_skills'] = current_skills
                         rewards['skill_added'] = False
     
+    # 기술 충전 아이템 드롭 (기술 드롭과 동일 확률, 심화 난이도에서 2배)
+    item_reward_rate = stage_config.get('skill_reward_rate', 0.02)
+    if player.get('모험_난이도') == '심화':
+        item_reward_rate *= 2
+    
+    if random.random() < item_reward_rate:
+        rewards['item_type'] = '기술충전제'
+        if '모험_아이템' not in player:
+            player['모험_아이템'] = {}
+        player['모험_아이템']['기술충전제'] = player['모험_아이템'].get('기술충전제', 0) + 1
+        rewards['items'].append('기술충전제')
+    
+    # 기술 초기화제 드롭 (기술 드롭의 1/2 확률, 심화 난이도에서 2배)
+    reset_reward_rate = (stage_config.get('skill_reward_rate', 0.02) / 2)
+    if player.get('모험_난이도') == '심화':
+        reset_reward_rate *= 2
+    
+    if random.random() < reset_reward_rate:
+        rewards['item_type'] = '기술초기화제'
+        if '모험_아이템' not in player:
+            player['모험_아이템'] = {}
+        player['모험_아이템']['기술초기화제'] = player['모험_아이템'].get('기술초기화제', 0) + 1
+        rewards['items'].append('기술초기화제')
+    
     # 돈 지급 안함 (경험치도 안 오름)
     
     # 스테이지 클리어 업데이트

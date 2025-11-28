@@ -1909,3 +1909,64 @@ def replace_skill():
         return jsonify({'success': True, 'message': f'{old_skill} → {new_skill}로 교체되었습니다.'})
     
     return jsonify({'success': False, 'error': '기술 교체 실패'})
+
+@app.route('/adventure/use_skill_item', methods=['POST'])
+def use_skill_item():
+    """기술 충전제 또는 기술 초기화제 사용"""
+    if 'player_data' not in session:
+        return jsonify({'success': False, 'error': '플레이어 정보 없음'})
+    
+    player = session['player_data']
+    item_type = request.form.get('item_type', '')
+    skill_to_recover = request.form.get('skill_name', '')
+    
+    if item_type not in ['기술충전제', '기술초기화제']:
+        return jsonify({'success': False, 'error': '유효하지 않은 아이템입니다.'})
+    
+    adventure_items = player.get('모험_아이템', {})
+    
+    if adventure_items.get(item_type, 0) <= 0:
+        return jsonify({'success': False, 'error': f'{item_type}이 없습니다.'})
+    
+    from game_logic import get_skill_uses
+    
+    if item_type == '기술충전제':
+        if not skill_to_recover:
+            return jsonify({'success': False, 'error': '회복할 기술을 선택하세요.'})
+        
+        if skill_to_recover not in player.get('모험_기술', []):
+            return jsonify({'success': False, 'error': '해당 기술을 보유하지 않았습니다.'})
+        
+        from data.adventure_data import SKILLS
+        skill_info = SKILLS.get(skill_to_recover, {})
+        max_uses = get_skill_uses(skill_info)
+        recovery_amount = max(1, max_uses // 2)
+        
+        adventure_items[item_type] -= 1
+        player['모험_아이템'] = adventure_items
+        session['player_data'] = player
+        session.modified = True
+        game_logic.save_game(player)
+        
+        return jsonify({
+            'success': True,
+            'message': f'{skill_to_recover} 기술이 {recovery_amount}회 회복되었습니다!',
+            'item_type': item_type,
+            'skill_name': skill_to_recover,
+            'recovery_amount': recovery_amount,
+            'max_uses': max_uses
+        })
+    
+    elif item_type == '기술초기화제':
+        adventure_items[item_type] -= 1
+        player['모험_아이템'] = adventure_items
+        session['player_data'] = player
+        session.modified = True
+        game_logic.save_game(player)
+        
+        return jsonify({
+            'success': True,
+            'message': '모든 기술의 사용 횟수가 리셋되었습니다!',
+            'item_type': item_type,
+            'reset_all': True
+        })
