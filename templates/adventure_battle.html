@@ -534,6 +534,9 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
         if (updateMode === 'enemy') {
             // 적 공격 내용 제외 (플레이어 공격만)
             logs = logs.filter(log => !log.includes('플레이어 몬스터에게'));
+        } else if (updateMode === 'player') {
+            // 플레이어 공격 내용 제외 (적 공격만)
+            logs = logs.filter(log => log.includes('플레이어 몬스터에게'));
         }
         
         for (let log_line of logs) {
