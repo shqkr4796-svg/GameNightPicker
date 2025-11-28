@@ -6,30 +6,13 @@
 <!-- 효과음 시스템 스크립트 -->
 <script src="{{ url_for('static', filename='js/adventure_sound.js') }}"></script>
 
-<!-- 배경음악 상태 복구 -->
+<!-- 효과음 시스템 초기화 -->
 <script>
-// 음악 재생 (adventureSound 로드 후)
+// 효과음 재생 초기화
 setTimeout(function() {
     if (typeof adventureSound !== 'undefined') {
-        const savedMusicState = localStorage.getItem('adventureMusicEnabled');
-        const shouldPlayMusic = savedMusicState !== 'false'; // 기본값은 true
-        
-        // 먼저 모든 음악을 확실히 정지
-        adventureSound.isMusicPlaying = false;
-        adventureSound.masterGain.gain.setValueAtTime(0, adventureSound.audioContext.currentTime);
-        
-        if (adventureSound.musicLoopTimeout) {
-            clearTimeout(adventureSound.musicLoopTimeout);
-            adventureSound.musicLoopTimeout = null;
-        }
-        
-        // 저장된 상태에 따라 배경음악 시작
-        if (shouldPlayMusic) {
-            adventureSound.soundEnabled = true;
-            adventureSound.playBackgroundMusic();
-        } else {
-            adventureSound.soundEnabled = false;
-        }
+        // 모든 효과음 활성화 (배경음악은 playBackgroundMusic에서 비활성화되어 재생 안 됨)
+        adventureSound.soundEnabled = true;
     }
 }, 50);
 </script>
