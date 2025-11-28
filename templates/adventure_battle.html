@@ -730,15 +730,41 @@ function useSkill(skillName) {
                 if (data.game_over) {
                     setTimeout(() => {
                         if (data.winner === 'player') {
-                            // 승리 음향
                             adventureSound.playVictorySound();
                             adventureSound.stopBackgroundMusic();
-                            setTimeout(() => {
+                            
+                            // 아이템 획득 팝업 처리
+                            if (data.rewards && data.rewards.items) {
+                                for (let item of data.rewards.items) {
+                                    if (item === '기술충전제' || item === '기술초기화제') {
+                                        showItemAcquireModal(item);
+                                    }
+                                }
+                            }
+                            
+                            // 기술 획득/교체 팝업 처리
+                            if (data.rewards) {
+                                if (data.rewards.skill_added) {
+                                    // 4개 미만: 기술 획득 팝업
+                                    showSkillAcquireModal(data.rewards.skills[0]);
+                                    setTimeout(() => {
+                                        alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                                        window.location.href = "{{ url_for('adventure') }}";
+                                    }, 2000);
+                                } else if (data.rewards.new_skill) {
+                                    // 4개 이상: 기술 교체 팝업
+                                    window.pendingNewSkill = data.rewards.new_skill;
+                                    showSkillReplaceModal(data.rewards.new_skill, data.rewards.current_skills);
+                                } else {
+                                    // 기술 미획득
+                                    alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                                    window.location.href = "{{ url_for('adventure') }}";
+                                }
+                            } else {
                                 alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
                                 window.location.href = "{{ url_for('adventure') }}";
-                            }, 500);
+                            }
                         } else {
-                            // 패배 음향
                             adventureSound.playDefeatSound();
                             adventureSound.stopBackgroundMusic();
                             setTimeout(() => {
@@ -747,8 +773,8 @@ function useSkill(skillName) {
                             }, 500);
                         }
                     }, 250);
-                } else if (battleState.player_turn) {
-                    // 플레이어 턴이면 UI 유지 (이미 표시됨)
+                } else if (!battleState.player_turn) {
+                    handleEnemyTurn(battleState);
                 }
             }, 500);
         } else {
@@ -1020,82 +1046,5 @@ function useSkillReset() {
 
 // 페이지 로드 시 아이템 카운트 업데이트
 window.addEventListener('load', updateItemCounts);
-
-// 승리 시 기술 획득/교체 팝업 처리
-const originalUseSkill = useSkill;
-useSkill = function(skillName) {
-    const form = new FormData();
-    form.append('action_type', 'skill');
-    form.append('skill_name', skillName);
-    
-    fetch("{{ url_for('adventure_action') }}", {
-        method: 'POST',
-        body: form
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const battleState = data.battle_state;
-            updateBattleUI(battleState);
-            updateSkillUsageUI(data.skill_usage || {});
-            
-            if (data.game_over) {
-                setTimeout(() => {
-                    if (data.winner === 'player') {
-                        adventureSound.playVictorySound();
-                        adventureSound.stopBackgroundMusic();
-                        
-                        // 아이템 획득 팝업 처리
-                        if (data.rewards && data.rewards.items) {
-                            for (let item of data.rewards.items) {
-                                if (item === '기술충전제' || item === '기술초기화제') {
-                                    showItemAcquireModal(item);
-                                }
-                            }
-                        }
-                        
-                        // 기술 획득/교체 팝업 처리
-                        if (data.rewards) {
-                            if (data.rewards.skill_added) {
-                                // 4개 미만: 기술 획득 팝업
-                                showSkillAcquireModal(data.rewards.skills[0]);
-                                setTimeout(() => {
-                                    alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
-                                    window.location.href = "{{ url_for('adventure') }}";
-                                }, 2000);
-                            } else if (data.rewards.new_skill) {
-                                // 4개 이상: 기술 교체 팝업
-                                window.pendingNewSkill = data.rewards.new_skill;
-                                showSkillReplaceModal(data.rewards.new_skill, data.rewards.current_skills);
-                            } else {
-                                // 기술 미획득
-                                alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
-                                window.location.href = "{{ url_for('adventure') }}";
-                            }
-                        } else {
-                            alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
-                            window.location.href = "{{ url_for('adventure') }}";
-                        }
-                    } else {
-                        adventureSound.playDefeatSound();
-                        adventureSound.stopBackgroundMusic();
-                        setTimeout(() => {
-                            alert('패배했습니다. 다시 시도하세요.');
-                            window.location.href = "{{ url_for('adventure') }}";
-                        }, 500);
-                    }
-                }, 250);
-            } else if (!battleState.player_turn) {
-                handleEnemyTurn(battleState);
-            }
-        } else {
-            alert('오류: ' + data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('오류가 발생했습니다.');
-    });
-};
 </script>
 {% endblock %}
