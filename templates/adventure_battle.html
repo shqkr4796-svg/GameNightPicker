@@ -528,7 +528,14 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
     if (logContainers.length > 0 && battleState.log) {
         const logContainer = logContainers[0];
         let logHtml = '';
-        const logs = battleState.log.slice(-10);
+        let logs = battleState.log.slice(-10);
+        
+        // updateMode에 따라 로그 필터링
+        if (updateMode === 'enemy') {
+            // 적 공격 내용 제외 (플레이어 공격만)
+            logs = logs.filter(log => !log.includes('플레이어 몬스터에게'));
+        }
+        
         for (let log_line of logs) {
             let color = '#bbb';
             if (log_line.includes('플레이어')) color = '#4CAF50';
