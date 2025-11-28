@@ -725,12 +725,11 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 전체 로그 표시
-            updateBattleUI(battleState, true, 'both');
-            updateSkillUsageUI(data.skill_usage || {});
-            
-            // 0.5초 후: 게임 오버 상태 확인
+            // 0.5초 후: 전체 로그 표시
             setTimeout(() => {
+                updateBattleUI(battleState, true, 'both');
+                updateSkillUsageUI(data.skill_usage || {});
+                
                 // 게임 오버 상태 확인
                 if (data.game_over) {
                     setTimeout(() => {
