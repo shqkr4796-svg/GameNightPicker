@@ -772,14 +772,18 @@ function useSkill(skillName) {
             battleStateBeforeEnemyAttack.player_monster.current_hp = 
                 battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
             
-            // 내 공격 표시 (상대 몬스터만 업데이트, 반짝임 활성화)
-            updateBattleUI(battleState, true, 'enemy');
+            // 캐릭터 교체 여부 확인
+            const isPlayerSwapped = battleState.player_monster.current_hp === battleState.player_monster.max_hp;
+            const isEnemySwapped = battleState.enemy_monster.current_hp === battleState.enemy_monster.max_hp;
+            
+            // 내 공격 표시 (적 몬스터 교체 시 반짝임 비활성화)
+            updateBattleUI(battleState, !isEnemySwapped, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
             // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
-                // 내 몬스터만 업데이트 (상대 공격 반영, 반짝임 활성화)
-                updateBattleUI(battleState, true, 'player');
+                // 내 몬스터만 업데이트 (플레이어 몬스터 교체 시 반짝임 비활성화)
+                updateBattleUI(battleState, !isPlayerSwapped, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
