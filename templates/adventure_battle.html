@@ -398,117 +398,127 @@ function flashMonsterImage(elementId) {
     }, 300);
 }
 
-function updateBattleUI(battleState, enableFlash = true) {
-    // HP 바 업데이트 (부드러운 애니메이션)
-    const playerHpPercent = (battleState.player_monster.current_hp / battleState.player_monster.max_hp * 100);
-    const enemyHpPercent = (battleState.enemy_monster.current_hp / battleState.enemy_monster.max_hp * 100);
+function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
+    // updateMode: 'both' = 양쪽 업데이트, 'enemy' = 상대만, 'player' = 내것만
     
-    document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
-    document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
+    // HP 바 업데이트 (부드러운 애니메이션)
+    if (updateMode === 'both' || updateMode === 'enemy') {
+        const enemyHpPercent = (battleState.enemy_monster.current_hp / battleState.enemy_monster.max_hp * 100);
+        document.getElementById('enemyHpBar').style.width = enemyHpPercent + '%';
+    }
+    
+    if (updateMode === 'both' || updateMode === 'player') {
+        const playerHpPercent = (battleState.player_monster.current_hp / battleState.player_monster.max_hp * 100);
+        document.getElementById('playerHpBar').style.width = playerHpPercent + '%';
+    }
     
     // === 적 몬스터 정보 카드 업데이트 ===
-    // 적 몬스터 이름
-    const enemyNameElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] h6');
-    if (enemyNameElements.length > 0) {
-        enemyNameElements[0].textContent = battleState.enemy_monster.name;
-    }
-    
-    // 적 몬스터 등급
-    const enemyRarityElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] p[style*="color: #999; font-size: 0.65rem"]');
-    if (enemyRarityElements.length > 0) {
-        enemyRarityElements[0].textContent = battleState.enemy_monster.rarity;
-    }
-    
-    // 적 몬스터 HP 텍스트
-    const enemyHpTexts = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] span[style*="font-weight: 700; font-size: 0.65rem"]');
-    if (enemyHpTexts.length > 0) {
-        enemyHpTexts[0].textContent = battleState.enemy_monster.current_hp + ' / ' + battleState.enemy_monster.max_hp;
-    }
-    
-    // 적 몬스터 ATK
-    const enemyAtkElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] span[style*="color: #FF6B6B"]');
-    if (enemyAtkElements.length > 0) {
-        enemyAtkElements[0].textContent = battleState.enemy_monster.attack;
-    }
-    
-    // 적 몬스터 이미지
-    const enemyMonsterImg = document.getElementById('enemyMonsterImg');
-    if (enemyMonsterImg && battleState.enemy_monster.image) {
-        if (enemyMonsterImg.tagName === 'IMG') {
-            enemyMonsterImg.src = battleState.enemy_monster.image;
+    if (updateMode === 'both' || updateMode === 'enemy') {
+        // 적 몬스터 이름
+        const enemyNameElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] h6');
+        if (enemyNameElements.length > 0) {
+            enemyNameElements[0].textContent = battleState.enemy_monster.name;
         }
-    }
-    
-    // 남은 적 몬스터 수 배지 업데이트 (상단 우측) - 깜빡거림 없이 처리
-    const enemyCardContainer = document.querySelector('div[style*="position: absolute; top: 0; right: 0"]');
-    if (enemyCardContainer) {
-        const enemyBadge = enemyCardContainer.querySelector('div[style*="position: absolute; top: -12px"]');
-        if (enemyBadge) {
-            const remainingEnemyCount = battleState.enemy_count - battleState.defeated_monsters;
-            const currentImgs = enemyBadge.querySelectorAll('img');
-            
-            // 이미지 개수가 다를 때만 업데이트
-            if (currentImgs.length !== remainingEnemyCount) {
-                let badgeHtml = '';
-                for (let i = 0; i < remainingEnemyCount; i++) {
-                    badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+        
+        // 적 몬스터 등급
+        const enemyRarityElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] p[style*="color: #999; font-size: 0.65rem"]');
+        if (enemyRarityElements.length > 0) {
+            enemyRarityElements[0].textContent = battleState.enemy_monster.rarity;
+        }
+        
+        // 적 몬스터 HP 텍스트
+        const enemyHpTexts = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] span[style*="font-weight: 700; font-size: 0.65rem"]');
+        if (enemyHpTexts.length > 0) {
+            enemyHpTexts[0].textContent = battleState.enemy_monster.current_hp + ' / ' + battleState.enemy_monster.max_hp;
+        }
+        
+        // 적 몬스터 ATK
+        const enemyAtkElements = document.querySelectorAll('div[style*="position: absolute; top: 0; right: 0"] span[style*="color: #FF6B6B"]');
+        if (enemyAtkElements.length > 0) {
+            enemyAtkElements[0].textContent = battleState.enemy_monster.attack;
+        }
+        
+        // 적 몬스터 이미지
+        const enemyMonsterImg = document.getElementById('enemyMonsterImg');
+        if (enemyMonsterImg && battleState.enemy_monster.image) {
+            if (enemyMonsterImg.tagName === 'IMG') {
+                enemyMonsterImg.src = battleState.enemy_monster.image;
+            }
+        }
+        
+        // 남은 적 몬스터 수 배지 업데이트 (상단 우측) - 깜빡거림 없이 처리
+        const enemyCardContainer = document.querySelector('div[style*="position: absolute; top: 0; right: 0"]');
+        if (enemyCardContainer) {
+            const enemyBadge = enemyCardContainer.querySelector('div[style*="position: absolute; top: -12px"]');
+            if (enemyBadge) {
+                const remainingEnemyCount = battleState.enemy_count - battleState.defeated_monsters;
+                const currentImgs = enemyBadge.querySelectorAll('img');
+                
+                // 이미지 개수가 다를 때만 업데이트
+                if (currentImgs.length !== remainingEnemyCount) {
+                    let badgeHtml = '';
+                    for (let i = 0; i < remainingEnemyCount; i++) {
+                        badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+                    }
+                    enemyBadge.innerHTML = badgeHtml;
                 }
-                enemyBadge.innerHTML = badgeHtml;
             }
         }
     }
     
     // === 플레이어 몬스터 정보 카드 업데이트 ===
-    // 플레이어 몬스터 이름
-    const playerNameElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] h6');
-    if (playerNameElements.length > 0) {
-        playerNameElements[0].textContent = battleState.player_monster.name;
-    }
-    
-    // 플레이어 몬스터 등급
-    const playerRarityElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] p[style*="color: #999; font-size: 0.65rem"]');
-    if (playerRarityElements.length > 0) {
-        playerRarityElements[0].textContent = battleState.player_monster.rarity;
-    }
-    
-    // 플레이어 몬스터 HP 텍스트
-    const playerHpTexts = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] span[style*="font-weight: 700; font-size: 0.65rem"]');
-    if (playerHpTexts.length > 0) {
-        playerHpTexts[0].textContent = battleState.player_monster.current_hp + ' / ' + battleState.player_monster.max_hp;
-    }
-    
-    // 플레이어 몬스터 ATK
-    const playerAtkElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] span[style*="color: #4CAF50"]');
-    if (playerAtkElements.length > 0) {
-        playerAtkElements[0].textContent = battleState.player_monster.attack;
-    }
-    
-    // 플레이어 몬스터 이미지
-    const playerMonsterImg = document.getElementById('playerMonsterImg');
-    if (playerMonsterImg && battleState.player_monster.image) {
-        if (playerMonsterImg.tagName === 'IMG') {
-            playerMonsterImg.src = battleState.player_monster.image;
+    if (updateMode === 'both' || updateMode === 'player') {
+        // 플레이어 몬스터 이름
+        const playerNameElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] h6');
+        if (playerNameElements.length > 0) {
+            playerNameElements[0].textContent = battleState.player_monster.name;
         }
-    }
-    
-    // 남은 플레이어 몬스터 수 배지 업데이트 (좌측 하단) - 깜빡거림 없이 처리
-    const playerCardContainer = document.querySelector('div[style*="position: absolute; bottom: 0; left: 0"]');
-    if (playerCardContainer) {
-        const playerBadge = playerCardContainer.querySelector('div[style*="position: absolute; top: -12px"]');
-        if (playerBadge) {
-            // 남은 몬스터 수 계산: player_team 배열에서 현재 인덱스 이후의 몬스터들
-            const currentTeamIndex = battleState.current_team_index || 0;
-            const playerTeamLength = battleState.player_team ? battleState.player_team.length : 3;
-            const remainingPlayerCount = playerTeamLength - currentTeamIndex;
-            const currentImgs = playerBadge.querySelectorAll('img');
-            
-            // 이미지 개수가 다를 때만 업데이트
-            if (currentImgs.length !== remainingPlayerCount) {
-                let badgeHtml = '';
-                for (let i = 0; i < remainingPlayerCount; i++) {
-                    badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+        
+        // 플레이어 몬스터 등급
+        const playerRarityElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] p[style*="color: #999; font-size: 0.65rem"]');
+        if (playerRarityElements.length > 0) {
+            playerRarityElements[0].textContent = battleState.player_monster.rarity;
+        }
+        
+        // 플레이어 몬스터 HP 텍스트
+        const playerHpTexts = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] span[style*="font-weight: 700; font-size: 0.65rem"]');
+        if (playerHpTexts.length > 0) {
+            playerHpTexts[0].textContent = battleState.player_monster.current_hp + ' / ' + battleState.player_monster.max_hp;
+        }
+        
+        // 플레이어 몬스터 ATK
+        const playerAtkElements = document.querySelectorAll('div[style*="position: absolute; bottom: 0; left: 0"] span[style*="color: #4CAF50"]');
+        if (playerAtkElements.length > 0) {
+            playerAtkElements[0].textContent = battleState.player_monster.attack;
+        }
+        
+        // 플레이어 몬스터 이미지
+        const playerMonsterImg = document.getElementById('playerMonsterImg');
+        if (playerMonsterImg && battleState.player_monster.image) {
+            if (playerMonsterImg.tagName === 'IMG') {
+                playerMonsterImg.src = battleState.player_monster.image;
+            }
+        }
+        
+        // 남은 플레이어 몬스터 수 배지 업데이트 (좌측 하단) - 깜빡거림 없이 처리
+        const playerCardContainer = document.querySelector('div[style*="position: absolute; bottom: 0; left: 0"]');
+        if (playerCardContainer) {
+            const playerBadge = playerCardContainer.querySelector('div[style*="position: absolute; top: -12px"]');
+            if (playerBadge) {
+                // 남은 몬스터 수 계산: player_team 배열에서 현재 인덱스 이후의 몬스터들
+                const currentTeamIndex = battleState.current_team_index || 0;
+                const playerTeamLength = battleState.player_team ? battleState.player_team.length : 3;
+                const remainingPlayerCount = playerTeamLength - currentTeamIndex;
+                const currentImgs = playerBadge.querySelectorAll('img');
+                
+                // 이미지 개수가 다를 때만 업데이트
+                if (currentImgs.length !== remainingPlayerCount) {
+                    let badgeHtml = '';
+                    for (let i = 0; i < remainingPlayerCount; i++) {
+                        badgeHtml += '<img src="{{ url_for("static", filename="images/health_circle.png") }}" alt="남은 몬스터" style="width: 8px; height: 8px;">';
+                    }
+                    playerBadge.innerHTML = badgeHtml;
                 }
-                playerBadge.innerHTML = badgeHtml;
             }
         }
     }
@@ -529,18 +539,32 @@ function updateBattleUI(battleState, enableFlash = true) {
         logContainer.scrollTop = logContainer.scrollHeight;
     }
     
-    // 반짝임 효과는 enableFlash가 true일 때만 실행
+    // 반짝임 효과
     if (enableFlash) {
-        // 적 몬스터에 피해를 입었으면 적 이미지 플래시 + 피해 음향
-        if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
-            flashMonsterImage('enemyMonsterImg');
-            const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
-            adventureSound.playDamageSound(damage);
+        // 적 몬스터만 업데이트하는 경우: 적 몬스터만 반짝거림
+        if (updateMode === 'enemy') {
+            if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
+                flashMonsterImage('enemyMonsterImg');
+                const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
+                adventureSound.playDamageSound(damage);
+            }
         }
-        
-        // 플레이어 몬스터에 피해를 입었으면 플레이어 이미지 플래시 + 피해 음향
-        if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
-            flashMonsterImage('playerMonsterImg');
+        // 플레이어 몬스터만 업데이트하는 경우: 플레이어 몬스터만 반짝거림
+        else if (updateMode === 'player') {
+            if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
+                flashMonsterImage('playerMonsterImg');
+            }
+        }
+        // 양쪽 모두 업데이트하는 경우: 양쪽 다 반짝거림
+        else if (updateMode === 'both') {
+            if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
+                flashMonsterImage('enemyMonsterImg');
+                const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
+                adventureSound.playDamageSound(damage);
+            }
+            if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
+                flashMonsterImage('playerMonsterImg');
+            }
         }
     }
 }
@@ -735,14 +759,14 @@ function useSkill(skillName) {
             battleStateBeforeEnemyAttack.player_monster.current_hp = 
                 battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
             
-            // 내 공격 표시 (반짝임 없음)
-            updateBattleUI(battleStateBeforeEnemyAttack, false);
+            // 내 공격 표시 (상대 몬스터만 업데이트, 반짝임 활성화)
+            updateBattleUI(battleState, true, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
             // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
-                // 전체 전투 상태 업데이트 (상대 공격 포함, 반짝임 활성화)
-                updateBattleUI(battleState, true);
+                // 내 몬스터만 업데이트 (상대 공격 반영, 반짝임 활성화)
+                updateBattleUI(battleState, true, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
