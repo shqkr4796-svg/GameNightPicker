@@ -398,7 +398,7 @@ function flashMonsterImage(elementId) {
     }, 300);
 }
 
-function updateBattleUI(battleState) {
+function updateBattleUI(battleState, enableFlash = true) {
     // HP 바 업데이트 (부드러운 애니메이션)
     const playerHpPercent = (battleState.player_monster.current_hp / battleState.player_monster.max_hp * 100);
     const enemyHpPercent = (battleState.enemy_monster.current_hp / battleState.enemy_monster.max_hp * 100);
@@ -529,16 +529,19 @@ function updateBattleUI(battleState) {
         logContainer.scrollTop = logContainer.scrollHeight;
     }
     
-    // 적 몬스터에 피해를 입었으면 적 이미지 플래시 + 피해 음향
-    if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
-        flashMonsterImage('enemyMonsterImg');
-        const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
-        adventureSound.playDamageSound(damage);
-    }
-    
-    // 플레이어 몬스터에 피해를 입었으면 플레이어 이미지 플래시 + 피해 음향
-    if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
-        flashMonsterImage('playerMonsterImg');
+    // 반짝임 효과는 enableFlash가 true일 때만 실행
+    if (enableFlash) {
+        // 적 몬스터에 피해를 입었으면 적 이미지 플래시 + 피해 음향
+        if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
+            flashMonsterImage('enemyMonsterImg');
+            const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
+            adventureSound.playDamageSound(damage);
+        }
+        
+        // 플레이어 몬스터에 피해를 입었으면 플레이어 이미지 플래시 + 피해 음향
+        if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
+            flashMonsterImage('playerMonsterImg');
+        }
     }
 }
 
@@ -716,14 +719,14 @@ function useSkill(skillName) {
                 }
             }
             
-            // 내 공격 표시
-            updateBattleUI(battleStateBeforeEnemyAttack);
+            // 내 공격 표시 (반짝임 없음)
+            updateBattleUI(battleStateBeforeEnemyAttack, false);
             updateSkillUsageUI(data.skill_usage || {});
             
             // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
-                // 전체 전투 상태 업데이트 (상대 공격 포함)
-                updateBattleUI(battleState);
+                // 전체 전투 상태 업데이트 (상대 공격 포함, 반짝임 활성화)
+                updateBattleUI(battleState, true);
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
