@@ -775,53 +775,35 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 첫 번째: 내 공격까지만 표시 (상대 공격 제외)
-            const battleStateBeforeEnemyAttack = JSON.parse(JSON.stringify(battleState));
-            
-            // 로그 필터링 + HP 역계산
-            let playerDamageTaken = 0; // 상대 공격으로 받은 피해
-            if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
-                let lastPlayerAttackIndex = -1;
-                
-                // 로그에서 피해 정보 추출 및 적 공격 항목 제거
-                for (let i = battleStateBeforeEnemyAttack.log.length - 1; i >= 0; i--) {
-                    const logLine = battleStateBeforeEnemyAttack.log[i];
-                    
-                    // 적의 공격 항목에서 피해량 추출
-                    if (logLine.includes('플레이어 몬스터에게') && logLine.includes('피해')) {
-                        const damageMatch = logLine.match(/(\d+)\s*피해/);
-                        if (damageMatch) {
-                            playerDamageTaken += parseInt(damageMatch[1]);
-                        }
+            // 적 공격 로그와 플레이어 피해 로그 추출
+            let enemyAttackLogs = [];
+            const stateWithoutEnemyLogs = JSON.parse(JSON.stringify(battleState));
+            if (stateWithoutEnemyLogs.log && stateWithoutEnemyLogs.log.length > 0) {
+                for (let i = stateWithoutEnemyLogs.log.length - 1; i >= 0; i--) {
+                    const logLine = stateWithoutEnemyLogs.log[i];
+                    if (logLine.includes('적의 공격') || logLine.includes('플레이어 몬스터에게')) {
+                        enemyAttackLogs.unshift(logLine);
+                        stateWithoutEnemyLogs.log.splice(i, 1);
                     }
-                    // 플레이어 공격 항목 찾기
-                    else if (logLine.includes('플레이어') && !logLine.includes('플레이어 몬스터에게')) {
-                        lastPlayerAttackIndex = i;
-                    }
-                }
-                
-                // 로그를 플레이어 공격까지만 잘라내기
-                if (lastPlayerAttackIndex !== -1) {
-                    battleStateBeforeEnemyAttack.log = battleStateBeforeEnemyAttack.log.slice(0, lastPlayerAttackIndex + 1);
                 }
             }
-            
-            // HP 복원: 상대 공격 전 상태로
-            battleStateBeforeEnemyAttack.player_monster.current_hp = 
-                battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
             
             // 캐릭터 교체 여부 확인
             const isPlayerSwapped = battleState.player_monster.current_hp === battleState.player_monster.max_hp;
             const isEnemySwapped = battleState.enemy_monster.current_hp === battleState.enemy_monster.max_hp;
             
-            // 내 공격 표시 (적 몬스터 교체 시 반짝임 비활성화)
-            updateBattleUI(battleState, !isEnemySwapped, 'enemy');
+            // 내 공격 표시 (적 몬스터 교체 시 반짝임 비활성화, 적 공격 로그 제외)
+            updateBattleUI(stateWithoutEnemyLogs, !isEnemySwapped, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
             // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
+                // 적 공격 로그 추가
+                if (enemyAttackLogs.length > 0) {
+                    stateWithoutEnemyLogs.log = stateWithoutEnemyLogs.log.concat(enemyAttackLogs);
+                }
                 // 내 몬스터만 업데이트 (플레이어 몬스터 교체 시 반짝임 비활성화)
-                updateBattleUI(battleState, !isPlayerSwapped, 'player');
+                updateBattleUI(stateWithoutEnemyLogs, !isPlayerSwapped, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
