@@ -770,7 +770,7 @@ function useSkill(skillName) {
                 battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
             
             // 내 공격 표시 (상대 몬스터만 업데이트, 반짝임 활성화)
-            updateBattleUI(battleState, true, 'enemy');
+            updateBattleUI(battleStateBeforeEnemyAttack, true, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
             // 0.5초 후: 상대 공격 표시
