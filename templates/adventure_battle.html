@@ -683,9 +683,9 @@ function handleEnemyTurn(battleState) {
                     setTimeout(() => {
                         // 적 공격 로그 추가
                         if (enemyAttackLogs.length > 0) {
-                            newBattleState.log = newBattleState.log.concat(enemyAttackLogs);
+                            stateWithoutEnemyLogs.log = stateWithoutEnemyLogs.log.concat(enemyAttackLogs);
                         }
-                        updateBattleUI(newBattleState, !isPlayerSwapped && !isEnemySwapped, 'player');
+                        updateBattleUI(stateWithoutEnemyLogs, !isPlayerSwapped && !isEnemySwapped, 'player');
                         updateSkillUsageUI(data.skill_usage || {});
                         
                         // 게임 오버 확인
