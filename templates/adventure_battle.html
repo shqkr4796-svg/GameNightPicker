@@ -606,71 +606,74 @@ function handleEnemyTurn(battleState) {
         .then(data => {
             if (data.success) {
                 const newBattleState = data.battle_state;
-                updateBattleUI(newBattleState);
-                updateSkillUsageUI(data.skill_usage || {});
-                
-                // 게임 오버 확인
-                if (data.game_over) {
-                    setTimeout(() => {
-                        if (data.winner === 'player') {
-                            // 승리 음향
-                            adventureSound.playVictorySound();
-                            adventureSound.stopBackgroundMusic();
-                            setTimeout(() => {
-                                alert('승리! 스테이지 ' + newBattleState.stage_id + '을(를) 클리어했습니다!');
-                                window.location.href = "{{ url_for('adventure') }}";
-                            }, 500);
-                        } else {
-                            // 패배 음향
-                            adventureSound.playDefeatSound();
-                            adventureSound.stopBackgroundMusic();
-                            setTimeout(() => {
-                                alert('패배했습니다. 다시 시도하세요.');
-                                window.location.href = "{{ url_for('adventure') }}";
-                            }, 500);
-                        }
-                    }, 250);
-                } else if (newBattleState.player_turn) {
-                    // 플레이어 턴으로 전환 (부드러운 UI 업데이트)
-                    setTimeout(() => {
-                        // 기술 버튼 영역 다시 생성
-                        let skillButtonsHtml = `
-                            <div style="text-align: center; margin-bottom: 15px;">
-                                <p style="color: #999; font-size: 0.85rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">기술을 선택하세요</p>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 400px; margin: 0 auto;">`;
-                        
-                        for (let i = 0; i < playerSkills.length; i++) {
-                            const skillName = playerSkills[i];
-                            const usage = skillUsage[skillName] || 0;
-                            const maxUses = skillMaxUses[skillName] || 10;
-                            const isUsed = usage >= maxUses;
+                // 상대 공격 표시 전 0.5초 딜레이
+                setTimeout(() => {
+                    updateBattleUI(newBattleState);
+                    updateSkillUsageUI(data.skill_usage || {});
+                    
+                    // 게임 오버 확인
+                    if (data.game_over) {
+                        setTimeout(() => {
+                            if (data.winner === 'player') {
+                                // 승리 음향
+                                adventureSound.playVictorySound();
+                                adventureSound.stopBackgroundMusic();
+                                setTimeout(() => {
+                                    alert('승리! 스테이지 ' + newBattleState.stage_id + '을(를) 클리어했습니다!');
+                                    window.location.href = "{{ url_for('adventure') }}";
+                                }, 500);
+                            } else {
+                                // 패배 음향
+                                adventureSound.playDefeatSound();
+                                adventureSound.stopBackgroundMusic();
+                                setTimeout(() => {
+                                    alert('패배했습니다. 다시 시도하세요.');
+                                    window.location.href = "{{ url_for('adventure') }}";
+                                }, 500);
+                            }
+                        }, 250);
+                    } else if (newBattleState.player_turn) {
+                        // 플레이어 턴으로 전환 (부드러운 UI 업데이트)
+                        setTimeout(() => {
+                            // 기술 버튼 영역 다시 생성
+                            let skillButtonsHtml = `
+                                <div style="text-align: center; margin-bottom: 15px;">
+                                    <p style="color: #999; font-size: 0.85rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">기술을 선택하세요</p>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 400px; margin: 0 auto;">`;
+                            
+                            for (let i = 0; i < playerSkills.length; i++) {
+                                const skillName = playerSkills[i];
+                                const usage = skillUsage[skillName] || 0;
+                                const maxUses = skillMaxUses[skillName] || 10;
+                                const isUsed = usage >= maxUses;
+                                
+                                skillButtonsHtml += `
+                                    <div>
+                                        <button onclick="showSkillInfo('${skillName}')" title="기술 정보 보기" class="btn w-100" id="skill-btn-${i}" 
+                                        style="background-color: ${isUsed ? '#555' : '#333'}; color: ${isUsed ? '#888' : 'white'}; border: 2px solid ${isUsed ? '#777' : '#555'}; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: ${isUsed ? 'not-allowed' : 'pointer'}; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" 
+                                        onmouseover="${isUsed ? '' : "this.style.backgroundColor='#444'; this.style.borderColor='#666';"}"
+                                        onmouseout="${isUsed ? '' : "this.style.backgroundColor='#333'; this.style.borderColor='#555';"}"
+                                        ondblclick="${isUsed ? '' : "useSkill('" + skillName + "')"}"
+                                        ${isUsed ? 'disabled' : ''}>
+                                            ${skillName}<br><span style="font-size: 0.6rem;">${usage}/${maxUses}</span>
+                                        </button>
+                                    </div>
+                                `;
+                            }
                             
                             skillButtonsHtml += `
-                                <div>
-                                    <button onclick="showSkillInfo('${skillName}')" title="기술 정보 보기" class="btn w-100" id="skill-btn-${i}" 
-                                    style="background-color: ${isUsed ? '#555' : '#333'}; color: ${isUsed ? '#888' : 'white'}; border: 2px solid ${isUsed ? '#777' : '#555'}; border-radius: 6px; padding: 12px; font-size: 0.75rem; font-weight: 600; cursor: ${isUsed ? 'not-allowed' : 'pointer'}; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-word;" 
-                                    onmouseover="${isUsed ? '' : "this.style.backgroundColor='#444'; this.style.borderColor='#666';"}"
-                                    onmouseout="${isUsed ? '' : "this.style.backgroundColor='#333'; this.style.borderColor='#555';"}"
-                                    ondblclick="${isUsed ? '' : "useSkill('" + skillName + "')"}"
-                                    ${isUsed ? 'disabled' : ''}>
-                                        ${skillName}<br><span style="font-size: 0.6rem;">${usage}/${maxUses}</span>
-                                    </button>
+                                    </div>
+                                    <p style="color: #999; font-size: 0.7rem; margin-top: 8px;">클릭으로 정보 보기, 더블클릭으로 사용</p>
                                 </div>
                             `;
-                        }
-                        
-                        skillButtonsHtml += `
-                                </div>
-                                <p style="color: #999; font-size: 0.7rem; margin-top: 8px;">클릭으로 정보 보기, 더블클릭으로 사용</p>
-                            </div>
-                        `;
-                        
-                        actionContainer.innerHTML = skillButtonsHtml;
-                        
-                        // 스킬 사용 횟수 업데이트
-                        Object.assign(skillUsage, data.skill_usage || {});
-                    }, 200);
-                }
+                            
+                            actionContainer.innerHTML = skillButtonsHtml;
+                            
+                            // 스킬 사용 횟수 업데이트
+                            Object.assign(skillUsage, data.skill_usage || {});
+                        }, 200);
+                    }
+                }, 500);
             }
         })
         .catch(error => console.error('Error:', error));
