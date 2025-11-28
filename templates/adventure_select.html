@@ -17,18 +17,6 @@
                             <br><span style="color: #999; font-size: 1rem;">(일반)</span>
                         {% endif %}
                     </h1>
-                    <button onclick="toggleBackgroundMusic()" id="musicToggleBtn" style="background-color: #1a1a1a; color: white; border: none; border-radius: 6px; padding: 10px 16px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; min-width: 80px;" onmouseover="this.style.backgroundColor='#333'" onmouseout="this.style.backgroundColor='#1a1a1a'">
-                        🔊 ON
-                    </button>
-                    <script>
-                        (function() {
-                            const btn = document.getElementById('musicToggleBtn');
-                            const savedMusicState = localStorage.getItem('adventureMusicEnabled');
-                            const shouldPlayMusic = savedMusicState !== 'false';
-                            btn.textContent = shouldPlayMusic ? '🔊 ON' : '🔇 OFF';
-                            btn.style.backgroundColor = shouldPlayMusic ? '#1a1a1a' : '#999';
-                        })();
-                    </script>
                 </div>
                 <p style="color: #666; font-size: 0.95rem; margin-top: 5px;">턴제 전투로 스테이지를 진행하세요</p>
                 
