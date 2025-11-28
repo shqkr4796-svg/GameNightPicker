@@ -224,6 +224,21 @@ setTimeout(function() {
                                 </div>
                             </div>
                             <p style="color: #999; font-size: 0.7rem; margin-top: 8px;">클릭으로 정보 보기, 더블클릭으로 사용</p>
+                            
+                            <!-- 아이템 사용 섹션 -->
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
+                                <p style="color: #999; font-size: 0.85rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">아이템</p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 400px; margin: 0 auto;">
+                                    <!-- 기술 충전제 -->
+                                    <button id="skillRecoveryBtn" onclick="showSkillRecoveryModal()" style="background-color: #2d5a2d; color: #4CAF50; border: 2px solid #4CAF50; border-radius: 6px; padding: 10px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.backgroundColor='#3d7a3d'" onmouseout="this.style.backgroundColor='#2d5a2d'">
+                                        기술충전제<br><span id="recoveryCount" style="font-size: 0.6rem;">0개</span>
+                                    </button>
+                                    <!-- 기술 초기화제 -->
+                                    <button id="skillResetBtn" onclick="useSkillReset()" style="background-color: #1a3a52; color: #2196F3; border: 2px solid #2196F3; border-radius: 6px; padding: 10px; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;" onmouseover="this.style.backgroundColor='#2a5a82'" onmouseout="this.style.backgroundColor='#1a3a52'">
+                                        기술초기화제<br><span id="resetCount" style="font-size: 0.6rem;">0개</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     {% else %}
                         <div style="text-align: center; padding: 15px; background-color: #2a2a2a; border-radius: 6px; color: #999; border: 1px solid #444;">
@@ -851,6 +866,13 @@ document.getElementById('skillModal').addEventListener('click', function(e) {
     }
 });
 
+// 아이템 카운트 업데이트
+function updateItemCounts() {
+    const adventureItems = {{ adventure_items | tojson }};
+    document.getElementById('recoveryCount').textContent = (adventureItems['기술충전제'] || 0) + '개';
+    document.getElementById('resetCount').textContent = (adventureItems['기술초기화제'] || 0) + '개';
+}
+
 // 아이템 획득 팝업 표시
 function showItemAcquireModal(itemType) {
     const itemNames = {'기술충전제': '기술 충전제', '기술초기화제': '기술 초기화제'};
@@ -874,6 +896,102 @@ function showItemAcquireModal(itemType) {
     document.body.appendChild(modal);
     modal.onclick = function(e) { if (e.target === this) this.remove(); };
 }
+
+// 기술 충전제 선택 팝업
+function showSkillRecoveryModal() {
+    const adventureItems = {{ adventure_items | tojson }};
+    if ((adventureItems['기술충전제'] || 0) <= 0) {
+        alert('기술충전제가 없습니다.');
+        return;
+    }
+    
+    const skills = playerSkills;
+    let skillButtons = skills.map(skill => `
+        <button onclick="useSkillRecovery('${skill}')" style="background-color: #333; color: white; border: 2px solid #4CAF50; border-radius: 6px; padding: 12px; font-size: 0.75rem; cursor: pointer; word-break: break-word; width: 100%; margin-bottom: 8px;">
+            ${skill}
+        </button>
+    `).join('');
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = 'display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; padding:20px;';
+    
+    modal.innerHTML = `
+        <div style="background-color: #2a2a2a; border-radius: 12px; padding: 25px; max-width: 400px; border: 2px solid #4CAF50; color: white;">
+            <h4 style="color: #4CAF50; margin-bottom: 15px; text-align: center;">회복할 기술 선택</h4>
+            <div style="max-height: 300px; overflow-y: auto;">${skillButtons}</div>
+            <button onclick="this.closest('div').parentElement.remove()" style="background-color: #333; color: #999; border: 1px solid #555; border-radius: 6px; padding: 10px; cursor: pointer; width: 100%; margin-top: 10px;">취소</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.onclick = function(e) { if (e.target === this) this.remove(); };
+}
+
+// 기술 충전제 사용
+function useSkillRecovery(skillName) {
+    document.querySelectorAll('div[style*="position:fixed"]').forEach(el => el.remove());
+    
+    const form = new FormData();
+    form.append('action_type', 'skill_item');
+    form.append('item_type', '기술충전제');
+    form.append('skill_name', skillName);
+    
+    fetch("{{ url_for('adventure_action') }}", {
+        method: 'POST',
+        body: form
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✓ ' + skillName + ' 기술이 ' + data.recovery_amount + '회 회복되었습니다!');
+            updateItemCounts();
+            handleEnemyTurn(data.battle_state);
+        } else {
+            alert('오류: ' + (data.error || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다.');
+    });
+}
+
+// 기술 초기화제 사용
+function useSkillReset() {
+    const adventureItems = {{ adventure_items | tojson }};
+    if ((adventureItems['기술초기화제'] || 0) <= 0) {
+        alert('기술초기화제가 없습니다.');
+        return;
+    }
+    
+    if (!confirm('모든 기술의 사용 횟수를 리셋하시겠습니까?')) return;
+    
+    const form = new FormData();
+    form.append('action_type', 'skill_item');
+    form.append('item_type', '기술초기화제');
+    
+    fetch("{{ url_for('adventure_action') }}", {
+        method: 'POST',
+        body: form
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✓ 모든 기술의 사용 횟수가 리셋되었습니다!');
+            updateItemCounts();
+            handleEnemyTurn(data.battle_state);
+        } else {
+            alert('오류: ' + (data.error || '알 수 없는 오류'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('오류가 발생했습니다.');
+    });
+}
+
+// 페이지 로드 시 아이템 카운트 업데이트
+window.addEventListener('load', updateItemCounts);
 
 // 승리 시 기술 획득/교체 팝업 처리
 const originalUseSkill = useSkill;
