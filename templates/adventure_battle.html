@@ -747,16 +747,22 @@ function useSkill(skillName) {
             battleStateBeforeEnemyAttack.player_monster.current_hp = 
                 battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
             
-            // 로그에서 상대 공격 항목 제거 (플레이어 공격만 남기기)
+            // 로그에서 적의 모든 행동 필터링 (플레이어 공격만 남기기)
             if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
-                // 적 턴, 적의 공격 로그 제거
                 const filteredLog = [];
                 for (let log of battleStateBeforeEnemyAttack.log) {
-                    if (!log.includes('플레이어 몬스터에게') && !log.includes('차례') && !log.includes('적의 공격')) {
+                    // 적의 행동: 피해, 차례, 공격, 기술 사용
+                    const isEnemyAction = log.includes('플레이어 몬스터에게') || 
+                                         log.includes('차례') || 
+                                         log.includes('적의 공격') ||
+                                         (log.includes('적') && log.includes('사용'));
+                    if (!isEnemyAction) {
                         filteredLog.push(log);
                     }
                 }
-                battleStateBeforeEnemyAttack.log = filteredLog;
+                if (filteredLog.length > 0) {
+                    battleStateBeforeEnemyAttack.log = filteredLog;
+                }
             }
             
             // 내 공격 표시 (상대 몬스터만 업데이트, 반짝임 활성화)
