@@ -661,13 +661,29 @@ function handleEnemyTurn(battleState) {
                 const isPlayerSwapped = newBattleState.player_monster.current_hp === newBattleState.player_monster.max_hp;
                 const isEnemySwapped = newBattleState.enemy_monster.current_hp === newBattleState.enemy_monster.max_hp;
                 
-                // 0.5초 후: 첫 번째 호출 - 적 몬스터만 업데이트
+                // 적 공격 로그 추출 및 제거 (0.5초 뒤에 표시하기 위함)
+                let enemyAttackLogs = [];
+                if (newBattleState.log && newBattleState.log.length > 0) {
+                    for (let i = newBattleState.log.length - 1; i >= 0; i--) {
+                        const logLine = newBattleState.log[i];
+                        if (logLine.includes('적의 공격') || logLine.includes('플레이어 몬스터에게')) {
+                            enemyAttackLogs.unshift(logLine);
+                            newBattleState.log.splice(i, 1);
+                        }
+                    }
+                }
+                
+                // 0.5초 후: 첫 번째 호출 - 적 몬스터만 업데이트 (적 공격 로그 제외)
                 setTimeout(() => {
                     updateBattleUI(newBattleState, !isEnemySwapped, 'enemy');
                     updateSkillUsageUI(data.skill_usage || {});
                     
-                    // 0.5초 후: 두 번째 호출 - 내 몬스터만 업데이트
+                    // 0.5초 후: 두 번째 호출 - 적 공격 로그 추가 후 내 몬스터만 업데이트
                     setTimeout(() => {
+                        // 적 공격 로그 다시 추가
+                        if (enemyAttackLogs.length > 0) {
+                            newBattleState.log = newBattleState.log.concat(enemyAttackLogs);
+                        }
                         updateBattleUI(newBattleState, !isPlayerSwapped && !isEnemySwapped, 'player');
                         updateSkillUsageUI(data.skill_usage || {});
                         
