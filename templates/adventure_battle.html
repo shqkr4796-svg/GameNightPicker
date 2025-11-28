@@ -528,16 +528,7 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
     if (logContainers.length > 0 && battleState.log) {
         const logContainer = logContainers[0];
         let logHtml = '';
-        let logs = battleState.log.slice(-10);
-        
-        // updateMode에 따라 로그 필터링
-        if (updateMode === 'enemy') {
-            // 적 공격 내용 제외 (플레이어 공격만)
-            logs = logs.filter(log => !log.includes('플레이어 몬스터에게'));
-        } else if (updateMode === 'player') {
-            // 플레이어 공격 내용 제외 (적 공격만)
-            logs = logs.filter(log => log.includes('플레이어 몬스터에게'));
-        }
+        const logs = battleState.log.slice(-10);
         
         for (let log_line of logs) {
             let color = '#bbb';
@@ -737,7 +728,7 @@ function useSkill(skillName) {
             // 첫 번째: 내 공격까지만 표시 (상대 공격 제외)
             const battleStateBeforeEnemyAttack = JSON.parse(JSON.stringify(battleState));
             
-            // HP 역계산 (상대 공격으로 받은 피해)
+            // HP 역계산 + 로그 필터링
             let playerDamageTaken = 0;
             if (battleState.log && battleState.log.length > 0) {
                 // 로그에서 적의 공격으로 받은 피해량 추출
@@ -756,14 +747,29 @@ function useSkill(skillName) {
             battleStateBeforeEnemyAttack.player_monster.current_hp = 
                 battleStateBeforeEnemyAttack.player_monster.current_hp + playerDamageTaken;
             
+            // 로그 필터링: 플레이어 공격만 남기기
+            if (battleStateBeforeEnemyAttack.log) {
+                battleStateBeforeEnemyAttack.log = battleStateBeforeEnemyAttack.log.filter(log => 
+                    !log.includes('플레이어 몬스터에게')
+                );
+            }
+            
             // 내 공격 표시 (상대 몬스터만 업데이트, 반짝임 활성화)
             updateBattleUI(battleStateBeforeEnemyAttack, true, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
             // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
+                // 로그 필터링: 적 공격만 남기기
+                const battleStateForEnemyAttack = JSON.parse(JSON.stringify(battleState));
+                if (battleStateForEnemyAttack.log) {
+                    battleStateForEnemyAttack.log = battleStateForEnemyAttack.log.filter(log => 
+                        log.includes('플레이어 몬스터에게')
+                    );
+                }
+                
                 // 내 몬스터만 업데이트 (상대 공격 반영, 반짝임 활성화)
-                updateBattleUI(battleState, true, 'player');
+                updateBattleUI(battleStateForEnemyAttack, true, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
