@@ -532,11 +532,11 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
         
         // updateMode에 따라 로그 필터링
         if (updateMode === 'enemy') {
-            // 첫 번째 업데이트: 적 공격 내용 제외 (플레이어 공격만)
-            logs = logs.filter(log => !log.includes('플레이어 몬스터에게'));
+            // 첫 번째 업데이트: 플레이어 공격만 (적 턴, 적 공격 제외)
+            logs = logs.filter(log => !log.includes('적') || log.includes('플레이어'));
         } else if (updateMode === 'player') {
-            // 두 번째 업데이트: 적 공격 내용만 (새로 추가된 것)
-            logs = logs.filter(log => log.includes('플레이어 몬스터에게') || log.includes('차례'));
+            // 두 번째 업데이트: 적 턴, 적 공격만 표시
+            logs = logs.filter(log => log.includes('적'));
         }
         
         for (let log_line of logs) {
