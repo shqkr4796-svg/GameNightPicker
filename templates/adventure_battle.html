@@ -737,31 +737,18 @@ function useSkill(skillName) {
             // 첫 번째: 내 공격까지만 표시 (상대 공격 제외)
             const battleStateBeforeEnemyAttack = JSON.parse(JSON.stringify(battleState));
             
-            // 로그 필터링 + HP 역계산
-            let playerDamageTaken = 0; // 상대 공격으로 받은 피해
-            if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
-                let lastPlayerAttackIndex = -1;
-                
-                // 로그에서 피해 정보 추출 및 적 공격 항목 제거
-                for (let i = battleStateBeforeEnemyAttack.log.length - 1; i >= 0; i--) {
-                    const logLine = battleStateBeforeEnemyAttack.log[i];
-                    
-                    // 적의 공격 항목에서 피해량 추출
+            // HP 역계산 (상대 공격으로 받은 피해)
+            let playerDamageTaken = 0;
+            if (battleState.log && battleState.log.length > 0) {
+                // 로그에서 적의 공격으로 받은 피해량 추출
+                for (let i = battleState.log.length - 1; i >= 0; i--) {
+                    const logLine = battleState.log[i];
                     if (logLine.includes('플레이어 몬스터에게') && logLine.includes('피해')) {
                         const damageMatch = logLine.match(/(\d+)\s*피해/);
                         if (damageMatch) {
                             playerDamageTaken += parseInt(damageMatch[1]);
                         }
                     }
-                    // 플레이어 공격 항목 찾기
-                    else if (logLine.includes('플레이어') && !logLine.includes('플레이어 몬스터에게')) {
-                        lastPlayerAttackIndex = i;
-                    }
-                }
-                
-                // 로그를 플레이어 공격까지만 잘라내기
-                if (lastPlayerAttackIndex !== -1) {
-                    battleStateBeforeEnemyAttack.log = battleStateBeforeEnemyAttack.log.slice(0, lastPlayerAttackIndex + 1);
                 }
             }
             
