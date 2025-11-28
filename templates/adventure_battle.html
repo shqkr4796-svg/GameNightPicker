@@ -660,7 +660,7 @@ function handleEnemyTurn(battleState) {
                                 }, 500);
                             }
                         }, 250);
-                    } else if (newBattleState.player_turn) {
+                    } else if (newBattleState.player_turn && !data.game_over) {
                         // 플레이어 턴으로 전환 (부드러운 UI 업데이트)
                         setTimeout(() => {
                             // 기술 버튼 영역 다시 생성
@@ -725,12 +725,17 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 즉시 업데이트
-            updateBattleUI(battleState, false, 'both');
-            updateSkillUsageUI(data.skill_usage || {});
+            // 몬스터 교체 여부 확인
+            const isMonsterSwapped = battleState.log && battleState.log.some(log => log.includes('다음 팀원 등장'));
+            const delayTime = isMonsterSwapped ? 0 : 500;
             
-            // 게임 오버 상태 확인
-            if (data.game_over) {
+            // 딜레이 후 업데이트
+            setTimeout(() => {
+                updateBattleUI(battleState, false, 'both');
+                updateSkillUsageUI(data.skill_usage || {});
+                
+                // 게임 오버 상태 확인
+                if (data.game_over) {
                 setTimeout(() => {
                     if (data.winner === 'player') {
                         adventureSound.playVictorySound();
@@ -776,9 +781,10 @@ function useSkill(skillName) {
                         }, 500);
                     }
                 }, 250);
-            } else if (!battleState.player_turn) {
-                handleEnemyTurn(battleState);
-            }
+                } else if (!battleState.player_turn) {
+                    handleEnemyTurn(battleState);
+                }
+            }, delayTime);
         } else {
             alert('오류: ' + data.error);
         }
