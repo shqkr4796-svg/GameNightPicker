@@ -5318,7 +5318,7 @@ def merge_monsters(player, monster_ids):
     # 레전드리 3마리 합성 -> 신화급 30% 확률적 획득
     if first_monster_rarity == '레전드리':
         if random.random() < 0.3:
-            # 신화급 30% 확률 획득 (3종류만 고정)
+            # 신화급 30% 확률 획득
             mythic_monsters = ['신화급_1', '신화급_2', '신화급_3']
             result_monster_id = random.choice(mythic_monsters)
             result_monster_data = get_monster_by_id(result_monster_id)
