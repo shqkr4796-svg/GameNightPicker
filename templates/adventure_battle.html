@@ -661,31 +661,14 @@ function handleEnemyTurn(battleState) {
                 const isPlayerSwapped = newBattleState.player_monster.current_hp === newBattleState.player_monster.max_hp;
                 const isEnemySwapped = newBattleState.enemy_monster.current_hp === newBattleState.enemy_monster.max_hp;
                 
-                // 적 공격 로그와 플레이어 피해 로그 추출
-                let enemyAttackLogs = [];
-                const stateWithoutEnemyLogs = JSON.parse(JSON.stringify(newBattleState));
-                if (stateWithoutEnemyLogs.log && stateWithoutEnemyLogs.log.length > 0) {
-                    for (let i = stateWithoutEnemyLogs.log.length - 1; i >= 0; i--) {
-                        const logLine = stateWithoutEnemyLogs.log[i];
-                        if (logLine.includes('적의 공격') || logLine.includes('플레이어 몬스터에게')) {
-                            enemyAttackLogs.unshift(logLine);
-                            stateWithoutEnemyLogs.log.splice(i, 1);
-                        }
-                    }
-                }
-                
-                // 0.5초 후: 첫 번째 호출 - 적 몬스터만 업데이트 (적 공격 로그 제외)
+                // 0.5초 후: 첫 번째 호출 - 적 몬스터만 업데이트
                 setTimeout(() => {
-                    updateBattleUI(stateWithoutEnemyLogs, !isEnemySwapped, 'enemy');
+                    updateBattleUI(newBattleState, !isEnemySwapped, 'enemy');
                     updateSkillUsageUI(data.skill_usage || {});
                     
-                    // 0.5초 후: 두 번째 호출 - 적 공격 로그와 함께 내 몬스터 업데이트
+                    // 0.5초 후: 두 번째 호출 - 내 몬스터만 업데이트
                     setTimeout(() => {
-                        // 적 공격 로그 추가
-                        if (enemyAttackLogs.length > 0) {
-                            stateWithoutEnemyLogs.log = stateWithoutEnemyLogs.log.concat(enemyAttackLogs);
-                        }
-                        updateBattleUI(stateWithoutEnemyLogs, !isPlayerSwapped && !isEnemySwapped, 'player');
+                        updateBattleUI(newBattleState, !isPlayerSwapped && !isEnemySwapped, 'player');
                         updateSkillUsageUI(data.skill_usage || {});
                         
                         // 게임 오버 확인
@@ -775,35 +758,18 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 적 공격 로그와 플레이어 피해 로그 추출
-            let enemyAttackLogs = [];
-            const stateWithoutEnemyLogs = JSON.parse(JSON.stringify(battleState));
-            if (stateWithoutEnemyLogs.log && stateWithoutEnemyLogs.log.length > 0) {
-                for (let i = stateWithoutEnemyLogs.log.length - 1; i >= 0; i--) {
-                    const logLine = stateWithoutEnemyLogs.log[i];
-                    if (logLine.includes('적의 공격') || logLine.includes('플레이어 몬스터에게')) {
-                        enemyAttackLogs.unshift(logLine);
-                        stateWithoutEnemyLogs.log.splice(i, 1);
-                    }
-                }
-            }
-            
             // 캐릭터 교체 여부 확인
             const isPlayerSwapped = battleState.player_monster.current_hp === battleState.player_monster.max_hp;
             const isEnemySwapped = battleState.enemy_monster.current_hp === battleState.enemy_monster.max_hp;
             
-            // 내 공격 표시 (적 몬스터 교체 시 반짝임 비활성화, 적 공격 로그 제외)
-            updateBattleUI(stateWithoutEnemyLogs, !isEnemySwapped, 'enemy');
+            // 내 공격 표시 (적 몬스터 교체 시 반짝임 비활성화)
+            updateBattleUI(battleState, !isEnemySwapped, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
             // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
-                // 적 공격 로그 추가
-                if (enemyAttackLogs.length > 0) {
-                    stateWithoutEnemyLogs.log = stateWithoutEnemyLogs.log.concat(enemyAttackLogs);
-                }
                 // 내 몬스터만 업데이트 (플레이어 몬스터 교체 시 반짝임 비활성화)
-                updateBattleUI(stateWithoutEnemyLogs, !isPlayerSwapped, 'player');
+                updateBattleUI(battleState, !isPlayerSwapped, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
