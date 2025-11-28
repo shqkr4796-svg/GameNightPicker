@@ -530,7 +530,15 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
         let logHtml = '';
         let logs = battleState.log.slice(-10);
         
-        // 필터링 없음 - 모든 로그를 누적해서 표시
+        // updateMode에 따라 로그 처리
+        if (updateMode === 'enemy') {
+            // 첫 번째: 플레이어 공격만 표시 (로그 초기화)
+            logs = logs.filter(log => !log.includes('플레이어 몬스터에게') && !log.includes('차례'));
+            logContainer.innerHTML = ''; // 로그 초기화
+        } else if (updateMode === 'player') {
+            // 두 번째: 적 로그만 추가 (기존 로그 유지)
+            logs = logs.filter(log => log.includes('플레이어 몬스터에게') || log.includes('차례'));
+        }
         
         for (let log_line of logs) {
             let color = '#bbb';
@@ -538,7 +546,14 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
             else if (log_line.includes('적')) color = '#FF6B6B';
             logHtml += `<div style="margin-bottom: 2px; color: ${color}; font-size: 0.7rem; line-height: 1.4;">> ${log_line}</div>`;
         }
-        logContainer.innerHTML = logHtml;
+        
+        // updateMode에 따라 누적 또는 초기화
+        if (updateMode === 'enemy') {
+            logContainer.innerHTML = logHtml;
+        } else {
+            logContainer.innerHTML += logHtml;
+        }
+        
         logContainer.scrollTop = logContainer.scrollHeight;
     }
     
