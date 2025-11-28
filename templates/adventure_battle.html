@@ -697,35 +697,38 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 전투 UI 업데이트 (부드러운 애니메이션)
-            updateBattleUI(battleState);
-            updateSkillUsageUI(data.skill_usage || {});
-            
-            // 게임 오버 상태 확인
-            if (data.game_over) {
-                setTimeout(() => {
-                    if (data.winner === 'player') {
-                        // 승리 음향
-                        adventureSound.playVictorySound();
-                        adventureSound.stopBackgroundMusic();
-                        setTimeout(() => {
-                            alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
-                            window.location.href = "{{ url_for('adventure') }}";
-                        }, 500);
-                    } else {
-                        // 패배 음향
-                        adventureSound.playDefeatSound();
-                        adventureSound.stopBackgroundMusic();
-                        setTimeout(() => {
-                            alert('패배했습니다. 다시 시도하세요.');
-                            window.location.href = "{{ url_for('adventure') }}";
-                        }, 500);
-                    }
-                }, 250);
-            } else if (!battleState.player_turn) {
-                // 적의 턴이면 자동 진행 (페이지 새로고침 없이!)
-                handleEnemyTurn(battleState);
-            }
+            // 상대 공격 표시 후 0.5초 딜레이
+            setTimeout(() => {
+                // 전투 UI 업데이트 (부드러운 애니메이션)
+                updateBattleUI(battleState);
+                updateSkillUsageUI(data.skill_usage || {});
+                
+                // 게임 오버 상태 확인
+                if (data.game_over) {
+                    setTimeout(() => {
+                        if (data.winner === 'player') {
+                            // 승리 음향
+                            adventureSound.playVictorySound();
+                            adventureSound.stopBackgroundMusic();
+                            setTimeout(() => {
+                                alert('승리! 스테이지 ' + battleState.stage_id + '을(를) 클리어했습니다!');
+                                window.location.href = "{{ url_for('adventure') }}";
+                            }, 500);
+                        } else {
+                            // 패배 음향
+                            adventureSound.playDefeatSound();
+                            adventureSound.stopBackgroundMusic();
+                            setTimeout(() => {
+                                alert('패배했습니다. 다시 시도하세요.');
+                                window.location.href = "{{ url_for('adventure') }}";
+                            }, 500);
+                        }
+                    }, 250);
+                } else if (!battleState.player_turn) {
+                    // 적의 턴이면 자동 진행 (페이지 새로고침 없이!)
+                    handleEnemyTurn(battleState);
+                }
+            }, 500);
         } else {
             alert('오류: ' + data.error);
         }
