@@ -751,11 +751,13 @@ function useSkill(skillName) {
             if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
                 const filteredLog = [];
                 for (let log of battleStateBeforeEnemyAttack.log) {
-                    // 적의 행동: 피해, 차례, 공격, 기술 사용
+                    // 적의 행동: 피해, 차례, 공격, 기술 사용, 상태이상
                     const isEnemyAction = log.includes('플레이어 몬스터에게') || 
                                          log.includes('차례') || 
                                          log.includes('적의 공격') ||
-                                         (log.includes('적') && log.includes('사용'));
+                                         log.includes('적 몬스터를 격파') ||
+                                         log.includes('감소했습니다') ||
+                                         (log.includes('적 [') && log.includes('사용'));
                     if (!isEnemyAction) {
                         filteredLog.push(log);
                     }
@@ -769,11 +771,10 @@ function useSkill(skillName) {
             updateBattleUI(battleStateBeforeEnemyAttack, true, 'enemy');
             updateSkillUsageUI(data.skill_usage || {});
             
-            // 0.5초 후: 상대 공격 표시
+            // 0.5초 후: 상대 공격 표시 (전체 로그)
             setTimeout(() => {
-                // 원본 battleState 새로 생성 (완전한 로그 보장)
-                const completeBattleState = JSON.parse(JSON.stringify(data.battle_state));
-                updateBattleUI(completeBattleState, true, 'player');
+                // 원본 battleState 사용 (필터링 없이 전체 로그 표시)
+                updateBattleUI(battleState, true, 'player');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
