@@ -410,9 +410,6 @@ function submitQuizAnswer(event) {
                         }
                     };
                 }
-                
-                // 결과 메시지를 스크롤해서 보이게 함
-                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
     })
