@@ -316,8 +316,16 @@ const skillMaxUses = {{ skill_max_uses | tojson }};
 const currentPlayerRarity = '{{ battle_state.player_monster.rarity }}';
 let skillButtonClickCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
 
-// 페이지 로드 시 배경음악 시작 및 전투 시작 음향
+// 이전 HP 상태 추적 (반짝거림 발동 조건용)
+let previousEnemyHP = null;
+let previousPlayerHP = null;
+
+// 페이지 로드 시 초기 상태 설정 및 배경음악 시작
 window.addEventListener('load', function() {
+    // 초기 HP 상태 저장
+    const battleState = {{ battle_state | tojson }};
+    initializeHPTracking(battleState);
+    
     setTimeout(() => {
         adventureSound.playBattleStartSound();
         adventureSound.playBackgroundMusic();
@@ -546,34 +554,45 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
         logContainer.scrollTop = logContainer.scrollHeight;
     }
     
-    // 반짝임 효과
+    // 반짝임 효과 - 체력이 변화했을 때만
     if (enableFlash) {
-        // 적 몬스터만 업데이트하는 경우: 적 몬스터만 반짝거림
+        // 적 몬스터만 업데이트하는 경우: HP가 감소했으면 반짝거림
         if (updateMode === 'enemy') {
-            if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
+            if (previousEnemyHP !== null && battleState.enemy_monster.current_hp < previousEnemyHP) {
                 flashMonsterImage('enemyMonsterImg');
-                const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
+                const damage = previousEnemyHP - battleState.enemy_monster.current_hp;
                 adventureSound.playDamageSound(damage);
             }
+            previousEnemyHP = battleState.enemy_monster.current_hp;
         }
-        // 플레이어 몬스터만 업데이트하는 경우: 플레이어 몬스터만 반짝거림
+        // 플레이어 몬스터만 업데이트하는 경우: HP가 감소했으면 반짝거림
         else if (updateMode === 'player') {
-            if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
+            if (previousPlayerHP !== null && battleState.player_monster.current_hp < previousPlayerHP) {
                 flashMonsterImage('playerMonsterImg');
             }
+            previousPlayerHP = battleState.player_monster.current_hp;
         }
-        // 양쪽 모두 업데이트하는 경우: 양쪽 다 반짝거림
+        // 양쪽 모두 업데이트하는 경우: 각각 HP가 감소했으면 반짝거림
         else if (updateMode === 'both') {
-            if (battleState.enemy_monster.current_hp < battleState.enemy_monster.max_hp) {
+            if (previousEnemyHP !== null && battleState.enemy_monster.current_hp < previousEnemyHP) {
                 flashMonsterImage('enemyMonsterImg');
-                const damage = battleState.enemy_monster.max_hp - battleState.enemy_monster.current_hp;
+                const damage = previousEnemyHP - battleState.enemy_monster.current_hp;
                 adventureSound.playDamageSound(damage);
             }
-            if (battleState.player_monster.current_hp < battleState.player_monster.max_hp) {
+            previousEnemyHP = battleState.enemy_monster.current_hp;
+            
+            if (previousPlayerHP !== null && battleState.player_monster.current_hp < previousPlayerHP) {
                 flashMonsterImage('playerMonsterImg');
             }
+            previousPlayerHP = battleState.player_monster.current_hp;
         }
     }
+}
+
+// 페이지 로드 시 초기 HP 상태 저장
+function initializeHPTracking(battleState) {
+    previousEnemyHP = battleState.enemy_monster.current_hp;
+    previousPlayerHP = battleState.player_monster.current_hp;
 }
 
 function updateSkillUsageUI(skillUsage) {
