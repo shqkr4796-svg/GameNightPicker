@@ -640,8 +640,10 @@ function handleEnemyTurn(battleState) {
         .then(data => {
             if (data.success) {
                 const newBattleState = data.battle_state;
-                // 캐릭터 교체 여부 확인 (플레이어 몬스터의 HP가 max_hp면 교체됨)
-                const isCharacterSwapped = newBattleState.player_monster.current_hp === newBattleState.player_monster.max_hp;
+                // 캐릭터 교체 여부 확인 (HP가 max_hp면 새로운 몬스터로 교체됨)
+                const isPlayerSwapped = newBattleState.player_monster.current_hp === newBattleState.player_monster.max_hp;
+                const isEnemySwapped = newBattleState.enemy_monster.current_hp === newBattleState.enemy_monster.max_hp;
+                const isCharacterSwapped = isPlayerSwapped || isEnemySwapped;
                 
                 // 상대 공격 표시 전 0.5초 딜레이
                 setTimeout(() => {
