@@ -725,15 +725,12 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 즉시: 상대 몬스터 HP 감소만 표시 (로그 제외)
-            updateBattleUI(battleState, true, 'enemy');
+            // 전체 로그 표시
+            updateBattleUI(battleState, true, 'both');
             updateSkillUsageUI(data.skill_usage || {});
             
-            // 0.5초 후: 전체 로그와 내 HP 감소 표시
+            // 0.5초 후: 게임 오버 상태 확인
             setTimeout(() => {
-                updateBattleUI(battleState, true, 'player');
-                updateSkillUsageUI(data.skill_usage || {});
-                
                 // 게임 오버 상태 확인
                 if (data.game_over) {
                     setTimeout(() => {
