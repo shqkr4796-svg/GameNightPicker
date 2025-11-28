@@ -481,7 +481,10 @@ function updateBattleUI(battleState) {
     if (playerCardContainer) {
         const playerBadge = playerCardContainer.querySelector('div[style*="position: absolute; top: -12px"]');
         if (playerBadge) {
-            const remainingPlayerCount = (battleState.player_team_length || 3) - (battleState.current_team_index || 0);
+            // 남은 몬스터 수 계산: player_team 배열에서 현재 인덱스 이후의 몬스터들
+            const currentTeamIndex = battleState.current_team_index || 0;
+            const playerTeamLength = battleState.player_team ? battleState.player_team.length : 3;
+            const remainingPlayerCount = playerTeamLength - currentTeamIndex;
             const currentImgs = playerBadge.querySelectorAll('img');
             
             // 이미지 개수가 다를 때만 업데이트
