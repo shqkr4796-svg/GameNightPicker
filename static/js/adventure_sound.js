@@ -16,7 +16,7 @@ class AdventureSound {
 
     // 배경음악 (무한 반복)
     playBackgroundMusic() {
-        if (this.isMusicPlaying) return;
+        return; // 배경음악 비활성화
         
         // 모든 기존 음악 정지
         this.isMusicPlaying = false;
