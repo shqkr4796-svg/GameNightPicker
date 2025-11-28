@@ -530,12 +530,7 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
         let logHtml = '';
         let logs = battleState.log.slice(-10);
         
-        // updateMode에 따라 로그 필터링
-        if (updateMode === 'enemy') {
-            // 첫 번째 업데이트: 플레이어 공격만 (적 턴, 적 공격 제외)
-            logs = logs.filter(log => !log.includes('적') || log.includes('플레이어'));
-        }
-        // updateMode === 'player'일 때: 필터링 없음 (모든 로그 표시 - 누적 효과)
+        // 필터링 없음 - 모든 로그를 누적해서 표시
         
         for (let log_line of logs) {
             let color = '#bbb';
