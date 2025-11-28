@@ -733,9 +733,9 @@ function useSkill(skillName) {
             }
             const delayTime = isMonsterSwapped ? 0 : 500;
             
-            // 딜레이 후 업데이트
+            // 딜레이 후 업데이트 (반짝임 효과 포함)
             setTimeout(() => {
-                updateBattleUI(battleState, false, 'both');
+                updateBattleUI(battleState, true, 'both');
                 updateSkillUsageUI(data.skill_usage || {});
                 
                 // 게임 오버 상태 확인
