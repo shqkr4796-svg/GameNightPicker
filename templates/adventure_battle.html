@@ -697,9 +697,32 @@ function useSkill(skillName) {
         if (data.success) {
             const battleState = data.battle_state;
             
-            // 상대 공격 표시 후 0.5초 딜레이
+            // 첫 번째: 내 공격까지만 표시 (상대 공격 제외)
+            const battleStateBeforeEnemyAttack = JSON.parse(JSON.stringify(battleState));
+            if (battleStateBeforeEnemyAttack.log && battleStateBeforeEnemyAttack.log.length > 0) {
+                // 로그에서 적 공격 관련 항목 제거 (뒤에서부터 찾음)
+                let lastPlayerAttackIndex = -1;
+                for (let i = battleStateBeforeEnemyAttack.log.length - 1; i >= 0; i--) {
+                    const logLine = battleStateBeforeEnemyAttack.log[i];
+                    if (logLine.includes('플레이어') || logLine.includes('체력 감소') || logLine.includes('공격')) {
+                        if (!logLine.includes('적')) {
+                            lastPlayerAttackIndex = i;
+                            break;
+                        }
+                    }
+                }
+                if (lastPlayerAttackIndex !== -1) {
+                    battleStateBeforeEnemyAttack.log = battleStateBeforeEnemyAttack.log.slice(0, lastPlayerAttackIndex + 1);
+                }
+            }
+            
+            // 내 공격 표시
+            updateBattleUI(battleStateBeforeEnemyAttack);
+            updateSkillUsageUI(data.skill_usage || {});
+            
+            // 0.5초 후: 상대 공격 표시
             setTimeout(() => {
-                // 전투 UI 업데이트 (부드러운 애니메이션)
+                // 전체 전투 상태 업데이트 (상대 공격 포함)
                 updateBattleUI(battleState);
                 updateSkillUsageUI(data.skill_usage || {});
                 
@@ -724,9 +747,8 @@ function useSkill(skillName) {
                             }, 500);
                         }
                     }, 250);
-                } else if (!battleState.player_turn) {
-                    // 적의 턴이면 자동 진행 (페이지 새로고침 없이!)
-                    handleEnemyTurn(battleState);
+                } else if (battleState.player_turn) {
+                    // 플레이어 턴이면 UI 유지 (이미 표시됨)
                 }
             }, 500);
         } else {
