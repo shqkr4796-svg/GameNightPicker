@@ -554,34 +554,44 @@ function updateBattleUI(battleState, enableFlash = true, updateMode = 'both') {
         logContainer.scrollTop = logContainer.scrollHeight;
     }
     
-    // 반짝임 효과 - HP 추적으로만 제어 (교체 관계없음)
-    // 적 몬스터만 업데이트하는 경우: HP가 감소했으면 반짝거림
+    // 반짝임 효과 & 로그 생성 - HP 추적으로만 제어 (교체 관계없음)
+    // 적 몬스터만 업데이트하는 경우: HP가 감소했으면 반짝거림 + 로그 생성
     if (updateMode === 'enemy') {
         if (previousEnemyHP !== null && battleState.enemy_monster.current_hp < previousEnemyHP) {
-            flashMonsterImage('enemyMonsterImg');
             const damage = previousEnemyHP - battleState.enemy_monster.current_hp;
+            flashMonsterImage('enemyMonsterImg');
             adventureSound.playDamageSound(damage);
+            // 내 공격 로그 생성
+            battleState.log.push(`플레이어 몬스터가 ${damage} 피해를 입혔습니다.`);
         }
         previousEnemyHP = battleState.enemy_monster.current_hp;
     }
-    // 플레이어 몬스터만 업데이트하는 경우: HP가 감소했으면 반짝거림
+    // 플레이어 몬스터만 업데이트하는 경우: HP가 감소했으면 반짝거림 + 로그 생성
     else if (updateMode === 'player') {
         if (previousPlayerHP !== null && battleState.player_monster.current_hp < previousPlayerHP) {
+            const damage = previousPlayerHP - battleState.player_monster.current_hp;
             flashMonsterImage('playerMonsterImg');
+            // 상대 공격 로그 생성
+            battleState.log.push(`플레이어 몬스터에게 ${damage} 피해를 입었습니다.`);
         }
         previousPlayerHP = battleState.player_monster.current_hp;
     }
-    // 양쪽 모두 업데이트하는 경우: 각각 HP가 감소했으면 반짝거림
+    // 양쪽 모두 업데이트하는 경우: 각각 HP가 감소했으면 반짝거림 + 로그 생성
     else if (updateMode === 'both') {
         if (previousEnemyHP !== null && battleState.enemy_monster.current_hp < previousEnemyHP) {
-            flashMonsterImage('enemyMonsterImg');
             const damage = previousEnemyHP - battleState.enemy_monster.current_hp;
+            flashMonsterImage('enemyMonsterImg');
             adventureSound.playDamageSound(damage);
+            // 내 공격 로그 생성
+            battleState.log.push(`플레이어 몬스터가 ${damage} 피해를 입혔습니다.`);
         }
         previousEnemyHP = battleState.enemy_monster.current_hp;
         
         if (previousPlayerHP !== null && battleState.player_monster.current_hp < previousPlayerHP) {
+            const damage = previousPlayerHP - battleState.player_monster.current_hp;
             flashMonsterImage('playerMonsterImg');
+            // 상대 공격 로그 생성
+            battleState.log.push(`플레이어 몬스터에게 ${damage} 피해를 입었습니다.`);
         }
         previousPlayerHP = battleState.player_monster.current_hp;
     }
