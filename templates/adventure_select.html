@@ -69,7 +69,7 @@
                                     <select id="stageSelect" name="stage_id" class="form-select" required style="border: 2px solid #e0e0e0; border-radius: 6px; padding: 10px;">
                                         {% for stage in stages %}
                                             {% if stage.stage_id <= cleared_stage + 1 %}
-                                                <option value="{{ stage.stage_id }}" data-difficulty="{{ stage.난이도 }}" data-enemies="{{ stage.enemy_count }}" data-skill-rate="{{ stage.skill_reward_rate }}" data-skill-rarity="{{ stage.skill_rarity_range }}" data-enemy-rarity="{{ stage.enemy_rarity_range }}" {% if stage.stage_id == current_stage %}selected{% endif %}>
+                                                <option value="{{ stage.stage_id }}" data-difficulty="{{ stage.난이도 }}" data-enemies="{{ stage.enemy_count }}" data-skill-rate="{{ stage.skill_reward_rate }}" data-skill-rarity="{{ stage.skill_rarity_range }}" data-enemy-rarity="{{ stage.enemy_rarity_range }}" data-recovery-item-rate="{{ stage.skill_recovery_item_rate }}" data-reset-item-rate="{{ stage.skill_reset_item_rate }}" {% if stage.stage_id == current_stage %}selected{% endif %}>
                                                     Stage {{ stage.stage_id }} - {{ stage.난이도 }}
                                                     {% if stage.stage_id <= cleared_stage %}(클리어됨){% endif %}
                                                 </option>
@@ -170,6 +170,13 @@
                                         <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">기술 카드 등급</div>
                                         <div id="stageSkillRarity" style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem; margin-top: 5px;">레어</div>
                                     </div>
+                                    <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #4CAF50;">
+                                        <div style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">기술 회복 아이템</div>
+                                        <div id="stageItemRate" style="color: #1a1a1a; font-weight: 700; font-size: 0.85rem; margin-top: 5px;">
+                                            <div style="font-size: 0.75rem; color: #4CAF50; margin-bottom: 3px;">충전제: <span id="recoveryRate">2%</span></div>
+                                            <div style="font-size: 0.75rem; color: #2196F3;">초기화제: <span id="resetRate">1%</span></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -229,12 +236,16 @@ document.getElementById('stageSelect').addEventListener('change', function() {
     const skillRate = (parseFloat(selectedOption.getAttribute('data-skill-rate')) * 100).toFixed(1);
     const skillRarity = selectedOption.getAttribute('data-skill-rarity');
     const enemyRarity = selectedOption.getAttribute('data-enemy-rarity');
+    const recoveryItemRate = (parseFloat(selectedOption.getAttribute('data-recovery-item-rate')) * 100).toFixed(1);
+    const resetItemRate = (parseFloat(selectedOption.getAttribute('data-reset-item-rate')) * 100).toFixed(1);
     
     document.getElementById('stageDifficulty').textContent = difficulty;
     document.getElementById('stageEnemies').textContent = enemies + '마리';
     document.getElementById('stageSkillRate').textContent = skillRate + '%';
     document.getElementById('stageMonsterRarity').textContent = enemyRarity;
     document.getElementById('stageSkillRarity').textContent = skillRarity;
+    document.getElementById('recoveryRate').textContent = recoveryItemRate + '%';
+    document.getElementById('resetRate').textContent = resetItemRate + '%';
 });
 
 // 몬스터 선택 순서 추적

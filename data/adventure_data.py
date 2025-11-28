@@ -482,6 +482,8 @@ def generate_adventure_stages():
             'enemy_rarity': rarities,
             'enemy_rarity_range': monster_rarity_range,  # 몬스터 등급 범위 (예: "레어 ~ 에픽")
             'skill_reward_rate': min(0.15, skill_reward),  # 최대 15%
+            'skill_recovery_item_rate': min(0.15, skill_reward),  # 기술충전제 드롭확률 (기술카드와 동일)
+            'skill_reset_item_rate': min(0.075, skill_reward / 2),  # 기술초기화제 드롭확률 (기술카드의 1/2)
             'skill_rarity_weights': skill_rarity_weights,  # 기술 등급별 가중치
             'skill_rarity_range': skill_rarity_range,  # 기술 등급 범위 (예: "레어 ~ 에픽")
             'enemy_count': enemy_count,  # 난이도별 몬스터 개수
