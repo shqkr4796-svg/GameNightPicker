@@ -45,9 +45,5 @@ externalPort = 3000
 localPort = 41541
 externalPort = 3002
 
-[[ports]]
-localPort = 46327
-externalPort = 3003
-
 [agent]
 integrations = ["styling_replit:1.0.0", "python_openai_ai_integrations:1.0.0"]
