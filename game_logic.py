@@ -5319,7 +5319,9 @@ def merge_monsters(player, monster_ids):
     if first_monster_rarity == '레전드리':
         if random.random() < 0.3:
             # 신화급 30% 확률 획득
-            mythic_monsters = ['신화급_1', '신화급_2', '신화급_3']
+            mythic_monsters = get_monsters_by_rarity('신화급')
+            if not mythic_monsters:
+                return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
             result_monster_id = random.choice(mythic_monsters)
             result_monster_data = get_monster_by_id(result_monster_id)
             

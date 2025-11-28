@@ -1626,9 +1626,9 @@ def start_adventure():
         flash('스테이지와 몬스터를 선택해주세요.', 'error')
         return redirect(url_for('adventure'))
     
-    # 최대 3마리 확인
-    if len(selected_monster_ids) > 3:
-        flash('최대 3마리까지만 선택 가능합니다.', 'error')
+    # 팀 크기 확인 (최소 1마리)
+    if len(selected_monster_ids) < 1:
+        flash('최소 1마리 이상의 몬스터를 선택해주세요.', 'error')
         return redirect(url_for('adventure'))
     
     # 모험 기력 확인
