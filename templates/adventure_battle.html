@@ -651,7 +651,7 @@ function handleEnemyTurn(battleState) {
                     
                     // 0.5초 후: 두 번째 호출 - 내 몬스터만 업데이트
                     setTimeout(() => {
-                        updateBattleUI(newBattleState, !isPlayerSwapped, 'player');
+                        updateBattleUI(newBattleState, !isPlayerSwapped && !isEnemySwapped, 'player');
                         updateSkillUsageUI(data.skill_usage || {});
                         
                         // 게임 오버 확인
