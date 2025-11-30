@@ -1250,11 +1250,17 @@ def compendium():
     # 도감 데이터 가져오기
     compendium = player.get('도감', [])
     
+    # 등급 순서 정의
+    rarity_order = {'레어': 0, '에픽': 1, '유니크': 2, '레전드리': 3, '신화급': 4}
+    
     # 필터링 (배열 기반)
     if filter_rarity != 'all':
         compendium = [m for m in compendium if m.get('등급') == filter_rarity]
+    else:
+        # 전체 필터일 때는 등급 순서대로 정렬
+        compendium = sorted(compendium, key=lambda m: rarity_order.get(m.get('등급', '레어'), 5))
     
-    rarities = ['레어', '에픽', '유니크', '레전드리']
+    rarities = ['레어', '에픽', '유니크', '레전드리', '신화급']
     total_monsters = len(player.get('도감', []))
     
     return render_template('compendium.html', 
