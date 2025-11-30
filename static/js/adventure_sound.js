@@ -8,13 +8,17 @@ class AdventureSound {
         this.activeOscillators = [];
         this.musicLoopTimeout = null;
         
+        // 아이템 사운드 전용 관리
+        this.itemSoundOsc = null;
+        this.itemSoundGain = null;
+        
         // Master Gain Node 생성 (모든 사운드 제어용)
         this.masterGain = this.audioContext.createGain();
         this.masterGain.connect(this.audioContext.destination);
         this.masterGain.gain.value = 1;
     }
 
-    // 아이템 사용 효과음 (충전제, 초기화제)
+    // 아이템 사용 효과음 (충전제, 초기화제) - 이전 사운드 정리 후 재생
     playItemUseSound(itemType) {
         if (!this.soundEnabled) {
             console.log('Sound disabled, enabling for item use');
@@ -22,6 +26,20 @@ class AdventureSound {
         }
         
         try {
+            // 이전 아이템 사운드 즉시 정리
+            if (this.itemSoundOsc) {
+                try {
+                    this.itemSoundOsc.stop(this.audioContext.currentTime);
+                } catch(e) {}
+                this.itemSoundOsc = null;
+            }
+            if (this.itemSoundGain) {
+                try {
+                    this.itemSoundGain.disconnect();
+                } catch(e) {}
+                this.itemSoundGain = null;
+            }
+            
             // audioContext가 suspended 상태라면 resume
             if (this.audioContext.state === 'suspended') {
                 this.audioContext.resume().catch(e => console.error('Resume failed:', e));
@@ -33,6 +51,10 @@ class AdventureSound {
             
             osc.connect(gain);
             gain.connect(this.masterGain);
+            
+            // 현재 아이템 사운드 추적
+            this.itemSoundOsc = osc;
+            this.itemSoundGain = gain;
             
             if (itemType === '기술충전제') {
                 // 고음: 800 → 400 Hz (상승→하강)
@@ -51,7 +73,6 @@ class AdventureSound {
                 osc.start(now);
                 osc.stop(now + 0.4);
             }
-            this.activeOscillators.push(osc);
         } catch(e) {
             console.error('Item sound error:', e);
         }
