@@ -1028,9 +1028,14 @@ def start_dungeon():
     # 입장료 차감이 반영되도록 먼저 게임 저장
     game_logic.save_game(player)
     
-    # 세션에 던전 실행 상태 및 수정된 플레이어 데이터 저장
-    session['dungeon_run'] = result['dungeon_run']
-    session['player_data'] = player
+    # 세션 쿠키 크기 최소화: 던전런 정보만 저장 (player_data는 파일 저장됨)
+    dungeon_run = result['dungeon_run']
+    # 불필요한 배열 데이터 제거
+    dungeon_run.pop('wrong_questions', None)
+    dungeon_run.pop('word_indices', None)
+    
+    session['dungeon_run'] = dungeon_run
+    session.modified = True
     
     # 입장료가 있는 던전인 경우 안내
     dungeon = game_logic.get_dungeon_by_id(dungeon_id)
@@ -1044,10 +1049,15 @@ def start_dungeon():
 @app.route('/dungeon/run')
 def dungeon_run():
     """던전 실행 화면"""
-    if 'player_data' not in session or 'dungeon_run' not in session:
+    if 'dungeon_run' not in session:
         return redirect(url_for('dungeons'))
     
-    player = session['player_data']
+    # 플레이어 데이터는 파일에서 다시 로드
+    player = game_logic.load_game()
+    if not player:
+        flash('게임 데이터를 불러올 수 없습니다.', 'error')
+        return redirect(url_for('index'))
+    
     dungeon_run = session['dungeon_run']
     
     # 던전런에서 플래시 메시지 확인 및 처리
@@ -1073,14 +1083,22 @@ def dungeon_run():
 @app.route('/dungeon/answer', methods=['POST'])
 def answer_dungeon():
     """던전 답변 처리 (AJAX 지원)"""
-    if 'player_data' not in session or 'dungeon_run' not in session:
+    if 'dungeon_run' not in session:
         msg = '던전 정보가 없습니다.'
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'success': False, 'message': msg, 'game_over': True})
         flash(msg, 'error')
         return redirect(url_for('dungeons'))
     
-    player = session['player_data']
+    # 플레이어 데이터는 파일에서 로드
+    player = game_logic.load_game()
+    if not player:
+        msg = '게임 데이터를 불러올 수 없습니다.'
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False, 'message': msg, 'game_over': True})
+        flash(msg, 'error')
+        return redirect(url_for('index'))
+    
     dungeon_run = session['dungeon_run']
     
     # 안전한 choice 값 처리
@@ -1152,16 +1170,19 @@ def answer_dungeon():
                 clear_message = "던전을 클리어했습니다!"
             
             session.pop('dungeon_run', None)
-            session['player_data'] = player
             game_logic.save_game(player)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({'success': False, 'message': clear_message, 'game_over': True, 'clear': True})
             flash(clear_message, 'success')
             return redirect(url_for('dungeons'))
     
-    # 상태 업데이트
+    # 상태 업데이트 (세션 크기 최소화)
+    # dungeon_run에서 불필요한 데이터 제거
+    dungeon_run.pop('wrong_questions', None)
+    dungeon_run.pop('word_indices', None)
+    
     session['dungeon_run'] = dungeon_run
-    session['player_data'] = player
+    session.modified = True
     game_logic.save_game(player)
     
     # AJAX 요청인 경우 JSON 반환 (flash 메시지 설정 X)
@@ -1190,10 +1211,11 @@ def leave_dungeon():
 @app.route('/dungeon/retry_wrong', methods=['POST'])
 def retry_wrong_questions():
     """틀린 문제들로 재도전"""
-    if 'player_data' not in session:
+    # 플레이어 데이터는 파일에서 로드
+    player = game_logic.load_game()
+    if not player:
+        flash('게임 데이터를 불러올 수 없습니다.', 'error')
         return redirect(url_for('index'))
-    
-    player = session['player_data']
     
     # 세션에서 틀린 문제들 가져오기
     last_wrong = session.get('last_wrong_questions')
@@ -1220,9 +1242,12 @@ def retry_wrong_questions():
         flash(result['message'], 'error')
         return redirect(url_for('dungeons'))
     
-    # 세션에 던전 실행 상태 저장
-    session['dungeon_run'] = result['dungeon_run']
-    session['player_data'] = player
+    # 세션 쿠키 크기 최소화: 던전런 정보만 저장
+    dungeon_run = result['dungeon_run']
+    dungeon_run.pop('wrong_questions', None)
+    dungeon_run.pop('word_indices', None)
+    
+    session['dungeon_run'] = dungeon_run
     session.modified = True
     
     # 데이터 저장 (일관성을 위해)
@@ -1366,10 +1391,14 @@ def perform_fusion():
 @app.route('/dungeon/use_item', methods=['POST'])
 def use_dungeon_item():
     """던전 아이템 사용"""
-    if 'player_data' not in session or 'dungeon_run' not in session:
+    if 'dungeon_run' not in session:
         return redirect(url_for('dungeons'))
     
-    player = session['player_data']
+    player = game_logic.load_game()
+    if not player:
+        flash('게임 데이터를 불러올 수 없습니다.', 'error')
+        return redirect(url_for('index'))
+    
     dungeon_run = session['dungeon_run']
     item_name = request.form.get('item_name')
     
@@ -1385,9 +1414,12 @@ def use_dungeon_item():
     else:
         flash(result['message'], 'error')
     
-    # 상태 업데이트
-    session['player_data'] = player
+    # 상태 업데이트 (세션 크기 최소화)
+    dungeon_run.pop('wrong_questions', None)
+    dungeon_run.pop('word_indices', None)
+    
     session['dungeon_run'] = dungeon_run
+    session.modified = True
     game_logic.save_game(player)
     
     return redirect(url_for('dungeon_run'))
@@ -1395,10 +1427,14 @@ def use_dungeon_item():
 @app.route('/dungeon/use_hint', methods=['POST'])
 def use_hint():
     """던전에서 힌트 사용"""
-    if 'player_data' not in session or 'dungeon_run' not in session:
+    if 'dungeon_run' not in session:
         return redirect(url_for('dungeons'))
     
-    player = session['player_data']
+    player = game_logic.load_game()
+    if not player:
+        flash('게임 데이터를 불러올 수 없습니다.', 'error')
+        return redirect(url_for('index'))
+    
     dungeon_run = session['dungeon_run']
     
     # 던전 버프 딕셔너리 초기화 (없는 경우)
@@ -1435,8 +1471,10 @@ def use_hint():
     
     flash('힌트를 사용했습니다! 선택지가 2개로 줄어들었습니다.', 'info')
     
-    # 상태 업데이트
-    session['player_data'] = player
+    # 상태 업데이트 (세션 크기 최소화)
+    dungeon_run.pop('wrong_questions', None)
+    dungeon_run.pop('word_indices', None)
+    
     session['dungeon_run'] = dungeon_run
     session.modified = True
     game_logic.save_game(player)
@@ -1446,10 +1484,14 @@ def use_hint():
 @app.route('/dungeon/skip_question', methods=['POST'])
 def skip_question():
     """던전에서 문제 스킵"""
-    if 'player_data' not in session or 'dungeon_run' not in session:
+    if 'dungeon_run' not in session:
         return redirect(url_for('dungeons'))
     
-    player = session['player_data']
+    player = game_logic.load_game()
+    if not player:
+        flash('게임 데이터를 불러올 수 없습니다.', 'error')
+        return redirect(url_for('index'))
+    
     dungeon_run = session['dungeon_run']
     
     # 던전 버프 딕셔너리 초기화 (없는 경우)
@@ -1499,7 +1541,6 @@ def skip_question():
             # 던전 클리어
             flash('던전을 클리어했습니다!', 'success')
             session.pop('dungeon_run', None)
-            session['player_data'] = player
             session.modified = True
             game_logic.save_game(player)
             return redirect(url_for('dungeons'))
@@ -1514,8 +1555,10 @@ def skip_question():
     
     flash(result_msg, 'success')
     
-    # 상태 업데이트
-    session['player_data'] = player
+    # 상태 업데이트 (세션 크기 최소화)
+    dungeon_run.pop('wrong_questions', None)
+    dungeon_run.pop('word_indices', None)
+    
     session['dungeon_run'] = dungeon_run
     session.modified = True
     game_logic.save_game(player)
