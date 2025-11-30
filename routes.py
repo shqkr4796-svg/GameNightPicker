@@ -1650,6 +1650,12 @@ def start_adventure():
         flash('이전 스테이지를 먼저 클리어해주세요.', 'error')
         return redirect(url_for('adventure'))
     
+    # 스테이지 ID에 따라 난이도 자동 설정 (201 이상이면 심화)
+    if stage_id > 200:
+        player['모험_난이도'] = '심화'
+    else:
+        player['모험_난이도'] = '일반'
+    
     # 모험 기력 소모
     player['모험_기력'] = adventure_energy - 1
     
