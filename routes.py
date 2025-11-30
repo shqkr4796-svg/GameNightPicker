@@ -5,6 +5,10 @@ import json
 import os
 import random
 from datetime import datetime
+import uuid
+
+# 전투 상태 메모리 캐시 (세션 쿠키 크기 제한 우회)
+battle_cache = {}
 
 @app.route('/')
 def index():
@@ -1677,7 +1681,10 @@ def start_adventure():
         if enemy_turn_result['success']:
             battle_state = enemy_turn_result['battle_state']
     
-    session['battle_state'] = battle_state
+    # 메모리 캐시에 전투 상태 저장
+    battle_id = str(uuid.uuid4())
+    battle_cache[battle_id] = battle_state
+    session['battle_id'] = battle_id
     session['player_data'] = player
     session.modified = True
     
@@ -1686,10 +1693,13 @@ def start_adventure():
 @app.route('/adventure/battle')
 def adventure_battle():
     """모험 전투 페이지"""
-    if 'player_data' not in session or 'battle_state' not in session:
+    if 'player_data' not in session or 'battle_id' not in session:
         return redirect(url_for('adventure'))
     
-    battle_state = session['battle_state']
+    battle_state = battle_cache.get(session.get('battle_id'))
+    if not battle_state:
+        return redirect(url_for('adventure'))
+    
     player = session['player_data']
     skills_info = game_logic.get_all_skills_info()
     skill_usage = battle_state.get('skill_usage_count', {})
@@ -1710,13 +1720,16 @@ def adventure_battle():
 @app.route('/adventure/action', methods=['POST'])
 def adventure_action():
     """전투 액션 실행"""
-    if 'player_data' not in session or 'battle_state' not in session:
+    if 'player_data' not in session or 'battle_id' not in session:
+        return jsonify({'success': False, 'error': '전투 중이 아닙니다.'})
+    
+    battle_state = battle_cache.get(session.get('battle_id'))
+    if not battle_state:
         return jsonify({'success': False, 'error': '전투 중이 아닙니다.'})
     
     action_type = request.form.get('action_type')
     skill_name = request.form.get('skill_name', '')
     
-    battle_state = session['battle_state']
     player = session['player_data']
     
     if action_type == 'skill_item':
@@ -1756,7 +1769,7 @@ def adventure_action():
             player['모험_아이템'] = adventure_items
         
         # 아이템 사용 - 턴 소모 없음, 플레이어가 다시 행동 가능
-        session['battle_state'] = battle_state
+        battle_cache[session['battle_id']] = battle_state
         session['player_data'] = player
         session.modified = True
         
@@ -1798,7 +1811,7 @@ def adventure_action():
                             player['모험_클리어스테이지'] = stage_id
                         
                         session['player_data'] = player
-                        session['battle_state'] = battle_state
+                        battle_cache[session['battle_id']] = battle_state
                         session.modified = True
                         game_logic.save_game(player)
                         
@@ -1812,7 +1825,7 @@ def adventure_action():
                 elif battle_state['winner'] == 'enemy':
                     # 패배 처리
                     session['player_data'] = player
-                    session['battle_state'] = battle_state
+                    battle_cache[session['battle_id']] = battle_state
                     session.modified = True
                     game_logic.save_game(player)
                     
@@ -1823,7 +1836,7 @@ def adventure_action():
                         'battle_state': battle_state
                     })
             else:
-                session['battle_state'] = battle_state
+                battle_cache[session['battle_id']] = battle_state
                 session.modified = True
             
             return jsonify({
@@ -1861,7 +1874,7 @@ def adventure_action():
                             player['모험_클리어스테이지'] = stage_id
                         
                         session['player_data'] = player
-                        session['battle_state'] = battle_state
+                        battle_cache[session['battle_id']] = battle_state
                         session.modified = True
                         game_logic.save_game(player)
                         
@@ -1875,7 +1888,7 @@ def adventure_action():
                 elif battle_state['winner'] == 'enemy':
                     # 패배 처리
                     session['player_data'] = player
-                    session['battle_state'] = battle_state
+                    battle_cache[session['battle_id']] = battle_state
                     session.modified = True
                     game_logic.save_game(player)
                     
@@ -1886,7 +1899,7 @@ def adventure_action():
                         'battle_state': battle_state
                     })
             else:
-                session['battle_state'] = battle_state
+                battle_cache[session['battle_id']] = battle_state
                 session.modified = True
             
             return jsonify({
@@ -1904,10 +1917,13 @@ def adventure_action():
 @app.route('/adventure/result')
 def adventure_result():
     """모험 결과 페이지"""
-    if 'player_data' not in session or 'battle_state' not in session:
+    if 'player_data' not in session or 'battle_id' not in session:
         return redirect(url_for('adventure'))
     
-    battle_state = session['battle_state']
+    battle_state = battle_cache.get(session.get('battle_id'))
+    if not battle_state:
+        return redirect(url_for('adventure'))
+    
     player = session['player_data']
     
     # 200스테이지 클리어 시 심화 난이도로 전환
