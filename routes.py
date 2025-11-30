@@ -1328,15 +1328,15 @@ def fusion():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    compendium = player.get('도감', {})
+    compendium = player.get('도감', [])
     
-    # 등급별로 몬스터 분류
+    # 등급별로 몬스터 분류 (배열 기반)
     monsters_by_rarity = {}
-    for monster_id, monster in compendium.items():
+    for idx, monster in enumerate(compendium):
         rarity = monster.get('등급', '레어')
         if rarity not in monsters_by_rarity:
             monsters_by_rarity[rarity] = []
-        monsters_by_rarity[rarity].append({'id': monster_id, 'name': monster['이름']})
+        monsters_by_rarity[rarity].append({'idx': idx, 'id': monster['id'], 'name': monster['이름'], 'monster': monster})
     
     # 합성 결과 플래그 확인
     fusion_upgraded = session.pop('fusion_upgraded', False)

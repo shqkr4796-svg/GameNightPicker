@@ -60,8 +60,8 @@
                                 <div class="col-4">
                                     <div class="card h-100 monster-selection-card">
                                         <div class="card-body text-center">
-                                            {% if compendium[monster.id].get('이미지') %}
-                                            <img src="{{ compendium[monster.id]['이미지'] }}" alt="{{ monster.name }}" 
+                                            {% if monster.monster.get('이미지') %}
+                                            <img src="{{ monster.monster['이미지'] }}" alt="{{ monster.name }}" 
                                                  style="width: 150px; height: 150px; object-fit: contain; margin-bottom: 15px;">
                                             {% else %}
                                             <div style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; font-size: 3rem; color: #ccc;">
@@ -71,16 +71,16 @@
                                             
                                             <h6 class="mb-3">{{ monster.name }}</h6>
                                             <div class="mb-3">
-                                                <small class="text-muted d-block">공격력: {{ compendium[monster.id].get('공격력', 0) }}</small>
-                                                <small class="text-muted d-block">체력: {{ compendium[monster.id].get('체력', 0) }}</small>
+                                                <small class="text-muted d-block">공격력: {{ monster.monster.get('공격력', 0) }}</small>
+                                                <small class="text-muted d-block">체력: {{ monster.monster.get('체력', 0) }}</small>
                                             </div>
                                             
                                             <div class="form-check">
                                                 <input class="form-check-input rarity-checkbox" type="checkbox" 
-                                                       name="selected_monsters" value="{{ monster.id }}" 
+                                                       name="selected_monsters" value="{{ monster.idx }}" 
                                                        data-rarity="{{ rarity }}"
-                                                       id="monster_{{ monster.id }}">
-                                                <label class="form-check-label" for="monster_{{ monster.id }}">
+                                                       id="monster_{{ monster.idx }}">
+                                                <label class="form-check-label" for="monster_{{ monster.idx }}">
                                                     선택
                                                 </label>
                                             </div>
