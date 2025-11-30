@@ -1740,7 +1740,8 @@ def adventure_action():
             
             # 기술 사용 횟수 회복
             current_usage = battle_state['skill_usage_count'].get(skill_to_recover, 0)
-            battle_state['skill_usage_count'][skill_to_recover] = max(0, current_usage - recovery_amount)
+            new_usage = max(0, current_usage - recovery_amount)
+            battle_state['skill_usage_count'][skill_to_recover] = new_usage
             
             adventure_items[item_type] -= 1
             player['모험_아이템'] = adventure_items
@@ -1750,57 +1751,18 @@ def adventure_action():
             adventure_items[item_type] -= 1
             player['모험_아이템'] = adventure_items
         
-        # 아이템 사용 후 적 턴으로 진행 (플레이어 턴 상태 유지하면서 적이 공격)
-        battle_state['player_turn'] = False
-        result = game_logic.execute_skill(battle_state, '')
-        if result['success']:
-            battle_state = result['battle_state']
-            
-            if battle_state['game_over']:
-                if battle_state['winner'] == 'player':
-                    battle_state['defeated_monsters'] = battle_state.get('defeated_monsters', 0) + 1
-                    complete_result = game_logic.complete_adventure_battle(player, battle_state)
-                    
-                    if complete_result['success']:
-                        session['player_data'] = player
-                        session['battle_state'] = battle_state
-                        session.modified = True
-                        game_logic.save_game(player)
-                        
-                        return jsonify({
-                            'success': True,
-                            'game_over': True,
-                            'winner': 'player',
-                            'rewards': complete_result['rewards'],
-                            'battle_state': battle_state,
-                            'recovery_amount': recovery_amount
-                        })
-                elif battle_state['winner'] == 'enemy':
-                    session['player_data'] = player
-                    session['battle_state'] = battle_state
-                    session.modified = True
-                    game_logic.save_game(player)
-                    
-                    return jsonify({
-                        'success': True,
-                        'game_over': True,
-                        'winner': 'enemy',
-                        'battle_state': battle_state,
-                        'recovery_amount': recovery_amount
-                    })
-            else:
-                session['battle_state'] = battle_state
-                session['player_data'] = player
-                session.modified = True
-            
-            return jsonify({
-                'success': True,
-                'battle_state': battle_state,
-                'game_over': battle_state['game_over'],
-                'recovery_amount': recovery_amount
-            })
-        else:
-            return jsonify({'success': False, 'error': '아이템 사용 실패'})
+        # 아이템 사용 - 턴 소모 없음, 플레이어가 다시 행동 가능
+        session['battle_state'] = battle_state
+        session['player_data'] = player
+        session.modified = True
+        
+        return jsonify({
+            'success': True,
+            'battle_state': battle_state,
+            'game_over': False,
+            'recovery_amount': recovery_amount,
+            'message': '아이템을 사용했습니다.'
+        })
     
     elif action_type == 'skill':
         result = game_logic.execute_skill(battle_state, skill_name)
