@@ -1248,14 +1248,14 @@ def compendium():
     filter_rarity = request.args.get('rarity', 'all')
     
     # 도감 데이터 가져오기
-    compendium = player.get('도감', {})
+    compendium = player.get('도감', [])
     
-    # 필터링
+    # 필터링 (배열 기반)
     if filter_rarity != 'all':
-        compendium = {k: v for k, v in compendium.items() if v.get('등급') == filter_rarity}
+        compendium = [m for m in compendium if m.get('등급') == filter_rarity]
     
     rarities = ['레어', '에픽', '유니크', '레전드리']
-    total_monsters = len(player.get('도감', {}))
+    total_monsters = len(player.get('도감', []))
     
     return render_template('compendium.html', 
                          player=player,
@@ -1277,11 +1277,12 @@ def all_monsters():
     all_monsters_data = game_logic.get_all_monster_images()
     
     # 플레이어 도감에 있는 몬스터 ID 확인
-    captured_monsters = set(player.get('도감', {}).keys())
+    compendium_array = player.get('도감', [])
+    captured_monster_ids = set(m.get('id') for m in compendium_array if isinstance(compendium_array, list))
     
     # 미포획 몬스터는 이미지를 제거 (궁금증 유발)
     for monster_id, monster in all_monsters_data.items():
-        if monster_id not in captured_monsters:
+        if monster_id not in captured_monster_ids:
             monster['이미지'] = ''  # 미포획 몬스터는 이미지 비우기
     
     # 필터링
@@ -1304,14 +1305,19 @@ def delete_monster(monster_id):
     
     player = session['player_data']
     
-    if '도감' in player and monster_id in player['도감']:
-        monster_name = player['도감'][monster_id]['이름']
-        del player['도감'][monster_id]
-        session['player_data'] = player
-        game_logic.save_game(player)
-        flash(f'"{monster_name}"을(를) 도감에서 삭제했습니다.', 'success')
-    else:
+    if '도감' in player:
+        # 배열에서 해당 id를 찾아 삭제
+        for i, monster in enumerate(player['도감']):
+            if monster.get('id') == monster_id:
+                monster_name = monster['이름']
+                del player['도감'][i]
+                session['player_data'] = player
+                game_logic.save_game(player)
+                flash(f'"{monster_name}"을(를) 도감에서 삭제했습니다.', 'success')
+                return redirect(url_for('compendium'))
         flash('몬스터를 찾을 수 없습니다.', 'error')
+    else:
+        flash('도감에 몬스터가 없습니다.', 'error')
     
     return redirect(url_for('compendium'))
 

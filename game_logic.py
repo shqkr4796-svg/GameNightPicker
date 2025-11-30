@@ -23,7 +23,7 @@ def create_new_player():
         '체력': 10, '기력': 10, '최대기력': 10, '직장': None, '직장정보': None,
         '돈': 0, '거주지': None, '날짜': 1, '시간': 8, '질병': None,
         '인벤토리': [], '성취': [], '총_퀴즈': 0, '정답_퀴즈': 0,
-        '도감': {},  # 몬스터 도감
+        '도감': [],  # 몬스터 도감 (리스트 - 중복 등록 가능)
         '던전클리어횟수': 0,  # 던전 클리어 횟수
         '무기_인벤토리': {},  # 무기 인벤토리
         '장착된_무기': None,  # 장착된 무기
@@ -1743,13 +1743,8 @@ def answer_dungeon(player, dungeon_run, choice):
             
             if random.random() < capture_rate:
                 # 몬스터 포획 성공
-                is_new_monster = update_compendium(player, dungeon_run)
-                if is_new_monster:
-                    result_msg += f" {rarity} 몬스터를 처치하고 새로운 몬스터를 도감에 추가했습니다!"
-                else:
-                    # 중복된 몬스터 - 처치수 증가
-                    kill_count = player['도감'][dungeon_run['monster_id']].get('처치수', 1)
-                    result_msg += f" {rarity} 몬스터를 처치했습니다. (처치수: {kill_count})"
+                update_compendium(player, dungeon_run)
+                result_msg += f" {rarity} 몬스터를 도감에 추가했습니다!"
             else:
                 result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
             
@@ -1856,11 +1851,11 @@ def get_monster_stats(monster_id):
     }
 
 def update_compendium(player, dungeon_run):
-    """몬스터 도감 업데이트"""
+    """몬스터 도감 업데이트 - 중복 등록 가능"""
     try:
         # 플레이어 도감 초기화 (없다면)
         if '도감' not in player:
-            player['도감'] = {}
+            player['도감'] = []
             
         monster_id = dungeon_run['monster_id']
         rarity = dungeon_run['current_rarity']
@@ -1874,23 +1869,20 @@ def update_compendium(player, dungeon_run):
         monster_image = monster_data.get('이미지', '')
         monster_stats = get_monster_stats(monster_id)
         
-        is_new_monster = False
-        if monster_id not in player['도감']:
-            player['도감'][monster_id] = {
-                '이름': monster_name,
-                '등급': rarity,
-                '이미지': monster_image,
-                '최초처치일': datetime.now().isoformat(),
-                '처치수': 1,
-                '포획됨': True,
-                '공격력': monster_stats['공격력'],
-                '체력': monster_stats['체력']
-            }
-            is_new_monster = True
-        else:
-            player['도감'][monster_id]['처치수'] += 1
+        # 도감에 새 몬스터 추가 (중복 가능)
+        new_monster = {
+            'id': monster_id,
+            '이름': monster_name,
+            '등급': rarity,
+            '이미지': monster_image,
+            '포획날짜': datetime.now().isoformat(),
+            '포획됨': True,
+            '공격력': monster_stats['공격력'],
+            '체력': monster_stats['체력']
+        }
+        player['도감'].append(new_monster)
         
-        return is_new_monster
+        return True  # 항상 새로 추가되므로 True 반환
     except Exception as e:
         print(f"도감 업데이트 오류: {e}")
         return False
@@ -5289,29 +5281,33 @@ def evaluate_conversation_response(user_response, target_expression, context_sen
             'error': str(e)
         }
 
-def merge_monsters(player, monster_ids):
+def merge_monsters(player, monster_indices):
     """몬스터 합성 함수 - 같은 등급 3마리를 더 높은 등급 또는 신화급 몬스터로 변환"""
     from data.monsters import get_monster_by_id, get_monsters_by_rarity
     
-    if not player.get('도감') or len(monster_ids) != 3:
+    if not player.get('도감') or len(monster_indices) != 3:
         return {'success': False, 'message': '유효하지 않은 선택입니다.'}
     
+    compendium = player['도감']
+    monsters_to_merge = []
+    
     # 선택한 몬스터들이 도감에 있는지 확인
-    for monster_id in monster_ids:
-        if monster_id not in player['도감']:
+    for idx in monster_indices:
+        if idx < 0 or idx >= len(compendium):
             return {'success': False, 'message': '선택한 몬스터가 도감에 없습니다.'}
+        monsters_to_merge.append((idx, compendium[idx]))
     
     # 첫 번째 몬스터로 등급 확인
-    first_monster_rarity = player['도감'][monster_ids[0]].get('등급')
+    first_monster_rarity = monsters_to_merge[0][1].get('등급')
     
     # 모든 몬스터가 같은 등급인지 확인
-    for monster_id in monster_ids[1:]:
-        if player['도감'][monster_id].get('등급') != first_monster_rarity:
+    for _, monster in monsters_to_merge[1:]:
+        if monster.get('등급') != first_monster_rarity:
             return {'success': False, 'message': '같은 등급의 몬스터 3마리를 선택해주세요.'}
     
-    # 도감에서 3마리 제거
-    for monster_id in monster_ids:
-        del player['도감'][monster_id]
+    # 도감에서 3마리 제거 (뒤에서부터 삭제해서 인덱스 꼬임 방지)
+    for idx, _ in sorted(monsters_to_merge, key=lambda x: x[0], reverse=True):
+        del compendium[idx]
     
     # 합성 결과 결정
     rarity_order = ['레어', '에픽', '유니크', '레전드리', '신화급']
@@ -5329,17 +5325,17 @@ def merge_monsters(player, monster_ids):
                 return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
             
             result_monster = {
+                'id': result_monster_id,
                 '이름': result_monster_data['이름'],
                 '등급': '신화급',
                 '이미지': result_monster_data.get('이미지', ''),
-                '최초처치일': datetime.now().isoformat(),
-                '처치수': 0,
+                '포획날짜': datetime.now().isoformat(),
                 '포획됨': True,
                 '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
                 '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
             }
             
-            player['도감'][result_monster_id] = result_monster
+            player['도감'].append(result_monster)
             return {
                 'success': True,
                 'message': f"축하합니다! 신화급 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
@@ -5361,17 +5357,17 @@ def merge_monsters(player, monster_ids):
                 return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
             
             result_monster = {
+                'id': result_monster_id,
                 '이름': result_monster_data['이름'],
                 '등급': '레전드리',
                 '이미지': result_monster_data.get('이미지', ''),
-                '최초처치일': datetime.now().isoformat(),
-                '처치수': 0,
+                '포획날짜': datetime.now().isoformat(),
                 '포획됨': True,
                 '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
                 '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
             }
             
-            player['도감'][result_monster_id] = result_monster
+            player['도감'].append(result_monster)
             return {
                 'success': True,
                 'message': f"합성 성공! 레전드리 몬스터 '{result_monster_data['이름']}'을(를) 획득했습니다!",
@@ -5415,17 +5411,17 @@ def merge_monsters(player, monster_ids):
         return {'success': False, 'message': '합성 중 오류가 발생했습니다.'}
     
     result_monster = {
+        'id': result_monster_id,
         '이름': result_monster_data['이름'],
         '등급': next_rarity,
         '이미지': result_monster_data.get('이미지', ''),
-        '최초처치일': datetime.now().isoformat(),
-        '처치수': 0,
+        '포획날짜': datetime.now().isoformat(),
         '포획됨': True,
         '공격력': random.randint(result_monster_data['공격력'][0], result_monster_data['공격력'][1]),
         '체력': random.randint(result_monster_data['체력'][0], result_monster_data['체력'][1])
     }
     
-    player['도감'][result_monster_id] = result_monster
+    player['도감'].append(result_monster)
     
     return {
         'success': True,
@@ -5448,11 +5444,15 @@ def get_available_monsters(player):
     from data.monsters import get_monster_by_id
     available = []
     
-    for monster_id, monster_data in player['도감'].items():
-        monster_info = get_monster_by_id(monster_id)
-        if monster_info and monster_data.get('포획됨'):
+    compendium = player.get('도감', [])
+    # 배열 또는 딕셔너리 호환성
+    if isinstance(compendium, dict):
+        compendium = list(compendium.values())
+    
+    for monster_data in compendium:
+        if monster_data.get('포획됨'):
             available.append({
-                'id': monster_id,
+                'id': monster_data.get('id'),
                 'name': monster_data['이름'],
                 'rarity': monster_data['등급'],
                 'attack': monster_data.get('공격력', 0),
