@@ -1028,13 +1028,14 @@ def start_dungeon():
     # 입장료 차감이 반영되도록 먼저 게임 저장
     game_logic.save_game(player)
     
-    # 세션 쿠키 크기 최소화: 던전런 정보만 저장 (player_data는 파일 저장됨)
-    dungeon_run = result['dungeon_run']
-    # 불필요한 배열 데이터 제거
-    dungeon_run.pop('wrong_questions', None)
-    dungeon_run.pop('word_indices', None)
+    # 세션에 저장할 플레이어 데이터 준비 (불필요한 필드 제거 - 크기 최소화)
+    player_for_session = player.copy()
+    # 큰 배열/텍스트 필드 제거
+    for key in ['직업_경험치_기록', '보유_스킬', '기술_사용_횟수']:
+        player_for_session.pop(key, None)
     
-    session['dungeon_run'] = dungeon_run
+    session['player_data'] = player_for_session
+    session['dungeon_run'] = result['dungeon_run']
     session.modified = True
     
     # 입장료가 있는 던전인 경우 안내
@@ -1471,10 +1472,7 @@ def use_hint():
     
     flash('힌트를 사용했습니다! 선택지가 2개로 줄어들었습니다.', 'info')
     
-    # 상태 업데이트 (세션 크기 최소화)
-    dungeon_run.pop('wrong_questions', None)
-    dungeon_run.pop('word_indices', None)
-    
+    # 상태 업데이트
     session['dungeon_run'] = dungeon_run
     session.modified = True
     game_logic.save_game(player)
@@ -1555,10 +1553,7 @@ def skip_question():
     
     flash(result_msg, 'success')
     
-    # 상태 업데이트 (세션 크기 최소화)
-    dungeon_run.pop('wrong_questions', None)
-    dungeon_run.pop('word_indices', None)
-    
+    # 상태 업데이트
     session['dungeon_run'] = dungeon_run
     session.modified = True
     game_logic.save_game(player)
