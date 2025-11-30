@@ -5501,10 +5501,16 @@ def start_adventure_battle(player, stage_id, selected_monster_ids):
     # 플레이어 몬스터 팀 구성 확인
     player_team = []
     for monster_id in selected_monster_ids:
-        if monster_id not in player['도감']:
+        # 배열에서 해당 id의 몬스터 찾기
+        monster_data = None
+        for m in player['도감']:
+            if m.get('id') == monster_id:
+                monster_data = m
+                break
+        
+        if not monster_data:
             return {'success': False, 'message': '해당 몬스터를 보유하고 있지 않습니다.'}
         
-        monster_data = player['도감'][monster_id]
         monster_info = get_monster_by_id(monster_id)
         
         if not monster_info:
