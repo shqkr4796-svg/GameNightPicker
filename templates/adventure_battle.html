@@ -869,8 +869,13 @@ let selectedOldSkill = null;
 function showSkillAcquireModal(newSkill) {
     const skillInfo = skillsInfo[newSkill];
     document.getElementById('acquireSkillName').textContent = skillInfo?.['한글'] || newSkill;
-    document.getElementById('acquireSkillRarity').textContent = (skillInfo?.['등급'] || '레어') + ' 등급';
-    document.getElementById('acquireSkillDesc').textContent = (skillInfo?.['설명'] || '') + (skillInfo?.['효과'] ? '\n' + skillInfo['효과'] : '');
+    
+    // 등급과 데미지 정보를 포함한 설명 표시
+    const rarity = skillInfo?.['등급'] || '레어';
+    const effect = skillInfo?.['효과'] || '';
+    const fullDesc = `[${rarity}]\n${skillInfo?.['설명'] || ''}\n${effect}`;
+    document.getElementById('acquireSkillRarity').textContent = rarity + ' 등급';
+    document.getElementById('acquireSkillDesc').textContent = fullDesc;
     document.getElementById('acquireSkillUses').textContent = '사용 제한: ' + (skillInfo?.['사용_횟수'] || '?') + '회';
     document.getElementById('skillAcquireModal').style.display = 'flex';
 }
