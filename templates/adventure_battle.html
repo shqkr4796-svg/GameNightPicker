@@ -825,8 +825,10 @@ skillAcquireModal.style.cssText = 'display: none; position: fixed; top: 0; left:
 skillAcquireModal.innerHTML = `
     <div style="background-color: #2a2a2a; border: 2px solid #4CAF50; border-radius: 8px; padding: 30px; max-width: 400px; text-align: center; color: white;">
         <h4 style="color: #4CAF50; font-weight: 700; margin-bottom: 15px;">기술 획득!</h4>
-        <p id="acquireSkillName" style="font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; color: #fff;"></p>
-        <p id="acquireSkillDesc" style="color: #bbb; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px;"></p>
+        <p id="acquireSkillName" style="font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; color: #fff;"></p>
+        <p id="acquireSkillRarity" style="color: #999; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;"></p>
+        <p id="acquireSkillDesc" style="color: #bbb; font-size: 0.85rem; line-height: 1.6; margin-bottom: 15px;"></p>
+        <p id="acquireSkillUses" style="color: #FFD700; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;"></p>
         <button onclick="closeSkillAcquireModal()" class="btn w-100" style="background-color: #4CAF50; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; cursor: pointer;">
             확인
         </button>
@@ -867,8 +869,11 @@ document.body.appendChild(skillReplaceModal);
 let selectedOldSkill = null;
 
 function showSkillAcquireModal(newSkill) {
-    document.getElementById('acquireSkillName').textContent = skillsInfo[newSkill]?.['한글'] || newSkill;
-    document.getElementById('acquireSkillDesc').textContent = (skillsInfo[newSkill]?.['설명'] || '') + '\n' + (skillsInfo[newSkill]?.['효과'] || '');
+    const skillInfo = skillsInfo[newSkill];
+    document.getElementById('acquireSkillName').textContent = skillInfo?.['한글'] || newSkill;
+    document.getElementById('acquireSkillRarity').textContent = (skillInfo?.['등급'] || '레어') + ' 등급';
+    document.getElementById('acquireSkillDesc').textContent = (skillInfo?.['설명'] || '') + (skillInfo?.['효과'] ? '\n' + skillInfo['효과'] : '');
+    document.getElementById('acquireSkillUses').textContent = '사용 제한: ' + (skillInfo?.['사용_횟수'] || '?') + '회';
     document.getElementById('skillAcquireModal').style.display = 'flex';
 }
 
