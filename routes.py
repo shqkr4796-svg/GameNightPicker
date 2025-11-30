@@ -1761,6 +1761,8 @@ def adventure_action():
             'battle_state': battle_state,
             'game_over': False,
             'recovery_amount': recovery_amount,
+            'adventure_items': player.get('모험_아이템', {}),
+            'skill_usage': battle_state.get('skill_usage_count', {}),
             'message': '아이템을 사용했습니다.'
         })
     
