@@ -414,61 +414,70 @@ SKILLS = {
 
 # 스테이지 생성 함수
 def generate_adventure_stages():
-    """200개의 스테이지를 동적으로 생성"""
+    """400개의 스테이지를 동적으로 생성 (1~200: 일반, 201~400: 심화)"""
     stages = []
     
-    for stage_id in range(1, 201):
+    for stage_id in range(1, 401):
+        # 일반/심화 구분
+        is_hard = stage_id > 200
+        base_stage_id = stage_id if not is_hard else stage_id - 200
+        
         # 난이도 결정 (200개 스테이지에 맞게 단계적으로 상승)
-        if stage_id <= 40:
+        if base_stage_id <= 40:
             difficulty = '쉬움'
-            enemy_count = min(6, 1 + (stage_id - 1) // 6)  # 1~6마리
+            enemy_count = min(6, 1 + (base_stage_id - 1) // 6)  # 1~6마리
             hp_mult = 1.0
             atk_mult = 1.0
             rarities = ['레어']
-            skill_reward = 0.02 + (stage_id - 1) * 0.002
+            skill_reward = 0.02 + (base_stage_id - 1) * 0.002
             # 기술 카드 등급 가중치: 레어 100%
             skill_rarity_weights = {'레어': 100, '에픽': 0, '유니크': 0, '레전드리': 0}
             skill_rarity_range = '레어'
-        elif stage_id <= 80:
+        elif base_stage_id <= 80:
             difficulty = '보통'
-            enemy_count = min(6, 2 + (stage_id - 41) // 8)  # 2~6마리
+            enemy_count = min(6, 2 + (base_stage_id - 41) // 8)  # 2~6마리
             hp_mult = 1.0
             atk_mult = 1.0
             rarities = ['레어', '에픽']
-            skill_reward = 0.05 + (stage_id - 40) * 0.002
+            skill_reward = 0.05 + (base_stage_id - 40) * 0.002
             # 기술 카드 등급 가중치: 레어 70%, 에픽 30%
             skill_rarity_weights = {'레어': 70, '에픽': 30, '유니크': 0, '레전드리': 0}
             skill_rarity_range = '레어~에픽'
-        elif stage_id <= 120:
+        elif base_stage_id <= 120:
             difficulty = '어려움'
-            enemy_count = min(6, 3 + (stage_id - 81) // 9)  # 3~6마리
+            enemy_count = min(6, 3 + (base_stage_id - 81) // 9)  # 3~6마리
             hp_mult = 1.0
             atk_mult = 1.0
             rarities = ['에픽', '유니크']
-            skill_reward = 0.07 + (stage_id - 80) * 0.001
+            skill_reward = 0.07 + (base_stage_id - 80) * 0.001
             # 기술 카드 등급 가중치: 에픽 50%, 유니크 50%
             skill_rarity_weights = {'레어': 0, '에픽': 50, '유니크': 50, '레전드리': 0}
             skill_rarity_range = '에픽~유니크'
-        elif stage_id <= 160:
+        elif base_stage_id <= 160:
             difficulty = '매우 어려움'
-            enemy_count = min(6, 4 + (stage_id - 121) // 14)  # 4~6마리
+            enemy_count = min(6, 4 + (base_stage_id - 121) // 14)  # 4~6마리
             hp_mult = 1.0
             atk_mult = 1.0
             rarities = ['유니크', '레전드리']
-            skill_reward = 0.09 + (stage_id - 120) * 0.0005
+            skill_reward = 0.09 + (base_stage_id - 120) * 0.0005
             # 기술 카드 등급 가중치: 유니크 30%, 레전드리 70%
             skill_rarity_weights = {'레어': 0, '에픽': 0, '유니크': 30, '레전드리': 70}
             skill_rarity_range = '유니크~레전드리'
         else:
             difficulty = '극악'
-            enemy_count = min(6, 5 + (stage_id - 161) // 39)  # 5~6마리
+            enemy_count = min(6, 5 + (base_stage_id - 161) // 39)  # 5~6마리
             hp_mult = 1.0
             atk_mult = 1.0
             rarities = ['레전드리']
-            skill_reward = 0.12 + (stage_id - 160) * 0.0002
+            skill_reward = 0.12 + (base_stage_id - 160) * 0.0002
             # 기술 카드 등급 가중치: 레전드리 100%
             skill_rarity_weights = {'레어': 0, '에픽': 0, '유니크': 0, '레전드리': 100}
             skill_rarity_range = '레전드리'
+        
+        # 심화 난이도 추가 설정
+        if is_hard:
+            difficulty = '심화 ' + difficulty
+            skill_reward *= 2.0  # 심화는 기술카드 드롭율 2배
         
         # 몬스터 등급 범위 표시
         monster_rarity_range = ' ~ '.join(rarities)

@@ -122,10 +122,10 @@
                         <div style="margin-bottom: 30px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                                 <span style="color: #666; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">전체 진행도</span>
-                                <span style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem;">Stage {{ cleared_stage }} / 200</span>
+                                <span style="color: #1a1a1a; font-weight: 700; font-size: 0.95rem;">Stage {{ cleared_stage }} / 400</span>
                             </div>
                             <div style="width: 100%; height: 6px; background-color: #e0e0e0; border-radius: 3px; overflow: hidden;">
-                                <div style="height: 100%; width: {{ (cleared_stage / 200 * 100) }}%; background-color: #1a1a1a; transition: width 0.3s;"></div>
+                                <div style="height: 100%; width: {{ (cleared_stage / 400 * 100) }}%; background-color: #1a1a1a; transition: width 0.3s;"></div>
                             </div>
                         </div>
 
@@ -170,7 +170,7 @@
                         </div>
 
                         <!-- 난이도별 안내 -->
-                        <h6 style="color: #1a1a1a; font-weight: 600; margin-bottom: 15px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;">난이도별 범위</h6>
+                        <h6 style="color: #1a1a1a; font-weight: 600; margin-bottom: 15px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;">일반 난이도 범위</h6>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                             <div style="background-color: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #999;">
                                 <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">쉬움</div>
@@ -187,6 +187,29 @@
                             <div style="background-color: #f0f0f0; padding: 12px; border-radius: 6px; border-left: 4px solid #1a1a1a;">
                                 <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">매우 어려움</div>
                                 <div style="color: #1a1a1a; font-weight: 700;">121~200</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 심화 난이도 안내 -->
+                        <div style="margin-top: 20px;">
+                            <h6 style="color: #FF6B6B; font-weight: 600; margin-bottom: 15px; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;">🔥 심화 난이도 범위 (3배 강함)</h6>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div style="background-color: #ffe8e8; padding: 12px; border-radius: 6px; border-left: 4px solid #999;">
+                                    <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">쉬움</div>
+                                    <div style="color: #1a1a1a; font-weight: 700;">201~240</div>
+                                </div>
+                                <div style="background-color: #ffe8e8; padding: 12px; border-radius: 6px; border-left: 4px solid #666;">
+                                    <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">보통</div>
+                                    <div style="color: #1a1a1a; font-weight: 700;">241~280</div>
+                                </div>
+                                <div style="background-color: #ffe8e8; padding: 12px; border-radius: 6px; border-left: 4px solid #333;">
+                                    <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">어려움</div>
+                                    <div style="color: #1a1a1a; font-weight: 700;">281~320</div>
+                                </div>
+                                <div style="background-color: #ffe8e8; padding: 12px; border-radius: 6px; border-left: 4px solid #FF6B6B;">
+                                    <div style="color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">매우 어려움 / 극악</div>
+                                    <div style="color: #1a1a1a; font-weight: 700;">321~400</div>
+                                </div>
                             </div>
                         </div>
 

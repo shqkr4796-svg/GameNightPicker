@@ -5513,7 +5513,7 @@ def start_adventure_battle(player, stage_id, selected_monster_ids):
         return {'success': False, 'message': '적 몬스터 정보를 찾을 수 없습니다.'}
     
     # 적 몬스터 스탯 계산
-    difficulty_multiplier = 2 if player.get('모험_난이도') == '심화' else 1
+    difficulty_multiplier = 3 if player.get('모험_난이도') == '심화' else 1
     enemy_attack = int(random.randint(enemy_monster_info['공격력'][0], enemy_monster_info['공격력'][1]) * stage['enemy_attack_multiplier'] * difficulty_multiplier)
     enemy_hp = int(random.randint(enemy_monster_info['체력'][0], enemy_monster_info['체력'][1]) * stage['enemy_hp_multiplier'] * difficulty_multiplier)
     
