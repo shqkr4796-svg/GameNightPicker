@@ -8,14 +8,12 @@
 
 <!-- 효과음 시스템 초기화 -->
 <script>
-// 효과음 재생 초기화 + 아이템 초기값 설정
+// 효과음 재생 초기화
 setTimeout(function() {
     if (typeof adventureSound !== 'undefined') {
         // 모든 효과음 활성화 (배경음악은 playBackgroundMusic에서 비활성화되어 재생 안 됨)
         adventureSound.soundEnabled = true;
     }
-    // 아이템 카운트 즉시 업데이트
-    updateItemCounts();
 }, 50);
 </script>
 
@@ -1163,7 +1161,7 @@ function useSkillReset() {
 }
 
 // 페이지 로드 시 아이템 카운트 업데이트
-window.addEventListener('load', updateItemCounts);
+updateItemCounts();
 
 // 배경음악 토글 함수
 function toggleBackgroundMusic() {
