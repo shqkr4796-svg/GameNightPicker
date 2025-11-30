@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기술 UI 목업</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .scenario {
+            margin-bottom: 60px;
+        }
+        .scenario-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .scenario-title.replace {
+            color: #FF9800;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .modal-mockup {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 400px;
+            text-align: center;
+            color: white;
+        }
+        .modal-mockup.replace {
+            max-width: 500px;
+        }
+        .modal-mockup h4 {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .modal-mockup.acquire h4 {
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            padding-bottom: 15px;
+        }
+        .modal-mockup.replace h4 {
+            color: #FF9800;
+            border: 2px solid #FF9800;
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            padding-bottom: 15px;
+        }
+        .skill-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .skill-rarity {
+            color: #999;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .skill-desc {
+            color: #bbb;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: left;
+            background-color: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .skill-uses {
+            color: #FFD700;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .new-skill-section {
+            background-color: #1a1a1a;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .new-skill-label {
+            color: #999;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .new-skill-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #FF9800;
+            margin: 0;
+        }
+        .existing-skills-label {
+            color: #999;
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+        }
+        .existing-skills-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .skill-option {
+            background-color: #333;
+            color: white;
+            border: 2px solid #555;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            word-break: break-word;
+            transition: all 0.3s;
+        }
+        .skill-option:hover {
+            border-color: #666;
+        }
+        .skill-option.selected {
+            background-color: #FF9800;
+            border-color: #FFB84D;
+            color: #000;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .button-group.single {
+            grid-template-columns: 1fr;
+        }
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .btn-confirm {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .btn-confirm:hover {
+            background-color: #45a049;
+        }
+        .btn-cancel {
+            background-color: #333;
+            color: #999;
+            border: 1px solid #555;
+        }
+        .btn-cancel:hover {
+            background-color: #444;
+        }
+        .btn-disabled {
+            background-color: #333;
+            color: #999;
+            border: 1px solid #555;
+            display: none;
+        }
+        .preview {
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 시나리오 1: 기술 4개 미만 상황에서 기술 획득 -->
+        <div class="scenario">
+            <div class="scenario-title">시나리오 1: 기술 획득 (4개 미만)</div>
+            <div class="preview">
+                <div class="modal-overlay" style="position: static; background-color: rgba(0, 0, 0, 0.7); border-radius: 8px; padding: 40px; margin-top: 20px;">
+                    <div class="modal-mockup acquire">
+                        <h4>기술 획득!</h4>
+                        <p class="skill-name">물기</p>
+                        <p class="skill-rarity">일반 등급</p>
+                        <p class="skill-desc">상대를 물어뜯는 공격입니다.
+상대에게 피해를 줍니다.</p>
+                        <p class="skill-uses">사용 제한: 5회</p>
+                        <div class="button-group single">
+                            <button class="btn-confirm">확인</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 시나리오 2: 기술 4개 이상 상황에서 기술 교체 -->
+        <div class="scenario">
+            <div class="scenario-title replace">시나리오 2: 기술 교체 (4개 이상)</div>
+            <div class="preview">
+                <div class="modal-overlay" style="position: static; background-color: rgba(0, 0, 0, 0.7); border-radius: 8px; padding: 40px; margin-top: 20px;">
+                    <div class="modal-mockup replace">
+                        <h4>기술이 가득 찼습니다!</h4>
+                        <p style="color: #bbb; font-size: 0.85rem; margin-bottom: 20px;">기술 4개의 한계에 도달했습니다. 새 기술과 기존 기술 중 하나를 교체할 수 있습니다.</p>
+                        
+                        <div class="new-skill-section">
+                            <p class="new-skill-label">새 기술</p>
+                            <p class="new-skill-name">물기</p>
+                            <p style="color: #bbb; font-size: 0.8rem; margin-top: 5px;">상대를 물어뜯는 공격입니다.</p>
+                        </div>
+                        
+                        <p class="existing-skills-label">기존 기술 중 하나를 선택하세요:</p>
+                        <div class="existing-skills-container">
+                            <button class="skill-option">불꽃</button>
+                            <button class="skill-option selected">냉동</button>
+                            <button class="skill-option">전기</button>
+                            <button class="skill-option">독</button>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button class="btn-cancel">취소</button>
+                            <button class="btn-confirm">교체 확인</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
