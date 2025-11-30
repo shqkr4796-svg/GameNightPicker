@@ -1747,7 +1747,9 @@ def answer_dungeon(player, dungeon_run, choice):
                 if is_new_monster:
                     result_msg += f" {rarity} 몬스터를 처치하고 새로운 몬스터를 도감에 추가했습니다!"
                 else:
-                    result_msg += f" {rarity} 몬스터를 처치하고 도감에 등록했습니다!"
+                    # 중복된 몬스터 - 처치수 증가
+                    kill_count = player['도감'][dungeon_run['monster_id']].get('처치수', 1)
+                    result_msg += f" {rarity} 몬스터를 처치했습니다. (처치수: {kill_count})"
             else:
                 result_msg += f" {rarity} 몬스터를 처치했지만 도감 등록에 실패했습니다."
             
