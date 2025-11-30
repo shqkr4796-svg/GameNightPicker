@@ -5460,7 +5460,7 @@ def get_adventure_stages():
     return ADVENTURE_STAGES
 
 def get_available_monsters(player):
-    """플레이어가 보유한 도감 몬스터 반환 (높은 등급순)"""
+    """플레이어가 보유한 도감 몬스터 반환 (높은 등급순, 원본 인덱스 포함)"""
     from data.monsters import get_monster_by_id
     available = []
     
@@ -5469,7 +5469,7 @@ def get_available_monsters(player):
     if isinstance(compendium, dict):
         compendium = list(compendium.values())
     
-    for monster_data in compendium:
+    for idx, monster_data in enumerate(compendium):
         if monster_data.get('포획됨'):
             available.append({
                 'id': monster_data.get('id'),
@@ -5477,7 +5477,8 @@ def get_available_monsters(player):
                 'rarity': monster_data['등급'],
                 'attack': monster_data.get('공격력', 0),
                 'hp': monster_data.get('체력', 0),
-                'image': monster_data.get('이미지', '')
+                'image': monster_data.get('이미지', ''),
+                'compendium_index': idx  # 원본 도감 배열 인덱스 저장
             })
     
     # 등급순 정렬 (높은 등급이 위로), 같은 등급 내에서 공격력 순
