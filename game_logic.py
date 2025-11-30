@@ -5811,8 +5811,10 @@ def execute_skill(battle_state, skill_name):
                     enemy_monster_info = get_monster_by_id(enemy_monster_id)
                     
                     if enemy_monster_info:
-                        enemy_attack = int(random.randint(enemy_monster_info['공격력'][0], enemy_monster_info['공격력'][1]) * stage.get('enemy_attack_multiplier', 1.0))
-                        enemy_hp = int(random.randint(enemy_monster_info['체력'][0], enemy_monster_info['체력'][1]) * stage.get('enemy_hp_multiplier', 1.0))
+                        # 난이도 배수 적용 (심화: stage_id > 200이면 3배)
+                        difficulty_multiplier = 3 if battle_state['stage_id'] > 200 else 1
+                        enemy_attack = int(random.randint(enemy_monster_info['공격력'][0], enemy_monster_info['공격력'][1]) * stage.get('enemy_attack_multiplier', 1.0) * difficulty_multiplier)
+                        enemy_hp = int(random.randint(enemy_monster_info['체력'][0], enemy_monster_info['체력'][1]) * stage.get('enemy_hp_multiplier', 1.0) * difficulty_multiplier)
                         
                         battle_state['enemy_monster'] = {
                             'id': enemy_monster_id,
