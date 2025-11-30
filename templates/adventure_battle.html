@@ -949,14 +949,17 @@ document.getElementById('skillModal').addEventListener('click', function(e) {
     }
 });
 
+// 현재 아이템 상태 (JavaScript에서 추적)
+let currentAdventureItems = {{ adventure_items | tojson }} || {};
+
 // 아이템 카운트 업데이트 (동적 업데이트)
 function updateItemCounts(adventureItems = null) {
-    // 동적으로 받은 데이터가 있으면 사용, 없으면 초기 데이터 사용
-    if (!adventureItems) {
-        adventureItems = {{ adventure_items | tojson }};
+    // 동적으로 받은 데이터가 있으면 사용
+    if (adventureItems) {
+        currentAdventureItems = adventureItems;
     }
-    document.getElementById('recoveryCount').textContent = (adventureItems['기술충전제'] || 0) + '개';
-    document.getElementById('resetCount').textContent = (adventureItems['기술초기화제'] || 0) + '개';
+    document.getElementById('recoveryCount').textContent = (currentAdventureItems['기술충전제'] || 0) + '개';
+    document.getElementById('resetCount').textContent = (currentAdventureItems['기술초기화제'] || 0) + '개';
 }
 
 // 아이템 획득 팝업 표시
@@ -1017,6 +1020,26 @@ function showSkillRecoveryModal() {
 function useSkillRecovery(skillName) {
     document.querySelectorAll('div[style*="position:fixed"]').forEach(el => el.remove());
     
+    // 아이템 사용 효과음 재생
+    if (typeof adventureSound !== 'undefined' && adventureSound.audioContext) {
+        try {
+            const now = adventureSound.audioContext.currentTime;
+            const osc = adventureSound.audioContext.createOscillator();
+            const gain = adventureSound.audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(adventureSound.audioContext.destination);
+            
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.3);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } catch(e) {}
+    }
+    
     const form = new FormData();
     form.append('action_type', 'skill_item');
     form.append('item_type', '기술충전제');
@@ -1033,6 +1056,10 @@ function useSkillRecovery(skillName) {
             updateItemCounts(data.adventure_items);
             updateBattleUI(data.battle_state);
             updateSkillUsageUI(data.skill_usage || {});
+            // 배경음악 계속 재생
+            if (typeof adventureSound !== 'undefined' && !adventureSound.soundEnabled) {
+                adventureSound.playBackgroundMusic();
+            }
         } else {
             alert('오류: ' + (data.error || '알 수 없는 오류'));
         }
@@ -1045,13 +1072,32 @@ function useSkillRecovery(skillName) {
 
 // 기술 초기화제 사용
 function useSkillReset() {
-    const adventureItems = {{ adventure_items | tojson }};
-    if ((adventureItems['기술초기화제'] || 0) <= 0) {
+    if ((currentAdventureItems['기술초기화제'] || 0) <= 0) {
         alert('기술초기화제가 없습니다.');
         return;
     }
     
     if (!confirm('모든 기술의 사용 횟수를 리셋하시겠습니까?')) return;
+    
+    // 아이템 사용 효과음 재생
+    if (typeof adventureSound !== 'undefined' && adventureSound.audioContext) {
+        try {
+            const now = adventureSound.audioContext.currentTime;
+            const osc = adventureSound.audioContext.createOscillator();
+            const gain = adventureSound.audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(adventureSound.audioContext.destination);
+            
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(300, now + 0.4);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } catch(e) {}
+    }
     
     const form = new FormData();
     form.append('action_type', 'skill_item');
@@ -1068,6 +1114,10 @@ function useSkillReset() {
             updateItemCounts(data.adventure_items);
             updateBattleUI(data.battle_state);
             updateSkillUsageUI(data.skill_usage || {});
+            // 배경음악 계속 재생
+            if (typeof adventureSound !== 'undefined' && !adventureSound.soundEnabled) {
+                adventureSound.playBackgroundMusic();
+            }
         } else {
             alert('오류: ' + (data.error || '알 수 없는 오류'));
         }
