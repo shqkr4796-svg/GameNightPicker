@@ -882,7 +882,12 @@ function closeSkillAcquireModal() {
 function showSkillReplaceModal(newSkill, currentSkills) {
     const newSkillInfo = skillsInfo[newSkill];
     document.getElementById('newSkillName').textContent = newSkillInfo?.['한글'] || newSkill;
-    document.getElementById('newSkillDesc').textContent = newSkillInfo?.['설명'] || '';
+    
+    // 등급과 데미지 정보를 포함한 설명 표시
+    const rarity = newSkillInfo?.['등급'] || '레어';
+    const effect = newSkillInfo?.['효과'] || '';
+    const fullDesc = `[${rarity}]\n${newSkillInfo?.['설명'] || ''}\n${effect}`;
+    document.getElementById('newSkillDesc').textContent = fullDesc;
     
     let existingHtml = '';
     for (let skill of currentSkills) {
