@@ -263,13 +263,14 @@ def get_player_tier(player):
     
     # 몬스터 등급별 개수 계산
     monster_counts = {'rare': 0, 'epic': 0, 'unique': 0, 'legendary': 0, 'mythic': 0}
-    compendium = player.get('도감', {})
+    compendium = player.get('도감', [])
     
-    for monster_id in compendium:
-        if monster_id:
-            monster = get_monster_by_id(monster_id)
-            if monster:
-                rarity = monster.get('등급', '레어').lower()
+    for monster in compendium:
+        if monster and isinstance(monster, dict):
+            monster_id = monster.get('id')
+            monster_data = get_monster_by_id(monster_id)
+            if monster_data:
+                rarity = monster_data.get('등급', '레어').lower()
                 if rarity == '레어':
                     monster_counts['rare'] += 1
                 elif rarity == '에픽':
