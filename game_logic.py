@@ -5937,12 +5937,12 @@ def complete_adventure_battle(player, battle_state):
                         # 4개 미만: 자동 추가
                         player['모험_기술'].append(new_skill)
                         rewards['skills'].append(new_skill)
-                        rewards['skill_added'] = True
+                        rewards['skill_auto_added'] = True
                     else:
                         # 4개 이상: 교체 UI를 위해 new_skill 정보 반환
                         rewards['new_skill'] = new_skill
                         rewards['current_skills'] = current_skills
-                        rewards['skill_added'] = False
+                        rewards['skill_auto_added'] = False
     
     # 기술 충전 아이템 드롭 (기술 드롭과 동일 확률, 심화 난이도에서 2배)
     item_reward_rate = stage_config.get('skill_reward_rate', 0.02)
@@ -5950,7 +5950,7 @@ def complete_adventure_battle(player, battle_state):
         item_reward_rate *= 2
     
     if random.random() < item_reward_rate:
-        rewards['item_type'] = '기술충전제'
+        rewards['dropped_item'] = '기술충전제'
         if '모험_아이템' not in player:
             player['모험_아이템'] = {}
         player['모험_아이템']['기술충전제'] = player['모험_아이템'].get('기술충전제', 0) + 1
@@ -5962,7 +5962,7 @@ def complete_adventure_battle(player, battle_state):
         reset_reward_rate *= 2
     
     if random.random() < reset_reward_rate:
-        rewards['item_type'] = '기술초기화제'
+        rewards['dropped_item'] = '기술초기화제'
         if '모험_아이템' not in player:
             player['모험_아이템'] = {}
         player['모험_아이템']['기술초기화제'] = player['모험_아이템'].get('기술초기화제', 0) + 1

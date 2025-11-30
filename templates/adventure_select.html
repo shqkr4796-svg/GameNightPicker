@@ -282,8 +282,8 @@ document.getElementById('adventureForm').addEventListener('submit', function(e) 
     const existingHiddenInputs = this.querySelectorAll('input[name="monster_ids"][type="hidden"]');
     existingHiddenInputs.forEach(input => input.remove());
     
-    // 체크박스 제거
-    const checkboxes = this.querySelectorAll('input[name="monster_ids"][type="checkbox"]');
+    // 체크박스 제거 (올바른 selector 사용)
+    const checkboxes = this.querySelectorAll('input.monster-checkbox[type="checkbox"]');
     checkboxes.forEach(cb => cb.remove());
     
     // 선택된 순서대로 hidden input 추가

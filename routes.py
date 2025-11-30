@@ -1622,7 +1622,11 @@ def start_adventure():
     stage_id = request.form.get('stage_id', type=int)
     selected_monster_ids = request.form.getlist('monster_ids')
     
+    # 디버깅: 폼 데이터 확인
+    print(f"[DEBUG] stage_id={stage_id}, monster_ids={selected_monster_ids}")
+    
     if not stage_id or not selected_monster_ids:
+        print(f"[DEBUG] 폼 검증 실패: stage_id={stage_id}, monster_ids_count={len(selected_monster_ids)}")
         flash('스테이지와 몬스터를 선택해주세요.', 'error')
         return redirect(url_for('adventure'))
     
