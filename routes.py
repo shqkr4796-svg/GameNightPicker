@@ -1750,10 +1750,11 @@ def adventure_action():
             adventure_items[item_type] -= 1
             player['모험_아이템'] = adventure_items
         
-        # 아이템 사용 후 적 턴으로 진행
-        enemy_turn_result = game_logic.execute_enemy_turn(battle_state)
-        if enemy_turn_result['success']:
-            battle_state = enemy_turn_result['battle_state']
+        # 아이템 사용 후 적 턴으로 진행 (플레이어 턴 상태 유지하면서 적이 공격)
+        battle_state['player_turn'] = False
+        result = game_logic.execute_skill(battle_state, '')
+        if result['success']:
+            battle_state = result['battle_state']
             
             if battle_state['game_over']:
                 if battle_state['winner'] == 'player':
