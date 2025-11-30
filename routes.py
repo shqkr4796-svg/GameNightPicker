@@ -1028,13 +1028,7 @@ def start_dungeon():
     # 입장료 차감이 반영되도록 먼저 게임 저장
     game_logic.save_game(player)
     
-    # 세션에 저장할 플레이어 데이터 준비 (불필요한 필드 제거 - 크기 최소화)
-    player_for_session = player.copy()
-    # 큰 배열/텍스트 필드 제거
-    for key in ['직업_경험치_기록', '보유_스킬', '기술_사용_횟수']:
-        player_for_session.pop(key, None)
-    
-    session['player_data'] = player_for_session
+    # 세션에는 dungeon_run 정보만 저장 (player_data는 파일에서 로드)
     session['dungeon_run'] = result['dungeon_run']
     session.modified = True
     
