@@ -16,8 +16,17 @@ class AdventureSound {
 
     // 아이템 사용 효과음 (충전제, 초기화제)
     playItemUseSound(itemType) {
-        if (!this.soundEnabled) return;
+        if (!this.soundEnabled) {
+            console.log('Sound disabled, enabling for item use');
+            this.soundEnabled = true;
+        }
+        
         try {
+            // audioContext가 suspended 상태라면 resume
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume().catch(e => console.error('Resume failed:', e));
+            }
+            
             const now = this.audioContext.currentTime;
             const osc = this.audioContext.createOscillator();
             const gain = this.audioContext.createGain();
