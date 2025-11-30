@@ -1738,6 +1738,10 @@ def adventure_action():
             max_uses = get_skill_uses(skill_info)
             recovery_amount = max(1, max_uses // 2)
             
+            # 기술 사용 횟수 회복
+            current_usage = battle_state['skill_usage_count'].get(skill_to_recover, 0)
+            battle_state['skill_usage_count'][skill_to_recover] = max(0, current_usage - recovery_amount)
+            
             adventure_items[item_type] -= 1
             player['모험_아이템'] = adventure_items
         elif item_type == '기술초기화제':
@@ -1746,10 +1750,10 @@ def adventure_action():
             adventure_items[item_type] -= 1
             player['모험_아이템'] = adventure_items
         
-        # 적 턴으로 진행
-        result = game_logic.execute_skill(battle_state, '')
-        if result['success']:
-            battle_state = result['battle_state']
+        # 아이템 사용 후 적 턴으로 진행
+        enemy_turn_result = game_logic.execute_enemy_turn(battle_state)
+        if enemy_turn_result['success']:
+            battle_state = enemy_turn_result['battle_state']
             
             if battle_state['game_over']:
                 if battle_state['winner'] == 'player':
