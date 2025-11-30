@@ -5486,8 +5486,8 @@ def get_available_monsters(player):
     
     return available
 
-def start_adventure_battle(player, stage_id, selected_monster_ids):
-    """모험 전투 시작 (팀 기반)"""
+def start_adventure_battle(player, stage_id, selected_monster_indices):
+    """모험 전투 시작 (팀 기반, 도감 배열 인덱스 기반)"""
     from data.adventure_data import ADVENTURE_STAGES, ENEMY_DIALOGUES, PLAYER_DIALOGUES
     from data.monsters import get_monster_by_id, get_monsters_by_rarity
     from data.skills import SKILL_INFO
@@ -5498,33 +5498,38 @@ def start_adventure_battle(player, stage_id, selected_monster_ids):
     if not stage:
         return {'success': False, 'message': '존재하지 않는 스테이지입니다.'}
     
-    # 플레이어 몬스터 팀 구성 확인
+    # 플레이어 몬스터 팀 구성 확인 (도감 배열 인덱스 사용)
     player_team = []
-    for monster_id in selected_monster_ids:
-        # 배열에서 해당 id의 몬스터 찾기
-        monster_data = None
-        for m in player['도감']:
-            if m.get('id') == monster_id:
-                monster_data = m
-                break
-        
-        if not monster_data:
-            return {'success': False, 'message': '해당 몬스터를 보유하고 있지 않습니다.'}
-        
-        monster_info = get_monster_by_id(monster_id)
-        
-        if not monster_info:
-            return {'success': False, 'message': '플레이어 몬스터 정보를 찾을 수 없습니다.'}
-        
-        player_team.append({
-            'id': monster_id,
-            'name': monster_data['이름'],
-            'rarity': monster_data['등급'],
-            'attack': monster_data.get('공격력', 0),
-            'max_hp': monster_data.get('체력', 0),
-            'current_hp': monster_data.get('체력', 0),
-            'image': monster_data.get('이미지', '')
-        })
+    compendium = player.get('도감', [])
+    
+    for index_str in selected_monster_indices:
+        try:
+            idx = int(index_str)
+            if idx < 0 or idx >= len(compendium):
+                return {'success': False, 'message': '유효하지 않은 몬스터 선택입니다.'}
+            
+            monster_data = compendium[idx]
+            
+            if not monster_data.get('포획됨'):
+                return {'success': False, 'message': '포획되지 않은 몬스터입니다.'}
+            
+            monster_id = monster_data.get('id')
+            monster_info = get_monster_by_id(monster_id)
+            
+            if not monster_info:
+                return {'success': False, 'message': '플레이어 몬스터 정보를 찾을 수 없습니다.'}
+            
+            player_team.append({
+                'id': monster_id,
+                'name': monster_data['이름'],
+                'rarity': monster_data['등급'],
+                'attack': monster_data.get('공격력', 0),
+                'max_hp': monster_data.get('체력', 0),
+                'current_hp': monster_data.get('체력', 0),
+                'image': monster_data.get('이미지', '')
+            })
+        except (ValueError, IndexError):
+            return {'success': False, 'message': '유효하지 않은 몬스터 선택입니다.'}
     
     # 적 몬스터 생성
     rarity_list = stage['enemy_rarity']
