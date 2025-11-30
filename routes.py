@@ -985,10 +985,12 @@ def dungeons():
 @app.route('/dungeon/<dungeon_id>/preview')
 def dungeon_preview(dungeon_id):
     """던전 미리보기 페이지"""
-    if 'player_data' not in session:
+    # 플레이어 데이터는 파일에서 로드
+    player = game_logic.load_game()
+    if not player:
+        flash('게임 데이터를 불러올 수 없습니다.', 'error')
         return redirect(url_for('index'))
     
-    player = session['player_data']
     dungeon = game_logic.get_dungeon_by_id(dungeon_id)
     
     if not dungeon:
@@ -1007,10 +1009,12 @@ def dungeon_preview(dungeon_id):
 @app.route('/dungeon/start', methods=['POST'])
 def start_dungeon():
     """던전 시작"""
-    if 'player_data' not in session:
+    # 플레이어 데이터는 파일에서 로드
+    player = game_logic.load_game()
+    if not player:
+        flash('게임 데이터를 불러올 수 없습니다.', 'error')
         return redirect(url_for('index'))
     
-    player = session['player_data']
     dungeon_id = request.form.get('dungeon_id')
     
     # 최소 체력 확인 (체력 = 기력)
