@@ -972,6 +972,60 @@ function updateItemCounts(adventureItems = null) {
     if (resetEl) resetEl.textContent = currentAdventureItems['기술초기화제'] + '개';
 }
 
+// 커스텀 성공 모달
+function showSuccessModal(message) {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); z-index:2001; align-items:center; justify-content:center;';
+    
+    modal.innerHTML = `
+        <div style="background-color: #2a2a2a; border-radius: 12px; padding: 30px; max-width: 450px; border: 3px solid #4CAF50; color: white; text-align: center;">
+            <h3 style="color: #4CAF50; font-weight: 700; margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase;">✓ 성공!</h3>
+            <p style="color: #ccc; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">${message}</p>
+            <button onclick="this.parentElement.parentElement.remove()" style="background-color: #4CAF50; color: white; border: none; border-radius: 6px; padding: 12px 30px; font-weight: 600; cursor: pointer; font-size: 0.95rem; width: 100%;">확인</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.onclick = function(e) { if (e.target === this) this.remove(); };
+}
+
+// 커스텀 오류 모달
+function showErrorModal(message) {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); z-index:2001; align-items:center; justify-content:center;';
+    
+    modal.innerHTML = `
+        <div style="background-color: #2a2a2a; border-radius: 12px; padding: 30px; max-width: 450px; border: 3px solid #FF6B6B; color: white; text-align: center;">
+            <h3 style="color: #FF6B6B; font-weight: 700; margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase;">✗ 오류</h3>
+            <p style="color: #ccc; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6;">${message}</p>
+            <button onclick="this.parentElement.parentElement.remove()" style="background-color: #FF6B6B; color: white; border: none; border-radius: 6px; padding: 12px 30px; font-weight: 600; cursor: pointer; font-size: 0.95rem; width: 100%;">확인</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.onclick = function(e) { if (e.target === this) this.remove(); };
+}
+
+// 커스텀 확인/취소 모달
+function showConfirmModal(message, onConfirm) {
+    const modal = document.createElement('div');
+    modal.style.cssText = 'display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); z-index:2001; align-items:center; justify-content:center;';
+    
+    modal.innerHTML = `
+        <div style="background-color: #2a2a2a; border-radius: 12px; padding: 30px; max-width: 450px; border: 3px solid #2196F3; color: white; text-align: center;">
+            <h3 style="color: #2196F3; font-weight: 700; margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase;">확인</h3>
+            <p style="color: #ccc; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.6;">${message}</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background-color: #555; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">취소</button>
+                <button onclick="(${onConfirm})(); this.parentElement.parentElement.parentElement.remove();" style="background-color: #2196F3; color: white; border: none; border-radius: 6px; padding: 12px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">확인</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.onclick = function(e) { if (e.target === this) this.remove(); };
+}
+
 // 아이템 획득 팝업 표시
 function showItemAcquireModal(itemType) {
     const itemNames = {'기술충전제': '기술 충전제', '기술초기화제': '기술 초기화제'};
@@ -998,9 +1052,8 @@ function showItemAcquireModal(itemType) {
 
 // 기술 충전제 선택 팝업
 function showSkillRecoveryModal() {
-    const adventureItems = {{ adventure_items | tojson }};
-    if ((adventureItems['기술충전제'] || 0) <= 0) {
-        alert('기술충전제가 없습니다.');
+    if ((currentAdventureItems['기술충전제'] || 0) <= 0) {
+        showErrorModal('기술충전제가 없습니다.');
         return;
     }
     
@@ -1047,30 +1100,23 @@ function useSkillRecovery(skillName) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('✓ ' + skillName + ' 기술이 ' + data.recovery_amount + '회 회복되었습니다!');
+            showSuccessModal('✓ ' + skillName + ' 기술이 ' + data.recovery_amount + '회 회복되었습니다!');
             updateItemCounts(data.adventure_items);
             updateBattleUI(data.battle_state);
             updateSkillUsageUI(data.skill_usage || {});
         } else {
-            alert('오류: ' + (data.error || '알 수 없는 오류'));
+            showErrorModal('오류: ' + (data.error || '알 수 없는 오류'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('오류가 발생했습니다.');
+        showErrorModal('오류가 발생했습니다.');
     });
 }
 
-// 기술 초기화제 사용
-function useSkillReset() {
-    if ((currentAdventureItems['기술초기화제'] || 0) <= 0) {
-        alert('기술초기화제가 없습니다.');
-        return;
-    }
-    
-    if (!confirm('모든 기술의 사용 횟수를 리셋하시겠습니까?')) return;
-    
-    // 아이템 사용 효과음 재생 (통일된 방식)
+// 기술 초기화제 사용 (실제 서버 요청)
+function executeSkillReset() {
+    // 아이템 사용 효과음 재생
     if (typeof adventureSound !== 'undefined') {
         adventureSound.playItemUseSound('기술초기화제');
     }
@@ -1086,18 +1132,29 @@ function useSkillReset() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('✓ 모든 기술의 사용 횟수가 리셋되었습니다!');
+            showSuccessModal('✓ 모든 기술의 사용 횟수가 리셋되었습니다!');
             updateItemCounts(data.adventure_items);
             updateBattleUI(data.battle_state);
             updateSkillUsageUI(data.skill_usage || {});
         } else {
-            alert('오류: ' + (data.error || '알 수 없는 오류'));
+            showErrorModal('오류: ' + (data.error || '알 수 없는 오류'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('오류가 발생했습니다.');
+        showErrorModal('오류가 발생했습니다.');
     });
+}
+
+// 기술 초기화제 사용
+function useSkillReset() {
+    if ((currentAdventureItems['기술초기화제'] || 0) <= 0) {
+        showErrorModal('기술초기화제가 없습니다.');
+        return;
+    }
+    
+    // 커스텀 모달로 확인
+    showConfirmModal('모든 기술의 사용 횟수를 리셋하시겠습니까?', executeSkillReset);
 }
 
 // 페이지 로드 시 아이템 카운트 업데이트
