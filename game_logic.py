@@ -60,6 +60,25 @@ def load_game():
             with open(SAVE_FILE, 'r', encoding='utf-8') as f:
                 player = json.load(f)
                 
+                # 도감 마이그레이션 - 처치수 필드 제거
+                if '도감' in player:
+                    if isinstance(player['도감'], list):
+                        # 배열 형식: 처치수 필드 제거
+                        for monster in player['도감']:
+                            monster.pop('처치수', None)
+                            monster.pop('최초처치일', None)
+                    elif isinstance(player['도감'], dict):
+                        # 딕셔너리 형식: 배열로 변환하며 처치수 제거
+                        new_compendium = []
+                        for monster_id, monster_data in player['도감'].items():
+                            new_monster = {k: v for k, v in monster_data.items() if k not in ['처치수', '최초처치일']}
+                            if 'id' not in new_monster:
+                                new_monster['id'] = monster_id
+                            if '포획날짜' not in new_monster:
+                                new_monster['포획날짜'] = datetime.now().isoformat()
+                            new_compendium.append(new_monster)
+                        player['도감'] = new_compendium
+                
                 # 기존 플레이어 호환성 처리
                 if '최대기력' not in player:
                     player['최대기력'] = 10  # 기본값

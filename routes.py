@@ -1356,9 +1356,10 @@ def perform_fusion():
         return redirect(url_for('index'))
     
     player = session['player_data']
-    monster_ids = request.form.getlist('selected_monsters')
+    # 문자열로 받은 인덱스를 정수로 변환
+    monster_indices = [int(idx) for idx in request.form.getlist('selected_monsters')]
     
-    result = game_logic.merge_monsters(player, monster_ids)
+    result = game_logic.merge_monsters(player, monster_indices)
     
     session['player_data'] = player
     game_logic.save_game(player)

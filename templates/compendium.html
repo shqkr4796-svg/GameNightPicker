@@ -101,13 +101,9 @@
                             <strong>체력:</strong>
                             <span class="badge bg-success">{{ monster.get('체력', 0) }}</span>
                         </div>
-                        <div class="mb-2">
-                            <strong>처치 횟수:</strong>
-                            <span class="text-muted">{{ monster['처치수'] }}회</span>
-                        </div>
                         <div class="mb-3">
                             <small class="text-muted">
-                                <strong>최초 처치:</strong> {{ monster['최초처치일'][:10] }}
+                                <strong>포획일:</strong> {{ monster.get('포획날짜', '날짜 없음')[:10] }}
                             </small>
                         </div>
                     </div>
