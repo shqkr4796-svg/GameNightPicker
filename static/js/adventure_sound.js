@@ -14,6 +14,40 @@ class AdventureSound {
         this.masterGain.gain.value = 1;
     }
 
+    // 아이템 사용 효과음 (충전제, 초기화제)
+    playItemUseSound(itemType) {
+        if (!this.soundEnabled) return;
+        try {
+            const now = this.audioContext.currentTime;
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+            
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            if (itemType === '기술충전제') {
+                // 고음: 800 → 400 Hz (상승→하강)
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(400, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (itemType === '기술초기화제') {
+                // 저음: 600 → 300 Hz (깊은 음향)
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.4);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+            this.activeOscillators.push(osc);
+        } catch(e) {
+            console.error('Item sound error:', e);
+        }
+    }
+
     // 배경음악 (무한 반복)
     playBackgroundMusic() {
         return; // 배경음악 비활성화
