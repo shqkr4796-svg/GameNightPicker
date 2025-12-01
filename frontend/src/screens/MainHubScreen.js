@@ -176,6 +176,14 @@ export default function MainHubScreen({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Sleep')}
+        >
+          <Text style={styles.menuTitle}>💤 수면</Text>
+          <Text style={styles.menuDesc}>체력을 회복하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.menuButton, styles.logoutButton]}
           onPress={handleLogout}
         >

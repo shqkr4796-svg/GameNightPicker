@@ -21,6 +21,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import WrongQuizRetryScreen from './src/screens/WrongQuizRetryScreen';
 import FusionScreen from './src/screens/FusionScreen';
 import AllMonstersScreen from './src/screens/AllMonstersScreen';
+import SleepScreen from './src/screens/SleepScreen';
 
 const Stack = createStackNavigator();
 
@@ -150,6 +151,11 @@ export default function App() {
           name="AllMonsters"
           component={AllMonstersScreen}
           options={{ title: '모든 몬스터 카탈로그' }}
+        />
+        <Stack.Screen
+          name="Sleep"
+          component={SleepScreen}
+          options={{ title: '수면' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
