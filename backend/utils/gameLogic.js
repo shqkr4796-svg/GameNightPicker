@@ -123,12 +123,68 @@ const REAL_ESTATE_RENT_DATA = {
 };
 
 /**
- * 잠자기 (시간 진행, 기력 회복, 월세 수입)
+ * 랜덤 이벤트 데이터
+ */
+const RANDOM_EVENTS = [
+  // 긍정적 금전 이벤트
+  { name: '복권 당첨', message: '복권에 당첨되었습니다!', effects: { 돈: 10000 } },
+  { name: '길에서 돈 발견', message: '길을 걷다가 돈을 주웠습니다.', effects: { 돈: 1000 } },
+  { name: '보너스 지급', message: '갑작스럽게 보너스가 지급되었습니다!', effects: { 돈: 5000 } },
+  { name: '친척 선물', message: '친척에게서 생일 선물로 돈을 받았습니다.', effects: { 돈: 3000 } },
+  
+  // 부정적 금전 이벤트
+  { name: '지갑 잃어버림', message: '지갑을 잃어버렸습니다.', effects: { 돈: -3000 } },
+  { name: '휴대폰 깨짐', message: '휴대폰을 떨어뜨려 화면이 깨졌습니다.', effects: { 돈: -2000 } },
+  { name: '사기당함', message: '누군가에게 돈을 사기당했습니다.', effects: { 돈: -4000 } },
+  
+  // 건강 관련 이벤트
+  { name: '감기 걸림', message: '감기에 걸렸습니다.', effects: { 체력: -2, 기력: -1 } },
+  { name: '건강검진 좋은 결과', message: '건강검진에서 모든 수치가 정상입니다!', effects: { 체력: 3 } },
+  { name: '영양제 효과', message: '꾸준히 섭취한 영양제의 효과가 나타났습니다.', effects: { 체력: 2 } },
+  
+  // 기력 관련 이벤트
+  { name: '친구와의 만남', message: '오랜 친구를 만나 즐거운 시간을 보냈습니다.', effects: { 기력: 2 } },
+  { name: '좋은 소식', message: '좋은 소식을 들어 기분이 좋아졌습니다.', effects: { 기력: 1 } },
+  { name: '영화 감상', message: '재미있는 영화를 봐서 기분이 좋아졌습니다.', effects: { 기력: 3 } },
+  { name: '스트레스 폭발', message: '스트레스가 극에 달해 모든 것이 짜증납니다.', effects: { 기력: -3 } },
+  
+  // 스탯 증가 이벤트
+  { name: '운동 효과', message: '꾸준한 운동의 효과가 나타났습니다.', effects: { 힘: 1, 체력스탯: 1 } },
+  { name: '독서의 즐거움', message: '좋은 책을 읽어 지식이 늘었습니다.', effects: { 지능: 1 } },
+  { name: '패션 감각 up', message: '패션 감각이 늘었습니다.', effects: { 외모: 1 } },
+  { name: '명상 연습', message: '명상으로 마음이 편안해졌습니다.', effects: { 지능: 1, 기력: 2 } }
+];
+
+/**
+ * 랜덤 이벤트 발생 확인 (1% 확률)
+ */
+function checkRandomEvent(playerData) {
+  if (Math.random() > 0.01) {
+    return null; // 1% 확률에 미달
+  }
+
+  const event = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];
+  
+  // 이벤트 효과 적용
+  if (event.effects) {
+    for (const [stat, value] of Object.entries(event.effects)) {
+      if (stat in playerData && typeof playerData[stat] === 'number') {
+        playerData[stat] = Math.max(0, (playerData[stat] || 0) + value);
+      }
+    }
+  }
+
+  return event;
+}
+
+/**
+ * 잠자기 (시간 진행, 기력 회복, 월세 수입, 랜덤 이벤트)
  */
 export function sleep(playerData) {
   // 시간 진행
   playerData.시간 = (playerData.시간 || 8) + 8;
   let rentMessages = [];
+  let eventInfo = null;
   
   if (playerData.시간 >= 24) {
     playerData.시간 -= 24;
@@ -160,6 +216,9 @@ export function sleep(playerData) {
         }
       }
     }
+    
+    // 랜덤 이벤트 확인
+    eventInfo = checkRandomEvent(playerData);
   }
 
   // 기력 회복
@@ -171,6 +230,9 @@ export function sleep(playerData) {
   if (rentMessages.length > 0) {
     baseMessage += ` ${rentMessages.join(', ')}`;
   }
+  if (eventInfo) {
+    baseMessage += ` 이벤트: ${eventInfo.message}`;
+  }
 
   return {
     success: true,
@@ -178,6 +240,7 @@ export function sleep(playerData) {
     current_time: `${playerData.날짜}일 ${playerData.시간}시`,
     current_energy: playerData.기력,
     rent_income: rentMessages.length > 0 ? rentMessages : null,
+    event: eventInfo ? { name: eventInfo.name, message: eventInfo.message, effects: eventInfo.effects } : null,
     total_money: playerData.돈
   };
 }

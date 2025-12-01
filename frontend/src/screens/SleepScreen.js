@@ -29,7 +29,8 @@ export default function SleepScreen({ navigation }) {
           currentEnergy: response.data.data.current_energy,
           currentTime: response.data.data.current_time,
           totalMoney: response.data.data.total_money,
-          rentIncome: rentIncome
+          rentIncome: rentIncome,
+          event: response.data.data.event
         });
 
         setTimeout(() => {
@@ -70,6 +71,18 @@ export default function SleepScreen({ navigation }) {
               <Text style={styles.rentTitle}>💰 월세 수입</Text>
               {sleepResult.rentIncome.map((rent, idx) => (
                 <Text key={idx} style={styles.rentItem}>{rent}</Text>
+              ))}
+            </View>
+          )}
+
+          {sleepResult.event && (
+            <View style={[styles.rentContainer, styles.eventContainer]}>
+              <Text style={styles.eventTitle}>✨ {sleepResult.event.name}</Text>
+              <Text style={styles.eventMessage}>{sleepResult.event.message}</Text>
+              {sleepResult.event.effects && Object.entries(sleepResult.event.effects).map(([stat, value]) => (
+                <Text key={stat} style={[styles.rentItem, value >= 0 ? styles.eventGood : styles.eventBad]}>
+                  {stat}: {value >= 0 ? '+' : ''}{value}
+                </Text>
               ))}
             </View>
           )}
@@ -280,5 +293,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 4,
     paddingLeft: 8
+  },
+  eventContainer: {
+    borderLeftColor: '#ec4899'
+  },
+  eventTitle: {
+    color: '#ec4899',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 6
+  },
+  eventMessage: {
+    color: '#fff',
+    fontSize: 13,
+    marginBottom: 10,
+    fontStyle: 'italic'
+  },
+  eventGood: {
+    color: '#22c55e'
+  },
+  eventBad: {
+    color: '#ef4444'
   }
 });
