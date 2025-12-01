@@ -17,6 +17,7 @@ import InventoryScreen from './src/screens/InventoryScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import WordManagementScreen from './src/screens/WordManagementScreen';
+import HomeScreen from './src/screens/HomeScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,7 +30,8 @@ export default function App() {
 
   const checkAuth = async () => {
     const token = await AsyncStorage.getItem('auth_token');
-    setInitialRoute(token ? 'MainHub' : 'Login');
+    const playerData = await AsyncStorage.getItem('player_data');
+    setInitialRoute(token ? 'MainHub' : playerData ? 'Home' : 'Login');
   };
 
   if (initialRoute === null) {
@@ -51,6 +53,11 @@ export default function App() {
           }
         }}
       >
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Login"
           component={LoginScreen}

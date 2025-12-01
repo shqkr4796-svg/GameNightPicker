@@ -1,26 +1,40 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, Modal, TextInput, ScrollView, Vibration } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, Modal, TextInput, ScrollView, Vibration, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function WordManagementScreen({ navigation }) {
-  const [words, setWords] = useState([
-    { id: 1, word: 'Algorithm', meaning: '알고리즘', category: 'AI' },
-    { id: 2, word: 'Revenue', meaning: '수익', category: 'Business' },
-    { id: 3, word: 'Portfolio', meaning: '포트폴리오', category: 'Finance' },
-    { id: 4, word: 'API', meaning: '응용 프로그래밍 인터페이스', category: 'IT' },
-    { id: 5, word: 'Brand', meaning: '브랜드', category: 'Marketing' },
-    { id: 6, word: 'Variable', meaning: '변수', category: 'Programming' }
-  ]);
-
+  const [words, setWords] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [modalVisible, setModalVisible] = useState(false);
   const [editingWord, setEditingWord] = useState(null);
   const [newWord, setNewWord] = useState('');
   const [newMeaning, setNewMeaning] = useState('');
-  const [newCategory, setNewCategory] = useState('AI');
+  const [newCategory, setNewCategory] = useState('기본');
   const [selectedWords, setSelectedWords] = useState(new Set());
+  const [categories, setCategories] = useState([]);
 
-  const categories = ['AI', 'Business', 'Finance', 'IT', 'Marketing', 'Programming'];
+  useEffect(() => {
+    loadWords();
+  }, []);
+
+  const loadWords = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('user_words');
+      if (saved) {
+        setWords(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.log('단어 로드 실패');
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const cats = ['기본', ...new Set(words.map(w => w.category || '기본').filter(c => c !== '기본'))];
+    setCategories(cats);
+  }, [words]);
 
   const filteredWords = words.filter((word) => {
     const matchesSearch =
@@ -30,36 +44,40 @@ export default function WordManagementScreen({ navigation }) {
     return matchesSearch && matchesCategory;
   });
 
-  const handleAddWord = () => {
+  const handleAddWord = async () => {
     if (!newWord.trim() || !newMeaning.trim()) {
       Alert.alert('알림', '단어와 뜻을 입력해주세요.');
       return;
     }
 
+    let updatedWords = [];
     if (editingWord) {
-      // 수정
-      setWords(
-        words.map((w) =>
-          w.id === editingWord.id
-            ? { ...w, word: newWord, meaning: newMeaning, category: newCategory }
-            : w
-        )
+      updatedWords = words.map((w) =>
+        w.id === editingWord.id
+          ? { ...w, word: newWord, meaning: newMeaning, category: newCategory }
+          : w
       );
       Vibration.vibrate([0, 100, 50, 100]);
       Alert.alert('성공', '단어가 수정되었습니다.');
     } else {
-      // 추가
-      setWords([
+      updatedWords = [
         ...words,
-        { id: Math.max(...words.map((w) => w.id), 0) + 1, word: newWord, meaning: newMeaning, category: newCategory }
-      ]);
+        { id: Date.now(), word: newWord, meaning: newMeaning, category: newCategory }
+      ];
       Vibration.vibrate([0, 100, 50, 100]);
       Alert.alert('성공', '단어가 추가되었습니다.');
     }
 
+    try {
+      await AsyncStorage.setItem('user_words', JSON.stringify(updatedWords));
+      setWords(updatedWords);
+    } catch (error) {
+      Alert.alert('오류', '저장 실패');
+    }
+
     setNewWord('');
     setNewMeaning('');
-    setNewCategory('AI');
+    setNewCategory('기본');
     setEditingWord(null);
     setModalVisible(false);
   };
@@ -69,10 +87,16 @@ export default function WordManagementScreen({ navigation }) {
       { text: '취소', style: 'cancel' },
       {
         text: '삭제',
-        onPress: () => {
-          setWords(words.filter((w) => w.id !== id));
-          Vibration.vibrate(200);
-          Alert.alert('완료', '단어가 삭제되었습니다.');
+        onPress: async () => {
+          const updated = words.filter((w) => w.id !== id);
+          try {
+            await AsyncStorage.setItem('user_words', JSON.stringify(updated));
+            setWords(updated);
+            Vibration.vibrate(200);
+            Alert.alert('완료', '단어가 삭제되었습니다.');
+          } catch (error) {
+            Alert.alert('오류', '삭제 실패');
+          }
         },
         style: 'destructive'
       }
@@ -107,21 +131,41 @@ export default function WordManagementScreen({ navigation }) {
       { text: '취소', style: 'cancel' },
       {
         text: '삭제',
-        onPress: () => {
-          setWords(words.filter((w) => !selectedWords.has(w.id)));
-          setSelectedWords(new Set());
-          Vibration.vibrate([100, 100, 100]);
-          Alert.alert('완료', `${selectedWords.size}개의 단어가 삭제되었습니다.`);
+        onPress: async () => {
+          const updated = words.filter((w) => !selectedWords.has(w.id));
+          try {
+            await AsyncStorage.setItem('user_words', JSON.stringify(updated));
+            setWords(updated);
+            setSelectedWords(new Set());
+            Vibration.vibrate([100, 100, 100]);
+            Alert.alert('완료', `${selectedWords.size}개의 단어가 삭제되었습니다.`);
+          } catch (error) {
+            Alert.alert('오류', '삭제 실패');
+          }
         },
         style: 'destructive'
       }
     ]);
   };
 
-  const handleChangeCategorySelected = (category) => {
+  const handleChangeCategorySelected = async (category) => {
     if (selectedWords.size === 0) {
       Alert.alert('알림', '카테고리를 변경할 단어를 선택해주세요.');
       return;
+    }
+
+    const updated = words.map((w) =>
+      selectedWords.has(w.id) ? { ...w, category } : w
+    );
+
+    try {
+      await AsyncStorage.setItem('user_words', JSON.stringify(updated));
+      setWords(updated);
+      setSelectedWords(new Set());
+      Vibration.vibrate([0, 100, 50, 100]);
+      Alert.alert('완료', `${selectedWords.size}개의 단어 카테고리가 변경되었습니다.`);
+    } catch (error) {
+      Alert.alert('오류', '변경 실패');
     }
 
     setWords(
