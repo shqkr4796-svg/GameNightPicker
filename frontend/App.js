@@ -20,6 +20,7 @@ import WordManagementScreen from './src/screens/WordManagementScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import WrongQuizRetryScreen from './src/screens/WrongQuizRetryScreen';
 import FusionScreen from './src/screens/FusionScreen';
+import AllMonstersScreen from './src/screens/AllMonstersScreen';
 
 const Stack = createStackNavigator();
 
@@ -144,6 +145,11 @@ export default function App() {
           name="Fusion"
           component={FusionScreen}
           options={{ title: '몬스터 합성' }}
+        />
+        <Stack.Screen
+          name="AllMonsters"
+          component={AllMonstersScreen}
+          options={{ title: '모든 몬스터 카탈로그' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
