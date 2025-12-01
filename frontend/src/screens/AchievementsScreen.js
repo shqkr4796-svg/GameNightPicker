@@ -45,13 +45,6 @@ export default function AchievementsScreen({ navigation }) {
     }
   };
 
-  const getDifficultyColor = (difficulty) => ({
-    '쉬움': '#22c55e',
-    '보통': '#3b82f6',
-    '어려움': '#f59e0b',
-    '극어려움': '#ef4444'
-  }[difficulty] || '#666');
-
   if (loading) {
     return <View style={styles.container}><ActivityIndicator color="#6366f1" size="large" /></View>;
   }
@@ -70,159 +63,69 @@ export default function AchievementsScreen({ navigation }) {
         </View>
         <View style={styles.statBox}>
           <Text style={styles.statLabel}>획득 포인트</Text>
-          <Text style={[styles.statValue, { color: '#f59e0b' }]}>
-            {totalPoints}/{totalPointsMax}
-          </Text>
-        </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statLabel}>완성도</Text>
-          <Text style={[styles.statValue, { color: '#22c55e' }]}>
-            {Math.round((achievedCount / achievements.length) * 100)}%
-          </Text>
+          <Text style={styles.statValue}>{totalPoints}P</Text>
         </View>
       </View>
 
-      {/* 진행 막대 */}
-      <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${(achievedCount / achievements.length) * 100}%` }
-            ]}
-          />
+      <Text style={styles.sectionTitle}>업적 목록</Text>
+      {achievements.map((achievement, idx) => (
+        <View
+          key={idx}
+          style={[styles.achievementCard, achievement.achieved && styles.achievedCard]}
+        >
+          <View style={styles.achievementContent}>
+            <View style={styles.achievementIcon}>
+              <Text style={achievement.achieved ? styles.achievedIcon : styles.unachievedIcon}>
+                {achievement.achieved ? '✓' : '◯'}
+              </Text>
+            </View>
+            <View style={styles.achievementInfo}>
+              <Text style={[styles.achievementName, !achievement.achieved && styles.unachievedText]}>
+                {achievement.name}
+              </Text>
+              <Text style={styles.achievementDesc}>{achievement.description || achievement.desc}</Text>
+            </View>
+            <View style={styles.achievementRight}>
+              <Text style={[styles.pointsBadge, achievement.achieved && styles.earnedPoints]}>
+                {achievement.points}P
+              </Text>
+            </View>
+          </View>
+          {achievement.achieved && !achievement.claimed && (
+            <TouchableOpacity
+              style={styles.claimButton}
+              onPress={() => handleClaimAchievement(achievement.id)}
+            >
+              <Text style={styles.claimButtonText}>보상 수령</Text>
+            </TouchableOpacity>
+          )}
         </View>
-      </View>
-
-      {/* 성취 목록 */}
-      <FlatList
-        data={achievements}
-        renderItem={renderAchievement}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-        scrollEnabled={true}
-      />
-    </View>
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a1a1a',
-    padding: 20
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 15
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-    gap: 8
-  },
-  statBox: {
-    flex: 1,
-    backgroundColor: '#2a2a2a',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-  statLabel: {
-    color: '#aaa',
-    fontSize: 11,
-    marginBottom: 5
-  },
-  statValue: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  progressContainer: {
-    marginBottom: 20
-  },
-  progressBar: {
-    height: 12,
-    backgroundColor: '#3a3a3a',
-    borderRadius: 6,
-    overflow: 'hidden'
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#6366f1'
-  },
-  listContainer: {
-    gap: 10,
-    paddingBottom: 20
-  },
-  achievementCard: {
-    backgroundColor: '#2a2a2a',
-    padding: 12,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#3a3a3a',
-    opacity: 0.6
-  },
-  achievedCard: {
-    backgroundColor: '#1f3a1f',
-    borderLeftColor: '#22c55e',
-    opacity: 1
-  },
-  achievementContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10
-  },
-  achievementIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1a1a1a',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  achievedIcon: {
-    color: '#22c55e',
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
-  unachievedIcon: {
-    color: '#666',
-    fontSize: 20
-  },
-  achievementInfo: {
-    flex: 1
-  },
-  achievementName: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginBottom: 3
-  },
-  unachievedText: {
-    color: '#aaa'
-  },
-  achievementDesc: {
-    color: '#888',
-    fontSize: 11
-  },
-  achievementRight: {
-    alignItems: 'flex-end',
-    gap: 4
-  },
-  difficultyBadge: {
-    fontSize: 11,
-    fontWeight: 'bold'
-  },
-  pointsBadge: {
-    color: '#666',
-    fontSize: 12,
-    fontWeight: 'bold'
-  },
-  earnedPoints: {
-    color: '#f59e0b'
-  }
+  container: { flex: 1, backgroundColor: '#1a1a1a', padding: 16 },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#fff', marginBottom: 5 },
+  statsContainer: { flexDirection: 'row', gap: 12, marginBottom: 20 },
+  statBox: { flex: 1, backgroundColor: '#2a2a2a', padding: 15, borderRadius: 8 },
+  statLabel: { color: '#aaa', fontSize: 12, marginBottom: 5 },
+  statValue: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  sectionTitle: { fontSize: 16, fontWeight: '600', color: '#6366f1', marginBottom: 12 },
+  achievementCard: { backgroundColor: '#2a2a2a', padding: 12, borderRadius: 8, marginBottom: 10 },
+  achievedCard: { borderLeftWidth: 4, borderLeftColor: '#22c55e' },
+  achievementContent: { flexDirection: 'row', alignItems: 'center' },
+  achievementIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#3a3a3a', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
+  achievedIcon: { color: '#22c55e', fontSize: 20, fontWeight: 'bold' },
+  unachievedIcon: { color: '#aaa', fontSize: 16 },
+  achievementInfo: { flex: 1 },
+  achievementName: { color: '#fff', fontSize: 14, fontWeight: '600', marginBottom: 4 },
+  unachievedText: { color: '#aaa' },
+  achievementDesc: { color: '#999', fontSize: 12 },
+  achievementRight: { alignItems: 'flex-end' },
+  pointsBadge: { color: '#aaa', fontSize: 12, fontWeight: '600' },
+  earnedPoints: { color: '#22c55e' },
+  claimButton: { backgroundColor: '#6366f1', paddingVertical: 8, borderRadius: 6, alignItems: 'center', marginTop: 10 },
+  claimButtonText: { color: '#fff', fontSize: 12, fontWeight: '600' }
 });
