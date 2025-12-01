@@ -97,10 +97,34 @@ export default function MainHubScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.menuButton}
+          onPress={() => navigation.navigate('Dashboard')}
+        >
+          <Text style={styles.menuTitle}>📊 대시보드</Text>
+          <Text style={styles.menuDesc}>플레이어 정보를 보세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuButton}
           onPress={() => navigation.navigate('Skills')}
         >
           <Text style={styles.menuTitle}>⚔️ 스킬</Text>
           <Text style={styles.menuDesc}>스킬을 관리하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Inventory')}
+        >
+          <Text style={styles.menuTitle}>🎒 인벤토리</Text>
+          <Text style={styles.menuDesc}>아이템을 관리하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Achievements')}
+        >
+          <Text style={styles.menuTitle}>🏆 성취</Text>
+          <Text style={styles.menuDesc}>성취를 확인하세요</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

@@ -12,6 +12,9 @@ import ShopScreen from './src/screens/ShopScreen';
 import RealEstateScreen from './src/screens/RealEstateScreen';
 import JobScreen from './src/screens/JobScreen';
 import DailyExpressionsScreen from './src/screens/DailyExpressionsScreen';
+import DashboardScreen from './src/screens/DashboardScreen';
+import InventoryScreen from './src/screens/InventoryScreen';
+import AchievementsScreen from './src/screens/AchievementsScreen';
 
 const Stack = createStackNavigator();
 
@@ -95,6 +98,21 @@ export default function App() {
           name="DailyExpressions"
           component={DailyExpressionsScreen}
           options={{ title: '일일 표현' }}
+        />
+        <Stack.Screen
+          name="Dashboard"
+          component={DashboardScreen}
+          options={{ title: '대시보드' }}
+        />
+        <Stack.Screen
+          name="Inventory"
+          component={InventoryScreen}
+          options={{ title: '인벤토리' }}
+        />
+        <Stack.Screen
+          name="Achievements"
+          component={AchievementsScreen}
+          options={{ title: '성취' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
