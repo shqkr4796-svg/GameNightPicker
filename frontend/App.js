@@ -19,6 +19,7 @@ import QuizScreen from './src/screens/QuizScreen';
 import WordManagementScreen from './src/screens/WordManagementScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import WrongQuizRetryScreen from './src/screens/WrongQuizRetryScreen';
+import FusionScreen from './src/screens/FusionScreen';
 
 const Stack = createStackNavigator();
 
@@ -138,6 +139,11 @@ export default function App() {
           name="WrongQuizRetry"
           component={WrongQuizRetryScreen}
           options={{ title: '틀린 문제 재도전' }}
+        />
+        <Stack.Screen
+          name="Fusion"
+          component={FusionScreen}
+          options={{ title: '몬스터 합성' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

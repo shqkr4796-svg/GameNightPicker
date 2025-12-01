@@ -168,6 +168,14 @@ export default function MainHubScreen({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Fusion')}
+        >
+          <Text style={styles.menuTitle}>✨ 몬스터 합성</Text>
+          <Text style={styles.menuDesc}>같은 등급 3마리를 합성하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.menuButton, styles.logoutButton]}
           onPress={handleLogout}
         >
