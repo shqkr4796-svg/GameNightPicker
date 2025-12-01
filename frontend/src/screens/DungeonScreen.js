@@ -10,6 +10,8 @@ export default function DungeonScreen({ navigation }) {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [hintUsed, setHintUsed] = useState(false);
+  const [hintOptions, setHintOptions] = useState(null);
 
   useEffect(() => {
     loadDungeonData();
@@ -39,11 +41,59 @@ export default function DungeonScreen({ navigation }) {
         setQuizActive(true);
         setScore(0);
         setQuestionIndex(0);
+        setHintUsed(false);
+        setHintOptions(null);
         setCurrentQuestion(response.data.data.first_question);
       }
     } catch (error) {
       Alert.alert('오류', '던전 시작 실패');
     }
+  };
+
+  const handleUseHint = () => {
+    if (!currentQuestion || hintUsed) return;
+    
+    // 4개 선택지 중 정답 1개 + 오답 1개만 남기기
+    const correctAnswer = currentQuestion.options[0];
+    const wrongAnswers = currentQuestion.options.slice(1);
+    const selectedWrong = wrongAnswers[Math.floor(Math.random() * wrongAnswers.length)];
+    
+    const reduced = [correctAnswer, selectedWrong].sort(() => Math.random() - 0.5);
+    
+    setHintUsed(true);
+    setHintOptions(reduced);
+    Alert.alert('💡 힌트 사용됨', '선택지가 2개로 줄어들었습니다!');
+    Vibration.vibrate([0, 100, 50, 100]);
+  };
+
+  const handleSkipQuestion = () => {
+    if (!currentQuestion) return;
+    
+    Alert.alert(
+      '⏭️ 문제 스킵',
+      '이 문제를 넘어갈까요?\n(경험치를 받지 못합니다)',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '넘어가기',
+          onPress: async () => {
+            try {
+              const response = await dungeonAPI.answer(selectedDungeon.id, '스킵');
+              if (response.data.next_question) {
+                setCurrentQuestion(response.data.next_question);
+                setQuestionIndex(questionIndex + 1);
+                setHintUsed(false);
+                setHintOptions(null);
+              } else {
+                await completeDungeon();
+              }
+            } catch (error) {
+              Alert.alert('오류', '스킵 처리 실패');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleAnswerQuestion = async (answer) => {
@@ -110,6 +160,8 @@ export default function DungeonScreen({ navigation }) {
   }
 
   if (quizActive && currentQuestion) {
+    const displayOptions = hintOptions || currentQuestion.options;
+    
     return (
       <ScrollView style={styles.container}>
         <View style={styles.quizHeader}>
@@ -120,10 +172,11 @@ export default function DungeonScreen({ navigation }) {
         <View style={styles.questionContainer}>
           <Text style={styles.questionNumber}>문제 {questionIndex + 1}</Text>
           <Text style={styles.question}>{currentQuestion.text}</Text>
+          {hintUsed && <Text style={styles.hintBadge}>💡 힌트 사용됨</Text>}
         </View>
 
         <View style={styles.optionsContainer}>
-          {currentQuestion.options?.map((option, idx) => (
+          {displayOptions?.map((option, idx) => (
             <TouchableOpacity
               key={idx}
               style={styles.optionButton}
@@ -132,6 +185,22 @@ export default function DungeonScreen({ navigation }) {
               <Text style={styles.optionText}>{option}</Text>
             </TouchableOpacity>
           ))}
+        </View>
+
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            style={[styles.actionButton, hintUsed && styles.actionButtonDisabled]}
+            onPress={handleUseHint}
+            disabled={hintUsed}
+          >
+            <Text style={styles.actionButtonText}>💡 힌트</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleSkipQuestion}
+          >
+            <Text style={styles.actionButtonText}>⏭️ 스킵</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     );
@@ -273,6 +342,34 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '500'
+  },
+  hintBadge: {
+    color: '#fbbf24',
+    fontSize: 12,
+    marginTop: 8,
+    fontWeight: '600'
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20,
+    marginBottom: 20
+  },
+  actionButton: {
+    flex: 1,
+    backgroundColor: '#6366f1',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center'
+  },
+  actionButtonDisabled: {
+    backgroundColor: '#3a3a3a',
+    opacity: 0.5
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600'
   },
   emptyState: {
     alignItems: 'center',
