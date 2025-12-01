@@ -236,6 +236,29 @@ export default function DashboardScreen({ navigation }) {
           ))}
         </View>
       </View>
+
+      {/* 게임 통계 */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>📈 게임 통계</Text>
+        <View style={styles.statisticsGrid}>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>💤 수면</Text>
+            <Text style={styles.statValue}>{playerStats.sleep_count || 0}회</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>💼 일함</Text>
+            <Text style={styles.statValue}>{playerStats.work_count || 0}회</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>❓ 퀴즈</Text>
+            <Text style={styles.statValue}>{playerStats.quiz_correct || 0}정답</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statLabel}>🎮 던전</Text>
+            <Text style={styles.statValue}>{playerStats.dungeon_clears || 0}클</Text>
+          </View>
+        </View>
+      </View>
     </View>
   );
 
@@ -458,6 +481,11 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   abilitiesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10
+  },
+  statisticsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10

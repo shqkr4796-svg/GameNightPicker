@@ -49,7 +49,9 @@ export function createNewPlayer() {
     모험_기력: 100,
     모험_기력최대: 100,
     모험_정답_퀴즈: 0,
-    모험_난이도: '일반'
+    모험_난이도: '일반',
+    잠잔_횟수: 0,
+    일한_횟수: 0
   };
 }
 
@@ -225,6 +227,9 @@ export function sleep(playerData) {
   const maxEnergy = playerData.최대기력 || 10;
   playerData.기력 = Math.min((playerData.기력 || 5) + 5, maxEnergy);
 
+  // 수면 통계 업데이트
+  playerData.잠잔_횟수 = (playerData.잠잔_횟수 || 0) + 1;
+
   // 메시지 생성
   let baseMessage = `잠을 자서 기력이 ${playerData.기력}까지 회복되었습니다.`;
   if (rentMessages.length > 0) {
@@ -241,7 +246,8 @@ export function sleep(playerData) {
     current_energy: playerData.기력,
     rent_income: rentMessages.length > 0 ? rentMessages : null,
     event: eventInfo ? { name: eventInfo.name, message: eventInfo.message, effects: eventInfo.effects } : null,
-    total_money: playerData.돈
+    total_money: playerData.돈,
+    sleep_count: playerData.잠잔_횟수
   };
 }
 
