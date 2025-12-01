@@ -145,6 +145,14 @@ export default function MainHubScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.menuButton}
+          onPress={() => navigation.navigate('Quiz')}
+        >
+          <Text style={styles.menuTitle}>📚 단어 퀴즈</Text>
+          <Text style={styles.menuDesc}>단어 학습 퀴즈를 풀어보세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuButton}
           onPress={() => navigation.navigate('DailyExpressions')}
         >
           <Text style={styles.menuTitle}>📝 일일 표현</Text>

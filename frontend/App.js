@@ -15,6 +15,7 @@ import DailyExpressionsScreen from './src/screens/DailyExpressionsScreen';
 import DashboardScreen from './src/screens/DashboardScreen';
 import InventoryScreen from './src/screens/InventoryScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
+import QuizScreen from './src/screens/QuizScreen';
 
 const Stack = createStackNavigator();
 
@@ -113,6 +114,11 @@ export default function App() {
           name="Achievements"
           component={AchievementsScreen}
           options={{ title: '성취' }}
+        />
+        <Stack.Screen
+          name="Quiz"
+          component={QuizScreen}
+          options={{ title: '단어 퀴즈' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
