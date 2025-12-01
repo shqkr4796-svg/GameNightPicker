@@ -73,7 +73,18 @@ export function loadGameData(fileName) {
       return [];
     }
     const data = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    
+    // 몬스터 데이터: id를 key로 하는 객체로 변환
+    if (fileName === 'monsters' && Array.isArray(parsed)) {
+      const monstersMap = {};
+      parsed.forEach(monster => {
+        monstersMap[monster.id] = monster;
+      });
+      return monstersMap;
+    }
+    
+    return parsed;
   } catch (error) {
     console.error(`Error loading game data (${fileName}):`, error);
     return [];
