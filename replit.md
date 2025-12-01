@@ -117,7 +117,7 @@ Status: **Images placeholder (empty strings)**
   - 기술 충전제 (횟수 부분 회복)
   - 기술 초기화제 (완전 리셋)
 
-### Phase 3: React Native 프론트엔드 (70% 완료)
+### Phase 3: React Native 프론트엔드 (85% 완료)
 - ✅ Expo 프로젝트 구조
 - ✅ 인증 화면 (LoginScreen) 
 - ✅ 메인 게임 허브 (MainHubScreen)
@@ -127,7 +127,8 @@ Status: **Images placeholder (empty strings)**
 - ✅ 도감 화면 (CompendiumScreen) - 몬스터 갤러리
 - ✅ 스킬 화면 (SkillsScreen) - 스킬 관리 & 교체
 - ✅ 던전 화면 (DungeonScreen) - 퀴즈 시스템
-- ⏳ 상점/부동산 화면 (다음 단계)
+- ✅ 상점 화면 (ShopScreen) - 상품 구매
+- ⏳ 부동산/설정 화면 (최종 단계)
 
 ---
 

@@ -8,6 +8,7 @@ import AdventureScreen from './src/screens/AdventureScreen';
 import CompendiumScreen from './src/screens/CompendiumScreen';
 import SkillsScreen from './src/screens/SkillsScreen';
 import DungeonScreen from './src/screens/DungeonScreen';
+import ShopScreen from './src/screens/ShopScreen';
 
 const Stack = createStackNavigator();
 
@@ -71,6 +72,11 @@ export default function App() {
           name="Dungeon"
           component={DungeonScreen}
           options={{ title: '던전' }}
+        />
+        <Stack.Screen
+          name="Shop"
+          component={ShopScreen}
+          options={{ title: '상점' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
