@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Modal, Vibration } from 'react-native';
 import { skillsAPI } from '../services/api';
 
 export default function SkillsScreen({ navigation }) {
@@ -8,7 +8,6 @@ export default function SkillsScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [replaceMode, setReplaceMode] = useState(false);
-  const [replaceTarget, setReplaceTarget] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -32,9 +31,10 @@ export default function SkillsScreen({ navigation }) {
 
   const handleReplaceSkill = async (oldSkill, newSkill) => {
     try {
-      const response = await skillsAPI.replace(oldSkill.이름, newSkill.이름);
+      const response = await skillsAPI.replace(oldSkill.이름 || oldSkill.name, newSkill.이름 || newSkill.name);
       if (response.data.success) {
-        Alert.alert('성공', response.data.data.message);
+        Vibration.vibrate([0, 100, 50, 100]);
+        Alert.alert('성공', '스킬이 교체되었습니다!');
         loadSkills();
         setModalVisible(false);
         setReplaceMode(false);
@@ -44,46 +44,18 @@ export default function SkillsScreen({ navigation }) {
     }
   };
 
-  const renderSkillCard = ({ item, index }) => (
-    <TouchableOpacity
-      style={styles.skillCard}
-      onPress={() => {
-        setSelectedSkill(item);
-        setReplaceTarget({ skill: item, type: 'current', index });
-        setModalVisible(true);
-      }}
-    >
-      <View style={styles.skillHeader}>
-        <Text style={styles.skillName}>{item.이름}</Text>
-        <Text style={styles.skillSlot}>슬롯 {index + 1}/4</Text>
-      </View>
-      <View style={styles.skillStats}>
-        <Text style={styles.skillStat}>
-          데미지: {item.데미지_최소}-{item.데미지_최대}
-        </Text>
-        <Text style={styles.skillStat}>
-          횟수: {item.사용_횟수}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderAcquiredSkill = ({ item }) => (
-    <TouchableOpacity
-      style={styles.acquiredSkillCard}
-      onPress={() => {
-        setSelectedSkill(item);
-        setReplaceTarget({ skill: item, type: 'acquired' });
-        setReplaceMode(true);
-        setModalVisible(true);
-      }}
-    >
-      <Text style={styles.acquiredSkillName}>{item.이름}</Text>
-      <Text style={styles.acquiredSkillInfo}>
-        데미지: {item.데미지_최소}-{item.데미지_최대}
-      </Text>
-    </TouchableOpacity>
-  );
+  const handleAcquireSkill = async (skillName) => {
+    try {
+      const response = await skillsAPI.acquire(skillName);
+      if (response.data.success) {
+        Vibration.vibrate([0, 100, 50, 100]);
+        Alert.alert('성공', '스킬을 획득했습니다!');
+        loadSkills();
+      }
+    } catch (error) {
+      Alert.alert('오류', '스킬 획득 실패');
+    }
+  };
 
   if (loading) {
     return (
@@ -93,132 +65,108 @@ export default function SkillsScreen({ navigation }) {
     );
   }
 
+  const maxSlots = 4;
+  const emptySlots = maxSlots - currentSkills.length;
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>스킬</Text>
+      <Text style={styles.subtitle}>현재 장착한 스킬을 관리하세요</Text>
 
       {/* 현재 스킬 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          현재 스킬 ({currentSkills.length}/{4})
-        </Text>
-        <FlatList
-          data={currentSkills}
-          renderItem={renderSkillCard}
-          keyExtractor={(item, idx) => `current-${idx}`}
-          scrollEnabled={false}
-          contentContainerStyle={styles.skillList}
-        />
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>⚔️ 현재 스킬</Text>
+          <Text style={styles.sectionBadge}>{currentSkills.length}/{maxSlots}</Text>
+        </View>
+
+        {currentSkills.length > 0 ? (
+          <View style={styles.skillList}>
+            {currentSkills.map((skill, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={styles.skillCard}
+                onPress={() => {
+                  setSelectedSkill(skill);
+                  setReplaceMode(true);
+                  setModalVisible(true);
+                }}
+              >
+                <View style={styles.skillCardHeader}>
+                  <View>
+                    <Text style={styles.skillName}>{skill.이름 || skill.name}</Text>
+                    <Text style={styles.slotNumber}>슬롯 {idx + 1}</Text>
+                  </View>
+                  <Text style={styles.skillBadge}>⚡</Text>
+                </View>
+                <View style={styles.skillStats}>
+                  <Text style={styles.skillStat}>
+                    데미지: {skill.데미지_최소 || skill.min_damage}-{skill.데미지_최대 || skill.max_damage}
+                  </Text>
+                  <Text style={styles.skillStat}>
+                    사용: {skill.사용_횟수 || skill.uses} / {skill.최대_사용 || skill.max_uses}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>장착된 스킬이 없습니다</Text>
+          </View>
+        )}
+
+        {emptySlots > 0 && (
+          <View style={styles.emptySlots}>
+            <Text style={styles.emptySlotLabel}>빈 슬롯: {emptySlots}개</Text>
+          </View>
+        )}
       </View>
 
       {/* 획득한 스킬 */}
       {acquiredSkills.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            획득한 스킬 ({acquiredSkills.length})
-          </Text>
-          <Text style={styles.acquiredSubtext}>
-            현재 스킬과 교체하려면 선택하세요
-          </Text>
-          <FlatList
-            data={acquiredSkills}
-            renderItem={renderAcquiredSkill}
-            keyExtractor={(item, idx) => `acquired-${idx}`}
-            scrollEnabled={false}
-            contentContainerStyle={styles.acquiredList}
-            numColumns={2}
-          />
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>📚 획득한 스킬</Text>
+            <Text style={styles.sectionBadge}>{acquiredSkills.length}</Text>
+          </View>
+          <Text style={styles.sectionDesc}>현재 스킬과 교체하려면 선택하세요</Text>
+
+          <View style={styles.acquiredSkillList}>
+            {acquiredSkills.map((skill, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={styles.acquiredSkillCard}
+                onPress={() => {
+                  if (currentSkills.length < maxSlots) {
+                    handleAcquireSkill(skill.이름 || skill.name);
+                  } else {
+                    setSelectedSkill(skill);
+                    setReplaceMode(true);
+                    setModalVisible(true);
+                  }
+                }}
+              >
+                <View style={styles.acquiredSkillHeader}>
+                  <Text style={styles.acquiredSkillName}>{skill.이름 || skill.name}</Text>
+                  <Text style={styles.acquiredSkillDamage}>
+                    {skill.데미지_최소 || skill.min_damage}-{skill.데미지_최대 || skill.max_damage}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       )}
 
-      {/* 스킬 상세 & 교체 모달 */}
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>✕</Text>
-            </TouchableOpacity>
-
-            {selectedSkill && (
-              <>
-                <Text style={styles.modalTitle}>{selectedSkill.이름}</Text>
-
-                <View style={styles.modalStats}>
-                  <View style={styles.modalStatItem}>
-                    <Text style={styles.modalStatLabel}>최소 데미지</Text>
-                    <Text style={styles.modalStatValue}>
-                      {selectedSkill.데미지_최소}
-                    </Text>
-                  </View>
-                  <View style={styles.modalStatItem}>
-                    <Text style={styles.modalStatLabel}>최대 데미지</Text>
-                    <Text style={styles.modalStatValue}>
-                      {selectedSkill.데미지_최대}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.modalStats}>
-                  <View style={styles.modalStatItem}>
-                    <Text style={styles.modalStatLabel}>사용 횟수</Text>
-                    <Text style={styles.modalStatValue}>
-                      {selectedSkill.사용_횟수}
-                    </Text>
-                  </View>
-                  <View style={styles.modalStatItem}>
-                    <Text style={styles.modalStatLabel}>타입</Text>
-                    <Text style={styles.modalStatValue}>
-                      {selectedSkill.타입 || '일반'}
-                    </Text>
-                  </View>
-                </View>
-
-                {replaceMode && replaceTarget?.type === 'acquired' && currentSkills.length > 0 && (
-                  <>
-                    <Text style={styles.replaceText}>
-                      교체할 현재 스킬을 선택하세요
-                    </Text>
-                    <FlatList
-                      data={currentSkills}
-                      renderItem={({ item, index }) => (
-                        <TouchableOpacity
-                          style={styles.replaceOption}
-                          onPress={() =>
-                            handleReplaceSkill(item, selectedSkill)
-                          }
-                        >
-                          <Text style={styles.replaceOptionText}>
-                            {item.이름} (슬롯 {index + 1})
-                          </Text>
-                          <Text style={styles.replaceOptionArrow}>→</Text>
-                        </TouchableOpacity>
-                      )}
-                      keyExtractor={(item, idx) => `replace-${idx}`}
-                      scrollEnabled={false}
-                    />
-                  </>
-                )}
-
-                <TouchableOpacity
-                  style={styles.modalCloseButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.modalCloseButtonText}>닫기</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
-    </View>
+      {/* 스킬 팁 */}
+      <View style={styles.tipsCard}>
+        <Text style={styles.tipsTitle}>💡 스킬 팁</Text>
+        <Text style={styles.tipsText}>• 최대 {maxSlots}개의 스킬을 장착할 수 있습니다</Text>
+        <Text style={styles.tipsText}>• 새로운 스킬 획득 시 기존 스킬과 교체할 수 있습니다</Text>
+        <Text style={styles.tipsText}>• 각 스킬은 정해진 횟수만큼 사용할 수 있습니다</Text>
+      </View>
+    </ScrollView>
   );
 }
 
@@ -226,176 +174,148 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-    padding: 20
+    padding: 16
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
+    marginBottom: 5
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#aaa',
     marginBottom: 20
   },
   section: {
-    marginBottom: 30
+    marginBottom: 24
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#6366f1',
-    marginBottom: 10
+    fontWeight: '600',
+    color: '#fff'
   },
-  acquiredSubtext: {
+  sectionBadge: {
+    backgroundColor: '#6366f1',
+    color: '#fff',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
     fontSize: 12,
+    fontWeight: '600'
+  },
+  sectionDesc: {
     color: '#aaa',
-    marginBottom: 10
+    fontSize: 12,
+    marginBottom: 12
   },
   skillList: {
-    gap: 10
+    gap: 12
   },
   skillCard: {
     backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#6366f1',
-    marginBottom: 5
+    borderLeftColor: '#6366f1'
   },
-  skillHeader: {
+  skillCardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 10
   },
   skillName: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    flex: 1
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 4
   },
-  skillSlot: {
+  slotNumber: {
     color: '#aaa',
-    fontSize: 12
+    fontSize: 11
+  },
+  skillBadge: {
+    fontSize: 18
   },
   skillStats: {
-    gap: 5
+    gap: 4
   },
   skillStat: {
     color: '#aaa',
     fontSize: 12
   },
-  acquiredList: {
+  emptyState: {
+    backgroundColor: '#2a2a2a',
+    padding: 20,
+    borderRadius: 8,
+    alignItems: 'center'
+  },
+  emptyText: {
+    color: '#aaa',
+    fontSize: 14
+  },
+  emptySlots: {
+    backgroundColor: '#1a4d7d',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#6366f1'
+  },
+  emptySlotLabel: {
+    color: '#6366f1',
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  acquiredSkillList: {
     gap: 10
   },
   acquiredSkillCard: {
-    flex: 1,
     backgroundColor: '#2a2a2a',
     padding: 12,
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#44aa00',
-    marginHorizontal: 5,
-    marginBottom: 10
+    borderColor: '#3a3a3a'
   },
-  acquiredSkillName: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 5
-  },
-  acquiredSkillInfo: {
-    color: '#aaa',
-    fontSize: 11
-  },
-  // Modal
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    justifyContent: 'flex-end'
-  },
-  modalContent: {
-    backgroundColor: '#2a2a2a',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    paddingBottom: 40,
-    maxHeight: '80%'
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 24
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 20,
-    marginTop: 10
-  },
-  modalStats: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 15
-  },
-  modalStatItem: {
-    flex: 1,
-    backgroundColor: '#1a1a1a',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-  modalStatLabel: {
-    color: '#aaa',
-    fontSize: 12,
-    marginBottom: 5
-  },
-  modalStatValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#6366f1'
-  },
-  replaceText: {
-    color: '#fff',
-    fontSize: 14,
-    marginBottom: 10,
-    fontWeight: 'bold'
-  },
-  replaceOption: {
-    backgroundColor: '#1a1a1a',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
+  acquiredSkillHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  replaceOptionText: {
+  acquiredSkillName: {
     color: '#fff',
     fontSize: 14,
-    flex: 1
+    fontWeight: '600'
   },
-  replaceOptionArrow: {
+  acquiredSkillDamage: {
     color: '#6366f1',
-    fontSize: 16,
-    fontWeight: 'bold'
+    fontSize: 12,
+    fontWeight: '600'
   },
-  modalCloseButton: {
-    backgroundColor: '#6366f1',
+  tipsCard: {
+    backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20
+    marginBottom: 30,
+    borderLeftWidth: 4,
+    borderLeftColor: '#22c55e'
   },
-  modalCloseButtonText: {
+  tipsTitle: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold'
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8
+  },
+  tipsText: {
+    color: '#aaa',
+    fontSize: 12,
+    marginBottom: 4
   }
 });

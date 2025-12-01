@@ -106,4 +106,27 @@ export const inventoryAPI = {
   equip: (itemId) => api.post('/inventory/equip', { item_id: itemId })
 };
 
+// 직업 API
+export const jobAPI = {
+  list: () => api.get('/job'),
+  apply: (jobId) => api.post('/job/apply', { job_id: jobId }),
+  work: () => api.post('/job/work'),
+  quit: () => api.post('/job/quit')
+};
+
+// 부동산 API
+export const realEstateAPI = {
+  list: () => api.get('/real-estate'),
+  buy: (propertyId) => api.post('/real-estate/buy', { property_id: propertyId }),
+  sell: (propertyId) => api.post('/real-estate/sell', { property_id: propertyId }),
+  changeResidence: (propertyId) => api.post('/real-estate/change', { property_id: propertyId })
+};
+
+// 업적 API
+export const achievementsAPI = {
+  list: () => api.get('/achievements'),
+  progress: () => api.get('/achievements/progress'),
+  claim: (achievementId) => api.post('/achievements/claim', { achievement_id: achievementId })
+};
+
 export default api;

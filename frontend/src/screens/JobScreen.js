@@ -1,79 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal, Vibration } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Vibration } from 'react-native';
+import { jobAPI } from '../services/api';
 
 export default function JobScreen({ navigation }) {
-  const [jobs, setJobs] = useState([
-    {
-      id: 1,
-      name: '편의점 직원',
-      difficulty: '초급',
-      salary: 5000,
-      requirements: { strength: 1, intelligence: 1, charm: 1, stamina: 1, luck: 1 }
-    },
-    {
-      id: 2,
-      name: '식당 종업원',
-      difficulty: '초급',
-      salary: 6000,
-      requirements: { strength: 2, intelligence: 1, charm: 2, stamina: 2, luck: 1 }
-    },
-    {
-      id: 3,
-      name: '사무직 직원',
-      difficulty: '중급',
-      salary: 15000,
-      requirements: { strength: 2, intelligence: 5, charm: 2, stamina: 3, luck: 2 }
-    },
-    {
-      id: 4,
-      name: '개발자',
-      difficulty: '중급',
-      salary: 20000,
-      requirements: { strength: 2, intelligence: 8, charm: 1, stamina: 3, luck: 3 }
-    },
-    {
-      id: 5,
-      name: '마케터',
-      difficulty: '중급',
-      salary: 18000,
-      requirements: { strength: 2, intelligence: 5, charm: 6, stamina: 3, luck: 2 }
-    },
-    {
-      id: 6,
-      name: '의사',
-      difficulty: '고급',
-      salary: 40000,
-      requirements: { strength: 3, intelligence: 10, charm: 5, stamina: 5, luck: 4 }
-    },
-    {
-      id: 7,
-      name: 'CEO',
-      difficulty: '전문직',
-      salary: 100000,
-      requirements: { strength: 5, intelligence: 10, charm: 10, stamina: 8, luck: 10 }
-    }
-  ]);
+  const [jobs, setJobs] = useState([]);
   const [currentJob, setCurrentJob] = useState(null);
-  const [playerStats, setPlayerStats] = useState({
-    strength: 5,
-    intelligence: 5,
-    charm: 3,
-    stamina: 4,
-    luck: 2,
-    money: 50000
-  });
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const canApplyForJob = (job) => {
-    return (
-      playerStats.strength >= job.requirements.strength &&
-      playerStats.intelligence >= job.requirements.intelligence &&
-      playerStats.charm >= job.requirements.charm &&
-      playerStats.stamina >= job.requirements.stamina &&
-      playerStats.luck >= job.requirements.luck
-    );
+  useEffect(() => {
+    loadJobs();
+  }, []);
+
+  const loadJobs = async () => {
+    setLoading(true);
+    try {
+      const response = await jobAPI.list();
+      if (response.data.success) {
+        setJobs(response.data.data.jobs || []);
+        setCurrentJob(response.data.data.current_job);
+      }
+    } catch (error) {
+      Alert.alert('오류', '직업 데이터 로드 실패');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleApplyJob = async (jobId) => {
+    Vibration.vibrate([0, 100, 50, 100]);
+    try {
+      const response = await jobAPI.apply(jobId);
+      if (response.data.success) {
+        Alert.alert('성공', '직업에 지원했습니다!');
+        loadJobs();
+      }
+    } catch (error) {
+      Alert.alert('오류', '지원 실패');
+    }
+  };
+
+  const handleWork = async () => {
+    if (!currentJob) {
+      Alert.alert('알림', '먼저 직업을 선택해주세요');
+      return;
+    }
+    try {
+      const response = await jobAPI.work();
+      if (response.data.success) {
+        Vibration.vibrate([0, 100, 50, 100, 50, 100]);
+        Alert.alert('성공', `${response.data.data.earned || 0}원을 획득했습니다!`);
+        loadJobs();
+      }
+    } catch (error) {
+      Alert.alert('오류', '업무 수행 실패');
+    }
+  };
+
+  const handleQuit = async () => {
+    try {
+      const response = await jobAPI.quit();
+      if (response.data.success) {
+        Alert.alert('성공', '직업을 그만두었습니다');
+        loadJobs();
+      }
+    } catch (error) {
+      Alert.alert('오류', '사직 실패');
+    }
+  };
+
+  const canApplyForJob = (job) => true;
 
   const handleApplyJob = (job) => {
     if (!canApplyForJob(job)) {

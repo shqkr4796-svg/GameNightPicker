@@ -1,78 +1,95 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, Alert, Vibration } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Vibration } from 'react-native';
+import { inventoryAPI } from '../services/api';
 
 export default function InventoryScreen({ navigation }) {
-  const [inventory] = useState({
-    weapons: [
-      { id: 1, name: 'Iron Sword', attack: 5, equipped: true, rarity: 'Common' },
-      { id: 2, name: 'Steel Sword', attack: 8, equipped: false, rarity: 'Uncommon' }
-    ],
-    armor: [
-      { id: 1, name: 'Iron Armor', defense: 3, equipped: true, rarity: 'Common' },
-      { id: 2, name: 'Mithril Armor', defense: 7, equipped: false, rarity: 'Rare' }
-    ],
-    skillItems: [
-      { id: 1, name: 'Skill Recharger', quantity: 2, effect: '스킬 기력 회복' },
-      { id: 2, name: 'Skill Resetter', quantity: 1, effect: '스킬 초기화' },
-      { id: 3, name: 'Stat Booster', quantity: 3, effect: '능력치 +1' }
-    ]
-  });
-
+  const [inventory, setInventory] = useState({ weapons: [], armor: [], items: [] });
   const [selectedTab, setSelectedTab] = useState('weapons');
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const getRarityColor = (rarity) => {
-    const colors = {
-      'Common': '#95a5a6',
-      'Uncommon': '#27ae60',
-      'Rare': '#3498db',
-      'Epic': '#8e44ad',
-      'Legendary': '#f39c12'
-    };
-    return colors[rarity] || '#95a5a6';
+  useEffect(() => {
+    loadInventory();
+  }, []);
+
+  const loadInventory = async () => {
+    setLoading(true);
+    try {
+      const response = await inventoryAPI.list();
+      if (response.data.success) {
+        setInventory(response.data.data.inventory || { weapons: [], armor: [], items: [] });
+      }
+    } catch (error) {
+      Alert.alert('오류', '인벤토리 로드 실패');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleItemPress = (item, type) => {
-    setSelectedItem({ ...item, type });
-    setModalVisible(true);
-  };
-
-  const handleEquip = (item) => {
+  const handleEquip = async (itemId) => {
     Vibration.vibrate([0, 100, 50, 100]);
-    Alert.alert('장착', `${item.name}을(를) 장착했습니다!`);
-    setModalVisible(false);
+    try {
+      const response = await inventoryAPI.equip(itemId);
+      if (response.data.success) {
+        Alert.alert('성공', '장착되었습니다!');
+        loadInventory();
+      }
+    } catch (error) {
+      Alert.alert('오류', '장착 실패');
+    }
   };
 
-  const handleUseItem = (item) => {
+  const handleUseItem = async (itemId) => {
     Vibration.vibrate([0, 100, 50, 100, 50, 100]);
-    Alert.alert('사용', `${item.name}을(를) 사용했습니다!\n효과: ${item.effect}`);
-    setModalVisible(false);
+    try {
+      const response = await inventoryAPI.useItem(itemId);
+      if (response.data.success) {
+        Alert.alert('성공', response.data.data.message);
+        loadInventory();
+      }
+    } catch (error) {
+      Alert.alert('오류', '사용 실패');
+    }
   };
 
-  const renderWeapon = ({ item }) => (
-    <TouchableOpacity
-      style={[styles.itemCard, item.equipped && styles.equippedItem]}
-      onPress={() => handleItemPress(item, 'weapon')}
-    >
+  if (loading) {
+    return <View style={styles.container}><ActivityIndicator color="#6366f1" size="large" /></View>;
+  }
+
+  const renderItem = (item, type) => (
+    <View key={item.id} style={[styles.itemCard, item.equipped && styles.equippedItem]}>
       <View style={styles.itemContent}>
         <View>
           <Text style={styles.itemName}>{item.name}</Text>
-          <View style={styles.itemStats}>
-            <Text style={styles.itemStat}>⚔️ 공격: {item.attack}</Text>
-            <Text style={[styles.itemRarity, { color: getRarityColor(item.rarity) }]}>
-              {item.rarity}
-            </Text>
-          </View>
+          {item.attack && <Text style={styles.itemStat}>⚔️ {item.attack}</Text>}
+          {item.defense && <Text style={styles.itemStat}>🛡️ {item.defense}</Text>}
         </View>
-        {item.equipped && <Text style={styles.equippedBadge}>장착 중</Text>}
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
-  const renderArmor = ({ item }) => (
-    <TouchableOpacity
-      style={[styles.itemCard, item.equipped && styles.equippedItem]}
+  const tabs = ['weapons', 'armor', 'items'];
+  const tabLabels = { weapons: '무기', armor: '갑옷', items: '아이템' };
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>인벤토리</Text>
+      <Text style={styles.subtitle}>보유한 아이템을 관리하세요</Text>
+
+      <View style={styles.tabButtons}>
+        {tabs.map(tab => (
+          <TouchableOpacity
+            key={tab}
+            style={[styles.tabButton, selectedTab === tab && styles.tabButtonActive]}
+            onPress={() => setSelectedTab(tab)}
+          >
+            <Text style={[styles.tabText, selectedTab === tab && styles.tabTextActive]}>{tabLabels[tab]}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={styles.itemList}>
+        {inventory[selectedTab]?.map(item => renderItem(item, selectedTab))}
+      </View>
       onPress={() => handleItemPress(item, 'armor')}
     >
       <View style={styles.itemContent}>

@@ -1,78 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Vibration } from 'react-native';
+import { realEstateAPI } from '../services/api';
 
 export default function RealEstateScreen({ navigation }) {
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      name: '작은 집',
-      price: 50000,
-      monthly_rent: 1000,
-      location: '시골',
-      owned: false,
-      level_required: 1
-    },
-    {
-      id: 2,
-      name: '아파트',
-      price: 150000,
-      monthly_rent: 3000,
-      location: '도시',
-      owned: false,
-      level_required: 5
-    },
-    {
-      id: 3,
-      name: '큰 저택',
-      price: 500000,
-      monthly_rent: 10000,
-      location: '강남',
-      owned: false,
-      level_required: 15
+  const [properties, setProperties] = useState([]);
+  const [playerMoney, setPlayerMoney] = useState(0);
+  const [currentProperty, setCurrentProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRealEstate();
+  }, []);
+
+  const loadRealEstate = async () => {
+    setLoading(true);
+    try {
+      const response = await realEstateAPI.list();
+      if (response.data.success) {
+        setProperties(response.data.data.properties || []);
+        setPlayerMoney(response.data.data.player_money || 0);
+        setCurrentProperty(response.data.data.current_property);
+      }
+    } catch (error) {
+      Alert.alert('오류', '부동산 데이터 로드 실패');
+    } finally {
+      setLoading(false);
     }
-  ]);
-  const [playerMoney, setPlayerMoney] = useState(500000);
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  };
 
   const handleBuyProperty = async (propertyId) => {
-    const property = properties.find(p => p.id === propertyId);
-    if (!property) return;
-
-    if (property.price > playerMoney) {
-      Alert.alert('오류', '돈이 부족합니다.');
-      return;
+    Vibration.vibrate([0, 100, 50, 100]);
+    try {
+      const response = await realEstateAPI.buy(propertyId);
+      if (response.data.success) {
+        Alert.alert('성공', '부동산을 구매했습니다!');
+        loadRealEstate();
+      }
+    } catch (error) {
+      Alert.alert('오류', '구매 실패');
     }
-
-    // 구매 처리
-    const newMoney = playerMoney - property.price;
-    setPlayerMoney(newMoney);
-    
-    const updatedProperties = properties.map(p =>
-      p.id === propertyId ? { ...p, owned: true } : p
-    );
-    setProperties(updatedProperties);
-    
-    Alert.alert('성공', `${property.name}을(를) 구매했습니다!`);
-    setModalVisible(false);
   };
 
-  const handleCollectRent = (propertyId) => {
-    const property = properties.find(p => p.id === propertyId);
-    if (!property || !property.owned) return;
-
-    const newMoney = playerMoney + property.monthly_rent;
-    setPlayerMoney(newMoney);
-    
-    Alert.alert('성공', `월세 ${property.monthly_rent}원을 수령했습니다!`);
+  const handleChangeResidence = async (propertyId) => {
+    try {
+      const response = await realEstateAPI.changeResidence(propertyId);
+      if (response.data.success) {
+        Vibration.vibrate([0, 100, 50, 100]);
+        Alert.alert('성공', '거주지를 변경했습니다!');
+        loadRealEstate();
+      }
+    } catch (error) {
+      Alert.alert('오류', '변경 실패');
+    }
   };
 
-  const renderPropertyCard = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.propertyCard,
-        item.owned && styles.ownedProperty
+  if (loading) {
+    return <View style={styles.container}><ActivityIndicator color="#6366f1" size="large" /></View>;
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>부동산</Text>
+      <Text style={styles.subtitle}>부동산을 구매하여 자산을 늘려보세요</Text>
+
+      <View style={styles.moneyCard}>
+        <Text style={styles.moneyLabel}>보유 금액</Text>
+        <Text style={styles.moneyValue}>₩{playerMoney.toLocaleString()}</Text>
+      </View>
+
+      {currentProperty && (
+        <View style={styles.currentCard}>
+          <Text style={styles.currentLabel}>현재 거주지</Text>
+          <Text style={styles.propertyName}>{currentProperty.name}</Text>
+          <Text style={styles.propertyInfo}>월세: ₩{(currentProperty.monthly_rent || 0).toLocaleString()}</Text>
+        </View>
+      )}
+
+      <Text style={styles.sectionTitle}>매물</Text>
+      {properties.map((property, idx) => (
+        <TouchableOpacity
+          key={idx}
+          style={[styles.propertyCard, property.owned && styles.ownedProperty]}
       ]}
       onPress={() => {
         setSelectedProperty(item);
