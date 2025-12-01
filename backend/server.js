@@ -49,11 +49,17 @@ import playerRoutes from './routes/player.js';
 import dungeonRoutes from './routes/dungeon.js';
 import quizRoutes from './routes/quiz.js';
 import adventureRoutes from './routes/adventure.js';
+import compendiumRoutes from './routes/compendium.js';
+import shopRoutes from './routes/shop.js';
+import realEstateRoutes from './routes/realEstate.js';
 
 app.use('/api/player', playerRoutes);
 app.use('/api/dungeon', dungeonRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/adventure', adventureRoutes);
+app.use('/api/compendium', compendiumRoutes);
+app.use('/api/shop', shopRoutes);
+app.use('/api/realestate', realEstateRoutes);
 
 // 기본 API 정보 라우트
 app.get('/api', (req, res) => {
