@@ -112,6 +112,22 @@ export default function MainHubScreen({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Job')}
+        >
+          <Text style={styles.menuTitle}>💼 직업</Text>
+          <Text style={styles.menuDesc}>직업을 선택하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('DailyExpressions')}
+        >
+          <Text style={styles.menuTitle}>📝 일일 표현</Text>
+          <Text style={styles.menuDesc}>영어 표현을 학습하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.menuButton, styles.logoutButton]}
           onPress={handleLogout}
         >

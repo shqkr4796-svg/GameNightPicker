@@ -10,6 +10,8 @@ import SkillsScreen from './src/screens/SkillsScreen';
 import DungeonScreen from './src/screens/DungeonScreen';
 import ShopScreen from './src/screens/ShopScreen';
 import RealEstateScreen from './src/screens/RealEstateScreen';
+import JobScreen from './src/screens/JobScreen';
+import DailyExpressionsScreen from './src/screens/DailyExpressionsScreen';
 
 const Stack = createStackNavigator();
 
@@ -83,6 +85,16 @@ export default function App() {
           name="RealEstate"
           component={RealEstateScreen}
           options={{ title: '부동산' }}
+        />
+        <Stack.Screen
+          name="Job"
+          component={JobScreen}
+          options={{ title: '직업' }}
+        />
+        <Stack.Screen
+          name="DailyExpressions"
+          component={DailyExpressionsScreen}
+          options={{ title: '일일 표현' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
