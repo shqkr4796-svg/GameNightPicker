@@ -129,6 +129,16 @@ export default function DashboardScreen({ navigation }) {
             </Text>
           </View>
         </View>
+
+        {/* 스탯 분배 버튼 */}
+        {(playerStats.stat_points || 0) > 0 && (
+          <TouchableOpacity
+            style={styles.allocateButton}
+            onPress={() => navigation.navigate('AllocateStats')}
+          >
+            <Text style={styles.allocateButtonText}>📊 스탯 분배</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -478,5 +488,17 @@ const styles = StyleSheet.create({
   abilityBarFill: {
     height: '100%',
     backgroundColor: '#6366f1'
+  },
+  allocateButton: {
+    marginTop: 15,
+    backgroundColor: '#6366f1',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center'
+  },
+  allocateButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600'
   }
 });

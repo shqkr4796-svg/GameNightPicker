@@ -22,6 +22,7 @@ import WrongQuizRetryScreen from './src/screens/WrongQuizRetryScreen';
 import FusionScreen from './src/screens/FusionScreen';
 import AllMonstersScreen from './src/screens/AllMonstersScreen';
 import SleepScreen from './src/screens/SleepScreen';
+import AllocateStatsScreen from './src/screens/AllocateStatsScreen';
 
 const Stack = createStackNavigator();
 
@@ -156,6 +157,11 @@ export default function App() {
           name="Sleep"
           component={SleepScreen}
           options={{ title: '수면' }}
+        />
+        <Stack.Screen
+          name="AllocateStats"
+          component={AllocateStatsScreen}
+          options={{ title: '스탯 분배' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
