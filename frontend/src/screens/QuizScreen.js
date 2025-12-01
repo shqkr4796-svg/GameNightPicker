@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Vibration, ScrollView, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { quizAPI } from '../services/api';
 
 export default function QuizScreen({ navigation }) {
@@ -107,29 +108,56 @@ export default function QuizScreen({ navigation }) {
     setAnswered(answered + 1);
   };
 
-  const nextQuestion = () => {
+  const nextQuestion = async () => {
     if (answered + 1 >= totalQuestions) {
-      endQuiz();
+      await endQuiz();
     } else {
       generateNewQuestion(words);
     }
   };
 
-  const endQuiz = () => {
+  const endQuiz = async () => {
+    // 틀린 문제 AsyncStorage에 저장
+    if (wrongQuestions.length > 0) {
+      try {
+        await AsyncStorage.setItem(
+          `wrong_questions_${selectedCategory}`,
+          JSON.stringify(wrongQuestions)
+        );
+      } catch (error) {
+        console.log('틀린 문제 저장 실패');
+      }
+    }
+
+    const buttons = [
+      {
+        text: '계속',
+        onPress: () => {
+          setQuizMode(false);
+          setSelectedCategory(null);
+          setScore(0);
+          setAnswered(0);
+        }
+      }
+    ];
+
+    // 틀린 문제가 있으면 재도전 버튼 추가
+    if (wrongQuestions.length > 0) {
+      buttons.unshift({
+        text: '틀린 문제 재도전',
+        onPress: () => {
+          navigation.navigate('WrongQuizRetry', {
+            category: selectedCategory,
+            language: selectedLanguage
+          });
+        }
+      });
+    }
+
     Alert.alert(
       '퀴즈 완료',
-      `점수: ${score}점\n정답률: ${Math.round((score / totalQuestions) * 100)}%`,
-      [
-        {
-          text: '계속',
-          onPress: () => {
-            setQuizMode(false);
-            setSelectedCategory(null);
-            setScore(0);
-            setAnswered(0);
-          }
-        }
-      ]
+      `점수: ${score}점\n정답률: ${Math.round((score / totalQuestions) * 100)}%\n틀린 문제: ${wrongQuestions.length}개`,
+      buttons
     );
   };
 
@@ -246,6 +274,21 @@ export default function QuizScreen({ navigation }) {
           </TouchableOpacity>
         ))}
       </View>
+
+      {/* 틀린 문제 재도전 버튼 */}
+      {wrongQuestions.length > 0 && (
+        <TouchableOpacity
+          style={styles.retryButtonContainer}
+          onPress={() => navigation.navigate('WrongQuizRetry', { category: selectedCategory })}
+        >
+          <Text style={styles.retryButtonEmoji}>❌</Text>
+          <View style={styles.retryButtonContent}>
+            <Text style={styles.retryButtonTitle}>틀린 문제 재도전</Text>
+            <Text style={styles.retryButtonCount}>{wrongQuestions.length}개 문제 남음</Text>
+          </View>
+          <Text style={styles.retryButtonArrow}>→</Text>
+        </TouchableOpacity>
+      )}
 
       {/* 카테고리 그리드 */}
       <Text style={styles.sectionTitle}>카테고리</Text>
@@ -478,5 +521,38 @@ const styles = StyleSheet.create({
     color: '#ff9999',
     fontSize: 14,
     fontWeight: '600'
+  },
+  // Retry Button
+  retryButtonContainer: {
+    backgroundColor: '#3a1a1a',
+    borderLeftWidth: 4,
+    borderLeftColor: '#ef4444',
+    padding: 15,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  retryButtonEmoji: {
+    fontSize: 24,
+    marginRight: 12
+  },
+  retryButtonContent: {
+    flex: 1
+  },
+  retryButtonTitle: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4
+  },
+  retryButtonCount: {
+    color: '#aaa',
+    fontSize: 11
+  },
+  retryButtonArrow: {
+    color: '#ef4444',
+    fontSize: 16,
+    fontWeight: 'bold'
   }
 });

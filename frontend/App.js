@@ -18,6 +18,7 @@ import AchievementsScreen from './src/screens/AchievementsScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import WordManagementScreen from './src/screens/WordManagementScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import WrongQuizRetryScreen from './src/screens/WrongQuizRetryScreen';
 
 const Stack = createStackNavigator();
 
@@ -132,6 +133,11 @@ export default function App() {
           name="WordManagement"
           component={WordManagementScreen}
           options={{ title: '단어 관리' }}
+        />
+        <Stack.Screen
+          name="WrongQuizRetry"
+          component={WrongQuizRetryScreen}
+          options={{ title: '틀린 문제 재도전' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
