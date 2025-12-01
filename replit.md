@@ -78,6 +78,33 @@ Status: **Images placeholder (empty strings)**
 - Current system supports white background monster images
 - Images directory ready at: `/static/monsters/`
 
+## Expo Mobile App Development Progress (Dec 1, 2025)
+
+### Phase 2: Node.js/Express Backend (In Progress)
+**Status**: Initial implementation complete - 80% basic APIs ready
+- ✅ Express 프로젝트 초기화 + JWT 인증
+- ✅ 파일 저장 시스템 (JSON 기반)
+- ✅ 기본 게임 로직 유틸리티
+- ✅ 플레이어 관리 API 완성
+- ✅ 던전 시스템 API 기본 구현
+- ✅ 퀴즈 시스템 API 기본 구현
+- ✅ 모험 시스템 API 기본 구현
+- ⏳ 고급 게임 로직 (전투, 몬스터 포획 등) - 다음 단계
+- ⏳ 게임 데이터 파일 (monsters.json, skills.json 등) - 필요
+
+**Location**: `/home/runner/workspace/backend/`
+
+**API Documentation**: `/home/runner/workspace/API_DESIGN.md` 참고
+
+### 다음 단계
+1. 게임 데이터 파일 생성
+2. 복잡한 전투 로직 완성
+3. 몬스터 포획 시스템 구현
+4. 나머지 API 완성
+5. Expo React Native 프론트엔드 구현
+
+---
+
 ## Recent Changes (Nov 28, 2025)
 
 ### Skill Item System (Nov 28 - Latest)

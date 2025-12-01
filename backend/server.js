@@ -46,7 +46,14 @@ app.get('/health', (req, res) => {
 
 // API 라우트 임포트
 import playerRoutes from './routes/player.js';
+import dungeonRoutes from './routes/dungeon.js';
+import quizRoutes from './routes/quiz.js';
+import adventureRoutes from './routes/adventure.js';
+
 app.use('/api/player', playerRoutes);
+app.use('/api/dungeon', dungeonRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/adventure', adventureRoutes);
 
 // 기본 API 정보 라우트
 app.get('/api', (req, res) => {

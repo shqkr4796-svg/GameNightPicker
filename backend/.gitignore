@@ -10,7 +10,10 @@ yarn-error.log*
 dist/
 build/
 saves/
+data/
 .idea/
 .vscode/
 *.swp
 *.swo
+.DS_Store
+*.bak
