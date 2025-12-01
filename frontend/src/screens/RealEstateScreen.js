@@ -54,6 +54,32 @@ export default function RealEstateScreen({ navigation }) {
     }
   };
 
+  const handleSellProperty = async (propertyId) => {
+    Alert.alert(
+      '⚠️ 부동산 판매',
+      '이 부동산을 판매할까요?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '판매',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await realEstateAPI.sell(propertyId);
+              if (response.data.success) {
+                Vibration.vibrate([0, 100, 200]);
+                Alert.alert('판매 완료', response.data.data.message);
+                loadRealEstate();
+              }
+            } catch (error) {
+              Alert.alert('오류', '판매 실패');
+            }
+          }
+        }
+      ]
+    );
+  };
+
   if (loading) {
     return <View style={styles.container}><ActivityIndicator color="#6366f1" size="large" /></View>;
   }
@@ -91,9 +117,14 @@ export default function RealEstateScreen({ navigation }) {
               <Text style={styles.buttonText}>구매하기</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={[styles.button, styles.buttonSecondary]} onPress={() => handleChangeResidence(property.id)}>
-              <Text style={styles.buttonText}>거주지 변경</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={[styles.button, styles.buttonSecondary, styles.flex1]} onPress={() => handleChangeResidence(property.id)}>
+                <Text style={styles.buttonText}>거주</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, styles.buttonDanger, styles.flex1]} onPress={() => handleSellProperty(property.id)}>
+                <Text style={styles.buttonText}>판매</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       ))}
@@ -120,5 +151,8 @@ const styles = StyleSheet.create({
   button: { paddingVertical: 10, borderRadius: 6, alignItems: 'center' },
   buttonPrimary: { backgroundColor: '#6366f1' },
   buttonSecondary: { backgroundColor: '#3a3a3a' },
-  buttonText: { color: '#fff', fontWeight: 'bold' }
+  buttonDanger: { backgroundColor: '#ef4444' },
+  buttonText: { color: '#fff', fontWeight: 'bold' },
+  buttonRow: { flexDirection: 'row', gap: 8 },
+  flex1: { flex: 1 }
 });

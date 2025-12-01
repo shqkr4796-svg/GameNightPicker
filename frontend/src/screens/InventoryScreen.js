@@ -51,6 +51,19 @@ export default function InventoryScreen({ navigation }) {
     }
   };
 
+  const handleUnequipWeapon = async (itemId) => {
+    Vibration.vibrate([0, 100, 50, 100]);
+    try {
+      const response = await inventoryAPI.unequip(itemId);
+      if (response.data.success) {
+        Alert.alert('성공', '무기가 제거되었습니다!');
+        loadInventory();
+      }
+    } catch (error) {
+      Alert.alert('오류', '무기 제거 실패');
+    }
+  };
+
   if (loading) {
     return <View style={styles.container}><ActivityIndicator color="#6366f1" size="large" /></View>;
   }
@@ -90,12 +103,22 @@ export default function InventoryScreen({ navigation }) {
               {item.equipped && <Text style={styles.equippedBadge}>장착 중</Text>}
             </View>
             {selectedTab !== 'items' && (
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => handleEquip(item.id)}
-              >
-                <Text style={styles.actionText}>{item.equipped ? '장착 해제' : '장착'}</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.flex1]}
+                  onPress={() => handleEquip(item.id)}
+                >
+                  <Text style={styles.actionText}>{item.equipped ? '장착' : '장착'}</Text>
+                </TouchableOpacity>
+                {item.equipped && (
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.deleteButton, styles.flex1]}
+                    onPress={() => handleUnequipWeapon(item.id)}
+                  >
+                    <Text style={styles.actionText}>해제</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             )}
           </View>
         ))}
@@ -125,7 +148,10 @@ const styles = StyleSheet.create({
   itemName: { color: '#fff', fontSize: 14, fontWeight: '600', marginBottom: 4 },
   itemStat: { color: '#aaa', fontSize: 12 },
   equippedBadge: { backgroundColor: '#6366f1', color: '#fff', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, fontSize: 11, fontWeight: '600' },
+  buttonRow: { flexDirection: 'row', gap: 8 },
+  flex1: { flex: 1 },
   actionButton: { backgroundColor: '#3a3a3a', paddingVertical: 8, borderRadius: 6, alignItems: 'center' },
+  deleteButton: { backgroundColor: '#ef4444' },
   actionText: { color: '#fff', fontSize: 12, fontWeight: '600' },
   emptyState: { alignItems: 'center', paddingVertical: 30 },
   emptyText: { color: '#aaa', fontSize: 14 }

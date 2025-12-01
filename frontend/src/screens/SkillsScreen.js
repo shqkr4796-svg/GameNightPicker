@@ -57,6 +57,32 @@ export default function SkillsScreen({ navigation }) {
     }
   };
 
+  const handleDeleteSkill = (skillName) => {
+    Alert.alert(
+      '⚠️ 스킬 제거',
+      `${skillName}을(를) 제거할까요?`,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '제거',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await skillsAPI.delete(skillName);
+              if (response.data.success) {
+                Vibration.vibrate([0, 100, 200]);
+                Alert.alert('제거됨', '스킬이 제거되었습니다.');
+                loadSkills();
+              }
+            } catch (error) {
+              Alert.alert('오류', '스킬 제거 실패');
+            }
+          }
+        }
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -83,31 +109,37 @@ export default function SkillsScreen({ navigation }) {
         {currentSkills.length > 0 ? (
           <View style={styles.skillList}>
             {currentSkills.map((skill, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={styles.skillCard}
-                onPress={() => {
-                  setSelectedSkill(skill);
-                  setReplaceMode(true);
-                  setModalVisible(true);
-                }}
-              >
-                <View style={styles.skillCardHeader}>
-                  <View>
-                    <Text style={styles.skillName}>{skill.이름 || skill.name}</Text>
-                    <Text style={styles.slotNumber}>슬롯 {idx + 1}</Text>
+              <View key={idx} style={styles.skillCard}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedSkill(skill);
+                    setReplaceMode(true);
+                    setModalVisible(true);
+                  }}
+                >
+                  <View style={styles.skillCardHeader}>
+                    <View>
+                      <Text style={styles.skillName}>{skill.이름 || skill.name}</Text>
+                      <Text style={styles.slotNumber}>슬롯 {idx + 1}</Text>
+                    </View>
+                    <Text style={styles.skillBadge}>⚡</Text>
                   </View>
-                  <Text style={styles.skillBadge}>⚡</Text>
-                </View>
-                <View style={styles.skillStats}>
-                  <Text style={styles.skillStat}>
-                    데미지: {skill.데미지_최소 || skill.min_damage}-{skill.데미지_최대 || skill.max_damage}
-                  </Text>
-                  <Text style={styles.skillStat}>
-                    사용: {skill.사용_횟수 || skill.uses} / {skill.최대_사용 || skill.max_uses}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                  <View style={styles.skillStats}>
+                    <Text style={styles.skillStat}>
+                      데미지: {skill.데미지_최소 || skill.min_damage}-{skill.데미지_최대 || skill.max_damage}
+                    </Text>
+                    <Text style={styles.skillStat}>
+                      사용: {skill.사용_횟수 || skill.uses} / {skill.최대_사용 || skill.max_uses}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.deleteSkillButton}
+                  onPress={() => handleDeleteSkill(skill.이름 || skill.name)}
+                >
+                  <Text style={styles.deleteSkillText}>🗑️ 제거</Text>
+                </TouchableOpacity>
+              </View>
             ))}
           </View>
         ) : (
@@ -250,6 +282,19 @@ const styles = StyleSheet.create({
   skillStat: {
     color: '#aaa',
     fontSize: 12
+  },
+  deleteSkillButton: {
+    marginTop: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    backgroundColor: '#ef4444',
+    borderRadius: 4,
+    alignItems: 'center'
+  },
+  deleteSkillText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600'
   },
   emptyState: {
     backgroundColor: '#2a2a2a',

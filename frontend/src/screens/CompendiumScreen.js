@@ -56,6 +56,33 @@ export default function CompendiumScreen({ navigation }) {
     }
   };
 
+  const handleDeleteMonster = (monsterId) => {
+    Alert.alert(
+      '⚠️ 몬스터 삭제',
+      '이 몬스터를 삭제할까요? 복구할 수 없습니다.',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await compendiumAPI.deleteMonster(monsterId);
+              if (response.data.success) {
+                Vibration.vibrate([0, 100, 200]);
+                Alert.alert('삭제됨', '몬스터가 삭제되었습니다.');
+                loadCompendium();
+                setModalVisible(false);
+              }
+            } catch (error) {
+              Alert.alert('오류', '몬스터 삭제 실패');
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const getRarityColor = (rarity) => {
     const colors = {
       'Rare': '#3b82f6',
@@ -196,12 +223,20 @@ export default function CompendiumScreen({ navigation }) {
                   </View>
                 )}
 
-                <TouchableOpacity
-                  style={styles.modalCloseButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.modalCloseButtonText}>닫기</Text>
-                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={styles.modalDeleteButton}
+                    onPress={() => handleDeleteMonster(selectedMonster.monster_id)}
+                  >
+                    <Text style={styles.modalDeleteButtonText}>🗑️ 삭제</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.modalCloseButton}
+                    onPress={() => setModalVisible(false)}
+                  >
+                    <Text style={styles.modalCloseButtonText}>닫기</Text>
+                  </TouchableOpacity>
+                </View>
               </>
             )}
           </View>
@@ -375,6 +410,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold'
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20
+  },
+  modalDeleteButton: {
+    flex: 1,
+    backgroundColor: '#ef4444',
+    paddingVertical: 12,
+    borderRadius: 6,
+    alignItems: 'center'
+  },
+  modalDeleteButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600'
   },
   actionButtonContainer: {
     flexDirection: 'row',
