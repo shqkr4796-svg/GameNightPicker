@@ -117,10 +117,38 @@ Status: **Images placeholder (empty strings)**
   - 기술 충전제 (횟수 부분 회복)
   - 기술 초기화제 (완전 리셋)
 
-### Phase 3: React Native 프론트엔드 (미시작)
-- Expo 프로젝트 초기화
-- 인증 화면, 메인 게임 화면
-- 각 시스템별 UI 개발
+### Phase 3: React Native 프론트엔드 (기본 구조 완료)
+- ✅ Expo 프로젝트 구조
+- ✅ 인증 화면 (LoginScreen)
+- ✅ 메인 게임 허브 (MainHubScreen)
+- ✅ API 클라이언트 (axios + interceptors)
+- ✅ 네비게이션 설정
+- ⏳ 각 시스템별 UI 개발 (다음 단계)
+
+---
+
+## Recent Changes (Dec 1, 2025 - Turn 3)
+
+### React Native 프론트엔드 초기화 완료
+1. ✅ **Expo 프로젝트 구조**
+   - React Native + Expo 기본 설정
+   - React Navigation 스택 네비게이션
+   - 환경 변수 설정
+
+2. ✅ **API 클라이언트** (api.js)
+   - Axios 인터셉터 (토큰 자동 추가)
+   - 모든 게임 API 메서드
+   - 에러 처리
+
+3. ✅ **인증 시스템**
+   - LoginScreen: 플레이어 이름 입력 → 게임 시작
+   - JWT 토큰 저장 (AsyncStorage)
+   - 자동 인증 체크
+
+4. ✅ **게임 허브**
+   - MainHubScreen: 플레이어 통계 표시
+   - 게임 시스템 메뉴
+   - 로그아웃 기능
 
 ---
 
