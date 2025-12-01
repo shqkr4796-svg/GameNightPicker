@@ -9,6 +9,7 @@ import CompendiumScreen from './src/screens/CompendiumScreen';
 import SkillsScreen from './src/screens/SkillsScreen';
 import DungeonScreen from './src/screens/DungeonScreen';
 import ShopScreen from './src/screens/ShopScreen';
+import RealEstateScreen from './src/screens/RealEstateScreen';
 
 const Stack = createStackNavigator();
 
@@ -77,6 +78,11 @@ export default function App() {
           name="Shop"
           component={ShopScreen}
           options={{ title: '상점' }}
+        />
+        <Stack.Screen
+          name="RealEstate"
+          component={RealEstateScreen}
+          options={{ title: '부동산' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

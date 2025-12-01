@@ -104,6 +104,14 @@ export default function MainHubScreen({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('RealEstate')}
+        >
+          <Text style={styles.menuTitle}>🏠 부동산</Text>
+          <Text style={styles.menuDesc}>부동산을 구매하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.menuButton, styles.logoutButton]}
           onPress={handleLogout}
         >
