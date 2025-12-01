@@ -94,7 +94,7 @@ export default function CompendiumScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>도감</Text>
+      <Text style={styles.title}>📖 도감</Text>
       
       {stats && (
         <View style={styles.statsContainer}>
@@ -108,6 +108,22 @@ export default function CompendiumScreen({ navigation }) {
           </View>
         </View>
       )}
+
+      {/* 액션 버튼 */}
+      <View style={styles.actionButtonContainer}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => navigation.navigate('Fusion')}
+        >
+          <Text style={styles.actionButtonText}>✨ 합성</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.actionButtonSecondary]}
+          onPress={() => navigation.navigate('AllMonsters')}
+        >
+          <Text style={styles.actionButtonText}>📋 전체</Text>
+        </TouchableOpacity>
+      </View>
 
       {monsters.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -359,5 +375,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold'
+  },
+  actionButtonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 15
+  },
+  actionButton: {
+    flex: 1,
+    backgroundColor: '#6366f1',
+    paddingVertical: 10,
+    borderRadius: 6,
+    alignItems: 'center'
+  },
+  actionButtonSecondary: {
+    backgroundColor: '#3a3a3a'
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600'
   }
 });
