@@ -80,28 +80,37 @@ Status: **Images placeholder (empty strings)**
 
 ## Expo Mobile App Development Progress (Dec 1, 2025)
 
-### Phase 2: Node.js/Express Backend (In Progress)
-**Status**: Initial implementation complete - 80% basic APIs ready
+### Phase 2: Node.js/Express Backend (100% Basic APIs Complete)
+**Status**: All 9 core API systems implemented! Ready for advanced logic phase.
+
+**Completed APIs (9 systems):**
+- ✅ 플레이어 관리 (시작, 로드, 저장, 정보, 잠자기, 스탯 분배)
+- ✅ 던전 시스템 (목록, 미리보기, 시작, 답변, 나가기)
+- ✅ 퀴즈 시스템 (조회, 답변)
+- ✅ 모험 시스템 (선택, 시작, 액션)
+- ✅ 도감 시스템 (조회, 상세, 포획)
+- ✅ 상점 시스템 (조회, 구매, 아이템 사용)
+- ✅ 부동산 시스템 (조회, 구매, 월세 수금)
+- ✅ 직업 시스템 (목록, 선택, 일하기)
+- ✅ 일일 표현 시스템 (조회, 연습)
+
+**Infrastructure:**
 - ✅ Express 프로젝트 초기화 + JWT 인증
 - ✅ 파일 저장 시스템 (JSON 기반)
-- ✅ 기본 게임 로직 유틸리티
-- ✅ 플레이어 관리 API 완성
-- ✅ 던전 시스템 API 기본 구현
-- ✅ 퀴즈 시스템 API 기본 구현
-- ✅ 모험 시스템 API 기본 구현
-- ⏳ 고급 게임 로직 (전투, 몬스터 포획 등) - 다음 단계
-- ⏳ 게임 데이터 파일 (monsters.json, skills.json 등) - 필요
+- ✅ 게임 데이터 JSON 파일 (monsters, skills, adventures)
+- ✅ API 문서 작성
 
 **Location**: `/home/runner/workspace/backend/`
 
-**API Documentation**: `/home/runner/workspace/API_DESIGN.md` 참고
+### Phase 2.3: 고급 게임 로직 (다음 단계 - 미시작)
+- 복잡한 전투 로직 (스킬 사용, 데미지 계산)
+- 스킬 획득 및 교체 시스템
+- 기술 아이템 시스템
 
-### 다음 단계
-1. 게임 데이터 파일 생성
-2. 복잡한 전투 로직 완성
-3. 몬스터 포획 시스템 구현
-4. 나머지 API 완성
-5. Expo React Native 프론트엔드 구현
+### Phase 3: React Native 프론트엔드 (미시작)
+- Expo 프로젝트 초기화
+- 인증 화면, 메인 게임 화면
+- 각 시스템별 UI 개발
 
 ---
 
