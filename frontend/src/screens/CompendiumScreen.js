@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal, Vibration } from 'react-native';
 import { compendiumAPI } from '../services/api';
 
 export default function CompendiumScreen({ navigation }) {
@@ -28,7 +28,23 @@ export default function CompendiumScreen({ navigation }) {
     }
   };
 
+  const playRaritySound = (rarity) => {
+    // 레어도별 효과음 패턴
+    if (rarity === 'Rare') {
+      Vibration.vibrate([0, 100]); // 일반 톤
+    } else if (rarity === 'Epic') {
+      Vibration.vibrate([0, 50, 50, 100]); // 에픽 톤
+    } else if (rarity === 'Unique') {
+      Vibration.vibrate([0, 100, 50, 50, 100]); // 유니크 톤
+    } else if (rarity === 'Legendary') {
+      Vibration.vibrate([0, 200, 100, 200]); // 레전드리 톤
+    }
+  };
+
   const handleMonsterPress = async (monster) => {
+    // 레어도별 효과음
+    playRaritySound(monster.rarity);
+
     try {
       const response = await compendiumAPI.details(monster.monster_id);
       if (response.data.success) {

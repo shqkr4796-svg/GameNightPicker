@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator, Vibration } from 'react-native';
 import { adventureAPI, skillsAPI } from '../services/api';
 
 export default function AdventureScreen({ navigation }) {
@@ -41,6 +41,9 @@ export default function AdventureScreen({ navigation }) {
       return;
     }
 
+    // 전투 시작 효과음
+    Vibration.vibrate([0, 50, 50, 50, 50, 50]);
+
     setBattleActive(true);
     try {
       const response = await adventureAPI.start(selectedStage.stage_id, []);
@@ -60,8 +63,24 @@ export default function AdventureScreen({ navigation }) {
     }
   };
 
+  const playBattleSound = (type) => {
+    // 전투 효과음 시뮬레이션 (진동 패턴)
+    if (type === 'attack') {
+      Vibration.vibrate([0, 100, 50, 100]); // 공격 효과
+    } else if (type === 'damage') {
+      Vibration.vibrate([0, 200, 100, 200]); // 피격 효과
+    } else if (type === 'victory') {
+      Vibration.vibrate([0, 100, 50, 100, 50, 100]); // 승리 효과
+    } else if (type === 'defeat') {
+      Vibration.vibrate(500); // 패배 효과
+    }
+  };
+
   const handleUseSkill = async (skillName) => {
     if (!battleState) return;
+
+    // 공격 효과음
+    playBattleSound('attack');
 
     try {
       const response = await adventureAPI.action(battleState.battle_id, skillName);
@@ -70,8 +89,14 @@ export default function AdventureScreen({ navigation }) {
         const newLog = [...battleState.log];
         newLog.push(`플레이어: ${skillName} 사용!`);
         
+        // 피격 효과음
+        if (response.data.data.damage > 0) {
+          playBattleSound('damage');
+        }
+        
         if (response.data.data.enemy_hp <= 0) {
           newLog.push('적을 물리쳤습니다! 전투 승리!');
+          playBattleSound('victory');
           setBattleState({
             ...battleState,
             log: newLog,

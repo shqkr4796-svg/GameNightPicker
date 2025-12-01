@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal, Vibration } from 'react-native';
 
 export default function DungeonScreen({ navigation }) {
   const [dungeons, setDungeons] = useState([
@@ -33,6 +33,16 @@ export default function DungeonScreen({ navigation }) {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const playQuizSound = (type) => {
+    if (type === 'correct') {
+      Vibration.vibrate([0, 100, 50, 100]); // 정답 효과
+    } else if (type === 'wrong') {
+      Vibration.vibrate([0, 200]); // 오답 효과
+    } else if (type === 'complete') {
+      Vibration.vibrate([0, 100, 50, 100, 50, 100, 50, 100]); // 완료 효과
+    }
+  };
 
   // 샘플 문제들
   const sampleQuestions = [

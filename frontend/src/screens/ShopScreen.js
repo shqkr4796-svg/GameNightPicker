@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal, Vibration } from 'react-native';
 import { shopAPI } from '../services/api';
 
 export default function ShopScreen({ navigation }) {
@@ -37,8 +37,12 @@ export default function ShopScreen({ navigation }) {
     const totalCost = selectedItem.price * buyAmount;
     if (totalCost > playerMoney) {
       Alert.alert('오류', '돈이 부족합니다.');
+      Vibration.vibrate(200); // 오류 효과
       return;
     }
+
+    // 구매 효과음
+    Vibration.vibrate([0, 100, 50, 100, 50, 100]);
 
     try {
       const response = await shopAPI.buy(selectedItem.item_id, buyAmount);
