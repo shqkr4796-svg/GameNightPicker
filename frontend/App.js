@@ -4,6 +4,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from './src/screens/LoginScreen';
 import MainHubScreen from './src/screens/MainHubScreen';
+import AdventureScreen from './src/screens/AdventureScreen';
+import CompendiumScreen from './src/screens/CompendiumScreen';
+import SkillsScreen from './src/screens/SkillsScreen';
+import DungeonScreen from './src/screens/DungeonScreen';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +51,26 @@ export default function App() {
           name="MainHub"
           component={MainHubScreen}
           options={{ title: '게임 허브' }}
+        />
+        <Stack.Screen
+          name="Adventure"
+          component={AdventureScreen}
+          options={{ title: '모험' }}
+        />
+        <Stack.Screen
+          name="Compendium"
+          component={CompendiumScreen}
+          options={{ title: '도감' }}
+        />
+        <Stack.Screen
+          name="Skills"
+          component={SkillsScreen}
+          options={{ title: '스킬' }}
+        />
+        <Stack.Screen
+          name="Dungeon"
+          component={DungeonScreen}
+          options={{ title: '던전' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
