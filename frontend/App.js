@@ -16,6 +16,7 @@ import DashboardScreen from './src/screens/DashboardScreen';
 import InventoryScreen from './src/screens/InventoryScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
 import QuizScreen from './src/screens/QuizScreen';
+import WordManagementScreen from './src/screens/WordManagementScreen';
 
 const Stack = createStackNavigator();
 
@@ -119,6 +120,11 @@ export default function App() {
           name="Quiz"
           component={QuizScreen}
           options={{ title: '단어 퀴즈' }}
+        />
+        <Stack.Screen
+          name="WordManagement"
+          component={WordManagementScreen}
+          options={{ title: '단어 관리' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

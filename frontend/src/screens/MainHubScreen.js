@@ -160,6 +160,14 @@ export default function MainHubScreen({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('WordManagement')}
+        >
+          <Text style={styles.menuTitle}>📋 단어 관리</Text>
+          <Text style={styles.menuDesc}>나의 단어장을 관리하세요</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={[styles.menuButton, styles.logoutButton]}
           onPress={handleLogout}
         >
