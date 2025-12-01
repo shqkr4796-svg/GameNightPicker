@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Vibration, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { playerAPI } from '../services/api';
 
 export default function SleepScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
@@ -11,35 +12,32 @@ export default function SleepScreen({ navigation }) {
     Vibration.vibrate([0, 100, 50, 100]);
 
     try {
-      const playerStr = await AsyncStorage.getItem('player_data');
-      if (playerStr) {
-        const player = JSON.parse(playerStr);
-
-        // 수면 효과: 체력 50% 회복
-        const originalHp = player.hp || 100;
-        const recoveredHp = Math.min(originalHp + 50, 150);
-        const hpRecovered = recoveredHp - originalHp;
-
-        player.hp = recoveredHp;
-
-        // 경험치 10 획득
-        player.exp = (player.exp || 0) + 10;
-
-        await AsyncStorage.setItem('player_data', JSON.stringify(player));
-
+      // 백엔드 API 호출
+      const response = await playerAPI.sleep();
+      
+      if (response.data.success) {
+        const playerData = response.data.data.player;
+        
+        // 플레이어 데이터 업데이트
+        await AsyncStorage.setItem('player_data', JSON.stringify(playerData));
+        
+        // 월세 수입 메시지 파싱
+        const rentIncome = response.data.data.rent_income;
+        
         setSleepResult({
-          message: '숙면을 취했습니다! 😴',
-          hpRecovered,
-          newHp: recoveredHp,
-          expGained: 10
+          message: response.data.data.message,
+          currentEnergy: response.data.data.current_energy,
+          currentTime: response.data.data.current_time,
+          totalMoney: response.data.data.total_money,
+          rentIncome: rentIncome
         });
 
         setTimeout(() => {
           navigation.goBack();
-        }, 2000);
+        }, 2500);
       }
     } catch (error) {
-      Alert.alert('오류', '수면 중 오류가 발생했습니다.');
+      Alert.alert('오류', error.response?.data?.error || '수면 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -54,18 +52,27 @@ export default function SleepScreen({ navigation }) {
           
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>체력 회복</Text>
-              <Text style={styles.statValue}>+{sleepResult.hpRecovered}</Text>
+              <Text style={styles.statLabel}>시간</Text>
+              <Text style={styles.statValue}>{sleepResult.currentTime}</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>현재 체력</Text>
-              <Text style={styles.statValue}>{sleepResult.newHp}</Text>
+              <Text style={styles.statLabel}>기력</Text>
+              <Text style={styles.statValue}>{sleepResult.currentEnergy}</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>경험치 획득</Text>
-              <Text style={styles.statValue}>+{sleepResult.expGained}</Text>
+              <Text style={styles.statLabel}>총 자산</Text>
+              <Text style={styles.statValue}>₩{(sleepResult.totalMoney || 0).toLocaleString()}</Text>
             </View>
           </View>
+
+          {sleepResult.rentIncome && sleepResult.rentIncome.length > 0 && (
+            <View style={styles.rentContainer}>
+              <Text style={styles.rentTitle}>💰 월세 수입</Text>
+              {sleepResult.rentIncome.map((rent, idx) => (
+                <Text key={idx} style={styles.rentItem}>{rent}</Text>
+              ))}
+            </View>
+          )}
 
           <Text style={styles.autoCloseText}>자동으로 돌아갑니다...</Text>
         </View>
@@ -253,5 +260,25 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 12,
     marginTop: 15
+  },
+  rentContainer: {
+    backgroundColor: '#1a1a1a',
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 15,
+    borderLeftWidth: 3,
+    borderLeftColor: '#fbbf24'
+  },
+  rentTitle: {
+    color: '#fbbf24',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8
+  },
+  rentItem: {
+    color: '#aaa',
+    fontSize: 12,
+    marginBottom: 4,
+    paddingLeft: 8
   }
 });

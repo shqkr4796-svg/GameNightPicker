@@ -113,25 +113,72 @@ export function allocateStatPoints(playerData, statType, points) {
 }
 
 /**
- * 잠자기 (시간 진행, 기력 회복)
+ * 부동산 월세 데이터
+ */
+const REAL_ESTATE_RENT_DATA = {
+  '작은 아파트': 1000,
+  '중형 주택': 5000,
+  '대형 빌라': 20000,
+  '상업용 건물': 15000
+};
+
+/**
+ * 잠자기 (시간 진행, 기력 회복, 월세 수입)
  */
 export function sleep(playerData) {
   // 시간 진행
   playerData.시간 = (playerData.시간 || 8) + 8;
+  let rentMessages = [];
+  
   if (playerData.시간 >= 24) {
     playerData.시간 -= 24;
     playerData.날짜 = (playerData.날짜 || 1) + 1;
+    
+    // 월세 수입 처리
+    if (playerData.부동산 && playerData.부동산.length > 0) {
+      for (let i = 0; i < playerData.부동산.length; i++) {
+        const prop = playerData.부동산[i];
+        const lastRentDate = prop.last_rent_date || prop.buy_date || playerData.날짜 - 31;
+        const daysSinceLastRent = playerData.날짜 - lastRentDate;
+        
+        // 30일마다 월세 지급
+        if (daysSinceLastRent >= 30) {
+          const propName = prop.name || prop.이름;
+          const rentAmount = REAL_ESTATE_RENT_DATA[propName] || 5000;
+          const rentCycles = Math.floor(daysSinceLastRent / 30);
+          
+          // 월세 적립
+          playerData.돈 = (playerData.돈 || 0) + (rentAmount * rentCycles);
+          playerData.부동산[i].last_rent_date = playerData.날짜;
+          
+          // 월세 메시지
+          if (rentCycles > 1) {
+            rentMessages.push(`${propName} 월세 ${rentAmount.toLocaleString()}원 (${rentCycles}개월분)`);
+          } else {
+            rentMessages.push(`${propName} 월세 ${rentAmount.toLocaleString()}원`);
+          }
+        }
+      }
+    }
   }
 
   // 기력 회복
   const maxEnergy = playerData.최대기력 || 10;
   playerData.기력 = Math.min((playerData.기력 || 5) + 5, maxEnergy);
 
+  // 메시지 생성
+  let baseMessage = `잠을 자서 기력이 ${playerData.기력}까지 회복되었습니다.`;
+  if (rentMessages.length > 0) {
+    baseMessage += ` ${rentMessages.join(', ')}`;
+  }
+
   return {
     success: true,
-    message: `잠을 자서 기력이 ${playerData.기력}까지 회복되었습니다.`,
+    message: baseMessage,
     current_time: `${playerData.날짜}일 ${playerData.시간}시`,
-    current_energy: playerData.기력
+    current_energy: playerData.기력,
+    rent_income: rentMessages.length > 0 ? rentMessages : null,
+    total_money: playerData.돈
   };
 }
 

@@ -37,7 +37,8 @@ export const playerAPI = {
   start: () => api.post('/player/start'),
   getInfo: () => api.get('/player/info'),
   save: (playerData) => api.post('/player/save', playerData),
-  load: () => api.get('/player/load')
+  load: () => api.get('/player/load'),
+  sleep: () => api.post('/player/sleep')
 };
 
 // 모험 API
