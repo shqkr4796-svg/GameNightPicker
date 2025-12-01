@@ -69,4 +69,41 @@ export const shopAPI = {
   useItem: (itemId) => api.post('/shop/use_item', { item_id: itemId })
 };
 
+// 퀴즈 API
+export const quizAPI = {
+  list: () => api.get('/quiz'),
+  getCategory: (category) => api.get(`/quiz/category/${category}`),
+  submit: (category, score, questions) => api.post('/quiz/submit', { category, score, questions }),
+  getWrongQuestions: (category) => api.get(`/quiz/wrong/${category}`)
+};
+
+// 던전 API
+export const dungeonAPI = {
+  list: () => api.get('/dungeon'),
+  start: (dungeonId) => api.post('/dungeon/start', { dungeon_id: dungeonId }),
+  answer: (dungeonId, answer) => api.post('/dungeon/answer', { dungeon_id: dungeonId, answer }),
+  complete: (dungeonId) => api.post('/dungeon/complete', { dungeon_id: dungeonId })
+};
+
+// 표현학습 API
+export const expressionsAPI = {
+  list: () => api.get('/expressions'),
+  submit: (expressionId, answer) => api.post('/expressions/submit', { expression_id: expressionId, answer }),
+  getDailyTask: () => api.get('/expressions/daily')
+};
+
+// 대시보드 API
+export const dashboardAPI = {
+  getStats: () => api.get('/dashboard/stats'),
+  getLevelInfo: () => api.get('/dashboard/level'),
+  getProgress: () => api.get('/dashboard/progress')
+};
+
+// 인벤토리 API
+export const inventoryAPI = {
+  list: () => api.get('/inventory'),
+  useItem: (itemId) => api.post('/inventory/use', { item_id: itemId }),
+  equip: (itemId) => api.post('/inventory/equip', { item_id: itemId })
+};
+
 export default api;

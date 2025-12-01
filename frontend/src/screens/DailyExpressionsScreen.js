@@ -1,293 +1,168 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal, Vibration, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Vibration } from 'react-native';
+import { expressionsAPI } from '../services/api';
 
 export default function DailyExpressionsScreen({ navigation }) {
-  const [expressions, setExpressions] = useState([
-    {
-      id: 1,
-      expression: 'Hello, how are you?',
-      meaning: '안녕하세요, 어떻게 지내세요?',
-      examples: [
-        'Hello, how are you? I\'m fine, thank you.',
-        'How are you doing today?'
-      ],
-      situation: '처음 만난 사람이나 친구에게 인사할 때',
-      tip: '가장 기본적인 인사 표현입니다.'
-    },
-    {
-      id: 2,
-      expression: 'Thank you',
-      meaning: '감사합니다',
-      examples: [
-        'Thank you for your help.',
-        'Thank you so much!'
-      ],
-      situation: '도움을 받았을 때 감사를 표할 때',
-      tip: '고마움을 표현하는 가장 기본적인 표현입니다.'
-    },
-    {
-      id: 3,
-      expression: 'Nice to meet you',
-      meaning: '만나서 반갑습니다',
-      examples: [
-        'Nice to meet you! What\'s your name?',
-        'Nice to meet you too!'
-      ],
-      situation: '처음 만나는 사람에게 인사할 때',
-      tip: '첫 만남에서 좋은 인상을 줄 수 있는 표현입니다.'
-    },
-    {
-      id: 4,
-      expression: 'How\'s the weather?',
-      meaning: '날씨가 어떻게 되나요?',
-      examples: [
-        'How\'s the weather today?',
-        'How\'s the weather where you are?'
-      ],
-      situation: '날씨에 대해 물어볼 때',
-      tip: '일상적인 화제로 자주 사용되는 표현입니다.'
-    },
-    {
-      id: 5,
-      expression: 'I\'m sorry',
-      meaning: '죄송합니다',
-      examples: [
-        'I\'m sorry, I didn\'t hear you.',
-        'I\'m sorry for being late.'
-      ],
-      situation: '실수를 했을 때 사과할 때',
-      tip: '상대방에게 예의를 표시하는 중요한 표현입니다.'
-    },
-    {
-      id: 6,
-      expression: 'What time is it?',
-      meaning: '지금 몇 시예요?',
-      examples: [
-        'What time is it now?',
-        'Could you tell me what time is it?'
-      ],
-      situation: '시간을 물어볼 때',
-      tip: '일상 생활에서 자주 사용하는 표현입니다.'
-    }
-  ]);
-
-  const [learnedCount, setLearnedCount] = useState(0);
+  const [expressions, setExpressions] = useState([]);
+  const [dailyTask, setDailyTask] = useState(null);
   const [selectedExpression, setSelectedExpression] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [quizActive, setQuizActive] = useState(false);
-  const [currentQuizExpression, setCurrentQuizExpression] = useState(null);
-  const [userAnswer, setUserAnswer] = useState('');
+  const [quizMode, setQuizMode] = useState(false);
   const [score, setScore] = useState(0);
+  const [answered, setAnswered] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const startQuiz = () => {
-    const randomExp = expressions[Math.floor(Math.random() * expressions.length)];
-    setCurrentQuizExpression(randomExp);
-    setUserAnswer('');
-    setQuizActive(true);
+  useEffect(() => {
+    loadExpressionData();
+  }, []);
+
+  const loadExpressionData = async () => {
+    setLoading(true);
+    try {
+      const [expRes, dailyRes] = await Promise.all([
+        expressionsAPI.list(),
+        expressionsAPI.getDailyTask()
+      ]);
+
+      if (expRes.data.success) {
+        setExpressions(expRes.data.data.expressions || []);
+      }
+      if (dailyRes.data.success) {
+        setDailyTask(dailyRes.data.data);
+      }
+    } catch (error) {
+      Alert.alert('오류', '표현 데이터 로드 실패');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const submitAnswer = () => {
-    if (!userAnswer.trim()) {
-      Alert.alert('알림', '답을 입력해주세요.');
+  const startQuiz = () => {
+    if (expressions.length === 0) {
+      Alert.alert('알림', '표현이 없습니다.');
       return;
     }
 
-    const isCorrect = userAnswer.toLowerCase().includes(currentQuizExpression.expression.toLowerCase());
+    setQuizMode(true);
+    setScore(0);
+    setAnswered(0);
+    setSelectedExpression(expressions[0]);
+  };
 
-    if (isCorrect) {
-      Vibration.vibrate([0, 100, 50, 100]);
-      const newScore = score + 10;
-      setScore(newScore);
-      setLearnedCount(learnedCount + 1);
-      Alert.alert('정답!', '경험치 +10 획득!', [
+  const handleAnswerQuestion = async (answer) => {
+    if (!selectedExpression) return;
+
+    Vibration.vibrate([0, 100, 50, 100]);
+
+    try {
+      const response = await expressionsAPI.submit(selectedExpression.id, answer);
+
+      if (response.data.correct) {
+        setScore(score + 10);
+        Alert.alert('정답!', '좋습니다!', [
+          { text: '다음', onPress: () => nextExpression() }
+        ]);
+      } else {
+        Alert.alert('오답', `정답: ${selectedExpression.meaning}`, [
+          { text: '다음', onPress: () => nextExpression() }
+        ]);
+      }
+      setAnswered(answered + 1);
+    } catch (error) {
+      Alert.alert('오류', '답변 처리 실패');
+    }
+  };
+
+  const nextExpression = () => {
+    if (answered + 1 >= expressions.length) {
+      Alert.alert('완료', `최종 점수: ${score + 10}점`, [
         {
-          text: '계속',
+          text: '확인',
           onPress: () => {
-            setUserAnswer('');
-            startQuiz();
+            setQuizMode(false);
+            setSelectedExpression(null);
           }
         }
       ]);
     } else {
-      Vibration.vibrate(200);
-      Alert.alert('오답', `정답: ${currentQuizExpression.expression}`, [
-        {
-          text: '다시',
-          onPress: () => {
-            setUserAnswer('');
-            startQuiz();
-          }
-        }
-      ]);
+      setSelectedExpression(expressions[answered + 1]);
     }
   };
 
-  const handleExpressionPress = (expression) => {
-    setSelectedExpression(expression);
-    setModalVisible(true);
-  };
-
-  const renderExpressionCard = ({ item }) => (
-    <TouchableOpacity
-      style={styles.expressionCard}
-      onPress={() => handleExpressionPress(item)}
-    >
-      <View style={styles.expressionHeader}>
-        <Text style={styles.expressionText}>{item.expression}</Text>
-        <Text style={styles.meaningText}>{item.meaning}</Text>
-      </View>
-      <Text style={styles.situationText}>{item.situation}</Text>
-    </TouchableOpacity>
-  );
-
-  if (quizActive && currentQuizExpression) {
+  if (loading) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>📝 일일 표현 - 퀴즈</Text>
-
-        <View style={styles.scoreBox}>
-          <View>
-            <Text style={styles.scoreLabel}>학습한 표현</Text>
-            <Text style={styles.scoreValue}>{learnedCount}</Text>
-          </View>
-          <View>
-            <Text style={styles.scoreLabel}>획득 경험치</Text>
-            <Text style={[styles.scoreValue, { color: '#6366f1' }]}>{score}</Text>
-          </View>
-        </View>
-
-        <View style={styles.quizBox}>
-          <Text style={styles.quizLabel}>📖 다음 뜻에 맞는 표현을 입력하세요</Text>
-          <View style={styles.meaningBox}>
-            <Text style={styles.meaningTextLarge}>{currentQuizExpression.meaning}</Text>
-          </View>
-
-          <Text style={styles.exampleLabel}>예시:</Text>
-          {currentQuizExpression.examples.map((ex, idx) => (
-            <Text key={idx} style={styles.exampleText}>
-              • {ex}
-            </Text>
-          ))}
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>답 입력:</Text>
-            <View style={styles.inputBox}>
-              <Text style={styles.inputPlaceholder}>{userAnswer || '표현을 입력하세요'}</Text>
-            </View>
-          </View>
-
-          <View style={styles.keyboardSimulation}>
-            {currentQuizExpression.expression.split('').map((char, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={styles.charButton}
-                onPress={() => setUserAnswer(userAnswer + char)}
-              >
-                <Text style={styles.charButtonText}>{char}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <TouchableOpacity style={styles.clearButton} onPress={() => setUserAnswer('')}>
-            <Text style={styles.clearButtonText}>지우기</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.submitButton} onPress={submitAnswer}>
-            <Text style={styles.submitButtonText}>제출 (경험치 +10)</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.exitButton}
-            onPress={() => setQuizActive(false)}
-          >
-            <Text style={styles.exitButtonText}>나가기</Text>
-          </TouchableOpacity>
-        </View>
+        <ActivityIndicator color="#6366f1" size="large" />
       </View>
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>📝 일일 표현</Text>
+  if (quizMode && selectedExpression) {
+    return (
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>표현 학습 - 퀴즈</Text>
 
-      <View style={styles.statsBox}>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>학습한 표현</Text>
-          <Text style={styles.statValue}>{learnedCount}</Text>
+        <View style={styles.progressCard}>
+          <Text style={styles.progressText}>
+            {answered + 1} / {expressions.length}
+          </Text>
+          <Text style={styles.scoreText}>점수: {score}점</Text>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>총 표현 수</Text>
-          <Text style={styles.statValue}>{expressions.length}</Text>
+
+        <View style={styles.questionCard}>
+          <Text style={styles.questionLabel}>다음 표현의 뜻은?</Text>
+          <Text style={styles.expressionText}>{selectedExpression.expression}</Text>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>획득 경험치</Text>
-          <Text style={[styles.statValue, { color: '#6366f1' }]}>{score}</Text>
-        </View>
-      </View>
 
-      <TouchableOpacity style={styles.quizButton} onPress={startQuiz}>
-        <Text style={styles.quizButtonText}>🎯 퀴즈 시작하기</Text>
-      </TouchableOpacity>
-
-      <FlatList
-        data={expressions}
-        renderItem={renderExpressionCard}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-        scrollEnabled={true}
-      />
-
-      {/* 표현 상세 모달 */}
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
+        <View style={styles.optionsContainer}>
+          {expressions.slice(0, 4).map((exp, idx) => (
             <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
+              key={idx}
+              style={styles.optionButton}
+              onPress={() => handleAnswerQuestion(exp.meaning)}
             >
-              <Text style={styles.closeButtonText}>✕</Text>
+              <Text style={styles.optionText}>{exp.meaning}</Text>
             </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    );
+  }
 
-            {selectedExpression && (
-              <ScrollView>
-                <Text style={styles.modalTitle}>{selectedExpression.expression}</Text>
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>표현 학습</Text>
+      <Text style={styles.subtitle}>일상 영어 표현을 배워보세요</Text>
 
-                <View style={styles.detailBox}>
-                  <Text style={styles.sectionTitle}>의미</Text>
-                  <Text style={styles.contentText}>{selectedExpression.meaning}</Text>
+      {dailyTask && (
+        <View style={styles.dailyTaskCard}>
+          <Text style={styles.dailyLabel}>오늘의 미션</Text>
+          <Text style={styles.dailyTitle}>{dailyTask.title || '10개 표현 학습'}</Text>
+          <Text style={styles.dailyReward}>보상: {dailyTask.reward || '100 EXP'}</Text>
+        </View>
+      )}
 
-                  <Text style={[styles.sectionTitle, { marginTop: 15 }]}>상황</Text>
-                  <Text style={styles.contentText}>{selectedExpression.situation}</Text>
-
-                  <Text style={[styles.sectionTitle, { marginTop: 15 }]}>팁</Text>
-                  <Text style={styles.contentText}>{selectedExpression.tip}</Text>
-
-                  <Text style={[styles.sectionTitle, { marginTop: 15 }]}>예시</Text>
-                  {selectedExpression.examples.map((ex, idx) => (
-                    <Text key={idx} style={styles.exampleItemText}>
-                      {idx + 1}. {ex}
-                    </Text>
-                  ))}
-                </View>
-
-                <TouchableOpacity
-                  style={styles.closeModalButton}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.closeModalButtonText}>닫기</Text>
-                </TouchableOpacity>
-              </ScrollView>
+      <Text style={styles.sectionTitle}>표현 목록</Text>
+      <View style={styles.expressionList}>
+        {expressions.map((expr, idx) => (
+          <View key={idx} style={styles.expressionCard}>
+            <View style={styles.expressionHeader}>
+              <Text style={styles.expressionText}>{expr.expression}</Text>
+            </View>
+            <Text style={styles.meaningText}>{expr.meaning}</Text>
+            {expr.examples && expr.examples[0] && (
+              <Text style={styles.exampleText}>예: {expr.examples[0]}</Text>
             )}
           </View>
-        </View>
-      </Modal>
-    </View>
+        ))}
+      </View>
+
+      <TouchableOpacity
+        style={styles.startButton}
+        onPress={startQuiz}
+      >
+        <Text style={styles.startButtonText}>퀴즈 시작</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
@@ -295,268 +170,132 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-    padding: 20
+    padding: 16
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 15
+    marginBottom: 5
   },
-  statsBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  subtitle: {
+    fontSize: 14,
+    color: '#aaa',
+    marginBottom: 20
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6366f1',
+    marginBottom: 12,
+    marginTop: 16
+  },
+  dailyTaskCard: {
     backgroundColor: '#2a2a2a',
-    padding: 15,
+    padding: 16,
     borderRadius: 8,
-    marginBottom: 15
+    marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#22c55e'
   },
-  statItem: {
-    alignItems: 'center'
-  },
-  statLabel: {
+  dailyLabel: {
     color: '#aaa',
     fontSize: 12,
     marginBottom: 5
   },
-  statValue: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold'
-  },
-  scoreBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#2a2a2a',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15
-  },
-  scoreLabel: {
-    color: '#aaa',
-    fontSize: 12,
-    marginBottom: 5
-  },
-  scoreValue: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold'
-  },
-  quizButton: {
-    backgroundColor: '#6366f1',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-    alignItems: 'center'
-  },
-  quizButtonText: {
+  dailyTitle: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: '600',
+    marginBottom: 8
   },
-  listContainer: {
-    gap: 10
+  dailyReward: {
+    color: '#22c55e',
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  expressionList: {
+    gap: 10,
+    marginBottom: 20
   },
   expressionCard: {
     backgroundColor: '#2a2a2a',
-    padding: 15,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#6366f1',
-    marginBottom: 5
+    padding: 12,
+    borderRadius: 8
   },
   expressionHeader: {
-    marginBottom: 10
+    marginBottom: 8
   },
   expressionText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5
+    fontSize: 14,
+    fontWeight: '600'
   },
   meaningText: {
     color: '#6366f1',
-    fontSize: 14
-  },
-  situationText: {
-    color: '#aaa',
-    fontSize: 12
-  },
-  quizBox: {
-    backgroundColor: '#2a2a2a',
-    padding: 20,
-    borderRadius: 8,
-    marginBottom: 20
-  },
-  quizLabel: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 15
-  },
-  meaningBox: {
-    backgroundColor: '#1a1a1a',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-    borderWidth: 2,
-    borderColor: '#6366f1'
-  },
-  meaningTextLarge: {
-    color: '#6366f1',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  exampleLabel: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginBottom: 8
-  },
-  exampleText: {
-    color: '#bbb',
     fontSize: 12,
     marginBottom: 5
   },
-  inputContainer: {
-    marginVertical: 15
+  exampleText: {
+    color: '#999',
+    fontSize: 11,
+    fontStyle: 'italic'
   },
-  inputLabel: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginBottom: 8
-  },
-  inputBox: {
-    backgroundColor: '#1a1a1a',
-    padding: 12,
+  startButton: {
+    backgroundColor: '#6366f1',
+    padding: 15,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#3a3a3a',
-    minHeight: 50,
-    justifyContent: 'center'
+    alignItems: 'center',
+    marginBottom: 30
   },
-  inputPlaceholder: {
-    color: '#666',
+  startButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  progressCard: {
+    backgroundColor: '#2a2a2a',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  progressText: {
+    color: '#aaa',
     fontSize: 14
   },
-  keyboardSimulation: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 5,
-    marginBottom: 15
-  },
-  charButton: {
-    backgroundColor: '#3a3a3a',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 4
-  },
-  charButtonText: {
-    color: '#fff',
-    fontSize: 12
-  },
-  clearButton: {
-    backgroundColor: '#ef4444',
-    padding: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 10
-  },
-  clearButtonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold'
-  },
-  submitButton: {
-    backgroundColor: '#22c55e',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 10
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold'
-  },
-  exitButton: {
-    backgroundColor: '#666',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-  exitButtonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: 'bold'
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    justifyContent: 'flex-end'
-  },
-  modalContent: {
-    backgroundColor: '#2a2a2a',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: '90%'
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 24
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 20,
-    marginTop: 10
-  },
-  detailBox: {
-    backgroundColor: '#1a1a1a',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15
-  },
-  sectionTitle: {
+  scoreText: {
     color: '#6366f1',
     fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 8
+    fontWeight: 'bold'
   },
-  contentText: {
-    color: '#bbb',
-    fontSize: 13,
-    lineHeight: 20
-  },
-  exampleItemText: {
-    color: '#aaa',
-    fontSize: 12,
-    marginVertical: 5,
-    lineHeight: 18
-  },
-  closeModalButton: {
-    backgroundColor: '#ef4444',
-    padding: 12,
+  questionCard: {
+    backgroundColor: '#2a2a2a',
+    padding: 20,
     borderRadius: 8,
+    marginBottom: 20,
     alignItems: 'center'
   },
-  closeModalButtonText: {
+  questionLabel: {
+    color: '#aaa',
+    fontSize: 12,
+    marginBottom: 10
+  },
+  optionsContainer: {
+    gap: 10,
+    marginBottom: 20
+  },
+  optionButton: {
+    backgroundColor: '#2a2a2a',
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent'
+  },
+  optionText: {
     color: '#fff',
     fontSize: 14,
-    fontWeight: 'bold'
+    fontWeight: '500'
   }
 });

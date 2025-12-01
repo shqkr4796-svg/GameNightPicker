@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, ActivityIndicator, Vibration } from 'react-native';
-import { adventureAPI, skillsAPI } from '../services/api';
+import { adventureAPI, skillsAPI, compendiumAPI } from '../services/api';
 
 export default function AdventureScreen({ navigation }) {
   const [stages, setStages] = useState([]);
   const [selectedStage, setSelectedStage] = useState(null);
+  const [availableMonsters, setAvailableMonsters] = useState([]);
+  const [selectedMonsters, setSelectedMonsters] = useState([]);
   const [currentSkills, setCurrentSkills] = useState([]);
+  const [adventureEnergy, setAdventureEnergy] = useState(100);
   const [loading, setLoading] = useState(true);
   const [battleActive, setBattleActive] = useState(false);
   const [battleState, setBattleState] = useState(null);
+  const [difficulty, setDifficulty] = useState('normal');
 
   useEffect(() => {
     loadAdventureData();
@@ -17,16 +21,22 @@ export default function AdventureScreen({ navigation }) {
   const loadAdventureData = async () => {
     setLoading(true);
     try {
-      const [adventureRes, skillsRes] = await Promise.all([
+      const [adventureRes, skillsRes, compendiumRes] = await Promise.all([
         adventureAPI.select(),
-        skillsAPI.list()
+        skillsAPI.list(),
+        compendiumAPI.list()
       ]);
 
       if (adventureRes.data.success) {
         setStages(adventureRes.data.data.stages || []);
+        setAdventureEnergy(adventureRes.data.data.energy || 100);
+        setDifficulty(adventureRes.data.data.difficulty || 'normal');
       }
       if (skillsRes.data.success) {
         setCurrentSkills(skillsRes.data.data.current_skills || []);
+      }
+      if (compendiumRes.data.success) {
+        setAvailableMonsters(compendiumRes.data.data.monsters || []);
       }
     } catch (error) {
       Alert.alert('오류', '모험 데이터 로드 실패');
@@ -35,26 +45,47 @@ export default function AdventureScreen({ navigation }) {
     }
   };
 
+  const toggleMonster = (monsterId) => {
+    if (selectedMonsters.includes(monsterId)) {
+      setSelectedMonsters(selectedMonsters.filter(id => id !== monsterId));
+    } else {
+      if (selectedMonsters.length < 3) {
+        setSelectedMonsters([...selectedMonsters, monsterId]);
+      } else {
+        Alert.alert('알림', '최대 3마리까지만 선택 가능합니다.');
+      }
+    }
+  };
+
   const handleStartBattle = async () => {
     if (!selectedStage) {
       Alert.alert('알림', '스테이지를 선택해주세요.');
       return;
     }
+    if (selectedMonsters.length === 0) {
+      Alert.alert('알림', '최소 1마리의 몬스터를 선택해주세요.');
+      return;
+    }
+    if (adventureEnergy < (selectedStage.energy_cost || 10)) {
+      Alert.alert('알림', '모험 기력이 부족합니다.');
+      return;
+    }
 
-    // 전투 시작 효과음
     Vibration.vibrate([0, 50, 50, 50, 50, 50]);
-
     setBattleActive(true);
+
     try {
-      const response = await adventureAPI.start(selectedStage.stage_id, []);
+      const response = await adventureAPI.start(selectedStage.stage_id, selectedMonsters);
       if (response.data.success) {
         setBattleState({
           battle_id: response.data.data.battle_id,
-          enemy: response.data.data.enemy,
-          playerHP: response.data.data.player_hp,
-          enemyHP: response.data.data.enemy_hp,
+          stage_name: selectedStage.name,
+          enemies: response.data.data.enemies || [],
+          currentEnemyIndex: 0,
+          playerHP: response.data.data.player_hp || 100,
+          enemyHP: response.data.data.enemy_hp || 50,
           turn: 0,
-          log: ['전투 시작!']
+          log: ['전투 시작!', `${selectedStage.name} 시작`]
         });
       }
     } catch (error) {
@@ -64,54 +95,54 @@ export default function AdventureScreen({ navigation }) {
   };
 
   const playBattleSound = (type) => {
-    // 전투 효과음 시뮬레이션 (진동 패턴)
     if (type === 'attack') {
-      Vibration.vibrate([0, 100, 50, 100]); // 공격 효과
+      Vibration.vibrate([0, 100, 50, 100]);
     } else if (type === 'damage') {
-      Vibration.vibrate([0, 200, 100, 200]); // 피격 효과
+      Vibration.vibrate([0, 200, 100, 200]);
     } else if (type === 'victory') {
-      Vibration.vibrate([0, 100, 50, 100, 50, 100]); // 승리 효과
+      Vibration.vibrate([0, 100, 50, 100, 50, 100]);
     } else if (type === 'defeat') {
-      Vibration.vibrate(500); // 패배 효과
+      Vibration.vibrate(500);
     }
   };
 
   const handleUseSkill = async (skillName) => {
     if (!battleState) return;
 
-    // 공격 효과음
     playBattleSound('attack');
 
     try {
       const response = await adventureAPI.action(battleState.battle_id, skillName);
-      
+
       if (response.data.success) {
         const newLog = [...battleState.log];
         newLog.push(`플레이어: ${skillName} 사용!`);
-        
-        // 피격 효과음
+
         if (response.data.data.damage > 0) {
           playBattleSound('damage');
+          newLog.push(`${response.data.data.damage} 데미지!`);
         }
-        
+
         if (response.data.data.enemy_hp <= 0) {
-          newLog.push('적을 물리쳤습니다! 전투 승리!');
+          newLog.push('적을 물리쳤습니다!');
           playBattleSound('victory');
           setBattleState({
             ...battleState,
             log: newLog,
-            victory: true
+            victory: true,
+            enemyHP: 0
           });
         } else if (response.data.data.player_hp <= 0) {
-          newLog.push('플레이어가 쓰러졌습니다. 전투 패배!');
+          newLog.push('플레이어가 쓰러졌습니다!');
+          playBattleSound('defeat');
           setBattleState({
             ...battleState,
             log: newLog,
-            defeat: true
+            defeat: true,
+            playerHP: 0
           });
         } else {
-          // 적의 공격
-          newLog.push(`적: 기본 공격 ${response.data.data.damage || 5} 데미지!`);
+          newLog.push(`상대: 공격 ${response.data.data.enemy_damage || 5} 데미지!`);
           setBattleState({
             ...battleState,
             playerHP: response.data.data.player_hp,
@@ -135,6 +166,7 @@ export default function AdventureScreen({ navigation }) {
         Alert.alert('알림', '전투에서 도망쳤습니다.');
         setBattleActive(false);
         setBattleState(null);
+        loadAdventureData();
       }
     } catch (error) {
       Alert.alert('오류', '도망 실패');
@@ -153,21 +185,23 @@ export default function AdventureScreen({ navigation }) {
   if (battleActive && battleState) {
     return (
       <View style={styles.battleContainer}>
+        <Text style={styles.stageTitle}>{battleState.stage_name}</Text>
+
         {/* 적 정보 */}
         <View style={styles.enemySection}>
-          <Text style={styles.enemyName}>{battleState.enemy.name}</Text>
+          <Text style={styles.enemyName}>적</Text>
           <View style={styles.hpBar}>
             <View
               style={[
                 styles.hpFill,
                 {
-                  width: `${Math.max(0, (battleState.enemyHP / battleState.enemy.hp) * 100)}%`
+                  width: `${Math.max(0, (battleState.enemyHP / 100) * 100)}%`
                 }
               ]}
             />
           </View>
           <Text style={styles.hpText}>
-            {battleState.enemyHP} / {battleState.enemy.hp}
+            {battleState.enemyHP} / 100
           </Text>
         </View>
 
@@ -245,6 +279,15 @@ export default function AdventureScreen({ navigation }) {
       <Text style={styles.title}>모험</Text>
       <Text style={styles.subtitle}>스테이지를 선택하여 진행하세요</Text>
 
+      {/* 모험 기력 표시 */}
+      <View style={styles.energyCard}>
+        <Text style={styles.energyLabel}>모험 기력</Text>
+        <Text style={styles.energyValue}>{adventureEnergy} / 100</Text>
+        <Text style={styles.energyNote}>난이도: {difficulty === 'normal' ? '일반' : '심화'}</Text>
+      </View>
+
+      {/* 스테이지 목록 */}
+      <Text style={styles.sectionTitle}>스테이지 선택</Text>
       <View style={styles.stageList}>
         {stages.map((stage, idx) => (
           <TouchableOpacity
@@ -256,23 +299,61 @@ export default function AdventureScreen({ navigation }) {
             onPress={() => setSelectedStage(stage)}
           >
             <Text style={styles.stageNumber}>Stage {stage.stage_id}</Text>
-            <Text style={styles.stageDifficulty}>난이도: {stage.difficulty}</Text>
+            <Text style={styles.stageDifficulty}>난이도: {stage.난이도 || 'Normal'}</Text>
             <Text style={styles.stageEnemy}>
-              {stage.enemy_count}마리 전투
+              {stage.enemy_count || 3}마리 전투
             </Text>
           </TouchableOpacity>
         ))}
       </View>
 
+      {/* 몬스터 선택 */}
       {selectedStage && (
-        <View style={styles.actionContainer}>
+        <>
+          <Text style={styles.sectionTitle}>팀 구성 (최대 3마리)</Text>
+          <View style={styles.monsterGrid}>
+            {availableMonsters.map((monster, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={[
+                  styles.monsterCard,
+                  selectedMonsters.includes(monster.id) && styles.selectedMonster
+                ]}
+                onPress={() => toggleMonster(monster.id)}
+              >
+                <Text style={styles.monsterEmoji}>
+                  {monster.emoji || monster.rarity_emoji || '🐉'}
+                </Text>
+                <Text style={styles.monsterName}>{monster.name}</Text>
+                <Text style={styles.monsterRarity}>{monster.rarity}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* 선택된 몬스터 표시 */}
+          <View style={styles.selectedMonsterList}>
+            <Text style={styles.selectedCountText}>
+              선택된 몬스터: {selectedMonsters.length} / 3
+            </Text>
+            {selectedMonsters.length > 0 && (
+              <View style={styles.selectedMonsterIndicator}>
+                {selectedMonsters.map((id, idx) => (
+                  <Text key={idx} style={styles.monsterBadge}>
+                    {idx + 1}
+                  </Text>
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* 전투 시작 버튼 */}
           <TouchableOpacity
             style={styles.startButton}
             onPress={handleStartBattle}
           >
             <Text style={styles.startButtonText}>전투 시작</Text>
           </TouchableOpacity>
-        </View>
+        </>
       )}
     </ScrollView>
   );
@@ -282,7 +363,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-    padding: 20
+    padding: 16
   },
   title: {
     fontSize: 28,
@@ -294,6 +375,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#aaa',
     marginBottom: 20
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6366f1',
+    marginBottom: 12,
+    marginTop: 16
+  },
+  energyCard: {
+    backgroundColor: '#2a2a2a',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#6366f1'
+  },
+  energyLabel: {
+    color: '#aaa',
+    fontSize: 12,
+    marginBottom: 5
+  },
+  energyValue: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
+  energyNote: {
+    color: '#6366f1',
+    fontSize: 12
   },
   stageList: {
     gap: 10,
@@ -327,14 +438,73 @@ const styles = StyleSheet.create({
     color: '#6366f1',
     fontSize: 12
   },
-  actionContainer: {
-    gap: 10
+  monsterGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 20
+  },
+  monsterCard: {
+    width: '31%',
+    backgroundColor: '#2a2a2a',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent'
+  },
+  selectedMonster: {
+    borderColor: '#6366f1',
+    backgroundColor: '#1a1a4d'
+  },
+  monsterEmoji: {
+    fontSize: 32,
+    marginBottom: 5
+  },
+  monsterName: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 3
+  },
+  monsterRarity: {
+    color: '#6366f1',
+    fontSize: 10
+  },
+  selectedMonsterList: {
+    backgroundColor: '#2a2a2a',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+    alignItems: 'center'
+  },
+  selectedCountText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 10
+  },
+  selectedMonsterIndicator: {
+    flexDirection: 'row',
+    gap: 8
+  },
+  monsterBadge: {
+    backgroundColor: '#6366f1',
+    color: '#fff',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    textAlign: 'center',
+    lineHeight: 30,
+    fontWeight: 'bold'
   },
   startButton: {
     backgroundColor: '#6366f1',
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 30
   },
   startButtonText: {
     color: '#fff',
@@ -345,8 +515,15 @@ const styles = StyleSheet.create({
   battleContainer: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-    padding: 20,
+    padding: 16,
     justifyContent: 'space-between'
+  },
+  stageTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 15
   },
   enemySection: {
     backgroundColor: '#2a2a2a',
@@ -362,15 +539,15 @@ const styles = StyleSheet.create({
   },
   enemyName: {
     color: '#ef4444',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginBottom: 8
   },
   playerName: {
     color: '#22c55e',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginBottom: 8
   },
   hpBar: {
     height: 20,

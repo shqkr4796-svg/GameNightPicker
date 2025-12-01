@@ -1,205 +1,172 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert, ActivityIndicator, Modal, Vibration } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Vibration } from 'react-native';
+import { dungeonAPI } from '../services/api';
 
 export default function DungeonScreen({ navigation }) {
-  const [dungeons, setDungeons] = useState([
-    {
-      id: 1,
-      name: '초급 던전',
-      difficulty: '쉬움',
-      level_required: 1,
-      monsters: 3,
-      rewards: '100 경험치, 500 골드'
-    },
-    {
-      id: 2,
-      name: '중급 던전',
-      difficulty: '보통',
-      level_required: 10,
-      monsters: 5,
-      rewards: '300 경험치, 1500 골드'
-    },
-    {
-      id: 3,
-      name: '고급 던전',
-      difficulty: '어려움',
-      level_required: 20,
-      monsters: 7,
-      rewards: '500 경험치, 3000 골드'
-    }
-  ]);
+  const [dungeons, setDungeons] = useState([]);
   const [selectedDungeon, setSelectedDungeon] = useState(null);
   const [quizActive, setQuizActive] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [score, setScore] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [questionIndex, setQuestionIndex] = useState(0);
 
-  const playQuizSound = (type) => {
-    if (type === 'correct') {
-      Vibration.vibrate([0, 100, 50, 100]); // 정답 효과
-    } else if (type === 'wrong') {
-      Vibration.vibrate([0, 200]); // 오답 효과
-    } else if (type === 'complete') {
-      Vibration.vibrate([0, 100, 50, 100, 50, 100, 50, 100]); // 완료 효과
+  useEffect(() => {
+    loadDungeonData();
+  }, []);
+
+  const loadDungeonData = async () => {
+    setLoading(true);
+    try {
+      const response = await dungeonAPI.list();
+      if (response.data.success) {
+        setDungeons(response.data.data.dungeons || []);
+      }
+    } catch (error) {
+      Alert.alert('오류', '던전 데이터 로드 실패');
+    } finally {
+      setLoading(false);
     }
   };
-
-  // 샘플 문제들
-  const sampleQuestions = [
-    {
-      id: 1,
-      text: '"Hello, how are you?" 는 무엇을 의미하나요?',
-      options: ['안녕하세요, 어떻게 지내세요?', '잠깐, 어디가?', '나중에 만나요', '안녕히 가세요'],
-      correct: 0
-    },
-    {
-      id: 2,
-      text: '"Thank you" 의 의미는?',
-      options: ['미안해요', '감사합니다', '도와줘', '멋있어요'],
-      correct: 1
-    },
-    {
-      id: 3,
-      text: '"Nice to meet you" 는?',
-      options: ['만나서 반갑습니다', '또 만났네요', '이별은 슬퍼요', '처음 봐요'],
-      correct: 0
-    },
-    {
-      id: 4,
-      text: '"I love you" 의 뜻은?',
-      options: ['난 너를 봐', '나는 너를 사랑해', '난 혼자야', '우리 친구할까?'],
-      correct: 1
-    },
-    {
-      id: 5,
-      text: '"Excuse me" 는?',
-      options: ['미안해요', '저기요', '괜찮아요', '뭐해요?'],
-      correct: 1
-    }
-  ];
 
   const handleStartDungeon = async (dungeon) => {
     setSelectedDungeon(dungeon);
-    setQuizActive(true);
-    setScore(0);
-    setCurrentQuestion(sampleQuestions[0]);
-  };
+    Vibration.vibrate([0, 100, 50, 100]);
 
-  const handleAnswerQuestion = (selectedIndex) => {
-    if (selectedIndex === currentQuestion.correct) {
-      setScore(score + 10);
-      Alert.alert('정답!', '다음 문제로 진행합니다.');
-    } else {
-      Alert.alert('오답!', '정답을 다시 확인해주세요.');
-    }
-
-    const nextQuestionIndex = sampleQuestions.findIndex(q => q.id === currentQuestion.id) + 1;
-    if (nextQuestionIndex < sampleQuestions.length) {
-      setCurrentQuestion(sampleQuestions[nextQuestionIndex]);
-    } else {
-      // 던전 완료
-      Alert.alert('던전 완료!', `최종 점수: ${score + 10}점\n보상을 획득했습니다!`);
-      setQuizActive(false);
-      setSelectedDungeon(null);
+    try {
+      const response = await dungeonAPI.start(dungeon.id);
+      if (response.data.success) {
+        setQuizActive(true);
+        setScore(0);
+        setQuestionIndex(0);
+        setCurrentQuestion(response.data.data.first_question);
+      }
+    } catch (error) {
+      Alert.alert('오류', '던전 시작 실패');
     }
   };
 
-  const handleFleeQuiz = () => {
-    Alert.alert('도망', '던전에서 도망쳤습니다.');
-    setQuizActive(false);
-    setSelectedDungeon(null);
-    setCurrentQuestion(null);
-  };
+  const handleAnswerQuestion = async (answer) => {
+    if (!currentQuestion) return;
 
-  const renderDungeonCard = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.dungeonCard,
-        {
-          borderLeftColor:
-            item.difficulty === '쉬움' ? '#3b82f6' : item.difficulty === '보통' ? '#f59e0b' : '#ef4444'
+    try {
+      const response = await dungeonAPI.answer(selectedDungeon.id, answer);
+
+      if (response.data.correct) {
+        Vibration.vibrate([0, 100, 50, 100]);
+        setScore(score + 10);
+
+        if (response.data.next_question) {
+          setCurrentQuestion(response.data.next_question);
+          setQuestionIndex(questionIndex + 1);
+        } else {
+          // 던전 완료
+          await completeDungeon();
         }
-      ]}
-      onPress={() => handleStartDungeon(item)}
-    >
-      <View style={styles.dungeonHeader}>
-        <Text style={styles.dungeonName}>{item.name}</Text>
-        <Text
-          style={[
-            styles.difficulty,
+      } else {
+        Vibration.vibrate([0, 200]);
+        Alert.alert('오답', `정답: ${response.data.correct_answer}`);
+        
+        if (response.data.next_question) {
+          setCurrentQuestion(response.data.next_question);
+          setQuestionIndex(questionIndex + 1);
+        }
+      }
+    } catch (error) {
+      Alert.alert('오류', '답변 처리 실패');
+    }
+  };
+
+  const completeDungeon = async () => {
+    try {
+      const response = await dungeonAPI.complete(selectedDungeon.id);
+      if (response.data.success) {
+        Alert.alert(
+          '던전 완료!',
+          `점수: ${score}점\n보상: ${response.data.rewards || '경험치 +100'}`,
+          [
             {
-              color:
-                item.difficulty === '쉬움' ? '#3b82f6' : item.difficulty === '보통' ? '#f59e0b' : '#ef4444'
+              text: '확인',
+              onPress: () => {
+                setQuizActive(false);
+                setSelectedDungeon(null);
+                loadDungeonData();
+              }
             }
-          ]}
-        >
-          {item.difficulty}
-        </Text>
+          ]
+        );
+      }
+    } catch (error) {
+      Alert.alert('오류', '던전 완료 처리 실패');
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator color="#6366f1" size="large" />
       </View>
-      <Text style={styles.dungeonInfo}>필요 레벨: {item.level_required}</Text>
-      <Text style={styles.dungeonInfo}>몬스터: {item.monsters}마리</Text>
-      <Text style={styles.rewards}>보상: {item.rewards}</Text>
-    </TouchableOpacity>
-  );
+    );
+  }
 
   if (quizActive && currentQuestion) {
     return (
-      <View style={styles.quizContainer}>
-        {/* 진행도 */}
-        <View style={styles.progressHeader}>
-          <Text style={styles.dungeonTitle}>{selectedDungeon.name}</Text>
-          <Text style={styles.score}>점수: {score}</Text>
+      <ScrollView style={styles.container}>
+        <View style={styles.quizHeader}>
+          <Text style={styles.dungeonName}>{selectedDungeon?.name}</Text>
+          <Text style={styles.scoreText}>점수: {score}점</Text>
         </View>
 
-        {/* 문제 */}
-        <View style={styles.questionBox}>
-          <Text style={styles.questionText}>{currentQuestion.text}</Text>
+        <View style={styles.questionContainer}>
+          <Text style={styles.questionNumber}>문제 {questionIndex + 1}</Text>
+          <Text style={styles.question}>{currentQuestion.text}</Text>
         </View>
 
-        {/* 선택지 */}
         <View style={styles.optionsContainer}>
-          {currentQuestion.options.map((option, index) => (
+          {currentQuestion.options?.map((option, idx) => (
             <TouchableOpacity
-              key={index}
+              key={idx}
               style={styles.optionButton}
-              onPress={() => handleAnswerQuestion(index)}
+              onPress={() => handleAnswerQuestion(option)}
             >
               <Text style={styles.optionText}>{option}</Text>
             </TouchableOpacity>
           ))}
         </View>
-
-        {/* 도망 버튼 */}
-        <TouchableOpacity
-          style={styles.fleeQuizButton}
-          onPress={handleFleeQuiz}
-        >
-          <Text style={styles.fleeQuizButtonText}>던전 도망</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>던전</Text>
-      <Text style={styles.subtitle}>퀴즈를 풀어 몬스터를 물리치세요</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>단어 던전</Text>
+      <Text style={styles.subtitle}>던전을 선택하여 어려운 단어들을 정복하세요</Text>
 
-      <FlatList
-        data={dungeons}
-        renderItem={renderDungeonCard}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-        scrollEnabled={true}
-      />
-
-      <View style={styles.infoBox}>
-        <Text style={styles.infoTitle}>📌 던전이란?</Text>
-        <Text style={styles.infoText}>
-          영어 단어 및 표현 퀴즈를 풀어서 던전의 몬스터를 물리치는 시스템입니다.
-        </Text>
+      <View style={styles.dungeonList}>
+        {dungeons.map((dungeon, idx) => (
+          <TouchableOpacity
+            key={idx}
+            style={styles.dungeonCard}
+            onPress={() => handleStartDungeon(dungeon)}
+          >
+            <View style={styles.dungeonHeader}>
+              <Text style={styles.dungeonName}>{dungeon.name || `던전 ${dungeon.id}`}</Text>
+              <Text style={styles.difficultyBadge}>{dungeon.difficulty}</Text>
+            </View>
+            <Text style={styles.dungeonInfo}>
+              문제: {dungeon.questions || 5}개 | 보상: {dungeon.rewards || '100 EXP'}
+            </Text>
+            <Text style={styles.dungeonDesc}>{dungeon.description || '지혜의 문제들'}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
-    </View>
+
+      {dungeons.length === 0 && (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>던전 데이터를 로드할 수 없습니다</Text>
+        </View>
+      )}
+    </ScrollView>
   );
 }
 
@@ -207,7 +174,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-    padding: 20
+    padding: 16
   },
   title: {
     fontSize: 28,
@@ -220,130 +187,100 @@ const styles = StyleSheet.create({
     color: '#aaa',
     marginBottom: 20
   },
-  listContainer: {
-    gap: 10,
-    paddingBottom: 20
+  dungeonList: {
+    gap: 12,
+    marginBottom: 20
   },
   dungeonCard: {
     backgroundColor: '#2a2a2a',
-    padding: 15,
+    padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    marginBottom: 5
+    borderLeftColor: '#6366f1'
   },
   dungeonHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10
+    marginBottom: 8
   },
   dungeonName: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
-    flex: 1
+    fontWeight: '600'
   },
-  difficulty: {
+  difficultyBadge: {
+    backgroundColor: '#6366f1',
+    color: '#fff',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
     fontSize: 12,
-    fontWeight: 'bold'
+    fontWeight: '600'
   },
   dungeonInfo: {
     color: '#aaa',
     fontSize: 12,
     marginBottom: 5
   },
-  rewards: {
-    color: '#6366f1',
-    fontSize: 12,
-    fontWeight: 'bold'
+  dungeonDesc: {
+    color: '#999',
+    fontSize: 12
   },
-  infoBox: {
+  quizHeader: {
     backgroundColor: '#2a2a2a',
-    padding: 15,
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#6366f1'
-  },
-  infoTitle: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 8
-  },
-  infoText: {
-    color: '#aaa',
-    fontSize: 12,
-    lineHeight: 18
-  },
-  // Quiz Styles
-  quizContainer: {
-    flex: 1,
-    backgroundColor: '#1a1a1a',
-    padding: 20,
-    justifyContent: 'space-between'
-  },
-  progressHeader: {
-    backgroundColor: '#2a2a2a',
-    padding: 15,
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20
-  },
-  dungeonTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    flex: 1
-  },
-  score: {
-    color: '#6366f1',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  questionBox: {
-    backgroundColor: '#2a2a2a',
-    padding: 20,
+    padding: 16,
     borderRadius: 8,
     marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: '#f59e0b'
-  },
-  questionText: {
-    color: '#fff',
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '500'
-  },
-  optionsContainer: {
-    gap: 10,
-    marginBottom: 20,
-    flex: 1,
-    justifyContent: 'center'
-  },
-  optionButton: {
-    backgroundColor: '#6366f1',
-    padding: 15,
-    borderRadius: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+  scoreText: {
+    color: '#6366f1',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
+  questionContainer: {
+    backgroundColor: '#2a2a2a',
+    padding: 20,
+    borderRadius: 8,
+    marginBottom: 20
+  },
+  questionNumber: {
+    color: '#aaa',
+    fontSize: 12,
+    marginBottom: 8
+  },
+  question: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 24
+  },
+  optionsContainer: {
+    gap: 10,
+    marginBottom: 20
+  },
+  optionButton: {
+    backgroundColor: '#2a2a2a',
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent'
   },
   optionText: {
     color: '#fff',
     fontSize: 14,
     fontWeight: '500'
   },
-  fleeQuizButton: {
-    backgroundColor: '#ef4444',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center'
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40
   },
-  fleeQuizButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold'
+  emptyText: {
+    color: '#aaa',
+    fontSize: 14
   }
 });

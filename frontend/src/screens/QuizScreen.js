@@ -1,43 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Vibration, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Vibration, ScrollView, ActivityIndicator } from 'react-native';
+import { quizAPI } from '../services/api';
 
 export default function QuizScreen({ navigation }) {
-  const [quizData] = useState({
-    ai: [
-      { word: 'Algorithm', meaning: '알고리즘', example: 'An algorithm is a step-by-step procedure' },
-      { word: 'Neural Network', meaning: '신경망', example: 'Neural networks mimic the brain' },
-      { word: 'Machine Learning', meaning: '머신러닝', example: 'Machine learning enables computers to learn' }
-    ],
-    business: [
-      { word: 'Revenue', meaning: '수익', example: 'The company increased its revenue by 20%' },
-      { word: 'Market Share', meaning: '시장 점유율', example: 'Apple has a large market share' },
-      { word: 'Stakeholder', meaning: '이해관계자', example: 'All stakeholders must agree' }
-    ],
-    finance: [
-      { word: 'Portfolio', meaning: '포트폴리오', example: 'Diversify your investment portfolio' },
-      { word: 'Dividend', meaning: '배당금', example: 'Shareholders receive annual dividends' },
-      { word: 'Liquidity', meaning: '유동성', example: 'The company has good liquidity' }
-    ],
-    it: [
-      { word: 'API', meaning: '응용 프로그래밍 인터페이스', example: 'Use the API to integrate services' },
-      { word: 'Framework', meaning: '프레임워크', example: 'React is a popular JavaScript framework' },
-      { word: 'Database', meaning: '데이터베이스', example: 'Store data in a SQL database' }
-    ],
-    marketing: [
-      { word: 'Brand', meaning: '브랜드', example: 'Apple is a strong brand' },
-      { word: 'Campaign', meaning: '캠페인', example: 'Launch a marketing campaign' },
-      { word: 'Demographic', meaning: '인구통계', example: 'Target your demographic audience' }
-    ],
-    programming: [
-      { word: 'Variable', meaning: '변수', example: 'Declare a variable in JavaScript' },
-      { word: 'Function', meaning: '함수', example: 'Define a function to reuse code' },
-      { word: 'Loop', meaning: '반복문', example: 'Use a loop to iterate through data' }
-    ]
-  });
-
-  const categories = ['AI', 'Business', 'Finance', 'IT', 'Marketing', 'Programming'];
-  
+  const [categories, setCategories] = useState(['AI', 'Business', 'Finance', 'IT', 'Marketing', 'Programming']);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('all');
   const [quizMode, setQuizMode] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [options, setOptions] = useState([]);
@@ -46,46 +14,64 @@ export default function QuizScreen({ navigation }) {
   const [answered, setAnswered] = useState(0);
   const [wrongQuestions, setWrongQuestions] = useState([]);
   const [showingWrongMode, setShowingWrongMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [words, setWords] = useState([]);
 
-  const startQuiz = (category) => {
-    const categoryKey = category.toLowerCase();
-    const words = quizData[categoryKey] || [];
-    
-    if (words.length === 0) {
-      Alert.alert('알림', '이 카테고리에 단어가 없습니다.');
+  const languages = [
+    { label: '전체', value: 'all' },
+    { label: '한글 뜻', value: 'korean' },
+    { label: '영어', value: 'english' }
+  ];
+
+  const startQuiz = async (category) => {
+    setLoading(true);
+    try {
+      const response = await quizAPI.getCategory(category.toLowerCase());
+      if (response.data.success) {
+        const categoryWords = response.data.data.words || [];
+        setWords(categoryWords);
+        setSelectedCategory(category);
+        setQuizMode(true);
+        setScore(0);
+        setAnswered(0);
+        setTotalQuestions(categoryWords.length * 2);
+        setWrongQuestions([]);
+        setShowingWrongMode(false);
+        generateNewQuestion(categoryWords);
+      }
+    } catch (error) {
+      Alert.alert('오류', '퀴즈 데이터 로드 실패');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateNewQuestion = (wordList) => {
+    if (!wordList || wordList.length === 0) {
+      Alert.alert('알림', '출제할 단어가 없습니다.');
       return;
     }
 
-    setSelectedCategory(category);
-    setQuizMode(true);
-    setScore(0);
-    setAnswered(0);
-    setTotalQuestions(words.length * 3);
-    setWrongQuestions([]);
-    setShowingWrongMode(false);
-    
-    generateNewQuestion(words);
-  };
+    const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+    const questionType = selectedLanguage === 'all' 
+      ? (Math.random() > 0.5 ? 'meaning' : 'word')
+      : (selectedLanguage === 'korean' ? 'meaning' : 'word');
 
-  const generateNewQuestion = (words) => {
-    const randomWord = words[Math.floor(Math.random() * words.length)];
-    const questionType = Math.random() > 0.5 ? 'meaning' : 'word';
-    
     let question, correctAnswer, incorrectAnswers;
 
     if (questionType === 'meaning') {
       question = `다음 뜻의 단어는?`;
-      correctAnswer = randomWord.word;
-      incorrectAnswers = words
-        .filter(w => w.word !== randomWord.word)
-        .map(w => w.word)
+      correctAnswer = randomWord.단어 || randomWord.word;
+      incorrectAnswers = wordList
+        .filter(w => (w.단어 || w.word) !== correctAnswer)
+        .map(w => w.단어 || w.word)
         .slice(0, 3);
     } else {
       question = `다음 단어의 뜻은?`;
-      correctAnswer = randomWord.meaning;
-      incorrectAnswers = words
-        .filter(w => w.meaning !== randomWord.meaning)
-        .map(w => w.meaning)
+      correctAnswer = randomWord.뜻 || randomWord.meaning;
+      incorrectAnswers = wordList
+        .filter(w => (w.뜻 || w.meaning) !== correctAnswer)
+        .map(w => w.뜻 || w.meaning)
         .slice(0, 3);
     }
 
@@ -93,7 +79,7 @@ export default function QuizScreen({ navigation }) {
 
     setCurrentQuestion({
       question,
-      questionContent: questionType === 'meaning' ? randomWord.meaning : randomWord.word,
+      questionContent: questionType === 'meaning' ? (randomWord.뜻 || randomWord.meaning) : (randomWord.단어 || randomWord.word),
       correctAnswer,
       type: questionType,
       word: randomWord
@@ -117,61 +103,93 @@ export default function QuizScreen({ navigation }) {
         { text: '다음', onPress: () => nextQuestion() }
       ]);
     }
-    
+
     setAnswered(answered + 1);
   };
 
   const nextQuestion = () => {
     if (answered + 1 >= totalQuestions) {
-      Alert.alert('완료!', `퀴즈 종료!\n정답: ${score/10}/${totalQuestions/3}\n정확도: ${Math.round((score/(totalQuestions)) * 100)}%`, [
-        { text: '확인', onPress: () => endQuiz() }
-      ]);
+      endQuiz();
     } else {
-      const categoryKey = selectedCategory.toLowerCase();
-      const words = quizData[categoryKey];
       generateNewQuestion(words);
     }
   };
 
   const endQuiz = () => {
-    setQuizMode(false);
-    setSelectedCategory(null);
-    setCurrentQuestion(null);
+    Alert.alert(
+      '퀴즈 완료',
+      `점수: ${score}점\n정답률: ${Math.round((score / totalQuestions) * 100)}%`,
+      [
+        {
+          text: '계속',
+          onPress: () => {
+            setQuizMode(false);
+            setSelectedCategory(null);
+            setScore(0);
+            setAnswered(0);
+          }
+        }
+      ]
+    );
   };
 
+  const retryWrongQuestions = () => {
+    if (wrongQuestions.length === 0) {
+      Alert.alert('알림', '틀린 문제가 없습니다.');
+      return;
+    }
+    setShowingWrongMode(true);
+    setScore(0);
+    setAnswered(0);
+    setTotalQuestions(wrongQuestions.length);
+    setCurrentQuestion(wrongQuestions[0]);
+    setOptions([wrongQuestions[0].correctAnswer, ...wrongQuestions.slice(1, 4).map(q => q.correctAnswer)].sort(() => Math.random() - 0.5));
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator color="#6366f1" size="large" />
+      </View>
+    );
+  }
+
+  // 퀴즈 진행 중
   if (quizMode && currentQuestion) {
+    const progressPercent = (answered / totalQuestions) * 100;
+
     return (
       <ScrollView style={styles.container}>
-        <View style={styles.quizHeader}>
-          <Text style={styles.title}>📚 {selectedCategory} 단어 퀴즈</Text>
-          <View style={styles.stats}>
-            <Text style={styles.stat}>진행: {answered}/{totalQuestions}</Text>
-            <Text style={styles.stat}>점수: {score}pt</Text>
+        {/* 진행률 표시 */}
+        <View style={styles.progressSection}>
+          <Text style={styles.progressText}>
+            {answered} / {totalQuestions}
+          </Text>
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${progressPercent}%` }
+              ]}
+            />
           </View>
+          <Text style={styles.scoreText}>점수: {score}점</Text>
         </View>
 
-        <View style={styles.progressBar}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${(answered / totalQuestions) * 100}%` }
-            ]}
-          />
+        {/* 카테고리 & 언어 표시 */}
+        <View style={styles.quizInfo}>
+          <Text style={styles.categoryTag}>카테고리: {selectedCategory}</Text>
+          <Text style={styles.languageTag}>
+            언어: {languages.find(l => l.value === selectedLanguage)?.label}
+          </Text>
         </View>
 
         {/* 질문 */}
-        <View style={styles.questionCard}>
-          <Text style={styles.questionLabel}>{currentQuestion.question}</Text>
+        <View style={styles.questionSection}>
+          <Text style={styles.question}>{currentQuestion.question}</Text>
           <View style={styles.questionContent}>
             <Text style={styles.questionText}>{currentQuestion.questionContent}</Text>
           </View>
-
-          {currentQuestion.type === 'word' && (
-            <View style={styles.exampleBox}>
-              <Text style={styles.exampleLabel}>예시:</Text>
-              <Text style={styles.exampleText}>{currentQuestion.word.example}</Text>
-            </View>
-          )}
         </View>
 
         {/* 선택지 */}
@@ -182,71 +200,74 @@ export default function QuizScreen({ navigation }) {
               style={styles.optionButton}
               onPress={() => handleAnswer(option)}
             >
-              <View style={styles.optionBox}>
-                <View style={styles.optionNumber}>
-                  <Text style={styles.optionNumberText}>{String.fromCharCode(65 + idx)}</Text>
-                </View>
-                <Text style={styles.optionText}>{option}</Text>
-              </View>
+              <Text style={styles.optionText}>{option}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <TouchableOpacity
-          style={styles.exitButton}
-          onPress={endQuiz}
-        >
-          <Text style={styles.exitButtonText}>퀴즈 종료</Text>
-        </TouchableOpacity>
+        {/* 틀린 문제 카운트 */}
+        {wrongQuestions.length > 0 && (
+          <View style={styles.wrongCountBadge}>
+            <Text style={styles.wrongCountText}>
+              ⚠️ 틀린 문제: {wrongQuestions.length}개
+            </Text>
+          </View>
+        )}
       </ScrollView>
     );
   }
 
+  // 카테고리 선택 화면
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>📚 단어 퀴즈</Text>
+      <Text style={styles.title}>단어 퀴즈</Text>
+      <Text style={styles.subtitle}>카테고리를 선택하여 시작하세요</Text>
 
-      {wrongQuestions.length > 0 && (
-        <TouchableOpacity
-          style={styles.wrongQuestionsButton}
-          onPress={() => {
-            setShowingWrongMode(true);
-            setQuizMode(true);
-            setAnswered(0);
-            setScore(0);
-            const categoryKey = selectedCategory?.toLowerCase() || 'ai';
-            const words = quizData[categoryKey];
-            generateNewQuestion(words);
-          }}
-        >
-          <Text style={styles.wrongQuestionsText}>
-            ⚠️ 틀린 문제 {wrongQuestions.length}개 재도전
-          </Text>
-        </TouchableOpacity>
-      )}
-
-      <View style={styles.categoryGrid}>
-        {categories.map((category) => (
+      {/* 언어 선택 */}
+      <Text style={styles.sectionTitle}>학습 언어</Text>
+      <View style={styles.languageButtons}>
+        {languages.map((lang) => (
           <TouchableOpacity
-            key={category}
-            style={styles.categoryCard}
-            onPress={() => startQuiz(category)}
+            key={lang.value}
+            style={[
+              styles.langButton,
+              selectedLanguage === lang.value && styles.langButtonActive
+            ]}
+            onPress={() => setSelectedLanguage(lang.value)}
           >
-            <View style={styles.categoryContent}>
-              <Text style={styles.categoryIcon}>📖</Text>
-              <Text style={styles.categoryName}>{category}</Text>
-              <Text style={styles.categoryDesc}>단어 퀴즈</Text>
-            </View>
+            <Text
+              style={[
+                styles.langButtonText,
+                selectedLanguage === lang.value && styles.langButtonTextActive
+              ]}
+            >
+              {lang.label}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View style={styles.infoBox}>
-        <Text style={styles.infoTitle}>ℹ️ 퀴즈 방법</Text>
-        <Text style={styles.infoText}>• 4개 선택지 중 정답을 고르세요</Text>
-        <Text style={styles.infoText}>• 정답마다 경험치 +10 획득</Text>
-        <Text style={styles.infoText}>• 카테고리별로 단어를 학습하세요</Text>
-        <Text style={styles.infoText}>• 틀린 문제는 따로 복습할 수 있습니다</Text>
+      {/* 카테고리 그리드 */}
+      <Text style={styles.sectionTitle}>카테고리</Text>
+      <View style={styles.categoryGrid}>
+        {categories.map((category, idx) => (
+          <TouchableOpacity
+            key={idx}
+            style={styles.categoryCard}
+            onPress={() => startQuiz(category)}
+          >
+            <Text style={styles.categoryEmoji}>📚</Text>
+            <Text style={styles.categoryName}>{category}</Text>
+            <Text style={styles.categoryHint}>탭하여 시작</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* 통계 */}
+      <View style={styles.statsCard}>
+        <Text style={styles.statsTitle}>📊 학습 통계</Text>
+        <Text style={styles.statItem}>카테고리: {categories.length}개</Text>
+        <Text style={styles.statItem}>학습 준비 완료!</Text>
       </View>
     </ScrollView>
   );
@@ -256,190 +277,206 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a1a',
-    padding: 20
+    padding: 16
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 20
-  },
-  wrongQuestionsButton: {
-    backgroundColor: '#ef4444',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-    alignItems: 'center'
-  },
-  wrongQuestionsText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold'
-  },
-  quizHeader: {
-    marginBottom: 20
-  },
-  stats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10
-  },
-  stat: {
-    color: '#aaa',
-    fontSize: 12
-  },
-  progressBar: {
-    height: 12,
-    backgroundColor: '#3a3a3a',
-    borderRadius: 6,
-    marginBottom: 20,
-    overflow: 'hidden'
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#6366f1'
-  },
-  questionCard: {
-    backgroundColor: '#2a2a2a',
-    padding: 20,
-    borderRadius: 8,
-    marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: '#6366f1'
-  },
-  questionLabel: {
-    color: '#aaa',
-    fontSize: 12,
-    marginBottom: 10,
-    fontWeight: 'bold'
-  },
-  questionContent: {
-    backgroundColor: '#1a1a1a',
-    padding: 20,
-    borderRadius: 8,
-    marginBottom: 15,
-    borderWidth: 2,
-    borderColor: '#6366f1'
-  },
-  questionText: {
-    color: '#6366f1',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  exampleBox: {
-    backgroundColor: '#1a1a1a',
-    padding: 12,
-    borderRadius: 6,
-    borderLeftWidth: 3,
-    borderLeftColor: '#f59e0b'
-  },
-  exampleLabel: {
-    color: '#f59e0b',
-    fontSize: 11,
-    fontWeight: 'bold',
     marginBottom: 5
   },
-  exampleText: {
-    color: '#bbb',
-    fontSize: 12,
-    lineHeight: 18
-  },
-  optionsContainer: {
-    marginBottom: 20,
-    gap: 10
-  },
-  optionButton: {
-    marginVertical: 4
-  },
-  optionBox: {
-    backgroundColor: '#2a2a2a',
-    padding: 15,
-    borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#3a3a3a'
-  },
-  optionNumber: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#6366f1',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15
-  },
-  optionNumberText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14
-  },
-  optionText: {
-    color: '#fff',
+  subtitle: {
     fontSize: 14,
-    flex: 1
-  },
-  exitButton: {
-    backgroundColor: '#ef4444',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
+    color: '#aaa',
     marginBottom: 20
   },
-  exitButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold'
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6366f1',
+    marginBottom: 12,
+    marginTop: 16
   },
+  // Language Selection
+  languageButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 20
+  },
+  langButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    backgroundColor: '#2a2a2a',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    alignItems: 'center'
+  },
+  langButtonActive: {
+    backgroundColor: '#6366f1',
+    borderColor: '#6366f1'
+  },
+  langButtonText: {
+    color: '#aaa',
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  langButtonTextActive: {
+    color: '#fff'
+  },
+  // Category Grid
   categoryGrid: {
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 30
+    gap: 12,
+    marginBottom: 20
   },
   categoryCard: {
     width: '48%',
     backgroundColor: '#2a2a2a',
     padding: 20,
     borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#6366f1'
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent'
   },
-  categoryContent: {
-    alignItems: 'center'
-  },
-  categoryIcon: {
+  categoryEmoji: {
     fontSize: 32,
     marginBottom: 8
   },
   categoryName: {
     color: '#fff',
     fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 4
+    fontWeight: '600',
+    marginBottom: 5,
+    textAlign: 'center'
   },
-  categoryDesc: {
-    color: '#aaa',
-    fontSize: 11
+  categoryHint: {
+    color: '#6366f1',
+    fontSize: 10
   },
-  infoBox: {
+  // Stats
+  statsCard: {
     backgroundColor: '#2a2a2a',
     padding: 15,
     borderRadius: 8,
-    marginBottom: 30
+    marginBottom: 30,
+    borderLeftWidth: 4,
+    borderLeftColor: '#6366f1'
   },
-  infoTitle: {
+  statsTitle: {
     color: '#fff',
-    fontSize: 13,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '600',
     marginBottom: 10
   },
-  infoText: {
+  statItem: {
     color: '#aaa',
     fontSize: 12,
-    marginVertical: 4,
-    lineHeight: 18
+    marginBottom: 5
+  },
+  // Quiz Mode
+  progressSection: {
+    backgroundColor: '#2a2a2a',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20
+  },
+  progressText: {
+    color: '#aaa',
+    fontSize: 12,
+    marginBottom: 8
+  },
+  progressBar: {
+    height: 6,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginBottom: 8
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#6366f1'
+  },
+  scoreText: {
+    color: '#6366f1',
+    fontSize: 14,
+    fontWeight: '600'
+  },
+  quizInfo: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 20
+  },
+  categoryTag: {
+    backgroundColor: '#2a2a2a',
+    color: '#6366f1',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  languageTag: {
+    backgroundColor: '#2a2a2a',
+    color: '#22c55e',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    fontSize: 12,
+    fontWeight: '600'
+  },
+  questionSection: {
+    backgroundColor: '#2a2a2a',
+    padding: 20,
+    borderRadius: 8,
+    marginBottom: 20
+  },
+  question: {
+    color: '#aaa',
+    fontSize: 14,
+    marginBottom: 15
+  },
+  questionContent: {
+    backgroundColor: '#1a1a1a',
+    padding: 15,
+    borderRadius: 8
+  },
+  questionText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center'
+  },
+  optionsContainer: {
+    gap: 10,
+    marginBottom: 20
+  },
+  optionButton: {
+    backgroundColor: '#2a2a2a',
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent'
+  },
+  optionText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500'
+  },
+  wrongCountBadge: {
+    backgroundColor: '#4d3333',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ef4444'
+  },
+  wrongCountText: {
+    color: '#ff9999',
+    fontSize: 14,
+    fontWeight: '600'
   }
 });
