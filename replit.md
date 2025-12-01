@@ -102,15 +102,20 @@ Status: **Images placeholder (empty strings)**
 
 **Location**: `/home/runner/workspace/backend/`
 
-### Phase 2.3: 고급 게임 로직 (25% 진행 중)
+### Phase 2.3: 고급 게임 로직 (완료 100%)
 - ✅ **복잡한 전투 엔진** (battleEngine.js)
   - 턴 기반 전투 시스템
   - 스킬 데미지 계산 (보정치 범위 내 랜덤)
   - 적의 기본 공격
   - 승리/패배 처리
   - 기술 카드 드롭 시스템 (난이도별 확률)
-- ⏳ 스킬 획득 및 교체 시스템
-- ⏳ 기술 아이템 시스템
+- ✅ **스킬 획득 및 교체** (skills.js)
+  - 새 스킬 획득 처리
+  - 최대 4개 스킬 슬롯 관리
+  - 스킬 교체 시스템
+- ✅ **기술 아이템 시스템** (skillItems.js)
+  - 기술 충전제 (횟수 부분 회복)
+  - 기술 초기화제 (완전 리셋)
 
 ### Phase 3: React Native 프론트엔드 (미시작)
 - Expo 프로젝트 초기화
@@ -119,7 +124,29 @@ Status: **Images placeholder (empty strings)**
 
 ---
 
-## Recent Changes (Dec 1, 2025 - Turn 1)
+## Recent Changes (Dec 1, 2025 - Turn 2)
+
+### 스킬 시스템 및 기술 아이템 완성
+1. ✅ **skills.js** - 스킬 관리
+   - 스킬 목록 조회
+   - 스킬 획득 처리
+   - 스킬 교체 시스템 (최대 4개 슬롯)
+   - 획득한 스킬 보유 목록
+
+2. ✅ **skillItems.js** - 기술 아이템 시스템
+   - 기술 충전제 (횟수 부분 회복 - 50%)
+   - 기술 초기화제 (완전 리셋)
+   - 아이템 인벤토리 관리
+   - 아이템 사용 처리
+
+3. ✅ **Phase 2.3 완료** - 고급 게임 로직 100%
+   - 턴 기반 전투 엔진
+   - 스킬 관리 시스템
+   - 기술 아이템 시스템
+
+---
+
+## Previous Changes (Dec 1, 2025 - Turn 1)
 
 ### 복잡한 전투 엔진 구현
 1. ✅ **battleEngine.js** - 턴 기반 전투 시스템

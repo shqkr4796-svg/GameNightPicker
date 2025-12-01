@@ -84,6 +84,46 @@ All routes require JWT token in header: `Authorization: Bearer {token}`
 
 ---
 
+## Skills API (`/api/skills`)
+
+### List Skills
+- **GET** `/api/skills`
+- Returns: Current skills, acquired skills
+
+### Get Skill Details
+- **GET** `/api/skills/:skill_name`
+- Returns: Skill information
+
+### Acquire Skill
+- **POST** `/api/skills/acquire`
+- Body: `{ skill_name }`
+- Returns: Acquisition confirmation
+
+### Replace Skill
+- **POST** `/api/skills/replace`
+- Body: `{ old_skill_name, new_skill_name }`
+- Returns: Replacement confirmation
+
+---
+
+## Skill Items API (`/api/skill-items`)
+
+### View Inventory
+- **GET** `/api/skill-items`
+- Returns: Available items and inventory
+
+### Use Item
+- **POST** `/api/skill-items/use`
+- Body: `{ item_id }`
+- Returns: Item effect confirmation
+
+### Acquire Item
+- **POST** `/api/skill-items/acquire`
+- Body: `{ item_id, quantity }`
+- Returns: Acquisition confirmation
+
+---
+
 ## Quiz API (`/api/quiz`)
 
 ### Get Quiz

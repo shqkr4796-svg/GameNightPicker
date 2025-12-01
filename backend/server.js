@@ -54,6 +54,8 @@ import shopRoutes from './routes/shop.js';
 import realEstateRoutes from './routes/realEstate.js';
 import jobRoutes from './routes/job.js';
 import dailyExpressionRoutes from './routes/dailyExpression.js';
+import skillsRoutes from './routes/skills.js';
+import skillItemsRoutes from './routes/skillItems.js';
 
 app.use('/api/player', playerRoutes);
 app.use('/api/dungeon', dungeonRoutes);
@@ -64,6 +66,8 @@ app.use('/api/shop', shopRoutes);
 app.use('/api/realestate', realEstateRoutes);
 app.use('/api/job', jobRoutes);
 app.use('/api/daily-expression', dailyExpressionRoutes);
+app.use('/api/skills', skillsRoutes);
+app.use('/api/skill-items', skillItemsRoutes);
 
 // 기본 API 정보 라우트
 app.get('/api', (req, res) => {
