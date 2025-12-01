@@ -102,10 +102,15 @@ Status: **Images placeholder (empty strings)**
 
 **Location**: `/home/runner/workspace/backend/`
 
-### Phase 2.3: 고급 게임 로직 (다음 단계 - 미시작)
-- 복잡한 전투 로직 (스킬 사용, 데미지 계산)
-- 스킬 획득 및 교체 시스템
-- 기술 아이템 시스템
+### Phase 2.3: 고급 게임 로직 (25% 진행 중)
+- ✅ **복잡한 전투 엔진** (battleEngine.js)
+  - 턴 기반 전투 시스템
+  - 스킬 데미지 계산 (보정치 범위 내 랜덤)
+  - 적의 기본 공격
+  - 승리/패배 처리
+  - 기술 카드 드롭 시스템 (난이도별 확률)
+- ⏳ 스킬 획득 및 교체 시스템
+- ⏳ 기술 아이템 시스템
 
 ### Phase 3: React Native 프론트엔드 (미시작)
 - Expo 프로젝트 초기화
@@ -114,7 +119,28 @@ Status: **Images placeholder (empty strings)**
 
 ---
 
-## Recent Changes (Nov 28, 2025)
+## Recent Changes (Dec 1, 2025 - Turn 1)
+
+### 복잡한 전투 엔진 구현
+1. ✅ **battleEngine.js** - 턴 기반 전투 시스템
+   - 스킬 데미지 계산 (보정치 범위 내 랜덤)
+   - 적의 기본 공격
+   - 승리/패배 처리
+   - 기술 카드 드롭 (확률 기반)
+   - 난이도별 보상 배증
+
+2. ✅ **adventure.js 개선**
+   - /start: 실제 전투 시작
+   - /action: 스킬 사용 처리
+   - /flee: 전투 도망 (NEW)
+
+3. ✅ **문서화**
+   - BACKEND_SUMMARY.md 작성
+   - API_ROUTES.md 업데이트
+
+---
+
+## Previous Changes (Nov 28, 2025)
 
 ### Skill Item System (Nov 28 - Latest)
 1. ✅ **기술 충전제 시스템** - 기술 횟수 부분 회복

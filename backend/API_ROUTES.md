@@ -70,12 +70,17 @@ All routes require JWT token in header: `Authorization: Bearer {token}`
 ### Start Battle
 - **POST** `/api/adventure/start`
 - Body: `{ stage_id, monster_ids }`
-- Returns: Battle state
+- Returns: Battle state with battle_id
 
-### Execute Action
+### Execute Skill (Battle Action)
 - **POST** `/api/adventure/action`
-- Body: `{ action_type, skill_name }`
-- Returns: Updated battle state
+- Body: `{ battle_id, skill_name }`
+- Returns: Updated battle state OR victory/defeat rewards
+
+### Flee Battle
+- **POST** `/api/adventure/flee`
+- Body: `{ battle_id }`
+- Returns: Confirmation
 
 ---
 

@@ -1,8 +1,12 @@
 import express from 'express';
 import { authMiddleware } from '../utils/auth.js';
-import { loadPlayerData, savePlayerData } from '../utils/fileStorage.js';
+import { loadPlayerData, savePlayerData, loadGameData } from '../utils/fileStorage.js';
+import { startBattle, useSkill, getBattleState, fleeBattle } from '../utils/battleEngine.js';
 
 const router = express.Router();
+
+// 플레이어 전투 세션 추적
+const playerBattles = {};
 
 /**
  * GET /api/adventure/select
@@ -94,25 +98,18 @@ router.post('/start', authMiddleware, (req, res) => {
     // 기력 소모
     playerData.모험_기력 -= 1;
 
-    // 전투 상태 생성
-    const battleState = {
-      stage_id: stage_id,
-      player_hp: 100,
-      player_mp: 50,
-      enemy_hp: 50 + stage_id * 5,
-      player_turn: true,
-      player_skills: playerData.모험_기술 || ['박치기'],
-      enemy_skills: ['기본공격'],
-      skill_usage_count: {}
-    };
+    // 전투 시작
+    const battleId = startBattle(playerId, stage_id, playerData);
+    const battleState = getBattleState(battleId);
 
     savePlayerData(playerId, playerData);
 
     res.json({
       success: true,
       data: {
+        battle_id: battleId,
         battle_state: battleState,
-        battle_id: `battle_${Date.now()}`
+        message: '전투가 시작되었습니다!'
       }
     });
   } catch (error) {
@@ -126,36 +123,110 @@ router.post('/start', authMiddleware, (req, res) => {
 
 /**
  * POST /api/adventure/action
- * 모험 액션
+ * 모험 액션 (스킬 사용)
  */
 router.post('/action', authMiddleware, (req, res) => {
   try {
-    const { action_type, skill_name } = req.body;
+    const playerId = req.playerId;
+    const { battle_id, skill_name } = req.body;
 
-    if (!action_type) {
+    if (!battle_id || !skill_name) {
       return res.status(400).json({
         success: false,
-        error: '액션 타입이 필요합니다.'
+        error: 'battle_id와 skill_name이 필요합니다.'
       });
     }
 
-    const battleState = {
-      player_hp: 90,
-      enemy_hp: 40,
-      player_turn: false,
-      game_over: false
-    };
+    // 스킬 사용 처리
+    const result = useSkill(battle_id, skill_name);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.error || '스킬 사용 실패'
+      });
+    }
+
+    // 전투 종료 여부 확인
+    if (result.victory !== undefined) {
+      // 전투 완료
+      const loadResult = loadPlayerData(playerId);
+      if (loadResult.success) {
+        const playerData = loadResult.data;
+        
+        // 보상 처리
+        playerData.경험치 = (playerData.경험치 || 0) + result.rewards.exp;
+        playerData.돈 = (playerData.돈 || 0) + result.rewards.money;
+        
+        // 스테이지 진행도 업데이트
+        if (result.victory) {
+          playerData.모험_클리어스테이지 = Math.max(
+            playerData.모험_클리어스테이지 || 0,
+            result.stageId
+          );
+          
+          // 스킬 카드 획득
+          if (result.rewards.skillCard) {
+            const acquiredSkills = playerData.모험_획득스킬 || [];
+            acquiredSkills.push(result.rewards.skillCard);
+            playerData.모험_획득스킬 = acquiredSkills;
+          }
+        }
+        
+        savePlayerData(playerId, playerData);
+      }
+
+      res.json({
+        success: true,
+        data: {
+          gameOver: true,
+          victory: result.victory,
+          rewards: result.rewards
+        }
+      });
+    } else {
+      // 전투 진행 중
+      res.json({
+        success: true,
+        data: {
+          gameOver: false,
+          battleState: result.battleState,
+          playerTurn: result.playerTurn
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error executing adventure action:', error);
+    res.status(500).json({
+      success: false,
+      error: '서버 오류가 발생했습니다.'
+    });
+  }
+});
+
+/**
+ * POST /api/adventure/flee
+ * 전투에서 도망치기
+ */
+router.post('/flee', authMiddleware, (req, res) => {
+  try {
+    const { battle_id } = req.body;
+
+    if (!battle_id) {
+      return res.status(400).json({
+        success: false,
+        error: 'battle_id가 필요합니다.'
+      });
+    }
+
+    const result = fleeBattle(battle_id);
 
     res.json({
       success: true,
-      data: {
-        battle_state: battleState,
-        game_over: false,
-        skill_usage: { 박치기: 1 }
-      }
+      data: result
     });
   } catch (error) {
-    console.error('Error executing adventure action:', error);
+    console.error('Error fleeing battle:', error);
     res.status(500).json({
       success: false,
       error: '서버 오류가 발생했습니다.'
