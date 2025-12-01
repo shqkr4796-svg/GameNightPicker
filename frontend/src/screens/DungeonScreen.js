@@ -199,6 +199,32 @@ export default function DungeonScreen({ navigation }) {
     }
   };
 
+  const handleLeaveDungeon = () => {
+    Alert.alert(
+      '⚠️ 던전 나가기',
+      '진행 중인 던전을 나가시겠습니까?\n진행 상황이 초기화됩니다.',
+      [
+        { text: '계속하기', style: 'cancel' },
+        {
+          text: '나가기',
+          style: 'destructive',
+          onPress: () => {
+            Vibration.vibrate([0, 100, 200]);
+            setQuizActive(false);
+            setSelectedDungeon(null);
+            setScore(0);
+            setQuestionIndex(0);
+            setCurrentQuestion(null);
+            setHintUsed(false);
+            setHintOptions(null);
+            setShowItemModal(false);
+            Alert.alert('알림', '던전에서 나갔습니다.');
+          }
+        }
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -257,6 +283,12 @@ export default function DungeonScreen({ navigation }) {
               <Text style={styles.actionButtonText}>🎁 아이템</Text>
             </TouchableOpacity>
           )}
+          <TouchableOpacity
+            style={[styles.actionButton, styles.leaveButton]}
+            onPress={handleLeaveDungeon}
+          >
+            <Text style={styles.actionButtonText}>🚪 나가기</Text>
+          </TouchableOpacity>
         </View>
 
         {/* 아이템 선택 모달 */}
@@ -446,14 +478,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
+    flexWrap: 'wrap'
   },
   actionButton: {
     flex: 1,
+    minWidth: '45%',
     backgroundColor: '#6366f1',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center'
+  },
+  leaveButton: {
+    backgroundColor: '#ef4444'
   },
   actionButtonDisabled: {
     backgroundColor: '#3a3a3a',
