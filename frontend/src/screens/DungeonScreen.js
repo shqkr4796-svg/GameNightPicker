@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Vibration } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, ActivityIndicator, Vibration, Modal } from 'react-native';
 import { dungeonAPI } from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DungeonScreen({ navigation }) {
   const [dungeons, setDungeons] = useState([]);
@@ -12,6 +13,8 @@ export default function DungeonScreen({ navigation }) {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [hintUsed, setHintUsed] = useState(false);
   const [hintOptions, setHintOptions] = useState(null);
+  const [dungeonInventory, setDungeonInventory] = useState({});
+  const [showItemModal, setShowItemModal] = useState(false);
 
   useEffect(() => {
     loadDungeonData();
@@ -36,6 +39,13 @@ export default function DungeonScreen({ navigation }) {
     Vibration.vibrate([0, 100, 50, 100]);
 
     try {
+      // 던전 인벤토리 로드
+      const playerStr = await AsyncStorage.getItem('player_data');
+      if (playerStr) {
+        const player = JSON.parse(playerStr);
+        setDungeonInventory(player.dungeonInventory || {});
+      }
+
       const response = await dungeonAPI.start(dungeon.id);
       if (response.data.success) {
         setQuizActive(true);
@@ -48,6 +58,44 @@ export default function DungeonScreen({ navigation }) {
     } catch (error) {
       Alert.alert('오류', '던전 시작 실패');
     }
+  };
+
+  const handleUseItem = (itemName) => {
+    Alert.alert(
+      `🎁 ${itemName} 사용`,
+      `이 아이템을 사용할까요?`,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '사용',
+          onPress: async () => {
+            try {
+              const playerStr = await AsyncStorage.getItem('player_data');
+              if (playerStr) {
+                const player = JSON.parse(playerStr);
+                
+                // 아이템 사용 - 인벤토리에서 제거
+                if (player.dungeonInventory && player.dungeonInventory[itemName]) {
+                  player.dungeonInventory[itemName]--;
+                  if (player.dungeonInventory[itemName] === 0) {
+                    delete player.dungeonInventory[itemName];
+                  }
+                  
+                  await AsyncStorage.setItem('player_data', JSON.stringify(player));
+                  setDungeonInventory(player.dungeonInventory || {});
+                  
+                  Vibration.vibrate([0, 100, 50, 100]);
+                  Alert.alert('✨ 아이템 사용됨', `${itemName}의 효과가 적용되었습니다!`);
+                  setShowItemModal(false);
+                }
+              }
+            } catch (error) {
+              Alert.alert('오류', '아이템 사용 실패');
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleUseHint = () => {
@@ -201,7 +249,52 @@ export default function DungeonScreen({ navigation }) {
           >
             <Text style={styles.actionButtonText}>⏭️ 스킵</Text>
           </TouchableOpacity>
+          {Object.keys(dungeonInventory).length > 0 && (
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => setShowItemModal(true)}
+            >
+              <Text style={styles.actionButtonText}>🎁 아이템</Text>
+            </TouchableOpacity>
+          )}
         </View>
+
+        {/* 아이템 선택 모달 */}
+        <Modal
+          visible={showItemModal}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowItemModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>🎁 던전 아이템 사용</Text>
+              
+              <ScrollView style={styles.itemList}>
+                {Object.entries(dungeonInventory).map(([itemName, count]) => (
+                  <TouchableOpacity
+                    key={itemName}
+                    style={styles.itemButton}
+                    onPress={() => handleUseItem(itemName)}
+                  >
+                    <View>
+                      <Text style={styles.itemName}>{itemName}</Text>
+                      <Text style={styles.itemCount}>보유: {count}개</Text>
+                    </View>
+                    <Text style={styles.useButtonText}>사용</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                onPress={() => setShowItemModal(false)}
+              >
+                <Text style={styles.modalCloseButtonText}>닫기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     );
   }
@@ -379,5 +472,64 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#aaa',
     fontSize: 14
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'flex-end'
+  },
+  modalContent: {
+    backgroundColor: '#2a2a2a',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: 20,
+    maxHeight: '70%'
+  },
+  modalTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16
+  },
+  itemList: {
+    marginBottom: 16,
+    maxHeight: 300
+  },
+  itemButton: {
+    backgroundColor: '#1a1a1a',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderLeftWidth: 3,
+    borderLeftColor: '#6366f1'
+  },
+  itemName: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4
+  },
+  itemCount: {
+    color: '#888',
+    fontSize: 12
+  },
+  useButtonText: {
+    color: '#6366f1',
+    fontSize: 12,
+    fontWeight: 'bold'
+  },
+  modalCloseButton: {
+    backgroundColor: '#3a3a3a',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center'
+  },
+  modalCloseButtonText: {
+    color: '#aaa',
+    fontSize: 14,
+    fontWeight: '600'
   }
 });
