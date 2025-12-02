@@ -6,19 +6,7 @@
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
     "newArchEnabled": false,
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "newArchEnabled": false
-          },
-          "android": {
-            "newArchEnabled": false
-          }
-        }
-      ]
-    ],
+    "plugins": [],
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
