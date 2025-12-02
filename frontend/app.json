@@ -6,17 +6,8 @@
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
     "newArchEnabled": false,
-    "runtimeVersion": "54.0.0",
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "newArchEnabled": false
-          }
-        }
-      ]
-    ],
+    "jsEngine": "hermes",
+    "plugins": [],
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
