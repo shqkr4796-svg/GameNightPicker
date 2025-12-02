@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from './src/screens/LoginScreen';
 import MainHubScreen from './src/screens/MainHubScreen';
@@ -40,7 +41,11 @@ export default function App() {
   };
 
   if (initialRoute === null) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1a1a1a' }}>
+        <ActivityIndicator size="large" color="#6366f1" />
+      </View>
+    );
   }
 
   return (
