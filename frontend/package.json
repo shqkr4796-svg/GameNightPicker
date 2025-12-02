@@ -4,9 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web --localhost"
+    "web": "npx expo start --web"
   },
   "dependencies": {
     "react": "19.1.0",
