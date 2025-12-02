@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, ActivityIndicator } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from './src/screens/LoginScreen';
 import MainHubScreen from './src/screens/MainHubScreen';
@@ -27,6 +28,8 @@ import AllocateStatsScreen from './src/screens/AllocateStatsScreen';
 
 const Stack = createStackNavigator();
 
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function App() {
   const [initialRoute, setInitialRoute] = useState(null);
 
@@ -35,9 +38,16 @@ export default function App() {
   }, []);
 
   const checkAuth = async () => {
-    const token = await AsyncStorage.getItem('auth_token');
-    const playerData = await AsyncStorage.getItem('player_data');
-    setInitialRoute(token ? 'MainHub' : playerData ? 'Home' : 'Login');
+    try {
+      const token = await AsyncStorage.getItem('auth_token');
+      const playerData = await AsyncStorage.getItem('player_data');
+      setInitialRoute(token ? 'MainHub' : playerData ? 'Home' : 'Login');
+    } catch (e) {
+      console.error('Auth check failed:', e);
+      setInitialRoute('Login');
+    } finally {
+      await SplashScreen.hideAsync().catch(() => {});
+    }
   };
 
   if (initialRoute === null) {
