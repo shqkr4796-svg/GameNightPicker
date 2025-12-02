@@ -1,0 +1,45 @@
+C:\Users\pc\Downloads\frontend>npx expo install react-dom react-native-web @expo/metro-runtime
+env: load .env
+env: export API_BASE_URL
+› Installing 3 SDK 54.0.0 compatible native modules using npm
+> npm install
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: life-simulation-game@1.0.0
+npm error Found: react@18.2.0
+npm error node_modules/react
+npm error   react@"18.2.0" from the root project
+npm error   peer react@"^18.0.0 || ^19.0.0" from react-native-web@0.21.2
+npm error   node_modules/react-native-web
+npm error     react-native-web@"^0.21.0" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer react@"^19.1.0" from react-dom@19.1.0
+npm error node_modules/react-dom
+npm error   react-dom@"19.1.0" from the root project
+npm error   peer react-dom@"^18.0.0 || ^19.0.0" from react-native-web@0.21.2
+npm error   node_modules/react-native-web
+npm error     react-native-web@"^0.21.0" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error C:\Users\pc\AppData\Local\npm-cache\_logs\2025-12-02T06_04_22_704Z-eresolve-report.txt
+npm error A complete log of this run can be found in: C:\Users\pc\AppData\Local\npm-cache\_logs\2025-12-02T06_04_22_704Z-debug-0.log
+Error: npm install exited with non-zero code: 1
+Error: npm install exited with non-zero code: 1
+    at ChildProcess.completionListener (C:\Users\pc\Downloads\frontend\node_modules\@expo\spawn-async\build\spawnAsync.js:42:23)
+    at Object.onceWrapper (node:events:623:26)
+    at ChildProcess.emit (node:events:508:28)
+    at cp.emit (C:\Users\pc\Downloads\frontend\node_modules\cross-spawn\lib\enoent.js:34:29)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:305:5)
+    ...
+    at spawnAsync (C:\Users\pc\Downloads\frontend\node_modules\@expo\spawn-async\build\spawnAsync.js:7:23)
+    at NpmPackageManager.runAsync (C:\Users\pc\Downloads\frontend\node_modules\@expo\package-manager\build\node\BasePackageManager.js:41:42)
+    at C:\Users\pc\Downloads\frontend\node_modules\@expo\package-manager\build\node\NpmPackageManager.js:36:20
+    at C:\Users\pc\Downloads\frontend\node_modules\@expo\package-manager\build\utils\spawn.js:14:34
