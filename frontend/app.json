@@ -4,18 +4,22 @@
     "slug": "life-simulation-game",
     "version": "1.0.0",
     "sdkVersion": "54.0.0",
+    "plugins": [],
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lifesimulationgame.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1a1a1a"
-      }
+      },
+      "package": "com.lifesimulationgame.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "platforms": ["ios", "android", "web"]
   }
 }
