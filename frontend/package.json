@@ -23,6 +23,7 @@
     "@react-native-async-storage/async-storage": "^1.23.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.0"
+    "@babel/core": "^7.22.0",
+    "babel-preset-expo": "^10.0.0"
   }
 }

@@ -4,6 +4,13 @@
     "slug": "life-simulation-game",
     "version": "1.0.0",
     "sdkVersion": "54.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a1a"
+    },
     "plugins": [],
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -20,6 +27,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "platforms": ["ios", "android", "web"]
+    "platforms": ["ios", "android", "web"],
+    "scheme": "lifesimulationgame"
   }
 }
